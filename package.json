@@ -60,6 +60,7 @@
     "registry": "lerna publish",
     "release": "lerna publish --exact --conventional-commits --registry=https://npm.pkg.github.com/",
     "release:git": "lerna publish from-package --yes --exact --conventional-commits --ignore-scripts --registry=https://npm.pkg.github.com/",
+    "lerna:publish:npm": "lerna version patch --yes --ignore-scripts && lerna publish from-package --yes --exact --ignore-scripts --registry=https://registry.npmjs.org/",
     "test": "lerna run test"
   },
   "version": "0.0.1"
