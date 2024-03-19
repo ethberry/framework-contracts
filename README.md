@@ -1,4 +1,4 @@
-# NFT Framework
+# NFT Framework Contracts
 
 Welcome to Framework contracts monorepo.
 
