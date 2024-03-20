@@ -6,7 +6,8 @@ import { concat, Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
 
-import { TokenMetadata, expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
+import { expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
+import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 import { isEqualEventArgObj, recursivelyDecodeResult } from "../utils";

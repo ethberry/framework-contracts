@@ -2,32 +2,8 @@ import { toUtf8Bytes, WeiPerEther, ZeroAddress, ZeroHash, zeroPadValue } from "e
 
 import { nonce } from "@gemunion/contracts-constants";
 
+import { TokenMetadata } from "./types";
 import { getNumbers } from "./utils";
-
-export const wallets = [
-  "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73",
-  "0x627306090abab3a6e1400e9345bc60c78a8bef57",
-  "0xf17f52151ebef6c7334fad080c5704d77216b732",
-];
-export const wallet = wallets[0];
-
-export enum TokenMetadata {
-  TEMPLATE_ID = "TEMPLATE_ID",
-  LEVEL = "LEVEL",
-  RARITY = "RARITY",
-  TRAITS = "TRAITS",
-  GENES = "GENES",
-  ROUND = "ROUND",
-  NUMBERS = "NUMBERS",
-  PRIZE = "PRIZE",
-}
-
-export enum NodeEnv {
-  test = "test",
-  development = "development",
-  staging = "staging",
-  production = "production",
-}
 
 export const tokenId = 1n;
 export const tokenIds = [1];

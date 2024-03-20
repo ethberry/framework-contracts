@@ -1,13 +1,13 @@
 import { ethers, network } from "hardhat";
-import { Result, WeiPerEther, ZeroAddress, formatEther } from "ethers";
+import { formatEther, Result, WeiPerEther, ZeroAddress } from "ethers";
 import fs from "fs";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 import { blockAwait, camelToSnakeCase } from "@gemunion/contracts-helpers";
-import { METADATA_ROLE, MINTER_ROLE, nonce, royalty } from "@gemunion/contracts-constants";
+import { METADATA_ROLE, MINTER_ROLE, nonce, royalty, wallet, wallets } from "@gemunion/contracts-constants";
 
 import { getContractName } from "../test/utils";
-import { wallet, wallets, expiresAt, externalId } from "../test/constants";
+import { expiresAt, externalId } from "../test/constants";
 import { deployDiamond } from "../test/Exchange/shared";
 import { debug, grantRoles, recursivelyDecodeResult } from "./utils/deploy-utils";
 import { getBaseTokenURI } from "../test/shared/uri";

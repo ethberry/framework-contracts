@@ -2,11 +2,11 @@ import { batchSize, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemuni
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeERC721Consecutive } from "@gemunion/contracts-erc721c";
-import { NodeEnv } from "../../constants";
 
 import { deployCollection } from "./shared/fixtures";
 import { shouldMintConsecutive } from "./shared/simple/base/mintConsecutive";
 import { shouldBehaveLikeERC721Collection } from "./shared/simple";
+import { NodeEnv } from "../../types";
 
 describe("ERC721CSimple", function () {
   // test timeout fails when batchSize = 5000n

@@ -4,10 +4,18 @@ import fs from "fs";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
-import { baseTokenURI, METADATA_ROLE, MINTER_ROLE, nonce, royalty } from "@gemunion/contracts-constants";
+import {
+  baseTokenURI,
+  METADATA_ROLE,
+  MINTER_ROLE,
+  nonce,
+  royalty,
+  wallet,
+  wallets,
+} from "@gemunion/contracts-constants";
 
 import { getContractName } from "../../test/utils";
-import { wallet, wallets, expiresAt, externalId } from "../../test/constants";
+import { expiresAt, externalId } from "../../test/constants";
 
 const delay = 1; // block delay
 const delayMs = 900; // block delay ms
@@ -40,7 +48,7 @@ interface IObj {
 
 const debug = async (obj: IObj | Record<string, Contract>, name?: string) => {
   if (obj && obj.hash) {
-    console.info(`${name} tx: ${obj.hash}`);
+    console.info(`${name} tx: ${obj.hash as string}`);
     await blockAwaitMs(delayMs);
   } else {
     console.info(`${Object.keys(obj).pop()} deployed`);
@@ -400,10 +408,13 @@ async function main() {
           },
         ],
         content: [],
-        period: 30 * 84600,
-        penalty: 1,
-        maxStake: 0,
-        recurrent: false,
+        terms: {
+          period: 30 * 84600,
+          penalty: 1,
+          maxStake: 0,
+          recurrent: false,
+          advance: false,
+        },
         active: true,
       },
     ]),
@@ -427,14 +438,17 @@ async function main() {
             tokenType: 2,
             token: await contracts.erc721Random.getAddress(),
             tokenId: 306001,
-            amount: 1,
+            amount: 1n,
           },
         ],
         content: [],
-        period: 30 * 84600,
-        penalty: 1,
-        maxStake: 0,
-        recurrent: false,
+        terms: {
+          period: 30 * 84600,
+          penalty: 1,
+          maxStake: 0,
+          recurrent: false,
+          advance: false,
+        },
         active: true,
       },
     ]),
@@ -471,10 +485,13 @@ async function main() {
             },
           ],
         ],
-        period: 1 * 84600,
-        penalty: 0,
-        maxStake: 0,
-        recurrent: true,
+        terms: {
+          period: 1 * 84600,
+          penalty: 0,
+          maxStake: 0,
+          recurrent: true,
+          advance: false,
+        },
         active: true,
       },
     ]),

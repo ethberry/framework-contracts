@@ -1,5 +1,5 @@
 import { toUtf8String, stripZerosLeft } from "ethers";
-import { TokenMetadata } from "../constants";
+import { TokenMetadata } from "../types";
 
 export const metadataKeysArray = [TokenMetadata.TEMPLATE_ID, TokenMetadata.TRAITS];
 

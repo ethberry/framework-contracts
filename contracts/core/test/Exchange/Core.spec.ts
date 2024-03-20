@@ -3,11 +3,12 @@ import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Contract, toBigInt, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
-import { TokenMetadata, expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
 
-import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
+import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
+import { expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
+import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { isEqualEventArgArrObj, isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
