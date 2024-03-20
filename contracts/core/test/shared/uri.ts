@@ -1,4 +1,4 @@
-export const baseTokenURI = "http://localhost:3011/metadata/";
+import { baseTokenURI } from "@gemunion/contracts-constants";
 
 // full one: http://localhost:3011/metadata/{chainID}/address/tokenId/
 export const getBaseTokenURI = (chainId: number | undefined): string => {
