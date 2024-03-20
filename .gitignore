@@ -25,4 +25,3 @@ yarn.lock
 # env
 .env.*
 !.env.sample
-!.env.test
