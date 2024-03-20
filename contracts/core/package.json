@@ -99,5 +99,5 @@
     "test": "NODE_ENV=test hardhat test --network hardhat"
   },
   "types": "./typechain-types/index.ts",
-  "version": "0.0.2"
+  "version": "0.0.1"
 }
