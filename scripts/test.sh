@@ -23,7 +23,6 @@
 # lerna run build --concurrency 1
 #
 # lerna exec --scope @framework/admin-api -- npm run test
-# lerna exec --scope @framework/traits-api -- npm run test
 # lerna exec --scope @framework/market-api -- npm run test
 # lerna exec --scope @framework/mobile-api -- npm run test
 #

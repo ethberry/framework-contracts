@@ -4,8 +4,9 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { concat, Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, zeroPadValue } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { TokenMetadata, expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
+import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
 
+import { TokenMetadata, expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 import { isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
@@ -13,7 +14,6 @@ import { deployDiamond, deployErc721Base } from "./shared";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
-import { decodeNumber, decodeTraits } from "../shared/traits";
 
 describe("Diamond Exchange Breed", function () {
   const factory = async (facetName = "ExchangeBreedFacet"): Promise<any> => {

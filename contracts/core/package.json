@@ -20,6 +20,7 @@
     "@gemunion/contracts-helpers": "5.0.20",
     "@gemunion/contracts-mocks": "5.0.20",
     "@gemunion/contracts-utils": "5.0.20",
+    "@gemunion/traits-v6": "1.0.2",
     "@gemunion/utils": "1.3.5",
     "@gemunion/utils-eth": "1.1.15",
     "@nomicfoundation/hardhat-chai-matchers": "2.0.6",
