@@ -36,10 +36,10 @@
     "@openzeppelin/merkle-tree": "1.0.6",
     "@openzeppelin/test-helpers": "0.5.16",
     "@safe-global/safe-contracts": "1.4.1-build.0",
-    "@safe-global/safe-singleton-factory": "1.0.20",
+    "@safe-global/safe-singleton-factory": "1.0.21",
     "dotenv": "16.4.5",
     "ethers": "6.11.1",
-    "hardhat": "2.22.1",
+    "hardhat": "2.22.2",
     "hardhat-contract-sizer": "2.10.0",
     "hardhat-deploy": "0.12.2",
     "hardhat-gas-reporter": "1.0.10",
@@ -51,7 +51,7 @@
     "@gemunion/eslint-config": "4.0.6",
     "@typechain/ethers-v6": "0.5.1",
     "@typechain/hardhat": "9.1.0",
-    "@types/chai": "4.3.13",
+    "@types/chai": "4.3.14",
     "@types/mocha": "10.0.6",
     "@types/node": "20.11.30",
     "@typescript-eslint/eslint-plugin": "7.3.1",
@@ -72,7 +72,7 @@
     "solhint-plugin-prettier": "0.1.0",
     "ts-node": "10.9.2",
     "typechain": "8.3.2",
-    "typescript": "5.4.2"
+    "typescript": "5.4.3"
   },
   "engines": {
     "node": ">=18"
