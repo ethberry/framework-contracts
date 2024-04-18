@@ -6,13 +6,13 @@
 
 pragma solidity ^0.8.20;
 
-import {VestingWallet} from "@openzeppelin/contracts/finance/VestingWallet.sol";
 import {IVotes} from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {TopUp} from "../../utils/TopUp.sol";
 import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
 import {Asset,TokenType,DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import "./extension/WestingWalletApproved.sol";
 
 /**
  * @title Vesting
@@ -22,7 +22,7 @@ import {Asset,TokenType,DisabledTokenTypes} from "../../Exchange/lib/interfaces/
  *      - TopUp (Gemunion)
  *      This contract abstracts all common functions and is used as an foundation for other vesting contracts
  */
-contract Vesting is VestingWallet, TopUp {
+contract Vesting is VestingWalletApproved, TopUp {
   using SafeCast for uint256;
 
   uint64 public constant _monthInSeconds = 2592000; // The number of seconds in month
@@ -34,7 +34,7 @@ contract Vesting is VestingWallet, TopUp {
     uint64 startTimestamp,
     uint16 cliffInMonth,
     uint16 monthlyRelease
-  ) VestingWallet(beneficiary, startTimestamp, (10000 * _monthInSeconds) / monthlyRelease) {
+  ) VestingWalletApproved(beneficiary, startTimestamp, (10000 * _monthInSeconds) / monthlyRelease) {
     _cliffInMonth = cliffInMonth;
     _monthlyRelease = monthlyRelease;
   }
@@ -69,7 +69,7 @@ contract Vesting is VestingWallet, TopUp {
   /**
    * @dev Restrict the contract to receive Ether (receive via topUp function only).
    */
-  receive() external payable override(VestingWallet, TopUp) {
+  receive() external payable override(VestingWalletApproved, TopUp) {
     revert();
   }
 
