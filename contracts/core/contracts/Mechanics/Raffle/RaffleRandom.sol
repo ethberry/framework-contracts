@@ -164,7 +164,10 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
 
   function releaseFunds(uint256 roundNumber) external onlyRole(DEFAULT_ADMIN_ROLE) {
     Round storage currentRound = _rounds[roundNumber];
-    if (currentRound.balance == 0) revert ZeroBalance();
+
+    if (currentRound.balance == 0) {
+        revert ZeroBalance();
+    }
 
     uint256 roundBalance = currentRound.balance;
     currentRound.balance = 0;
