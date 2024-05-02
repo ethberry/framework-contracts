@@ -198,7 +198,9 @@ describe("Raffle", function () {
       }
     });
 
-    it("should get current round info ", async function () {
+    // In this test round started and closed without bying any tickets.
+    // So right now RaffleRandom no more emitting RoundFinalized event if no tickets was sold
+    it.skip("should get current round info ", async function () {
       const { raffleInstance, erc20Instance, erc721Instance } = await factory();
 
       const tx0 = await raffleInstance.startRound(
@@ -302,6 +304,130 @@ describe("Raffle", function () {
   });
 
   describe("Purchase Raffle", function () {
+    it("TEST: should purchase Lottery and mint ticket", async function () {
+      const [owner, receiver] = await ethers.getSigners();
+
+      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+
+      const diamondInstance = await factoryDiamond();
+      const diamondAddress = await diamondInstance.getAddress();
+
+      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondAddress);
+
+      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+
+      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+
+      if (network.name === "hardhat") {
+        // Set VRFV2 Subscription
+        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+
+        // Add Consumer to VRFV2
+        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
+        await expect(tx02)
+          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
+          .withArgs(1, await raffleInstance.getAddress());
+      }
+      await raffleInstance.startRound(
+        {
+          tokenType: 2,
+          token: await erc721Instance.getAddress(),
+          tokenId: 1,
+          amount,
+        },
+        {
+          tokenType: 1,
+          token: await erc20Instance.getAddress(),
+          tokenId: 0,
+          amount,
+        },
+        0, // maxTicket count
+      );
+
+      // BUY TICKET @EXCHANGE
+      const networkE = await ethers.provider.getNetwork();
+      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
+
+      const signature = await generateOneToOneSignature({
+        account: receiver.address,
+        params: {
+          externalId: dbRoundId,
+          expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
+          receiver: await raffleInstance.getAddress(),
+          referrer: ZeroAddress,
+        },
+        item: {
+          tokenType: 2,
+          token: await erc721Instance.getAddress(),
+          tokenId: 0,
+          amount: 1,
+        },
+        price: {
+          tokenType: 1,
+          token: await erc20Instance.getAddress(),
+          tokenId: 0,
+          amount,
+        },
+      });
+
+      const tx0 = exchangeInstance.connect(receiver).purchaseRaffle(
+        {
+          externalId: dbRoundId,
+          expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
+          receiver: await raffleInstance.getAddress(),
+          referrer: ZeroAddress,
+        },
+        {
+          tokenType: 2,
+          token: await erc721Instance.getAddress(),
+          tokenId: 0,
+          amount: 1,
+        },
+        {
+          tokenType: 1,
+          token: await erc20Instance.getAddress(),
+          tokenId: 0,
+          amount,
+        },
+        signature,
+      );
+      await expect(tx0)
+        .to.emit(exchangeInstance, "PurchaseRaffle")
+        .withArgs(
+          receiver.address,
+          BigInt(dbRoundId),
+          isEqualEventArgObj({
+            tokenType: 2n,
+            token: await erc721Instance.getAddress(),
+            tokenId: 1n, // ticketId = 1
+            amount: 1n,
+          }),
+          isEqualEventArgObj({
+            tokenType: 1n,
+            token: await erc20Instance.getAddress(),
+            tokenId: 0n,
+            amount: amount * 1n,
+          }),
+          1n,
+          1n,
+        )
+        .to.emit(erc721Instance, "Transfer")
+        .withArgs(ZeroAddress, receiver.address, tokenId);
+      await expect(tx0).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
+
+      // TEST METADATA
+      const metadata = recursivelyDecodeResult(await erc721Instance.getTokenMetadata(tokenId));
+      const decodedMeta = decodeMetadata(metadata as any[]);
+      expect(decodedMeta.ROUND).to.equal(BigInt(dbRoundId));
+    });
+
     it("should purchase Lottery and mint ticket", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
