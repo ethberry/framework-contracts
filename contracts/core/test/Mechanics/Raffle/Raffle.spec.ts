@@ -198,8 +198,6 @@ describe("Raffle", function () {
       }
     });
 
-    // In this test round started and closed without bying any tickets.
-    // So right now RaffleRandom no more emitting RoundFinalized event if no tickets was sold
     it("should get current round info ", async function () {
       const { raffleInstance, erc20Instance, erc721Instance } = await factory();
 
