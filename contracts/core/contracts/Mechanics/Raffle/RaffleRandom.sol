@@ -168,7 +168,9 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
       // If more than one ticket sold, we have to call random function to figure out who is the winner
       currentRound.requestId = getRandomNumber();
       requestToRoundNumber[currentRound.requestId] = roundNumber;      
-    } // if no ticket sold, we suppose to set endTimestamp and no need emit RoundFinalized
+    } else {
+     emit RoundFinalized(currentRound.roundId, 0, 0); // roundId, prizeIndex, prizeNumber
+    }// if no ticket sold, we suppose to set endTimestamp and no need emit RoundFinalized
 
     emit RoundEnded(roundNumber, block.timestamp);
   }
