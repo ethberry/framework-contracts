@@ -9,7 +9,7 @@ import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
 
-describe("Diamond Exchange Grade", function () {
+describe("Diamond Exchange Discrete", function () {
   const factory = async (facetName = "ExchangeGradeFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
