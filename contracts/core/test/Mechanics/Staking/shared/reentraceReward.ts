@@ -6,7 +6,7 @@ import { time } from "@openzeppelin/test-helpers";
 import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { expiresAt, extra, templateId, tokenId, tokenIds } from "../../../constants";
-import { IRule } from "../interface/staking";
+import { IStakingRule } from "../interface/staking";
 import { deployERC1363 } from "../../../ERC20/shared/fixtures";
 import { deployERC721 } from "../../../ERC721/shared/fixtures";
 import { deployERC1155 } from "../../../ERC1155/shared/fixtures";
@@ -38,7 +38,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
         const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 0, // NATIVE
@@ -117,7 +117,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
         const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 0, // NATIVE
@@ -191,7 +191,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
         const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 0, // NATIVE
@@ -274,7 +274,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
         const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 0, // NATIVE
@@ -360,7 +360,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
         await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 0, // NATIVE
@@ -444,7 +444,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
 
         await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 1, // ERC20
@@ -538,7 +538,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await erc721Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
         await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 2, // ERC721
@@ -639,7 +639,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
         await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
 
-        const stakeRule: IRule = {
+        const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 4, // ERC1155

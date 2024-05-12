@@ -17,7 +17,7 @@ import {
 
 import { VRFCoordinatorV2Mock } from "../../../typechain-types";
 import { expiresAt, subscriptionId, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
-import { IRule } from "./interface/staking";
+import { IStakingRule } from "./interface/staking";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../shared/link";
 import { deployStaking } from "./shared/fixture";
@@ -121,7 +121,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -153,7 +153,7 @@ describe("Staking", function () {
       const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
       const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      const stakeRule1: IRule = {
+      const stakeRule1: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -175,7 +175,7 @@ describe("Staking", function () {
         active: true,
       };
 
-      const stakeRule2: IRule = {
+      const stakeRule2: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -217,7 +217,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -257,7 +257,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [],
         reward: [
           {
@@ -280,7 +280,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721RandomInstance = await erc721Factory("ERC721BlacklistDiscreteRentableRandom");
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -313,7 +313,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -347,7 +347,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -386,7 +386,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721RandomInstance = await erc721Factory("ERC721BlacklistDiscreteRentableRandom");
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -414,7 +414,7 @@ describe("Staking", function () {
         active: true,
       };
 
-      const stakeRule2: IRule = {
+      const stakeRule2: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -466,7 +466,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721RandomInstance = await erc721Factory("ERC721BlacklistDiscreteRentableRandom");
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -494,7 +494,7 @@ describe("Staking", function () {
         active: true,
       };
 
-      const stakeRule2: IRule = {
+      const stakeRule2: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -583,7 +583,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -616,7 +616,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -649,7 +649,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -702,7 +702,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -750,7 +750,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -787,7 +787,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -833,7 +833,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -870,7 +870,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -935,7 +935,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1000,7 +1000,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1076,7 +1076,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -1124,7 +1124,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1177,7 +1177,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1238,7 +1238,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1309,7 +1309,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1361,7 +1361,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1436,7 +1436,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1508,7 +1508,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1599,7 +1599,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1701,7 +1701,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1794,7 +1794,7 @@ describe("Staking", function () {
         .to.emit(vrfInstance, "SubscriptionConsumerAdded")
         .withArgs(1, await erc721Instance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1863,7 +1863,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -1932,7 +1932,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -2009,7 +2009,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -2075,7 +2075,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2159,7 +2159,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2254,7 +2254,7 @@ describe("Staking", function () {
         .to.emit(vrfInstance, "SubscriptionConsumerAdded")
         .withArgs(1, await erc721Instance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2330,7 +2330,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2406,7 +2406,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2491,7 +2491,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2593,7 +2593,7 @@ describe("Staking", function () {
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2686,7 +2686,7 @@ describe("Staking", function () {
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2802,7 +2802,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -2877,7 +2877,7 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
       await erc721Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -2960,7 +2960,7 @@ describe("Staking", function () {
       const erc20Instance = await erc20Factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3042,7 +3042,7 @@ describe("Staking", function () {
       const erc20Instance = await erc20Factory();
       const erc721Instance = await erc721Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3137,7 +3137,7 @@ describe("Staking", function () {
         .to.emit(vrfInstance, "SubscriptionConsumerAdded")
         .withArgs(1, await erc721Instance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3209,7 +3209,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3283,7 +3283,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3365,7 +3365,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -3438,7 +3438,7 @@ describe("Staking", function () {
       await erc998Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
       await erc998Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3521,7 +3521,7 @@ describe("Staking", function () {
       const erc20Instance = await erc20Factory();
       const erc998Instance = await erc721Factory("ERC998Simple");
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3605,7 +3605,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3679,7 +3679,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3761,7 +3761,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3853,7 +3853,7 @@ describe("Staking", function () {
         .to.emit(vrfInstance, "SubscriptionConsumerAdded")
         .withArgs(1, await erc998RandomInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3925,7 +3925,7 @@ describe("Staking", function () {
       await erc998Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
       await erc998Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -3994,7 +3994,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -4064,7 +4064,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc1155Instance = await erc1155Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4153,7 +4153,7 @@ describe("Staking", function () {
       const erc20Instance = await erc20Factory();
       const erc1155Instance = await erc1155Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4254,7 +4254,7 @@ describe("Staking", function () {
         .to.emit(vrfInstance, "SubscriptionConsumerAdded")
         .withArgs(1, await erc721RandomInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4334,7 +4334,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4414,7 +4414,7 @@ describe("Staking", function () {
 
       await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4501,7 +4501,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -4584,7 +4584,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -4652,7 +4652,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -4725,7 +4725,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -4796,7 +4796,7 @@ describe("Staking", function () {
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 2, // ERC721
@@ -4864,7 +4864,7 @@ describe("Staking", function () {
 
       await erc998Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -4935,7 +4935,7 @@ describe("Staking", function () {
 
       await erc998Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 3, // ERC998
@@ -5003,7 +5003,7 @@ describe("Staking", function () {
 
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 4, // ERC1155
@@ -5090,7 +5090,7 @@ describe("Staking", function () {
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -5224,7 +5224,7 @@ describe("Staking", function () {
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -5345,7 +5345,7 @@ describe("Staking", function () {
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -5534,7 +5534,7 @@ describe("Staking", function () {
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -5723,7 +5723,7 @@ describe("Staking", function () {
       const erc20Instance = await erc20Factory();
 
       // SET RULE 1
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -5774,7 +5774,7 @@ describe("Staking", function () {
       expect(balance2).to.equal(0);
 
       // SET RULE 2
-      const stakeRule1: IRule = {
+      const stakeRule1: IStakingRule = {
         deposit: [
           {
             tokenType: 1, // ERC20
@@ -5893,7 +5893,7 @@ describe("Staking", function () {
       });
       await expect(tx0).to.be.revertedWithCustomError(stakingInstance, "ZeroBalance");
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -5968,7 +5968,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE
@@ -6056,7 +6056,7 @@ describe("Staking", function () {
       await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
       await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
-      const stakeRule: IRule = {
+      const stakeRule: IStakingRule = {
         deposit: [
           {
             tokenType: 0, // NATIVE

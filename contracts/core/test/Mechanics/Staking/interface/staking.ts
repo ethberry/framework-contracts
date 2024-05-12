@@ -1,4 +1,4 @@
-export interface IRule {
+export interface IStakingRule {
   deposit: IAsset[];
   reward: IAsset[];
   content: IAsset[][];

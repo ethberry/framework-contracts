@@ -6,7 +6,7 @@ import { time } from "@openzeppelin/test-helpers";
 import { blockAwait } from "@gemunion/contracts-helpers";
 
 import { tokenZero } from "../../constants";
-import { IRule } from "./interface/staking";
+import type { IRule } from "./interface/staking";
 import { deployPonzi } from "./fixture";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { isEqualEventArgArrObj } from "../../utils";
