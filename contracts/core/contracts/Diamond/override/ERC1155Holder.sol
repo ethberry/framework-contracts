@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-// import {ERC1155Receiver} from "./ERC1155Receiver.sol"; // ! contain supportedInterface
+// import { ERC1155Receiver } from "./ERC1155Receiver.sol"; // ! contain supportedInterface
 
 /**
  * Simple implementation of `ERC1155Receiver` that will allow a contract to hold ERC1155 tokens.

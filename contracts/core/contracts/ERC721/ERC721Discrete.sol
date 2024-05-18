@@ -6,16 +6,16 @@
 
 pragma solidity ^0.8.20;
 
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import {METADATA_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
-import {IERC4906_ID} from "@gemunion/contracts-utils/contracts/interfaces.sol";
-import {TEMPLATE_ID} from "@gemunion/contracts-utils/contracts/attributes.sol";
+import { METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { IERC4906_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
+import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import {IERC721_DISCRETE_ID} from "../utils/interfaces.sol";
-import {ProtectedAttribute} from "../utils/errors.sol";
-import {ERC721Simple} from "./ERC721Simple.sol";
-import {IERC721Discrete} from "./interfaces/IERC721Discrete.sol";
+import { IERC721_DISCRETE_ID } from "../utils/interfaces.sol";
+import { ProtectedAttribute } from "../utils/errors.sol";
+import { ERC721Simple } from "./ERC721Simple.sol";
+import { IERC721Discrete } from "./interfaces/IERC721Discrete.sol";
 
 contract ERC721Discrete is IERC721Discrete, ERC721Simple {
   event LevelUp(address account, uint256 tokenId, bytes32 attribute, uint256 value);

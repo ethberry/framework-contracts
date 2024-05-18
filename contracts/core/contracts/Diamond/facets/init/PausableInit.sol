@@ -6,7 +6,7 @@
 
 pragma solidity ^0.8.0;
 
-import {PausableStorage} from "../../storage/PausableStorage.sol";
+import { PausableStorage } from "../../storage/PausableStorage.sol";
 
 contract PausableInit {
     function init() public virtual {

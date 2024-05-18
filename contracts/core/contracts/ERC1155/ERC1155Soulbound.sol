@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import {ERC1155Simple} from "./ERC1155Simple.sol";
+import { ERC1155Simple } from "./ERC1155Simple.sol";
 
 contract ERC1155Soulbound is ERC1155Simple {
   error Soulbound();

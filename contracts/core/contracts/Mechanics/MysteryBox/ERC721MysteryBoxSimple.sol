@@ -6,17 +6,17 @@
 
 pragma solidity ^0.8.20;
 
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import {MINTER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
+import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import {IERC721MysteryBox} from "./interfaces/IERC721MysteryBox.sol";
-import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
-import {ERC721Simple} from "../../ERC721/ERC721Simple.sol";
-import {TopUp} from "../../utils/TopUp.sol";
-import {Asset, DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
-import {IERC721_MYSTERY_ID} from "../../utils/interfaces.sol";
-import {MethodNotSupported, NoContent} from "../../utils/errors.sol";
+import { IERC721MysteryBox } from "./interfaces/IERC721MysteryBox.sol";
+import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
+import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
+import { TopUp } from "../../utils/TopUp.sol";
+import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
+import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
 contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
   using Address for address;

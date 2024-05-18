@@ -7,16 +7,16 @@
 
 pragma solidity ^0.8.20;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 
-import {PAUSER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
+import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import {Expired,NotInList,NotExist,WrongAmount,AlreadyExist} from "../../utils/errors.sol";
-import {TopUp} from "../../utils/TopUp.sol";
-import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
-import {Asset,Params,TokenType,DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Expired,NotInList,NotExist,WrongAmount,AlreadyExist } from "../../utils/errors.sol";
+import { TopUp } from "../../utils/TopUp.sol";
+import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
+import { Asset,Params,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
 contract WaitList is AccessControl, Pausable, TopUp {
   mapping(uint256 => bytes32) internal _roots;

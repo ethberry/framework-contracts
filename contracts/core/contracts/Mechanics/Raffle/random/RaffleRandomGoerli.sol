@@ -6,14 +6,14 @@
 
 pragma solidity ^0.8.20;
 
-import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import {ChainLinkGoerliV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
-import {ChainLinkBaseV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
+import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import {RaffleRandom} from "../RaffleRandom.sol";
-import {Asset} from "../../../Exchange/lib/interfaces/IAsset.sol";
-import {InvalidSubscription} from "../../../utils/errors.sol";
+import { RaffleRandom } from "../RaffleRandom.sol";
+import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
+import { InvalidSubscription } from "../../../utils/errors.sol";
 
 contract RaffleRandomGoerli is RaffleRandom, ChainLinkGoerliV2 {
   constructor() RaffleRandom() ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}

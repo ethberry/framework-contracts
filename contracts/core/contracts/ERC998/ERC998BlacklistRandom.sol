@@ -6,16 +6,16 @@
 
 pragma solidity ^0.8.20;
 
-import {MINTER_ROLE, METADATA_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
-import {RARITY} from "@gemunion/contracts-utils/contracts/attributes.sol";
+import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { RARITY } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import {IERC721_RANDOM_ID} from "../utils/interfaces.sol";
-import {ERC998Blacklist} from "./ERC998Blacklist.sol";
-import {IERC721Random} from "../ERC721/interfaces/IERC721Random.sol";
-import {ERC721Simple} from "../ERC721/ERC721Simple.sol";
-import {Rarity} from "../Mechanics/Rarity/Rarity.sol";
-import {TemplateZero} from "../utils/errors.sol";
-import {Rarity} from "../Mechanics/Rarity/Rarity.sol";
+import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
+import { ERC998Blacklist } from "./ERC998Blacklist.sol";
+import { IERC721Random } from "../ERC721/interfaces/IERC721Random.sol";
+import { ERC721Simple } from "../ERC721/ERC721Simple.sol";
+import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
+import { TemplateZero } from "../utils/errors.sol";
+import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 
 abstract contract ERC998BlacklistRandom is IERC721Random, ERC998Blacklist, Rarity {
   struct Request {

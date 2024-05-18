@@ -6,13 +6,13 @@
 
 pragma solidity ^0.8.20;
 
-import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import {ChainLinkHardhatV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkHardhatV2.sol";
-import {ChainLinkBaseV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkHardhatV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkHardhatV2.sol";
+import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import {InvalidSubscription} from "../../utils/errors.sol";
-import {ERC721Random} from "../ERC721Random.sol";
+import { InvalidSubscription } from "../../utils/errors.sol";
+import { ERC721Random } from "../ERC721Random.sol";
 
 contract ERC721RandomHardhat is ERC721Random, ChainLinkHardhatV2 {
   constructor(

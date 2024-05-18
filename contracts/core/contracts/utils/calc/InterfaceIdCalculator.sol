@@ -8,14 +8,14 @@ pragma solidity ^0.8.20;
 
 import "hardhat/console.sol";
 
-import {IERC721Simple} from "../../ERC721/interfaces/IERC721Simple.sol";
-import {IERC721Discrete} from "../../ERC721/interfaces/IERC721Discrete.sol";
-import {IERC721Random} from "../../ERC721/interfaces/IERC721Random.sol";
+import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
+import { IERC721Discrete } from "../../ERC721/interfaces/IERC721Discrete.sol";
+import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 
-import {IERC721MysteryBox} from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
-import {IDispenser} from "../../Mechanics/Dispenser/interfaces/IDispenser.sol";
-import {IERC721LotteryTicket} from "../../Mechanics/Lottery/interfaces/IERC721LotteryTicket.sol";
-import {IERC721RaffleTicket} from "../../Mechanics/Raffle/interfaces/IERC721RaffleTicket.sol";
+import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
+import { IDispenser } from "../../Mechanics/Dispenser/interfaces/IDispenser.sol";
+import { IERC721LotteryTicket } from "../../Mechanics/Lottery/interfaces/IERC721LotteryTicket.sol";
+import { IERC721RaffleTicket } from "../../Mechanics/Raffle/interfaces/IERC721RaffleTicket.sol";
 
 contract InterfaceIdCalculator {
   function test() public pure {

@@ -6,9 +6,9 @@
 
 pragma solidity ^0.8.20;
 
-import {BlackList} from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
+import { BlackList } from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
 
-import {ERC998Simple} from "./ERC998Simple.sol";
+import { ERC998Simple } from "./ERC998Simple.sol";
 
 contract ERC998Blacklist is ERC998Simple, BlackList {
   constructor(

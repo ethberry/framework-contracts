@@ -7,7 +7,7 @@
 pragma solidity ^0.8.20;
 
 import "hardhat/console.sol";
-// import {errors} from "../../utils/errors.sol";
+// import { errors } from "../../utils/errors.sol";
 // must include all errors here
 
 contract ErrorsIdCalculator {

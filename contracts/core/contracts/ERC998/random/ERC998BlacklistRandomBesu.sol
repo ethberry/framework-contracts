@@ -6,13 +6,13 @@
 
 pragma solidity ^0.8.20;
 
-import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import {ChainLinkBesuV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBesuV2.sol";
-import {ChainLinkBaseV2} from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkBesuV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBesuV2.sol";
+import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import {ERC998BlacklistRandom} from "../ERC998BlacklistRandom.sol";
-import {InvalidSubscription} from "../../utils/errors.sol";
+import { ERC998BlacklistRandom } from "../ERC998BlacklistRandom.sol";
+import { InvalidSubscription } from "../../utils/errors.sol";
 
 contract ERC998BlacklistRandomGemunion is ERC998BlacklistRandom, ChainLinkBesuV2 {
   constructor(

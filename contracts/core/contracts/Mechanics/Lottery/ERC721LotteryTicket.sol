@@ -6,16 +6,16 @@
 
 pragma solidity ^0.8.20;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {ERC721Burnable, ERC721} from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC721Burnable, ERC721 } from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-import {MINTER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
-import {ERC721ABaseUrl} from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
-import {ERC721GeneralizedCollection} from "@gemunion/contracts-erc721/contracts/extensions/ERC721GeneralizedCollection.sol";
-import {ERC721ABER} from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
+import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { ERC721ABaseUrl } from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
+import { ERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/extensions/ERC721GeneralizedCollection.sol";
+import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
 
-import {PRIZE, NUMBERS, ROUND} from "../../utils/constants.sol";
-import {IERC721LotteryTicket, TicketLottery} from "./interfaces/IERC721LotteryTicket.sol";
+import { PRIZE, NUMBERS, ROUND } from "../../utils/constants.sol";
+import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
 
 contract ERC721LotteryTicket is IERC721LotteryTicket, ERC721ABER, ERC721ABaseUrl, ERC721GeneralizedCollection {
   mapping(uint256 => TicketLottery) private _data;

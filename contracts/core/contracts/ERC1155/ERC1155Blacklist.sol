@@ -6,12 +6,12 @@
 
 pragma solidity ^0.8.20;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import {BlackList} from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
-import {ERC1155ABSR} from "@gemunion/contracts-erc1155/contracts/preset/ERC1155ABSR.sol";
+import { BlackList } from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
+import { ERC1155ABSR } from "@gemunion/contracts-erc1155/contracts/preset/ERC1155ABSR.sol";
 
-import {ERC1155Simple} from "./ERC1155Simple.sol";
+import { ERC1155Simple } from "./ERC1155Simple.sol";
 
 contract ERC1155Blacklist is ERC1155Simple, BlackList {
   constructor(uint96 royaltyNumerator, string memory baseTokenURI) ERC1155Simple(royaltyNumerator, baseTokenURI) {}

@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {PausableInternal} from "../override/PausableInternal.sol";
+import { PausableInternal } from "../override/PausableInternal.sol";
 
 /**
  * @dev Contract module which allows children to implement an emergency stop

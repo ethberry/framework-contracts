@@ -6,15 +6,15 @@
 
 pragma solidity ^0.8.20;
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import {ERC998ERC1155Enumerable} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155Enumerable.sol";
-import {ERC998Utils} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
-import {ERC998ERC721} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
-import {ERC998ERC1155} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155.sol";
+import { ERC998ERC1155Enumerable } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155Enumerable.sol";
+import { ERC998Utils } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
+import { ERC998ERC721 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
+import { ERC998ERC1155 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155.sol";
 
-import {ERC998SimpleEnum} from "./ERC998SimpleEnum.sol";
+import { ERC998SimpleEnum } from "./ERC998SimpleEnum.sol";
 
 contract ERC998ERC1155Enum is ERC998SimpleEnum, ERC998ERC1155Enumerable {
   constructor(

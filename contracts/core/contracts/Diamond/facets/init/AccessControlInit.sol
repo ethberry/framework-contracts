@@ -6,8 +6,8 @@
 
 pragma solidity ^0.8.0;
 
-import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
-import {LibDiamond} from "../../lib/LibDiamond.sol";
+import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { LibDiamond } from "../../lib/LibDiamond.sol";
 
 contract AccessControlInit {
     function init() public virtual {

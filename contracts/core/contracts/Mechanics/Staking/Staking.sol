@@ -6,29 +6,29 @@
 
 pragma solidity ^0.8.20;
 
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {EnumerableMap} from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
+import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import { EnumerableMap } from "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import {Wallet} from "@gemunion/contracts-mocks/contracts/Wallet.sol";
-import {PAUSER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
-import {TEMPLATE_ID} from "@gemunion/contracts-utils/contracts/attributes.sol";
-import {IERC721GeneralizedCollection} from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
+import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
+import { IERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
 
-import {IERC721Random} from "../../ERC721/interfaces/IERC721Random.sol";
-import {IERC721Simple} from "../../ERC721/interfaces/IERC721Simple.sol";
-import {IERC1155Simple} from "../../ERC1155/interfaces/IERC1155Simple.sol";
-import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
-import {IERC721_MYSTERY_ID} from "../../utils/interfaces.sol";
-import {TopUp} from "../../utils/TopUp.sol";
-import {ZeroBalance,NotExist,WrongRule,UnsupportedTokenType,NotComplete,Expired,NotAnOwner,WrongStake,WrongToken,LimitExceed,NotActive} from "../../utils/errors.sol";
-import {IERC721MysteryBox} from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
-import {IStaking} from "./interfaces/IStaking.sol";
-import {Asset,Params,TokenType,DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
+import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
+import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
+import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
+import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
+import { TopUp } from "../../utils/TopUp.sol";
+import { ZeroBalance,NotExist,WrongRule,UnsupportedTokenType,NotComplete,Expired,NotAnOwner,WrongStake,WrongToken,LimitExceed,NotActive } from "../../utils/errors.sol";
+import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
+import { IStaking } from "./interfaces/IStaking.sol";
+import { Asset,Params,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import "../../Referral/Referral.sol";
 
 /**

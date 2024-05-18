@@ -6,9 +6,9 @@
 
 pragma solidity ^0.8.20;
 
-import {Diamond} from "../Diamond/Diamond.sol";
-import {LibDiamond} from "../Diamond/lib/LibDiamond.sol";
-import {AccessControlInternal} from "../Diamond/override/AccessControlInternal.sol";
+import { Diamond } from "../Diamond/Diamond.sol";
+import { LibDiamond } from "../Diamond/lib/LibDiamond.sol";
+import { AccessControlInternal } from "../Diamond/override/AccessControlInternal.sol";
 
 /**
  * todo create contract WalletDiamond. It have to be inherited by this contract.

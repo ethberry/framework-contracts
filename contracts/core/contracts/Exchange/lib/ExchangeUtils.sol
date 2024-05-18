@@ -6,22 +6,22 @@
 
 pragma solidity ^0.8.20;
 
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import { IERC1155 } from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import {IERC1363} from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363.sol";
-import {IERC1363_ID, IERC1363_RECEIVER_ID} from "@gemunion/contracts-utils/contracts/interfaces.sol";
+import { IERC1363 } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363.sol";
+import { IERC1363_ID, IERC1363_RECEIVER_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
 
-import {IERC721Simple} from "../../ERC721/interfaces/IERC721Simple.sol";
-import {IERC721Random} from "../../ERC721/interfaces/IERC721Random.sol";
-import {IERC1155Simple} from "../../ERC1155/interfaces/IERC1155Simple.sol";
-import {IERC721_RANDOM_ID} from "../../utils/interfaces.sol";
-import {UnsupportedTokenType, WrongAmount} from "../../utils/errors.sol";
-import {Asset, DisabledTokenTypes, TokenType} from "./interfaces/IAsset.sol";
+import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
+import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
+import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
+import { IERC721_RANDOM_ID } from "../../utils/interfaces.sol";
+import { UnsupportedTokenType, WrongAmount } from "../../utils/errors.sol";
+import { Asset, DisabledTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
 library ExchangeUtils {
   using Address for address;

@@ -6,14 +6,14 @@
 
 pragma solidity ^0.8.20;
 
-import {ERC721} from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
-import {ERC721Votes} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
-import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
+import { ERC721 } from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import { ERC721Votes } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Votes.sol";
+import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-import {ERC721ABER} from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
+import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
 
-import {ERC721Soulbound} from "./ERC721Soulbound.sol";
-import {ERC721Simple} from "./ERC721Simple.sol";
+import { ERC721Soulbound } from "./ERC721Soulbound.sol";
+import { ERC721Simple } from "./ERC721Simple.sol";
 
 contract ERC721SoulboundVotes is ERC721Soulbound, ERC721Votes {
   constructor(

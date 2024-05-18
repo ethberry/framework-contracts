@@ -6,14 +6,14 @@
 
 pragma solidity ^0.8.20;
 
-import {Context} from "@openzeppelin/contracts/utils/Context.sol";
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import { Context } from "@openzeppelin/contracts/utils/Context.sol";
+import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import {ERC998Utils} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
-import {ERC998ERC1155} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155.sol";
-import {ERC998ERC721} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
+import { ERC998Utils } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
+import { ERC998ERC1155 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155.sol";
+import { ERC998ERC721 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
 
-import {ERC998Simple} from "./ERC998Simple.sol";
+import { ERC998Simple } from "./ERC998Simple.sol";
 
 contract ERC998ERC1155Simple is ERC998Simple, ERC998ERC1155 {
   constructor(

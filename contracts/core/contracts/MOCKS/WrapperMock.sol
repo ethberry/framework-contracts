@@ -6,9 +6,9 @@
 
 pragma solidity ^0.8.20;
 
-import {Wallet} from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 
-import {IERC721Wrapper} from "../Mechanics/Wrapper/interfaces/IERC721Wrapper.sol";
+import { IERC721Wrapper } from "../Mechanics/Wrapper/interfaces/IERC721Wrapper.sol";
 
 contract WrapperMock is Wallet {
   function unpack(address wrapper, uint256 tokenId) public {

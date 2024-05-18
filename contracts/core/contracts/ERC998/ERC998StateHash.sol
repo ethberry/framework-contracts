@@ -6,10 +6,10 @@
 
 pragma solidity ^0.8.20;
 
-import {StateHash} from "@gemunion/contracts-erc998td/contracts/extensions/StateHash.sol";
-import {ERC998ERC721} from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
+import { StateHash } from "@gemunion/contracts-erc998td/contracts/extensions/StateHash.sol";
+import { ERC998ERC721 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
 
-import {ERC998Simple} from "./ERC998Simple.sol";
+import { ERC998Simple } from "./ERC998Simple.sol";
 
 contract ERC998StateHash is ERC998Simple, StateHash {
   constructor(

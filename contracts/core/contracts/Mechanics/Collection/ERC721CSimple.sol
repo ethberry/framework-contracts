@@ -6,14 +6,14 @@
 
 pragma solidity ^0.8.13;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {ERC721} from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { ERC721 } from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-import {ERC721ABaseUrl} from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
-import {ERC721ABRK} from "@gemunion/contracts-erc721c/contracts/preset/ERC721ABRK.sol";
-import {MINTER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
+import { ERC721ABaseUrl } from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
+import { ERC721ABRK } from "@gemunion/contracts-erc721c/contracts/preset/ERC721ABRK.sol";
+import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import {SignerMissingRole, MethodNotSupported} from "../../utils/errors.sol";
+import { SignerMissingRole, MethodNotSupported } from "../../utils/errors.sol";
 
 contract ERC721CSimple is ERC721ABRK, ERC721ABaseUrl {
   uint96 _batchSize;

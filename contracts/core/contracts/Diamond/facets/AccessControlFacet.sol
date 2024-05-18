@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import {AccessControlInternal} from "../override/AccessControlInternal.sol";
+import { AccessControlInternal } from "../override/AccessControlInternal.sol";
 
 contract AccessControlFacet is AccessControlInternal {
 

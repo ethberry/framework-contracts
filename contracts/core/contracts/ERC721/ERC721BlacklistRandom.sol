@@ -6,15 +6,15 @@
 
 pragma solidity ^0.8.20;
 
-import {MINTER_ROLE, METADATA_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
-import {RARITY} from "@gemunion/contracts-utils/contracts/attributes.sol";
+import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { RARITY } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import {IERC721_RANDOM_ID} from "../utils/interfaces.sol";
-import {ERC721Blacklist} from "./ERC721Blacklist.sol";
-import {IERC721Random} from "./interfaces/IERC721Random.sol";
-import {Rarity} from "../Mechanics/Rarity/Rarity.sol";
-import {TemplateZero} from "../utils/errors.sol";
-import {ERC721Simple} from "./ERC721Simple.sol";
+import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
+import { ERC721Blacklist } from "./ERC721Blacklist.sol";
+import { IERC721Random } from "./interfaces/IERC721Random.sol";
+import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
+import { TemplateZero } from "../utils/errors.sol";
+import { ERC721Simple } from "./ERC721Simple.sol";
 
 abstract contract ERC721BlacklistRandom is IERC721Random, ERC721Blacklist, Rarity {
   struct Request {

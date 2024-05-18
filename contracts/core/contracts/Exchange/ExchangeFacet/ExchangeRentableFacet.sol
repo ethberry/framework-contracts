@@ -6,16 +6,16 @@
 
 pragma solidity ^0.8.20;
 
-import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
-import {IERC4907} from "@gemunion/contracts-erc721/contracts/interfaces/IERC4907.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import { IERC4907 } from "@gemunion/contracts-erc721/contracts/interfaces/IERC4907.sol";
 
-import {METADATA_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
+import { METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import {DiamondOverride} from "../../Diamond/override/DiamondOverride.sol";
-import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
-import {SignatureValidator} from "../override/SignatureValidator.sol";
-import {Asset, Params, DisabledTokenTypes} from "../lib/interfaces/IAsset.sol";
-import {SignerMissingRole, WrongAmount} from "../../utils/errors.sol";
+import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
+import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
+import { SignatureValidator } from "../override/SignatureValidator.sol";
+import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
 
 contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
   using SafeCast for uint256;

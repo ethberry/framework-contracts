@@ -6,7 +6,7 @@
 
 pragma solidity ^0.8.20;
 
-import {ERC721Simple} from "./ERC721Simple.sol";
+import { ERC721Simple } from "./ERC721Simple.sol";
 
 contract ERC721Soulbound is ERC721Simple {
   error Soulbound();

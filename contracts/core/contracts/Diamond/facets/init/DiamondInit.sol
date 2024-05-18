@@ -6,7 +6,7 @@
 
 pragma solidity ^0.8.0;
 
-import {InitialiseStorage} from "../../storage/InitStorage.sol";
+import { InitialiseStorage } from "../../storage/InitStorage.sol";
 
 contract DiamondInit {
     function init() public virtual {

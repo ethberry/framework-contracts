@@ -6,11 +6,11 @@
 
 pragma solidity ^0.8.20;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import {BlackList} from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
+import { BlackList } from "@gemunion/contracts-access/contracts/extension/BlackList.sol";
 
-import {ERC721MysteryBoxSimple} from "./ERC721MysteryBoxSimple.sol";
+import { ERC721MysteryBoxSimple } from "./ERC721MysteryBoxSimple.sol";
 
 contract ERC721MysteryBoxBlacklist is ERC721MysteryBoxSimple, BlackList {
   constructor(
