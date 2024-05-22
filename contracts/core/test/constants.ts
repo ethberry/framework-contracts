@@ -58,5 +58,7 @@ export enum FrameworkInterfaceId {
   ERC721Upgradable = "0x45977d03",
   ERC721Random = "0x32034d27",
   ERC721Mystery = "0xf0f47261",
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+  ERC721Loot = "0xf0f47261",
   Dispenser = "0x1f120210",
 }
