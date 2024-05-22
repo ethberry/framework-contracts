@@ -10,7 +10,7 @@ import { shouldBehaveLikeERC721LootBox } from "./shared/simple/base";
 import { customMint } from "./shared/simple/customMintFn";
 import { shouldBehaveLikeERC721LootBoxPausable } from "./shared/pausable/unpack";
 
-describe.only("ERC721LootBoxPausable", function () {
+describe("ERC721LootBoxPausable", function () {
   const factory = () => deployERC721("ERC721LootBoxPausable");
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
