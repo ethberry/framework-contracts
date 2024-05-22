@@ -15,7 +15,7 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
+import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
 import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
 contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
@@ -69,7 +69,7 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, TopUp) returns (bool) {
-    return interfaceId == IERC721_MYSTERY_ID || super.supportsInterface(interfaceId);
+    return interfaceId == IERC721_LOOT_ID || super.supportsInterface(interfaceId);
   }
 
   /**

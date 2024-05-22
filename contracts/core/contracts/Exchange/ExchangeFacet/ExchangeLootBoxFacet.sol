@@ -10,17 +10,17 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
+import { IERC721LootBox } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
 
-contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
-  event PurchaseMysteryBox(address account, uint256 externalId, Asset[] items, Asset[] price);
+contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
+  event PurchaseLootBox(address account, uint256 externalId, Asset[] items, Asset[] price);
 
   constructor() SignatureValidator() {}
 
-  function purchaseMystery(
+  function purchaseLoot(
     Params memory params,
     Asset[] memory items,
     Asset[] memory price,
@@ -39,18 +39,18 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
     Asset memory box = items[items.length - 1];
 
     // pop from array is not supported
-    Asset[] memory mysteryItems = new Asset[](items.length - 1);
+    Asset[] memory lootItems = new Asset[](items.length - 1);
     uint256 length = items.length;
     for (uint256 i = 0; i < length - 1; ) {
-      mysteryItems[i] = items[i];
+      lootItems[i] = items[i];
       unchecked {
         i++;
       }
     }
 
-    IERC721MysteryBox(box.token).mintBox(_msgSender(), box.tokenId, mysteryItems);
+    IERC721LootBox(box.token).mintBox(_msgSender(), box.tokenId, lootItems);
 
-    emit PurchaseMysteryBox(_msgSender(), params.externalId, items, price);
+    emit PurchaseLootBox(_msgSender(), params.externalId, items, price);
 
     _afterPurchase(params.referrer, price);
   }
