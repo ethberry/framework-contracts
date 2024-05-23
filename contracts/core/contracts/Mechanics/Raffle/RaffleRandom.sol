@@ -50,6 +50,8 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
     Asset ticketAsset;
   }
 
+  mapping (uint256 => uint256) private requestToRoundNumber; // requestId => roundNumber
+
   Round[] internal _rounds;
 
   constructor() {
@@ -157,7 +159,18 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
     }
 
     currentRound.endTimestamp = block.timestamp;
-    currentRound.requestId = getRandomNumber();
+    uint256 len = currentRound.tickets.length;
+
+    if (len == 1) {
+      // only one ticket sold, so he is the winner.
+      _roundFinalized(currentRound, 0);
+    } else if (len > 1) {
+      // If more than one ticket sold, we have to call random function to figure out who is the winner
+      currentRound.requestId = getRandomNumber();
+      requestToRoundNumber[currentRound.requestId] = roundNumber;      
+    } else {
+     emit RoundFinalized(currentRound.roundId, 0, 0); // roundId, prizeIndex, prizeNumber
+    }// if no ticket sold, we suppose to set endTimestamp and no need emit RoundFinalized
 
     emit RoundEnded(roundNumber, block.timestamp);
   }
@@ -183,19 +196,17 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
   }
 
   // ROUND
-  function fulfillRandomWords(uint256, uint256[] memory randomWords) internal virtual {
-    Round storage currentRound = _rounds[_rounds.length - 1];
+  function fulfillRandomWords(uint256 requiestId, uint256[] memory randomWords) internal virtual {
+    uint256 roundNumber = requestToRoundNumber[requiestId];
+    Round storage currentRound = _rounds[roundNumber];
+    // calculate wining numbers - uint256(uint8(randomWords[0] % tickets.length))
+    _roundFinalized(currentRound, uint256(uint8(randomWords[0] % currentRound.tickets.length)));
+  }
 
-    // calculate wining numbers
-    uint256 len = currentRound.tickets.length;
-
-    // prizeNumber - tickets[index] or Zero if no tickets sold
-    uint256 prizeIndex = len > 0 ? uint256(uint8(randomWords[0] % len)) : 0;
-
+  function _roundFinalized(Round storage currentRound, uint256 prizeIndex) internal virtual {
     // prizeNumber - winner's tokenId
     // Zero if no tickets sold
-    currentRound.prizeNumber = len > 0 ? currentRound.tickets[prizeIndex] : 0;
-
+    currentRound.prizeNumber = currentRound.tickets[prizeIndex];
     emit RoundFinalized(currentRound.roundId, prizeIndex, currentRound.prizeNumber /* ticket Id = ticket No*/);
   }
 
