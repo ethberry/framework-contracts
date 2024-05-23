@@ -301,11 +301,22 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
         (item.tokenType == TokenType.ERC998 && !disabled.erc998)
       ) {
+        uint32 loopIndex;
         bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
         if (randomInterface) {
-          IERC721Random(item.token).mintRandom(receiver, item.tokenId);
+          for (;loopIndex < item.amount;) {
+            IERC721Random(item.token).mintRandom(receiver, item.tokenId);
+            unchecked {
+              loopIndex++;
+            }
+          }
         } else {
-          IERC721Simple(item.token).mintCommon(receiver, item.tokenId);
+          for (; loopIndex < item.amount;) {
+            IERC721Simple(item.token).mintCommon(receiver, item.tokenId);
+            unchecked {
+              loopIndex++;
+            }
+          }
         }
       } else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
         IERC1155Simple(item.token).mint(receiver, item.tokenId, item.amount, "0x");
