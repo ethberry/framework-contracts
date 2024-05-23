@@ -62,7 +62,7 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
 
     _burn(tokenId);
 
-    ExchangeUtils.acquire(_itemData[tokenId], _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.acquire(_itemData[tokenId], _msgSender(), DisabledTokenTypes(true, true, false, false, true));
   }
 
   /**
