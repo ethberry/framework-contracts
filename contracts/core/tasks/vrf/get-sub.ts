@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
-import { VRFCoordinatorV2Mock } from "../typechain-types";
+import { VRFCoordinatorV2Mock } from "../../typechain-types";
 
 export const recursivelyDecodeResult = (result: Result): Record<string, any> => {
   if (typeof result !== "object") {
@@ -35,7 +35,7 @@ task("get-sub", "Prints a VRF subscription data")
         vrfContractAddr = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
         break;
       case "binancetest":
-        vrfContractAddr = "0x84b9b910527ad5c03a9ca831909e21e236ea7b06";
+        vrfContractAddr = "0x6a2aad07396b36fe02a22b33cf443582f682c82f";
         break;
       case "mumbai":
         vrfContractAddr = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
@@ -62,3 +62,5 @@ task("get-sub", "Prints a VRF subscription data")
     const data = await vrfTokenContract.getSubscription(sub);
     console.info("Subscription", recursivelyDecodeResult(data as unknown as Result));
   });
+
+// hardhat get-sub --sub 5914 --network binance_test

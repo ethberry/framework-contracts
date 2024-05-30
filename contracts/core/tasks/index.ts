@@ -1,6 +1,6 @@
 import "./abis";
 import "./accounts";
-import "./add-sub";
+import "./vrf/add-sub";
 import "./allowance-erc20";
 import "./balance-eth";
 import "./balance-erc20";
@@ -13,7 +13,7 @@ import "./get-uri";
 import "./get-rule";
 import "./flat";
 import "./grant";
-import "./get-sub";
+import "./vrf/get-sub";
 import "./get-royalty";
 import "./get-receipt-by-hash";
 import "./parse-dispenser-tx";
