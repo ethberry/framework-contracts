@@ -12,12 +12,11 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
-import { PaymentSplitter } from "@gemunion/contracts-utils/contracts/PaymentSplitter.sol";
 
 import { TopUp } from "../../utils/TopUp.sol";
 
-contract Prediction is AccessControl, Pausable, TopUp, Wallet, PaymentSplitter {
-  constructor(address[] memory payees, uint256[] memory shares) PaymentSplitter(payees, shares) {
+contract Prediction is AccessControl, Pausable, TopUp, Wallet {
+  constructor() {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(PAUSER_ROLE, _msgSender());
   }
@@ -26,7 +25,7 @@ contract Prediction is AccessControl, Pausable, TopUp, Wallet, PaymentSplitter {
    * @notice No tipping!
    * @dev Rejects any incoming ETH transfers
    */
-  receive() external payable override(Wallet, TopUp, PaymentSplitter) {
+  receive() external payable override(Wallet, TopUp) {
     revert();
   }
 

@@ -9,7 +9,7 @@ import { shouldBehaveLikeERC721Blacklist } from "./shared/blacklist";
 import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";
 import { shouldMintCommon } from "./shared/simple/base/mintCommon";
 
-describe.only("ERC721BlacklistRentable", function () {
+describe("ERC721BlacklistRentable", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE, METADATA_ROLE);
