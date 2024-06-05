@@ -627,6 +627,20 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
     }
   }
 
+  function topUp(uint64 subId, uint96 amount) external nonReentrant  {
+    if (s_subscriptionConfigs[subId].owner == address(0)) {
+      revert InvalidSubscription();
+    }
+
+    PaymentToken.transferFrom(msg.sender, address(this), amount);
+
+    uint256 oldBalance = s_subscriptions[subId].balance;
+    s_subscriptions[subId].balance += amount;
+    s_totalBalance += amount;
+
+    emit SubscriptionFunded(subId, oldBalance, oldBalance + amount);
+  }
+
   function onTokenTransfer(address /* sender */, uint256 amount, bytes calldata data) external override nonReentrant {
     if (msg.sender != address(PaymentToken)) {
       revert OnlyCallableFromPaymentToken();
@@ -640,7 +654,7 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
     }
     // We do not check that the msg.sender is the subscription owner,
     // anyone can fund a subscription.
-    uint256 oldBalance = s_subscriptions[subId].balance;
+    uint96 oldBalance = s_subscriptions[subId].balance;
     s_subscriptions[subId].balance += uint96(amount);
     s_totalBalance += uint96(amount);
     emit SubscriptionFunded(subId, oldBalance, oldBalance + amount);
