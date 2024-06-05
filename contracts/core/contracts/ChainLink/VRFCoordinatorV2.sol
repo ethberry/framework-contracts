@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import {LinkTokenInterface} from "./shared/interfaces/LinkTokenInterface.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {BlockhashStoreInterface} from "./shared/interfaces/BlockHashStoreInterface.sol";
 import {AggregatorV3Interface} from "./shared/interfaces/AggregatorV3Interface.sol";
 import {VRFCoordinatorV2Interface} from "./interfaces/VRFCoordinatorV2Interface.sol";
@@ -15,7 +15,8 @@ import {ChainSpecificUtil} from "./shared/ChainSpecificUtil.sol";
 
 contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCoordinatorV2Interface, IERC677Receiver {
   // solhint-disable-next-line chainlink-solidity/prefix-immutable-variables-with-i
-  LinkTokenInterface public immutable LINK;
+//   LinkTokenInterface public immutable LINK;
+  IERC20 public immutable PaymentToken;
   // solhint-disable-next-line chainlink-solidity/prefix-immutable-variables-with-i
   AggregatorV3Interface public immutable LINK_ETH_FEED;
   // solhint-disable-next-line chainlink-solidity/prefix-immutable-variables-with-i
@@ -29,7 +30,7 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
   error InsufficientBalance();
   error InvalidConsumer(uint64 subId, address consumer);
   error InvalidSubscription();
-  error OnlyCallableFromLink();
+  error OnlyCallableFromPaymentToken();
   error InvalidCalldata();
   error MustBeSubOwner(address owner);
   error PendingRequestExists();
@@ -156,8 +157,9 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
     FeeConfig feeConfig
   );
 
-  constructor(address link, address blockhashStore, address linkEthFeed) ConfirmedOwner(msg.sender) {
-    LINK = LinkTokenInterface(link);
+  constructor(address paymentToken, address blockhashStore, address linkEthFeed) ConfirmedOwner(msg.sender) {
+    PaymentToken = IERC20(paymentToken);
+    // TODO Find aggregator for USDT.
     LINK_ETH_FEED = AggregatorV3Interface(linkEthFeed);
     BLOCKHASH_STORE = BlockhashStoreInterface(blockhashStore);
   }
@@ -324,14 +326,14 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
    * @param to address to send link to
    */
   function recoverFunds(address to) external onlyOwner {
-    uint256 externalBalance = LINK.balanceOf(address(this));
+    uint256 externalBalance = PaymentToken.balanceOf(address(this));
     uint256 internalBalance = uint256(s_totalBalance);
     if (internalBalance > externalBalance) {
       revert BalanceInvariantViolated(internalBalance, externalBalance);
     }
     if (internalBalance < externalBalance) {
       uint256 amount = externalBalance - internalBalance;
-      LINK.transfer(to, amount);
+      PaymentToken.transfer(to, amount);
       emit FundsRecovered(to, amount);
     }
     // If the balances are equal, nothing to be done.
@@ -620,14 +622,14 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
     }
     s_withdrawableTokens[msg.sender] -= amount;
     s_totalBalance -= amount;
-    if (!LINK.transfer(recipient, amount)) {
+    if (!PaymentToken.transfer(recipient, amount)) {
       revert InsufficientBalance();
     }
   }
 
   function onTokenTransfer(address /* sender */, uint256 amount, bytes calldata data) external override nonReentrant {
-    if (msg.sender != address(LINK)) {
-      revert OnlyCallableFromLink();
+    if (msg.sender != address(PaymentToken)) {
+      revert OnlyCallableFromPaymentToken();
     }
     if (data.length != 32) {
       revert InvalidCalldata();
@@ -782,7 +784,7 @@ contract VRFCoordinatorV2 is VRF, ConfirmedOwner, TypeAndVersionInterface, VRFCo
     delete s_subscriptionConfigs[subId];
     delete s_subscriptions[subId];
     s_totalBalance -= balance;
-    if (!LINK.transfer(to, uint256(balance))) {
+    if (!PaymentToken.transfer(to, uint256(balance))) {
       revert InsufficientBalance();
     }
     emit SubscriptionCanceled(subId, to, balance);
