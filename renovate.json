@@ -1,6 +1,6 @@
 {
   "extends": ["github>gemunion/renovate-config"],
-  "baseBranches": ["master"],
+  "baseBranches": ["dev"],
   "packageRules": [
     {
       "matchPackageNames": ["hardhat-gas-reporter"],
