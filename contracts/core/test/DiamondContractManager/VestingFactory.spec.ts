@@ -65,6 +65,7 @@ describe("VestingFactoryDiamond", function () {
             { name: "startTimestamp", type: "uint64" },
             { name: "cliffInMonth", type: "uint16" },
             { name: "monthlyRelease", type: "uint16" },
+            { name: "contractTemplate", type: "string" },
           ],
           Asset: [
             { name: "tokenType", type: "uint256" },
@@ -85,6 +86,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
+            contractTemplate: "0",
           },
           items: [
             {
@@ -108,6 +110,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
+          contractTemplate: "0",
         },
         [
           {
@@ -137,6 +140,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toString(),
             cliffInMonth: "12",
             monthlyRelease: "417",
+            contractTemplate: "0",
           }),
           isEqualEventArgArrObj({
             tokenType: "1",
@@ -190,6 +194,7 @@ describe("VestingFactoryDiamond", function () {
             { name: "startTimestamp", type: "uint64" },
             { name: "cliffInMonth", type: "uint16" },
             { name: "monthlyRelease", type: "uint16" },
+            { name: "contractTemplate", type: "string" },
           ],
           Asset: [
             { name: "tokenType", type: "uint256" },
@@ -210,6 +215,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
+            contractTemplate: "0",
           },
           items: [
             {
@@ -236,6 +242,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
+          contractTemplate: "0",
         },
         [
           {
@@ -286,6 +293,7 @@ describe("VestingFactoryDiamond", function () {
             { name: "startTimestamp", type: "uint64" },
             { name: "cliffInMonth", type: "uint16" },
             { name: "monthlyRelease", type: "uint16" },
+            { name: "contractTemplate", type: "string" },
           ],
           Asset: [
             { name: "tokenType", type: "uint256" },
@@ -306,6 +314,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
+            contractTemplate: "0",
           },
           items: [
             {
@@ -329,6 +338,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
+          contractTemplate: "0",
         },
         [
           {
