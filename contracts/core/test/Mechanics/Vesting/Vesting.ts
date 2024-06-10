@@ -6,51 +6,51 @@ import { deployVesting } from "./shared/fixture";
 import { calc } from "./shared/calc";
 import { shouldBehaveLikeTopUp } from "../../shared/topUp";
 
-describe("MonthlyVesting", function () {
-  const factory = () => deployVesting("MonthlyVesting", 12, 417);
+describe("Vesting", function () {
+  const factory = () => deployVesting("Vesting", 12, 417);
 
   shouldBehaveLikeOwnable(factory);
   shouldBehaveLikeTopUp(factory);
 
   describe("release", function () {
     it("AdvisorsVesting", async function () {
-      await calc("MonthlyVesting", 12, 417);
+      await calc("Vesting", 12, 417);
     });
 
     it("MarketingVesting", async function () {
-      await calc("MonthlyVesting", 1, 1500);
+      await calc("Vesting", 1, 1500);
     });
 
     it("PartnershipVesting", async function () {
-      await calc("MonthlyVesting", 6, 417);
+      await calc("Vesting", 6, 417);
     });
 
     it("PreSeedSaleVesting", async function () {
-      await calc("MonthlyVesting", 3, 416);
+      await calc("Vesting", 3, 416);
     });
 
     it("PrivateSaleVesting", async function () {
-      await calc("MonthlyVesting", 1, 624);
+      await calc("Vesting", 1, 624);
     });
 
     it("PublicSaleVesting", async function () {
-      await calc("MonthlyVesting", 0, 3333);
+      await calc("Vesting", 0, 3333);
     });
 
     it("SeedSaleVesting", async function () {
-      await calc("MonthlyVesting", 2, 500);
+      await calc("Vesting", 2, 500);
     });
 
     it("TeamVesting", async function () {
-      await calc("MonthlyVesting", 12, 417);
+      await calc("Vesting", 12, 417);
     });
 
     it("InitialLiquidityVesting", async function () {
-      await calc("MonthlyVesting", 0, 5000);
+      await calc("Vesting", 0, 5000);
     });
 
     it("TreasuryVesting", async function () {
-      await calc("MonthlyVesting", 3, 10000);
+      await calc("Vesting", 3, 10000);
     });
   });
 

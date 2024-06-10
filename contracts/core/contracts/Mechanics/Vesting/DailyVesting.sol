@@ -6,7 +6,6 @@
 
 pragma solidity ^0.8.20;
 
-import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { VestingWallet } from "@openzeppelin/contracts/finance/VestingWallet.sol";
 

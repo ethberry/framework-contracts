@@ -6,7 +6,6 @@
 
 pragma solidity ^0.8.20;
 
-import { IVotes } from "@openzeppelin/contracts/governance/utils/IVotes.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { VestingWallet } from "@openzeppelin/contracts/finance/VestingWallet.sol";
 
@@ -22,7 +21,7 @@ import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interface
  *      - TopUp (Gemunion)
  *      This contract abstracts all common functions and is used as an foundation for other vesting contracts
  */
-contract MonthlyVesting is VestingWallet, TopUp {
+contract Vesting is VestingWallet, TopUp {
   using SafeCast for uint256;
 
   uint64 public constant _monthInSeconds = 2592000; // The number of seconds in month
