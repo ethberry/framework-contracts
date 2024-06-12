@@ -6,7 +6,7 @@ import { deployVesting } from "./shared/fixture";
 import { calc } from "./shared/calc";
 import { shouldBehaveLikeTopUp } from "../../shared/topUp";
 
-describe.only("VestingVotes", function () {
+describe("VestingVotes", function () {
   const factory = () => deployVesting("VestingVotes", 12, 417);
 
   shouldBehaveLikeOwnable(factory);
