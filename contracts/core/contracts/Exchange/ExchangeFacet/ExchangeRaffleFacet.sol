@@ -39,8 +39,10 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride {
       revert NotExist();
     }
 
+    Asset[] memory _price = ExchangeUtils._toArray(price);
+
     ExchangeUtils.spendFrom(
-      ExchangeUtils._toArray(price),
+      _price,
       _msgSender(),
       params.receiver, // RAFFLE CONTRACT
       DisabledTokenTypes(false, false, false, false, false)
@@ -56,6 +58,6 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride {
 
     emit PurchaseRaffle(_msgSender(), params.externalId, item, price, roundId, index);
 
-    _afterPurchase(params.referrer, ExchangeUtils._toArray(price));
+    _afterPurchase(params.referrer, _price);
   }
 }

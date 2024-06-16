@@ -26,11 +26,11 @@ contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
     Asset memory price, // item to dismantle
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, ExchangeUtils._toArray(price), signature))) {
+    Asset[] memory _price = ExchangeUtils._toArray(price);
+
+    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, _price, signature))) {
       revert SignerMissingRole();
     }
-
-    Asset[] memory _price = ExchangeUtils._toArray(price);
 
     // burn price (721, 998, 1155) or send price to receiver
     ExchangeUtils.burnFrom(_price, _msgSender(), DisabledTokenTypes(true, true, false, false, false));
