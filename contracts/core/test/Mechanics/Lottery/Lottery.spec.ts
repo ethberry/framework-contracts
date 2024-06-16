@@ -42,11 +42,11 @@ describe("Lottery", function () {
   const factoryDiamond = async () =>
     deployDiamond(
       "DiamondExchange",
-      ["ExchangeLotteryFacet", "PausableFacet", "AccessControlFacet", "WalletFacet"],
+      ["ExchangeLotteryFacet", "PausableFacet", "AccessControlFacet"],
       "DiamondExchangeInit",
       {
         // log: true,
-        logSelectors: false, //
+        logSelectors: false,
       },
     );
 

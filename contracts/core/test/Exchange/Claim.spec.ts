@@ -7,7 +7,7 @@ import { amount, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { expiresAt, externalId, extra, params, subscriptionId, templateId, tokenId } from "../constants";
-import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base } from "./shared";
+import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base, deployErc998Base } from "./shared";
 import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 import { isEqualEventArgArrObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
@@ -18,7 +18,7 @@ describe("Diamond Exchange Claim", function () {
   const factory = async (facetName = "ExchangeClaimFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      [facetName, "AccessControlFacet", "PausableFacet", "WalletFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
         logSelectors: false,
@@ -319,6 +319,123 @@ describe("Diamond Exchange Claim", function () {
         await randomRequest(erc721Instance, vrfInstance);
 
         const balance = await erc721Instance.balanceOf(receiver.address);
+        expect(balance).to.equal(1);
+      });
+    });
+
+    describe("ERC998", function () {
+      it("should claim (Simple)", async function () {
+        const [_owner, receiver] = await ethers.getSigners();
+        const exchangeInstance = await factory();
+        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+
+        const erc998Instance = await deployErc998Base("ERC998Simple", exchangeInstance);
+
+        const signature = await generateManyToManySignature({
+          account: receiver.address,
+          params,
+          items: [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          price: [],
+        });
+
+        const tx1 = exchangeInstance.connect(receiver).claim(
+          params,
+          [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          signature,
+        );
+
+        await expect(tx1)
+          .to.emit(exchangeInstance, "Claim")
+          .withArgs(
+            receiver.address,
+            externalId,
+            isEqualEventArgArrObj({
+              tokenType: 2n,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            }),
+          )
+          .to.emit(erc998Instance, "Transfer")
+          .withArgs(ZeroAddress, receiver.address, tokenId);
+
+        const balance = await erc998Instance.balanceOf(receiver.address);
+        expect(balance).to.equal(1);
+      });
+
+      it("should claim (Random)", async function () {
+        const [_owner, receiver] = await ethers.getSigners();
+        const exchangeInstance = await factory();
+        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const erc998Instance = await deployErc998Base("ERC998RandomHardhat", exchangeInstance);
+
+        const tx02 = await vrfInstance.addConsumer(subscriptionId, await erc998Instance.getAddress());
+        await expect(tx02)
+          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
+          .withArgs(subscriptionId, await erc998Instance.getAddress());
+
+        // Set VRFV2 Subscription
+        const tx01 = erc998Instance.setSubscriptionId(subscriptionId);
+        await expect(tx01).to.emit(erc998Instance, "VrfSubscriptionSet").withArgs(1);
+
+        const signature = await generateManyToManySignature({
+          account: receiver.address,
+          params,
+          items: [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          price: [],
+        });
+
+        const tx1 = exchangeInstance.connect(receiver).claim(
+          params,
+          [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          signature,
+        );
+
+        await expect(tx1)
+          .to.emit(exchangeInstance, "Claim")
+          .withArgs(
+            receiver.address,
+            externalId,
+            isEqualEventArgArrObj({
+              tokenType: 2n,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            }),
+          )
+          .to.not.emit(erc998Instance, "Transfer");
+
+        await randomRequest(erc998Instance, vrfInstance);
+
+        const balance = await erc998Instance.balanceOf(receiver.address);
         expect(balance).to.equal(1);
       });
     });
@@ -909,6 +1026,76 @@ describe("Diamond Exchange Claim", function () {
           .withArgs(owner.address, receiver.address, tokenId);
 
         const balance = await erc721CollectionInstance.balanceOf(receiver.address);
+        expect(balance).to.equal(1);
+      });
+    });
+
+    describe("ERC998", function () {
+      it("should spend (Simple)", async function () {
+        const [owner, receiver] = await ethers.getSigners();
+        const exchangeInstance = await factory();
+        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+
+        const erc998Instance = await deployErc998Base("ERC998Simple", exchangeInstance);
+
+        // MINT
+        const tx0 = erc998Instance.mintCommon(owner.address, templateId);
+        await expect(tx0).to.emit(erc998Instance, "Transfer").withArgs(ZeroAddress, owner.address, tokenId);
+        // APPROVE
+        await erc998Instance.approve(await exchangeInstance.getAddress(), tokenId);
+
+        const params = {
+          externalId,
+          expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
+          receiver: owner.address, // initial owner of token
+          referrer: ZeroAddress,
+        };
+
+        const signature = await generateManyToManySignature({
+          account: receiver.address,
+          params,
+          items: [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          price: [],
+        });
+
+        const tx1 = exchangeInstance.connect(receiver).spend(
+          params,
+          [
+            {
+              tokenType: 2,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            },
+          ],
+          signature,
+        );
+
+        await expect(tx1)
+          .to.emit(exchangeInstance, "Claim")
+          .withArgs(
+            receiver.address,
+            externalId,
+            isEqualEventArgArrObj({
+              tokenType: 2n,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1n,
+            }),
+          )
+          .to.emit(erc998Instance, "Transfer")
+          .withArgs(owner.address, receiver.address, tokenId);
+
+        const balance = await erc998Instance.balanceOf(receiver.address);
         expect(balance).to.equal(1);
       });
     });

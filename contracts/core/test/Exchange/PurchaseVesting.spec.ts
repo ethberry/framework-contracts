@@ -15,7 +15,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
   const factory = async (facetName = "ExchangePurchaseVestingFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      [facetName, "AccessControlFacet", "PausableFacet", "WalletFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
         logSelectors: false,
@@ -42,7 +42,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
 
   describe("exchange purchase", function () {
     it("should purchase Vesting for ERC20 (no ref)", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -51,7 +51,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -67,7 +67,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -92,7 +92,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -129,7 +129,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should purchase Vesting for ERC20 (ref)", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -138,7 +138,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -154,8 +154,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: owner.address,
         },
         item: {
           tokenType: 0,
@@ -179,8 +179,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: owner.address,
         },
         {
           tokenType: 0,
@@ -215,7 +215,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
         .to.emit(exchangeInstance, "ReferralEvent")
         .withArgs(
           receiver,
-          _owner.address,
+          owner.address,
           isEqualEventArgArrObj({
             tokenType: 1n,
             token: await erc20Instance.getAddress(),
@@ -226,7 +226,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should fail: not approved", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -246,8 +246,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         item: {
           tokenType: 0,
@@ -271,8 +271,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         {
           tokenType: 0,
@@ -295,7 +295,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should fail: SignerMissingRole", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -315,8 +315,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         item: {
           tokenType: 0,
@@ -335,7 +335,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       });
 
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
-      await accessInstance.renounceRole(MINTER_ROLE, _owner.address);
+      await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
       const tx1 = exchangeInstance.connect(receiver).purchaseVesting(
         {
@@ -343,8 +343,8 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         {
           tokenType: 0,
@@ -367,7 +367,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should fail: ERC20InsufficientAllowance", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -376,7 +376,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -388,7 +388,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -413,7 +413,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -439,7 +439,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should fail: ECDSAInvalidSignatureLength", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
 
       const vestingInstance = await factoryVesting();
@@ -447,7 +447,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -458,7 +458,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -486,7 +486,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
 
   describe("ERROR", function () {
     it("should fail: receiver not exist", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -495,7 +495,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -560,7 +560,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
     });
 
     it("should fail: EnforcedPause", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -569,7 +569,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
       const tx0 = vestingInstance.approve(await exchangeInstance.getAddress());
       await expect(tx0)
         .to.emit(vestingInstance, "Approval")
-        .withArgs(_owner.address, await exchangeInstance.getAddress());
+        .withArgs(owner.address, await exchangeInstance.getAddress());
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
@@ -585,7 +585,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -613,7 +613,7 @@ describe("Diamond Exchange Purchase Vesting", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {

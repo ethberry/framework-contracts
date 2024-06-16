@@ -35,7 +35,7 @@ describe("Raffle", function () {
   const factoryDiamond = async () =>
     deployDiamond(
       "DiamondExchange",
-      ["ExchangeRaffleFacet", "PausableFacet", "AccessControlFacet", "WalletFacet"],
+      ["ExchangeRaffleFacet", "PausableFacet", "AccessControlFacet"],
       "DiamondExchangeInit",
       {
         // log: true,

@@ -118,7 +118,6 @@ async function main() {
       "ExchangeMergeFacet",
       "PausableFacet",
       "AccessControlFacet",
-      "WalletFacet",
       "DiamondLoupeFacet",
     ],
     "DiamondExchangeInit",

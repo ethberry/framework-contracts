@@ -33,14 +33,9 @@ const disabled = {
 
 describe("Diamond Exchange Utils", function () {
   const factory = async (facetName = "ExchangeMockFacet"): Promise<any> => {
-    const diamondInstance = await deployDiamond(
-      "DiamondExchange",
-      [facetName, "ExchangeClaimFacet", "AccessControlFacet", "PausableFacet", "WalletFacet"],
-      "DiamondExchangeInit",
-      {
-        logSelectors: false,
-      },
-    );
+    const diamondInstance = await deployDiamond("DiamondExchange", [facetName, "WalletFacet"], "DiamondExchangeInit", {
+      logSelectors: false,
+    });
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 

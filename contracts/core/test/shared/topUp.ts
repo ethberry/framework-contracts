@@ -6,7 +6,7 @@ import { amount } from "@gemunion/contracts-constants";
 
 import { templateId, tokenId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { deployBusd, deployERC1363, deployERC20, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
+import { deployERC1363, deployERC20, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { deployERC998 } from "../ERC998/shared/fixtures";
 import { deployERC1155 } from "../ERC1155/shared/fixtures";
 import { shouldReceive } from "./receive";
@@ -88,26 +88,6 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
       const contractInstance = await factory();
 
       const erc20Instance = await deployUsdt();
-
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
-
-      const tx = contractInstance.topUp([
-        {
-          tokenType: 1,
-          token: await erc20Instance.getAddress(),
-          tokenId,
-          amount,
-        },
-      ]);
-
-      await expect(tx).changeTokenBalances(erc20Instance, [owner, contractInstance], [-amount, amount]);
-    });
-
-    it("should top-up with BUSD token", async function () {
-      const [owner] = await ethers.getSigners();
-      const contractInstance = await factory();
-
-      const erc20Instance = await deployBusd();
 
       await erc20Instance.approve(await contractInstance.getAddress(), amount);
 
