@@ -6,7 +6,7 @@ import { amount } from "@gemunion/contracts-constants";
 
 import { templateId, tokenId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { deployBusd, deployERC1363, deployERC20, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
+import { deployERC1363, deployERC20, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { deployERC998 } from "../ERC998/shared/fixtures";
 import { deployERC1155 } from "../ERC1155/shared/fixtures";
 import { shouldReceive } from "./receive";
@@ -103,26 +103,6 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
       await expect(tx).changeTokenBalances(erc20Instance, [owner, contractInstance], [-amount, amount]);
     });
 
-    it("should top-up with BUSD token", async function () {
-      const [owner] = await ethers.getSigners();
-      const contractInstance = await factory();
-
-      const erc20Instance = await deployBusd();
-
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
-
-      const tx = contractInstance.topUp([
-        {
-          tokenType: 1,
-          token: await erc20Instance.getAddress(),
-          tokenId,
-          amount,
-        },
-      ]);
-
-      await expect(tx).changeTokenBalances(erc20Instance, [owner, contractInstance], [-amount, amount]);
-    });
-
     it("should top-up with WETH token", async function () {
       const [owner] = await ethers.getSigners();
       const contractInstance = await factory();
@@ -157,7 +137,7 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ]);
 
@@ -178,7 +158,7 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
           tokenType: 3,
           token: await erc998Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1,
         },
       ]);
 

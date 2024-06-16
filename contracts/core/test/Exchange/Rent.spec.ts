@@ -14,7 +14,7 @@ describe("Diamond Exchange Rent", function () {
   const factory = async (facetName = "ExchangeRentableFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      [facetName, "AccessControlFacet", "PausableFacet", "WalletFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
         logSelectors: false,
@@ -40,7 +40,7 @@ describe("Diamond Exchange Rent", function () {
 
   describe("rent single", function () {
     it("should lend ERC721 to user for free", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
@@ -65,7 +65,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -83,7 +83,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -121,7 +121,7 @@ describe("Diamond Exchange Rent", function () {
     });
 
     it("should lend ERC721 to user for ERC20", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -147,7 +147,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -172,7 +172,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -192,7 +192,7 @@ describe("Diamond Exchange Rent", function () {
         signature,
       );
 
-      await expect(tx1).to.changeTokenBalances(erc20Instance, [receiver, stranger], [-amount, amount]);
+      await expect(tx1).to.changeTokenBalances(erc20Instance, [receiver, owner], [-amount, amount]);
       await expect(tx1)
         .to.emit(exchangeInstance, "Lend")
         .withArgs(
@@ -223,7 +223,7 @@ describe("Diamond Exchange Rent", function () {
     });
 
     it("should fail: Wrong signer", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -249,7 +249,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -274,7 +274,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -323,7 +323,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -344,7 +344,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -386,7 +386,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -411,7 +411,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -460,7 +460,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         item: {
@@ -485,7 +485,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         {
@@ -504,7 +504,7 @@ describe("Diamond Exchange Rent", function () {
 
   describe("lendMany", function () {
     it("should lend ERC721 to user for free", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateManyToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -527,7 +527,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [
@@ -547,7 +547,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [
@@ -587,7 +587,7 @@ describe("Diamond Exchange Rent", function () {
     });
 
     it("should lend ERC721 to user for ERC20", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateManyToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -613,7 +613,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [
@@ -640,7 +640,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [
@@ -662,7 +662,7 @@ describe("Diamond Exchange Rent", function () {
         signature,
       );
 
-      await expect(tx1).to.changeTokenBalances(erc20Instance, [receiver, exchangeInstance], [-amount, amount]);
+      await expect(tx1).to.changeTokenBalances(erc20Instance, [receiver, owner], [-amount, amount]);
       await expect(tx1)
         .to.emit(exchangeInstance, "LendMany")
         .withArgs(
@@ -693,7 +693,7 @@ describe("Diamond Exchange Rent", function () {
     });
 
     it("should fail: Wrong signer", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateManyToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -719,7 +719,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [
@@ -746,7 +746,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [
@@ -772,7 +772,7 @@ describe("Diamond Exchange Rent", function () {
     });
 
     it("should fail: Wrong items count", async function () {
-      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateManyToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
@@ -798,7 +798,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [],
@@ -819,7 +819,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [],
@@ -863,7 +863,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [
@@ -891,7 +891,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [
@@ -942,7 +942,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         items: [
@@ -970,7 +970,7 @@ describe("Diamond Exchange Rent", function () {
           expiresAt,
           nonce,
           extra: expires,
-          receiver: stranger.address,
+          receiver: owner.address,
           referrer: stranger.address,
         },
         [
@@ -991,8 +991,6 @@ describe("Diamond Exchange Rent", function () {
 
   describe("ERROR", function () {
     it("should fail: EnforcedPause", async function () {
-      const [_owner] = await ethers.getSigners();
-
       const exchangeInstance = await factory();
       const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
       await pausableInstance.pause();

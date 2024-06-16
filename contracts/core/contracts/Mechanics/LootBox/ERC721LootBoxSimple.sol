@@ -14,9 +14,9 @@ import {IERC721LootBox} from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import {Asset, DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
-import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
+import {MethodNotSupported, NoContent} from "../../utils/errors.sol";
 
 contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   using Address for address;

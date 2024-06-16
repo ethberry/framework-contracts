@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
 import { amount, InterfaceId } from "@gemunion/contracts-constants";
-import { deployContract } from "@gemunion/contracts-mocks";
+import { deployContract } from "@gemunion/contracts-utils";
 import { shouldSupportsInterface } from "@gemunion/contracts-utils";
 
 import { FrameworkInterfaceId, templateId, tokenId } from "../../constants";
@@ -223,7 +223,7 @@ describe("Dispenser", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         [receiver.address],
@@ -253,7 +253,7 @@ describe("Dispenser", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         [await attackerInstance.getAddress()],

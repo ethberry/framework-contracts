@@ -12,13 +12,11 @@ import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-utils/contracts/roles.so
 import { LibDiamond } from "../Diamond/lib/LibDiamond.sol";
 import { AccessControlInternal } from "../Diamond/override/AccessControlInternal.sol";
 
-import {  AccessControlInit, PausableInit, DiamondInit  } from "../Diamond/facets/init/index.sol";
+import { AccessControlInit, PausableInit, DiamondInit  } from "../Diamond/facets/init/index.sol";
 
 contract DiamondCMInit is Context, DiamondInit, PausableInit, AccessControlInit, AccessControlInternal {
-
-    function init() public override(DiamondInit, PausableInit, AccessControlInit) {
-        super.init();
-
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    }
+  function init() public override(DiamondInit, PausableInit, AccessControlInit) {
+    super.init();
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+  }
 }

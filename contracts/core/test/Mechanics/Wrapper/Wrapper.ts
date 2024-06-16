@@ -5,7 +5,7 @@ import { ZeroAddress } from "ethers";
 import { amount, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { deployContract } from "@gemunion/contracts-mocks";
+import { deployContract } from "@gemunion/contracts-utils";
 
 import { templateId, tokenId } from "../../constants";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
@@ -176,7 +176,7 @@ describe("Wrapper", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ]);
         const balanace = await erc721Instance.balanceOf(await erc721WrapperInstance.getAddress());
@@ -203,7 +203,7 @@ describe("Wrapper", function () {
             tokenType: 3,
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ]);
         const balanace = await erc998Instance.balanceOf(await erc721WrapperInstance.getAddress());

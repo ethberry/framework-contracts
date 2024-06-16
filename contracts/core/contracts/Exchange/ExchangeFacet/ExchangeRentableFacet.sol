@@ -77,7 +77,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
       revert WrongAmount();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), address(this), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, false, false, false));
 
     emit LendMany(
       _msgSender() /* from */,

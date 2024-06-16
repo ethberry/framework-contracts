@@ -20,7 +20,7 @@ describe("Diamond Exchange Breed", function () {
   const factory = async (facetName = "ExchangeBreedFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      [facetName, "AccessControlFacet", "PausableFacet", "WalletFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
         logSelectors: false,

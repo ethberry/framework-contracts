@@ -391,18 +391,18 @@ contract Staking is IStaking, AccessControl, Pausable, TopUp, Wallet, Referral, 
       }
     } else if (rewardItem.tokenType == TokenType.ERC721 || rewardItem.tokenType == TokenType.ERC998) {
       // If the token is an ERC721 or ERC998 token, mint NFT to the receiver.
-      for (uint256 k = 0; k < multiplier; ) {
         if (IERC165(rewardItem.token).supportsInterface(IERC721_MYSTERY_ID)) {
           // If the token supports the Mysterybox interface, call the mintBox function to mint the tokens and transfer them to the receiver.
-          IERC721MysteryBox(rewardItem.token).mintBox(receiver, rewardItem.tokenId, rule.content[itemIndex]);
+          for (uint256 k = 0; k < multiplier;) {
+            IERC721MysteryBox(rewardItem.token).mintBox(receiver, rewardItem.tokenId, rule.content[itemIndex]);
+            unchecked {
+              k++;
+            }
+          }
         } else {
           // If the token does not support the Mysterybox interface, call the acquire function to mint NFTs to the receiver.
           ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);
         }
-        unchecked {
-          k++;
-        }
-      }
     } else if (rewardItem.tokenType == TokenType.ERC1155) {
       // If the token is an ERC1155 token, call the acquire function to transfer the tokens to the receiver.
       ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);

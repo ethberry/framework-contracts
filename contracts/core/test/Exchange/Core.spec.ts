@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { Contract, toBigInt, ZeroAddress, ZeroHash } from "ethers";
+import { Contract, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
@@ -13,7 +13,7 @@ import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { isEqualEventArgArrObj, isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
-import { deployBusd, deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
+import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
 
@@ -21,7 +21,7 @@ describe("Diamond Exchange Core", function () {
   const factory = async (facetName = "ExchangePurchaseFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      [facetName, "AccessControlFacet", "PausableFacet", "WalletFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
         logSelectors: false,
@@ -62,7 +62,7 @@ describe("Diamond Exchange Core", function () {
 
   describe("exchange purchase", function () {
     it("should purchase ERC721 Simple for ERC20 (no ref)", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -82,7 +82,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -107,7 +107,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -139,7 +139,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase ERC721 Simple for ERC20 (ref)", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -159,8 +159,8 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         item: {
           tokenType: 2,
@@ -184,8 +184,8 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: _owner.address,
+          receiver: owner.address,
+          referrer: stranger.address,
         },
         {
           tokenType: 2,
@@ -209,7 +209,7 @@ describe("Diamond Exchange Core", function () {
         .to.emit(exchangeInstance, "ReferralEvent")
         .withArgs(
           receiver,
-          _owner.address,
+          stranger.address,
           isEqualEventArgArrObj({
             tokenType: 1n,
             token: await erc20Instance.getAddress(),
@@ -227,7 +227,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase ERC721 Random for ERC20", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
@@ -255,7 +255,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -280,7 +280,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -322,7 +322,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase ERC721 Genes for ERC20", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
@@ -350,7 +350,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -375,7 +375,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -421,7 +421,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase ERC721 Random for USDT", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
@@ -450,7 +450,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -475,7 +475,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -488,101 +488,6 @@ describe("Diamond Exchange Core", function () {
           {
             tokenType: 1,
             token: await usdtInstance.getAddress(),
-            tokenId: 0,
-            amount,
-          },
-        ],
-        signature,
-      );
-
-      await expect(tx1).to.emit(exchangeInstance, "Purchase");
-      await randomRequest(erc721Instance, vrfInstance);
-
-      const eventFilter = vrfInstance.filters.RandomWordsFulfilled();
-      const events = await vrfInstance.queryFilter(eventFilter);
-
-      expect(events[0].args.success).to.equal(true);
-
-      const eventRndFilter = erc721Instance.filters.MintRandom();
-      const eventsRnd = await erc721Instance.queryFilter(eventRndFilter);
-      // @ts-ignore
-      expect(eventsRnd[0].args.to).to.equal(receiver.address);
-
-      const metadata = await erc721Instance.getTokenMetadata(tokenId);
-      expect(metadata.length).to.equal(2);
-
-      const balance = await erc721Instance.balanceOf(receiver.address);
-      expect(balance).to.equal(1);
-    });
-
-    it("should purchase ERC721 Random for BUSD", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
-      const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
-      const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
-
-      const busdInstance = await deployBusd();
-      await busdInstance.transfer(receiver.address, amount);
-      await busdInstance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-
-      const busdAllowance = await busdInstance.allowance(receiver.address, await exchangeInstance.getAddress());
-      expect(busdAllowance).to.equal(amount);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
-
-      // ADD CONSUMER TO VRFV2
-      const tx02 = vrfInstance.addConsumer(subscriptionId, await erc721Instance.getAddress());
-      await expect(tx02)
-        .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-        .withArgs(subscriptionId, await erc721Instance.getAddress());
-
-      const signature = await generateOneToManySignature({
-        account: receiver.address,
-        params: {
-          externalId,
-          expiresAt,
-          nonce,
-          extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: ZeroAddress,
-        },
-        item: {
-          tokenType: 2,
-          token: await erc721Instance.getAddress(),
-          tokenId,
-          amount: 1,
-        },
-        price: [
-          {
-            tokenType: 1,
-            token: await busdInstance.getAddress(),
-            tokenId: 0,
-            amount,
-          },
-        ],
-      });
-
-      const tx1 = exchangeInstance.connect(receiver).purchase(
-        {
-          externalId,
-          expiresAt,
-          nonce,
-          extra,
-          receiver: await exchangeInstance.getAddress(),
-          referrer: ZeroAddress,
-        },
-        {
-          tokenType: 2,
-          token: await erc721Instance.getAddress(),
-          tokenId,
-          amount: 1,
-        },
-        [
-          {
-            tokenType: 1,
-            token: await busdInstance.getAddress(),
             tokenId: 0,
             amount,
           },
@@ -611,7 +516,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase ERC721 Random for WETH", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -641,7 +546,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -666,7 +571,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -708,7 +613,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase, spend ERC20", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -722,14 +627,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -750,14 +655,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -779,7 +684,7 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 1n,
@@ -791,7 +696,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase, spend ETH", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
@@ -803,21 +708,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -828,21 +733,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -858,19 +763,19 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 0n,
             token: ZeroAddress,
-            tokenId: 0n,
-            amount: 123000000000000000n,
+            tokenId,
+            amount,
           }),
         );
     });
 
     it("should purchase RANDOM, spend ETH", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Random", exchangeInstance);
@@ -882,21 +787,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount: "123000000000000000",
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -916,21 +821,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -946,19 +851,19 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 0n,
             token: ZeroAddress,
-            tokenId: 0n,
-            amount: 123000000000000000n,
+            tokenId,
+            amount,
           }),
         );
     });
 
     it("should fail: duplicate mint", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
@@ -971,14 +876,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -999,14 +904,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1027,14 +932,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1063,14 +968,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1091,14 +996,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1115,7 +1020,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should fail: ERC20InsufficientAllowance", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
@@ -1128,14 +1033,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1153,14 +1058,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1179,6 +1084,8 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should fail: ECDSAInvalidSignatureLength", async function () {
+      const [owner] = await ethers.getSigners();
+
       const exchangeInstance = await factory();
 
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
@@ -1190,14 +1097,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1214,7 +1121,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should fail: ExpiredSignature", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -1230,14 +1137,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1255,14 +1162,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1279,7 +1186,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should fail: ExpiredSignature 2", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -1296,14 +1203,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1321,14 +1228,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1349,14 +1256,14 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1373,7 +1280,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should fail: InvalidSubscription", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
 
@@ -1399,7 +1306,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
@@ -1424,7 +1331,7 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
@@ -1448,7 +1355,7 @@ describe("Diamond Exchange Core", function () {
     });
 
     it("should purchase", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
       const { generateOneToManySignature } = await getSignatures(exchangeInstance);
@@ -1464,21 +1371,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -1489,21 +1396,21 @@ describe("Diamond Exchange Core", function () {
           expiresAt,
           nonce,
           extra,
-          receiver: await exchangeInstance.getAddress(),
+          receiver: owner.address,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -1516,20 +1423,20 @@ describe("Diamond Exchange Core", function () {
           receiver.address,
           externalId,
           isEqualEventArgObj({
-            tokenType: "2",
+            tokenType: 2n,
             token: await erc721Instance.getAddress(),
-            tokenId: toBigInt(tokenId),
-            amount: toBigInt(amount),
+            tokenId,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
-            tokenType: "0",
+            tokenType: 0n,
             token: ZeroAddress,
-            tokenId: toBigInt("0"),
+            tokenId,
             amount,
           }),
         );
 
-      await expect(tx1).to.changeEtherBalances([receiver, exchangeInstance], [-amount, amount]);
+      await expect(tx1).to.changeEtherBalances([receiver, owner], [-amount, amount]);
     });
   });
 
@@ -1558,12 +1465,12 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
             amount,
-            token: "0x0000000000000000000000000000000000000000",
+            token: ZeroAddress,
             tokenId: "0",
             tokenType: 0,
           },
@@ -1583,12 +1490,12 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
             amount,
-            token: "0x0000000000000000000000000000000000000000",
+            token: ZeroAddress,
             tokenId: "0",
             tokenType: 0,
           },

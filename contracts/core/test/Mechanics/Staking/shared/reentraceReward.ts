@@ -194,7 +194,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakeRule: IStakingRule = {
           deposit: [
             {
-              tokenType: 0, // NATIVE
+              tokenType: 0,
               token: ZeroAddress,
               tokenId,
               amount,
@@ -202,10 +202,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           ],
           reward: [
             {
-              tokenType: 2, // NATIVE
+              tokenType: 2,
               token: await erc721SimpleInstance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
           content: [],
@@ -615,7 +615,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         });
 
         await expect(tx4).to.emit(attakerInstance, "Reentered").withArgs(false);

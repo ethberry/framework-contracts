@@ -37,6 +37,7 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     }
 
     // TODO test approve
+    // TODO try..catch
     if (IERC721(item.token).ownerOf(item.tokenId) != _msgSender()) {
       if (IERC721(item.token).getApproved(item.tokenId) != _msgSender()) {
         revert NotAnOwner();

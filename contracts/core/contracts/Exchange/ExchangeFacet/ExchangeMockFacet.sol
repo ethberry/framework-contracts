@@ -28,15 +28,14 @@ contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
   function testBurnFrom(
     Asset[] memory price,
     address spender,
-    address receiver,
     DisabledTokenTypes memory disabled
   ) external payable {
-    // Burns or transfer tokens to self or other address
-    ExchangeUtils.burnFrom(price, spender, receiver, disabled);
+    // Burn tokens
+    ExchangeUtils.burnFrom(price, spender, disabled);
   }
 
   function testSpend(Asset[] memory price, address receiver, DisabledTokenTypes memory disabled) external payable {
-    // Spender is always Exchange contract
+    // Spender is always this contract
     ExchangeUtils.spend(price, receiver, disabled);
   }
 
@@ -46,7 +45,7 @@ contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
   }
 
   /**
- * @dev Allows to top-up the contract with tokens (NATIVE and ERC20 only).
+   * @dev Allows to top-up the contract with tokens (NATIVE and ERC20 only).
    * @param price An array of Asset representing the tokens to be transferred.
    */
   function topUp(Asset[] memory price) external payable virtual {
