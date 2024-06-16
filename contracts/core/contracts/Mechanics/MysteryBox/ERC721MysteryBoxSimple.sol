@@ -14,9 +14,9 @@ import { IERC721MysteryBox } from "./interfaces/IERC721MysteryBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, DisabledTokenTypes, TokenType } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
-import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
+import { MethodNotSupported, NoContent, UnsupportedTokenType } from "../../utils/errors.sol";
 
 contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
   using Address for address;
@@ -48,7 +48,12 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
 
     uint256 length = items.length;
     for (uint256 i = 0; i < length; ) {
-      _itemData[tokenId].push(items[i]);
+      Asset memory item = items[i];
+      if (item.tokenType == TokenType.ERC721 || item.tokenType == TokenType.ERC998) {
+        _itemData[tokenId].push(items);
+      } else {
+        revert UnsupportedTokenType();
+      }
       unchecked {
         i++;
       }

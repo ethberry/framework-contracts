@@ -222,7 +222,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
           price: [],
@@ -235,7 +235,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
           signature,
@@ -250,7 +250,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2n,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             }),
           )
           .to.emit(erc721Instance, "Transfer")
@@ -283,7 +283,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
           price: [],
@@ -296,7 +296,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
           signature,
@@ -311,7 +311,7 @@ describe("Diamond Exchange Claim", function () {
               tokenType: 2n,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             }),
           )
           .to.not.emit(erc721Instance, "Transfer");

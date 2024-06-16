@@ -16,6 +16,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { IERC1363 } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363.sol";
 import { IERC1363_ID, IERC1363_RECEIVER_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
 
+import { IERC20Burnable } from "../../ERC20/interfaces/IERC20Burnable.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
@@ -110,36 +111,22 @@ library ExchangeUtils {
    *
    * @param price An array of assets to transfer
    * @param spender Address of spender
-   * @param receiver Address of receiver
    * @param disabled Disabled TokenTypes for spend from spender
    */
   function burnFrom(
     Asset[] memory price,
     address spender,
-    address receiver,
     DisabledTokenTypes memory disabled
   ) internal {
     // The total amount of native tokens in the transaction.
-    uint256 totalAmount;
 
     // Loop through all assets
     uint256 length = price.length;
     for (uint256 i = 0; i < length; ) {
       Asset memory item = price[i];
       // If the `Asset` token is native.
-      if (item.tokenType == TokenType.NATIVE && !disabled.native) {
-        // increase the total amount.
-        totalAmount = totalAmount + item.amount;
-      }
-      // If the `Asset` token is an ERC20 token.
-      else if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
-        if (_isERC1363Supported(receiver, item.token)) {
-          // Transfer the ERC20 token and emit event to notify server
-          IERC1363(item.token).transferFromAndCall(spender, receiver, item.amount);
-        } else {
-          // Transfer the ERC20 token in a safe way
-          SafeERC20.safeTransferFrom(IERC20(item.token), spender, receiver, item.amount);
-        }
+      if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
+        IERC20Burnable(item.token).burnFrom(spender, item.amount);
       }
       // If the `Asset` token is an ERC721/ERC998 token.
       else if (
@@ -154,28 +141,13 @@ library ExchangeUtils {
         // BURN the ERC1155 token
         IERC1155Simple(item.token).burn(spender, item.tokenId, item.amount);
       } else {
-        // should never happen
+        // NATIVE
         revert UnsupportedTokenType();
       }
 
     unchecked {
       i++;
     }
-    }
-
-    // If there is any native token in the transaction.
-    if (totalAmount > 0) {
-      // Verify the total amount of native tokens matches the amount sent with the transaction.
-      // This basically protects against reentrancy attack.
-      if (totalAmount > msg.value) {
-        revert WrongAmount();
-      }
-      if (address(this) == receiver) {
-        emit PaymentEthReceived(receiver, msg.value);
-      } else {
-        Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentEthSent(receiver, totalAmount);
-      }
     }
   }
 
@@ -301,17 +273,16 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
         (item.tokenType == TokenType.ERC998 && !disabled.erc998)
       ) {
-        uint32 loopIndex;
         bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
         if (randomInterface) {
-          for (;loopIndex < item.amount;) {
+          for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Random(item.token).mintRandom(receiver, item.tokenId);
             unchecked {
               loopIndex++;
             }
           }
         } else {
-          for (; loopIndex < item.amount;) {
+          for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Simple(item.token).mintCommon(receiver, item.tokenId);
             unchecked {
               loopIndex++;

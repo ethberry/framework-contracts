@@ -28,11 +28,10 @@ contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
   function testBurnFrom(
     Asset[] memory price,
     address spender,
-    address receiver,
     DisabledTokenTypes memory disabled
   ) external payable {
     // Burns or transfer tokens to self or other address
-    ExchangeUtils.burnFrom(price, spender, receiver, disabled);
+    ExchangeUtils.burnFrom(price, spender, disabled);
   }
 
   function testSpend(Asset[] memory price, address receiver, DisabledTokenTypes memory disabled) external payable {

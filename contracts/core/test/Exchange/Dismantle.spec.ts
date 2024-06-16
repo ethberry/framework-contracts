@@ -477,7 +477,7 @@ describe("Diamond Exchange Dismantle", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           price: [
@@ -504,14 +504,14 @@ describe("Diamond Exchange Dismantle", function () {
           },
           [
             {
-              tokenType: 2,
+              tokenType: 2n,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           {
-            tokenType: 4,
+            tokenType: 4n,
             token: await erc1155Instance.getAddress(),
             tokenId,
             amount,
@@ -529,7 +529,7 @@ describe("Diamond Exchange Dismantle", function () {
               tokenType: 2n,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             }),
             isEqualEventArgArrObj({
               tokenType: 4n,

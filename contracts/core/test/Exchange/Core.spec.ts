@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { Contract, toBigInt, ZeroAddress, ZeroHash } from "ethers";
+import { Contract, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
@@ -729,7 +729,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -757,7 +757,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -779,7 +779,7 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 1n,
@@ -810,14 +810,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -835,14 +835,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -858,13 +858,13 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 0n,
             token: ZeroAddress,
-            tokenId: 0n,
-            amount: 123000000000000000n,
+            tokenId,
+            amount,
           }),
         );
     });
@@ -889,14 +889,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount: "123000000000000000",
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -923,14 +923,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount: 123000000000000000n,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -946,13 +946,13 @@ describe("Diamond Exchange Core", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 0n,
             token: ZeroAddress,
-            tokenId: 0n,
-            amount: 123000000000000000n,
+            tokenId,
+            amount,
           }),
         );
     });
@@ -978,7 +978,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1006,7 +1006,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1034,7 +1034,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1303,7 +1303,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1328,7 +1328,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1356,7 +1356,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1471,14 +1471,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
-            amount,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
       });
@@ -1496,14 +1496,14 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
-            amount,
-            token: "0x0000000000000000000000000000000000000000",
-            tokenId: "0",
             tokenType: 0,
+            token: ZeroAddress,
+            tokenId,
+            amount,
           },
         ],
         signature,
@@ -1516,15 +1516,15 @@ describe("Diamond Exchange Core", function () {
           receiver.address,
           externalId,
           isEqualEventArgObj({
-            tokenType: "2",
+            tokenType: 2n,
             token: await erc721Instance.getAddress(),
-            tokenId: toBigInt(tokenId),
-            amount: toBigInt(amount),
+            tokenId,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
-            tokenType: "0",
+            tokenType: 0n,
             token: ZeroAddress,
-            tokenId: toBigInt("0"),
+            tokenId,
             amount,
           }),
         );

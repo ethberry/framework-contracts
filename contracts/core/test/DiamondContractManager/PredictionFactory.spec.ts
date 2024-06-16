@@ -7,7 +7,7 @@ import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 import { contractTemplate, externalId } from "../constants";
 import { deployDiamond } from "./shared/fixture";
 
-describe.only("PredictionFactoryDiamond", function () {
+describe("PredictionFactoryDiamond", function () {
   const factory = async (facetName = "PredictionFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",

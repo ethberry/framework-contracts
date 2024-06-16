@@ -35,12 +35,7 @@ describe("Raffle", function () {
   const factoryDiamond = async () =>
     deployDiamond(
       "DiamondExchange",
-      [
-        "ExchangeRaffleFacet",
-        "PausableFacet",
-        "AccessControlFacet",
-        "WalletFacet", //
-      ],
+      ["ExchangeRaffleFacet", "PausableFacet", "AccessControlFacet", "WalletFacet"],
       "DiamondExchangeInit",
       {
         // log: true,
@@ -295,9 +290,9 @@ describe("Raffle", function () {
     });
 
     it("should get current round info with 1 ticket", async function () {
-      const [owner, receiver] = await ethers.getSigners()
+      const [owner, receiver] = await ethers.getSigners();
       const { raffleInstance, erc20Instance, erc721Instance } = await factory();
-      
+
       const diamondInstance = await factoryDiamond();
       const diamondAddress = await diamondInstance.getAddress();
 
@@ -478,9 +473,9 @@ describe("Raffle", function () {
     });
 
     it("should get current round info with 2 tickets", async function () {
-      const [owner, receiver, stranger] = await ethers.getSigners()
+      const [owner, receiver, stranger] = await ethers.getSigners();
       const { raffleInstance, erc20Instance, erc721Instance } = await factory();
-      
+
       const diamondInstance = await factoryDiamond();
       const diamondAddress = await diamondInstance.getAddress();
 

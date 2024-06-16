@@ -37,22 +37,13 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       const [owner, receiver] = await ethers.getSigners();
 
       const mysteryBoxInstance = await factory();
-      await mysteryBoxInstance.topUp(
-        [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: 0,
-            amount: parseEther("1.0"),
-          },
-        ],
-        { value: parseEther("1.0") },
-      );
+      const erc721SimpleInstance = await erc721Factory("ERC721Simple");
+      await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
       const tx1 = mysteryBoxInstance.mintBox(owner.address, templateId, [
         {
-          tokenType: 0,
-          token: ZeroAddress,
+          tokenType: 2,
+          token: await erc721SimpleInstance.getAddress(),
           tokenId: templateId,
           amount,
         },
@@ -69,8 +60,8 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
-        await mysteryboxInstance.topUp(
+        const mysteryBoxInstance = await factory();
+        await mysteryBoxInstance.topUp(
           [
             {
               tokenType: 0,
@@ -82,7 +73,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           { value: parseEther("1.0") },
         );
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 0,
             token: ZeroAddress,
@@ -90,15 +81,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             amount,
           },
         ]);
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
-        await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
-          .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
-          .withArgs(receiver.address, tokenId);
-        await expect(tx2).to.changeEtherBalances([receiver, mysteryboxInstance], [amount, -amount]);
+        await expect(tx1).to.revertedWithCustomError(mysteryBoxInstance, "UnsupportedTokenType");
       });
     });
 
@@ -106,12 +89,12 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc20SimpleInstance = await erc20Factory("ERC20Simple");
-        await erc20SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
-        await erc20SimpleInstance.mint(await mysteryboxInstance.getAddress(), amount);
+        await erc20SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
+        await erc20SimpleInstance.mint(await mysteryBoxInstance.getAddress(), amount);
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 1,
             token: await erc20SimpleInstance.getAddress(),
@@ -119,16 +102,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             amount,
           },
         ]);
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
-        await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
-          .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
-          .withArgs(receiver.address, tokenId)
-          .to.emit(erc20SimpleInstance, "Transfer")
-          .withArgs(await mysteryboxInstance.getAddress(), receiver.address, amount);
+        await expect(tx1).to.revertedWithCustomError(mysteryBoxInstance, "UnsupportedTokenType");
       });
     });
 
@@ -136,11 +110,11 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack (Simple)", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-        await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 2,
             token: await erc721SimpleInstance.getAddress(),
@@ -149,13 +123,13 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           },
         ]);
 
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+        await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
+        const tx2 = mysteryBoxInstance.connect(receiver).unpack(tokenId);
         await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
+          .to.emit(mysteryBoxInstance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId)
           .to.emit(erc721SimpleInstance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId);
@@ -164,9 +138,9 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack (Random)", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc721RandomInstance = await erc721Factory("ERC721Random");
-        await erc721RandomInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc721RandomInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
         // Set VRFV2 Subscription
         const tx01 = erc721RandomInstance.setSubscriptionId(subscriptionId);
@@ -177,7 +151,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           .to.emit(vrfInstance, "SubscriptionConsumerAdded")
           .withArgs(1, await erc721RandomInstance.getAddress());
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 2,
             token: await erc721RandomInstance.getAddress(),
@@ -186,15 +160,15 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           },
         ]);
 
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+        await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
+        const tx2 = mysteryBoxInstance.connect(receiver).unpack(tokenId);
         await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
+          .to.emit(mysteryBoxInstance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId);
 
         // RANDOM
@@ -209,11 +183,11 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack (Simple)", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc998SimpleInstance = await erc998Factory("ERC998Simple");
-        await erc998SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc998SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 2,
             token: await erc998SimpleInstance.getAddress(),
@@ -222,13 +196,13 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           },
         ]);
 
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+        await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
+        const tx2 = mysteryBoxInstance.connect(receiver).unpack(tokenId);
         await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
+          .to.emit(mysteryBoxInstance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId)
           .to.emit(erc998SimpleInstance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId);
@@ -237,9 +211,9 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack (Random)", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc998RandomInstance = await erc998Factory("ERC998Random");
-        await erc998RandomInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc998RandomInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
         // Set VRFV2 Subscription
         const tx01 = erc998RandomInstance.setSubscriptionId(subscriptionId);
@@ -250,7 +224,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           .to.emit(vrfInstance, "SubscriptionConsumerAdded")
           .withArgs(1, await erc998RandomInstance.getAddress());
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 2,
             token: await erc998RandomInstance.getAddress(),
@@ -259,13 +233,13 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           },
         ]);
 
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+        await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
+        const tx2 = mysteryBoxInstance.connect(receiver).unpack(tokenId);
         await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
+          .to.emit(mysteryBoxInstance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId);
 
         await randomRequest(erc998RandomInstance, vrfInstance);
@@ -279,12 +253,12 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
+        const mysteryBoxInstance = await factory();
         const erc1155SimpleInstance = await erc1155Factory("ERC1155Simple");
 
-        await erc1155SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc1155SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 4,
             token: await erc1155SimpleInstance.getAddress(),
@@ -292,17 +266,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             amount,
           },
         ]);
-
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
-        await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
-          .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
-          .withArgs(receiver.address, tokenId)
-          .to.emit(erc1155SimpleInstance, "TransferSingle")
-          .withArgs(await mysteryboxInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
+        await expect(tx1).to.revertedWithCustomError(mysteryBoxInstance, "UnsupportedTokenType");
       });
     });
 
@@ -310,45 +274,15 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       it("should mint/unpack multiple", async function () {
         const [_owner, receiver] = await ethers.getSigners();
 
-        const mysteryboxInstance = await factory();
-
-        const erc20SimpleInstance = await erc20Factory("ERC20Simple");
+        const mysteryBoxInstance = await factory();
 
         const erc721SimpleInstance = await erc721Factory("ERC721Simple");
         const erc998SimpleInstance = await erc721Factory("ERC998Simple");
-        const erc1155SimpleInstance = await erc1155Factory("ERC1155Simple");
 
-        await erc20SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
-        await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
-        await erc998SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
-        await erc1155SimpleInstance.grantRole(MINTER_ROLE, await mysteryboxInstance.getAddress());
+        await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
+        await erc998SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
 
-        await mysteryboxInstance.topUp(
-          [
-            {
-              tokenType: 0,
-              token: ZeroAddress,
-              tokenId: 0,
-              amount: parseEther("1.0"),
-            },
-          ],
-          { value: parseEther("1.0") },
-        );
-        await erc20SimpleInstance.mint(await mysteryboxInstance.getAddress(), amount);
-
-        const tx1 = mysteryboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: templateId,
-            amount,
-          },
-          {
-            tokenType: 1,
-            token: await erc20SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
+        const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
             tokenType: 2,
             token: await erc721SimpleInstance.getAddress(),
@@ -361,31 +295,20 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenId: templateId,
             amount,
           },
-          {
-            tokenType: 4,
-            token: await erc1155SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
         ]);
 
-        await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+        await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-        const tx2 = mysteryboxInstance.connect(receiver).unpack(tokenId);
+        const tx2 = mysteryBoxInstance.connect(receiver).unpack(tokenId);
         await expect(tx2)
-          .to.emit(mysteryboxInstance, "Transfer")
+          .to.emit(mysteryBoxInstance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, tokenId)
-          .to.emit(mysteryboxInstance, "UnpackMysteryBox")
+          .to.emit(mysteryBoxInstance, "UnpackMysteryBox")
           .withArgs(receiver.address, tokenId)
-          .to.emit(erc20SimpleInstance, "Transfer")
-          .withArgs(await mysteryboxInstance.getAddress(), receiver.address, amount)
           .to.emit(erc721SimpleInstance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId)
           .to.emit(erc998SimpleInstance, "Transfer")
-          .withArgs(ZeroAddress, receiver.address, tokenId)
-          .to.emit(erc1155SimpleInstance, "TransferSingle")
-          .withArgs(await mysteryboxInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
-        await expect(tx2).to.changeEtherBalances([receiver, mysteryboxInstance], [amount, -amount]);
+          .withArgs(ZeroAddress, receiver.address, tokenId);
       });
     });
   });
