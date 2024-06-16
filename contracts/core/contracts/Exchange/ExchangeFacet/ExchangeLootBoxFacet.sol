@@ -34,7 +34,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
       revert WrongAmount();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, true, true, false));
 
     Asset memory box = items[items.length - 1];
 

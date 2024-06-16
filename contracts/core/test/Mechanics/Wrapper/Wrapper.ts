@@ -176,7 +176,7 @@ describe("Wrapper", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ]);
         const balanace = await erc721Instance.balanceOf(await erc721WrapperInstance.getAddress());
@@ -203,7 +203,7 @@ describe("Wrapper", function () {
             tokenType: 3,
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ]);
         const balanace = await erc998Instance.balanceOf(await erc721WrapperInstance.getAddress());

@@ -1885,7 +1885,7 @@ describe("Diamond Exchange Utils", function () {
                 tokenType: 2,
                 token: await erc721Instance.getAddress(),
                 tokenId: templateId,
-                amount,
+                amount: 1,
               },
             ],
             receiver.address,
@@ -1916,7 +1916,7 @@ describe("Diamond Exchange Utils", function () {
                 tokenType: 2,
                 token: await erc721Instance.getAddress(),
                 tokenId: templateId,
-                amount,
+                amount: 1,
               },
             ],
             receiver.address,
@@ -1929,6 +1929,39 @@ describe("Diamond Exchange Utils", function () {
 
           const balance = await erc721Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC721 => EOA (Multiple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount: 3,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 1)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 2)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 3);
+
+          const balance = await erc721Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(3);
         });
       });
 
@@ -1958,7 +1991,7 @@ describe("Diamond Exchange Utils", function () {
                 tokenType: 3,
                 token: await erc998Instance.getAddress(),
                 tokenId: templateId,
-                amount,
+                amount: 1n,
               },
             ],
             receiver.address,
@@ -1990,7 +2023,7 @@ describe("Diamond Exchange Utils", function () {
                 tokenType: 3,
                 token: await erc998Instance.getAddress(),
                 tokenId: templateId,
-                amount,
+                amount: 1n,
               },
             ],
             receiver.address,
@@ -2003,6 +2036,39 @@ describe("Diamond Exchange Utils", function () {
 
           const balance = await erc998Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC998 => EOA (Multiple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 3,
+                token: await erc998Instance.getAddress(),
+                tokenId: templateId,
+                amount: 3n,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 1)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 2)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 3);
+
+          const balance = await erc998Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(3);
         });
       });
 

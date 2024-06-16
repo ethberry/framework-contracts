@@ -64,7 +64,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -92,7 +92,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -115,7 +115,7 @@ describe("Diamond Exchange Discrete", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgArrObj({
             tokenType: 1n,
@@ -151,7 +151,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -172,7 +172,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -216,7 +216,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -244,7 +244,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
 
         [
@@ -285,7 +285,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -313,7 +313,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
 
         [
@@ -349,7 +349,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -373,7 +373,7 @@ describe("Diamond Exchange Discrete", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {

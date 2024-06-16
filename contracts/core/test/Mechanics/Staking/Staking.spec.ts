@@ -135,7 +135,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -264,7 +264,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -294,7 +294,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -327,7 +327,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -361,7 +361,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -400,7 +400,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -480,7 +480,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -597,7 +597,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -630,7 +630,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -663,7 +663,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -708,7 +708,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -716,7 +716,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -764,7 +764,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -801,7 +801,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -847,7 +847,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1082,7 +1082,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -1090,7 +1090,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1808,7 +1808,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1877,7 +1877,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -2268,7 +2268,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -2344,7 +2344,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -2883,7 +2883,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -2966,7 +2966,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3143,7 +3143,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3151,7 +3151,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3215,7 +3215,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3223,7 +3223,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3371,7 +3371,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3444,7 +3444,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3527,7 +3527,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3611,7 +3611,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3619,7 +3619,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3859,7 +3859,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3867,7 +3867,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3931,7 +3931,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3939,7 +3939,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4000,7 +4000,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -4268,7 +4268,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4348,7 +4348,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4396,7 +4396,9 @@ describe("Staking", function () {
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
         .to.emit(erc721SimpleInstance, "Transfer")
-        .withArgs(ZeroAddress, owner.address, tokenId);
+        .withArgs(ZeroAddress, owner.address, 1)
+        .to.emit(erc721SimpleInstance, "Transfer")
+        .withArgs(ZeroAddress, owner.address, 2);
 
       const balance3 = await erc721SimpleInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
@@ -4404,7 +4406,7 @@ describe("Staking", function () {
       expect(balance4).to.equal(amount);
     });
 
-    it("should stake ERC1155 & receive ERC721 Mysterybox", async function () {
+    it("should stake ERC1155 & receive ERC721 MysteryBox", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();

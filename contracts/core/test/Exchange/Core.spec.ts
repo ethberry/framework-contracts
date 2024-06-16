@@ -1070,7 +1070,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1098,7 +1098,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1135,7 +1135,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1160,7 +1160,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1197,7 +1197,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1237,7 +1237,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1262,7 +1262,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {
@@ -1558,7 +1558,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         price: [
           {
@@ -1583,7 +1583,7 @@ describe("Diamond Exchange Core", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         [
           {

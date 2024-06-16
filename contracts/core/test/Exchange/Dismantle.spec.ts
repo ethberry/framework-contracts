@@ -58,7 +58,7 @@ describe("Diamond Exchange Dismantle", function () {
               tokenType: 2,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             },
           ],
         });
@@ -70,7 +70,7 @@ describe("Diamond Exchange Dismantle", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
           signature,
         );
@@ -85,7 +85,7 @@ describe("Diamond Exchange Dismantle", function () {
               tokenType: 2n,
               token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1n,
             }),
           );
       });
@@ -1316,7 +1316,7 @@ describe("Diamond Exchange Dismantle", function () {
             tokenType: 2,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
       });
@@ -1328,7 +1328,7 @@ describe("Diamond Exchange Dismantle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         signature,
       );
@@ -1342,7 +1342,7 @@ describe("Diamond Exchange Dismantle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
         signature,
       );

@@ -21,7 +21,7 @@ export const customMint = async (
       tokenType: 2,
       token: await erc721SimpleInstance.getAddress(),
       tokenId: templateId,
-      amount,
+      amount: 1n,
     },
   ]) as Promise<any>;
 };

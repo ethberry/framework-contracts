@@ -4,9 +4,8 @@ import { ZeroAddress } from "ethers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
 import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
-import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
+import { deployContract, shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { deployContract } from "@gemunion/contracts-utils";
 
 import { deployERC20 } from "../../ERC20/shared/fixtures";
 import { deployERC721 } from "../../ERC721/shared/fixtures";
@@ -37,7 +36,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -125,7 +124,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -277,7 +276,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -322,7 +321,7 @@ describe("WaitList", function () {
           tokenType: 3n,
           token: await erc998Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -412,7 +411,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -492,7 +491,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 
@@ -533,7 +532,7 @@ describe("WaitList", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ];
 

@@ -18,7 +18,7 @@ import { Asset, DisabledTokenTypes, TokenType } from "../../Exchange/lib/interfa
 import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
 import { MethodNotSupported, NoContent, UnsupportedTokenType } from "../../utils/errors.sol";
 
-contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
+contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
   using Address for address;
 
   mapping(uint256 => Asset[]) internal _itemData;
@@ -50,7 +50,7 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = items[i];
       if (item.tokenType == TokenType.ERC721 || item.tokenType == TokenType.ERC998) {
-        _itemData[tokenId].push(items);
+        _itemData[tokenId].push(item);
       } else {
         revert UnsupportedTokenType();
       }
@@ -73,14 +73,7 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple, TopUp {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, TopUp) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
     return interfaceId == IERC721_MYSTERY_ID || super.supportsInterface(interfaceId);
-  }
-
-  /**
-   * @dev Restrict the contract to receive Ether (receive via topUp function only).
-   */
-  receive() external payable override(ERC721Simple, TopUp) {
-    revert();
   }
 }

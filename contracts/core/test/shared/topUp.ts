@@ -157,7 +157,7 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ]);
 
@@ -178,7 +178,7 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
           tokenType: 3,
           token: await erc998Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1,
         },
       ]);
 

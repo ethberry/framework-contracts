@@ -5,7 +5,6 @@
 // Website: https://gemunion.io/
 
 pragma solidity ^0.8.20;
-import "hardhat/console.sol";
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";

@@ -61,17 +61,6 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         const [_owner, receiver] = await ethers.getSigners();
 
         const mysteryBoxInstance = await factory();
-        await mysteryBoxInstance.topUp(
-          [
-            {
-              tokenType: 0,
-              token: ZeroAddress,
-              tokenId: 0,
-              amount: parseEther("1.0"),
-            },
-          ],
-          { value: parseEther("1.0") },
-        );
 
         const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
@@ -119,7 +108,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenType: 2,
             token: await erc721SimpleInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
         ]);
 
@@ -156,7 +145,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenType: 2,
             token: await erc721RandomInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
         ]);
 
@@ -192,7 +181,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenType: 2,
             token: await erc998SimpleInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
         ]);
 
@@ -229,7 +218,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenType: 2,
             token: await erc998RandomInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
         ]);
 
@@ -287,13 +276,13 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             tokenType: 2,
             token: await erc721SimpleInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
           {
             tokenType: 3,
             token: await erc998SimpleInstance.getAddress(),
             tokenId: templateId,
-            amount,
+            amount: 1n,
           },
         ]);
 

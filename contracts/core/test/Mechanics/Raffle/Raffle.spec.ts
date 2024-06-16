@@ -76,7 +76,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -98,7 +98,7 @@ describe("Raffle", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -116,7 +116,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -131,7 +131,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -153,7 +153,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -201,7 +201,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -223,7 +223,7 @@ describe("Raffle", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -284,7 +284,7 @@ describe("Raffle", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId: 1n,
-          amount,
+          amount: 1n,
         },
       });
     });
@@ -309,7 +309,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -331,7 +331,7 @@ describe("Raffle", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -467,7 +467,7 @@ describe("Raffle", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId: 1n,
-          amount,
+          amount: 1n,
         },
       });
     });
@@ -494,7 +494,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -516,7 +516,7 @@ describe("Raffle", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -728,7 +728,7 @@ describe("Raffle", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId: 1n,
-          amount,
+          amount: 1n,
         },
       });
     });
@@ -773,7 +773,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -897,7 +897,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1045,7 +1045,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1264,7 +1264,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1565,7 +1565,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1798,7 +1798,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1941,7 +1941,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -2054,7 +2054,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -2107,7 +2107,7 @@ describe("Raffle", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,

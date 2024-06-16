@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { parseEther, ZeroAddress } from "ethers";
+import { ZeroAddress } from "ethers";
 
 import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
 
@@ -15,18 +15,6 @@ export function shouldBehaveLikeERC721LootBoxPausable(factory: () => Promise<any
       const [owner] = await ethers.getSigners();
 
       const lootboxInstance = await factory();
-      await lootboxInstance.topUp(
-        [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: 0,
-            amount: parseEther("1.0"),
-          },
-        ],
-        { value: parseEther("1.0") },
-      );
-
       const tx1 = mint(lootboxInstance, owner, owner.address);
       await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, owner.address, tokenId);
 

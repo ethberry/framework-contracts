@@ -83,7 +83,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -106,7 +106,7 @@ describe("Lottery", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -124,7 +124,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -139,7 +139,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -161,7 +161,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -211,7 +211,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -233,7 +233,7 @@ describe("Lottery", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -296,7 +296,7 @@ describe("Lottery", function () {
           tokenType: 2n,
           token: await erc721Instance.getAddress(),
           tokenId: 1n,
-          amount,
+          amount: 1n,
         },
       });
     });
@@ -337,7 +337,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -466,7 +466,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -626,7 +626,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 0,
@@ -785,7 +785,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -903,7 +903,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -924,7 +924,7 @@ describe("Lottery", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -980,7 +980,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1010,7 +1010,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 0,
-          amount: 1,
+          amount: 1n,
         },
         price: {
           tokenType: 1,
@@ -1093,7 +1093,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1114,7 +1114,7 @@ describe("Lottery", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -1162,7 +1162,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1275,7 +1275,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1296,7 +1296,7 @@ describe("Lottery", function () {
             tokenType: 2n,
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           }),
           isEqualEventArgObj({
             tokenType: 1n,
@@ -1346,7 +1346,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1491,7 +1491,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1651,7 +1651,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -1884,7 +1884,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
@@ -2074,7 +2074,7 @@ describe("Lottery", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId: 1,
-          amount,
+          amount: 1n,
         },
         {
           tokenType: 1,
