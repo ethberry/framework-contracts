@@ -9,28 +9,39 @@ pragma solidity ^0.8.20;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
 
-import {IERC721LootBox} from "./interfaces/IERC721LootBox.sol";
+import { IERC721LootBox } from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import {Asset, DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
-import {MethodNotSupported, NoContent} from "../../utils/errors.sol";
+import { MethodNotSupported, NoContent, InvalidSubscription} from "../../utils/errors.sol";
 
-contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
+contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, ChainLinkGemunionV2, TopUp {
   using Address for address;
 
+  struct Request {
+    address account;
+    uint256 tokenId;
+  }
+
   mapping(uint256 => Asset[]) internal _itemData;
+  mapping(uint256 => Request) internal _queue;
 
   event UnpackLootBox(address account, uint256 tokenId);
+  event VrfSubscriptionSet(uint64 subId);
 
   constructor(
     string memory name,
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
+  )
+  ERC721Simple(name, symbol, royalty, baseTokenURI)
+  ChainLinkGemunionV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+  {}
 
   function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
     revert MethodNotSupported();
@@ -39,7 +50,7 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   function mintBox(address account, uint256 templateId, Asset[] memory items) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-    if (items.length == 0) {
+  if (items.length == 0) {
       revert NoContent();
     }
 
@@ -62,8 +73,39 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
 
     _burn(tokenId);
 
-    ExchangeUtils.acquire(_itemData[tokenId], _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    _queue[getRandomNumber()] = Request(_msgSender(), tokenId);
   }
+
+  function getRandomNumber() internal override returns (uint256 requestId) {
+    if (_subId == 0) {
+      revert InvalidSubscription();
+    }
+    return super.getRandomNumber();
+  }
+
+  function fulfillRandomWords(
+    uint256 requestId,
+    uint256[] memory randomWords
+  ) internal override {
+    Request memory request = _queue[requestId];
+
+    delete _queue[requestId];
+
+    uint256 min = 1;
+    uint256 max = 1;
+
+    for (uint256 i = min; i <= max; i++) {
+      ExchangeUtils.acquire(ExchangeUtils._toArray(_itemData[request.tokenId][i]), request.account, DisabledTokenTypes(true, true, false, false, true));
+    }
+  }
+
+	function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+		if (subId == 0) {
+			revert InvalidSubscription();
+		}
+		_subId = subId;
+		emit VrfSubscriptionSet(_subId);
+	}
 
   /**
    * @dev See {IERC165-supportsInterface}.
