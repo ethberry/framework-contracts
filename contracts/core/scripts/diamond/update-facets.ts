@@ -12,30 +12,37 @@ async function main() {
   currentBlock.number = block!.number;
   fs.appendFileSync(`${process.cwd()}/log.txt`, `STARTING_BLOCK=${currentBlock.number}\n`);
 
-  // BESU DEV
-  const exchangeAddr = "0x9368d587335dd04a4f752afaba25de1938eb7ed6"; // staging
+  // const exchangeAddr = "0xdb6371a89e3c840a14de470dd0247cc7459fa2a2"; // dev besu
+  // const exchangeAddr = "0x9368d587335dd04a4f752afaba25de1938eb7ed6"; // staging besu
+  // const exchangeAddr = "0x20ca70b79e60c75ef2c89d0a575b3f19371826c1"; // staging telos_test
+
+  const cmAddr = "0x9a038b61f10e4fa12edd44942cbf1e42c5f19e8d"; // staging besu
+  // const cmAddr = "0xda4cdbe84970cb7acc816f8d24e3ebc74cd3d57b"; // staging telos_test
 
   // const diamondContract = await ethers.getContractAt("DiamondLoupeFacet", exchangeAddr);
 
   // UPDATE DIAMOND EXCHANGE (REPLACE FACET)
   await updateFacetDiamond(
-    "DiamondExchange",
-    exchangeAddr,
+    // "DiamondExchange",
+    "DiamondCM",
+    // exchangeAddr,
+    cmAddr,
     [
-      "ExchangeBreedFacet",
-      "ExchangeClaimFacet",
-      "ExchangeCraftFacet",
-      "ExchangeDismantleFacet",
-      "ExchangeGradeFacet",
-      "ExchangeLootBoxFacet",
-      "ExchangeLotteryFacet",
-      "ExchangeMergeFacet",
-      "ExchangeMockFacet",
-      "ExchangeMysteryBoxFacet",
-      "ExchangePurchaseFacet",
-      "ExchangePurchaseVestingFacet",
-      "ExchangeRaffleFacet",
-      "ExchangeRentableFacet",
+      "VestingFactoryFacet",
+      // "ExchangeBreedFacet",
+      // "ExchangeClaimFacet",
+      // "ExchangeCraftFacet",
+      // "ExchangeDismantleFacet",
+      // "ExchangeGradeFacet",
+      // "ExchangeLootBoxFacet",
+      // "ExchangeLotteryFacet",
+      // "ExchangeMergeFacet",
+      // "ExchangeMockFacet",
+      // "ExchangeMysteryBoxFacet",
+      // "ExchangePurchaseFacet",
+      // "ExchangePurchaseVestingFacet",
+      // "ExchangeRaffleFacet",
+      // "ExchangeRentableFacet",
     ],
     {
       log: true,
