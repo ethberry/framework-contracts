@@ -7,7 +7,7 @@ import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants
 import { decodeTraits } from "@gemunion/traits-v6";
 
 import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
-import { claimId, externalId, tokenId, userId } from "../constants";
+import { claimId, externalId, tokenId, userId, contractTemplate } from "../constants";
 import { deployERC20 } from "../ERC20/shared/fixtures";
 import { deployDiamond } from "./shared/fixture";
 
@@ -86,7 +86,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
-            contractTemplate: "0",
+            contractTemplate,
           },
           items: [
             {
@@ -110,7 +110,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
-          contractTemplate: "0",
+          contractTemplate,
         },
         [
           {
@@ -140,7 +140,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toString(),
             cliffInMonth: "12",
             monthlyRelease: "417",
-            contractTemplate: "0",
+            contractTemplate,
           }),
           isEqualEventArgArrObj({
             tokenType: "1",
@@ -215,7 +215,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
-            contractTemplate: "0",
+            contractTemplate,
           },
           items: [
             {
@@ -242,7 +242,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
-          contractTemplate: "0",
+          contractTemplate,
         },
         [
           {
@@ -314,7 +314,7 @@ describe("VestingFactoryDiamond", function () {
             startTimestamp: current.toNumber(),
             cliffInMonth: 12,
             monthlyRelease: 417,
-            contractTemplate: "0",
+            contractTemplate,
           },
           items: [
             {
@@ -338,7 +338,7 @@ describe("VestingFactoryDiamond", function () {
           startTimestamp: current.toNumber(),
           cliffInMonth: 12,
           monthlyRelease: 417,
-          contractTemplate: "0",
+          contractTemplate,
         },
         [
           {
