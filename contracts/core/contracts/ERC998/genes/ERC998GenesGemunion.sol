@@ -14,7 +14,6 @@ import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC998Genes } from "../ERC998Genes.sol";
-import { InvalidSubscription } from "../../utils/errors.sol";
 
 contract ERC998GenesGemunion is ERC998Genes, ChainLinkGemunionV2 {
   constructor(

@@ -14,7 +14,6 @@ import { ChainLinkHardhatV2 } from "@gemunion/contracts-chain-link-v2/contracts/
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC998BlacklistDiscreteRandom } from "../ERC998BlacklistDiscreteRandom.sol";
-import { InvalidSubscription } from "../../utils/errors.sol";
 
 contract ERC998BlacklistDiscreteRandomHardhat is ERC998BlacklistDiscreteRandom, ChainLinkHardhatV2 {
   constructor(

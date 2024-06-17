@@ -15,7 +15,6 @@ import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/ext
 
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { LotteryConfig } from "../interfaces/ILottery.sol";
-import { InvalidSubscription } from "../../../utils/errors.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
 contract LotteryRandomGemunion is LotteryRandom, ChainLinkGemunionV2 {

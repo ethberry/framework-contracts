@@ -13,7 +13,6 @@ import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumer
 import { ChainLinkBesuV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBesuV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import { InvalidSubscription } from "../../utils/errors.sol";
 import { ERC721BlacklistDiscreteRentableRandom } from "../ERC721BlacklistDiscreteRentableRandom.sol";
 
 contract ERC721BlacklistDiscreteRentableRandomBesu is ERC721BlacklistDiscreteRentableRandom, ChainLinkBesuV2 {

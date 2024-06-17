@@ -15,7 +15,6 @@ import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/ext
 
 import { RaffleRandom } from "../RaffleRandom.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
-import { InvalidSubscription } from "../../../utils/errors.sol";
 
 contract RaffleRandomBinance is RaffleRandom, ChainLinkBinanceV2 {
   constructor() RaffleRandom() ChainLinkBinanceV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}

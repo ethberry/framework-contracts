@@ -10,18 +10,17 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
+import { ChainLinkEthereumGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkEthereumGoerliV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { LotteryConfig } from "../interfaces/ILottery.sol";
-import { InvalidSubscription } from "../../../utils/errors.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
-contract LotteryRandomEthereumGoerli is LotteryRandom, ChainLinkGoerliV2 {
+contract LotteryRandomEthereumGoerli is LotteryRandom, ChainLinkEthereumGoerliV2 {
   constructor(
     LotteryConfig memory config
-  ) LotteryRandom(config) ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
+  ) LotteryRandom(config) ChainLinkEthereumGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2) returns (uint256 requestId) {
     return super.getRandomNumber();
