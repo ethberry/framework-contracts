@@ -13,24 +13,31 @@ import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumer
 import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import { ERC998Genes } from "../ERC998Genes.sol";
 import { InvalidSubscription } from "../../utils/errors.sol";
+import { ERC721BlacklistDiscreteRentableRandom } from "../ERC721BlacklistDiscreteRentableRandom.sol";
 
-contract ERC998GenesGoerli is ERC998Genes, ChainLinkGoerliV2 {
+contract ERC721BlacklistDiscreteRentableRandomEthereumGoerli is ERC721BlacklistDiscreteRentableRandom, ChainLinkGoerliV2 {
   constructor(
     string memory name,
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC998Genes(name, symbol, royalty, baseTokenURI) ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
-  function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Genes) returns (uint256 requestId) {
+  )
+    ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
+    ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+  {}
+  function getRandomNumber()
+    internal
+    override(ChainLinkBaseV2, ERC721BlacklistDiscreteRentableRandom)
+    returns (uint256 requestId)
+  {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
     uint256[] memory randomWords
-  ) internal override(ERC998Genes, VRFConsumerBaseV2) {
+  ) internal override(ERC721BlacklistDiscreteRentableRandom, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 
@@ -39,7 +46,7 @@ contract ERC998GenesGoerli is ERC998Genes, ChainLinkGoerliV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Genes) returns (bool) {
+  ) public view virtual override(AccessControl, ERC721BlacklistDiscreteRentableRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

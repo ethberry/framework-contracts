@@ -16,7 +16,7 @@ import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/ext
 import { InvalidSubscription } from "../../utils/errors.sol";
 import { ERC721DiscreteRandom } from "../ERC721DiscreteRandom.sol";
 
-contract ERC721DiscreteRandomGoerli is ERC721DiscreteRandom, ChainLinkGoerliV2 {
+contract ERC721DiscreteRandomEthereumGoerli is ERC721DiscreteRandom, ChainLinkGoerliV2 {
   constructor(
     string memory name,
     string memory symbol,

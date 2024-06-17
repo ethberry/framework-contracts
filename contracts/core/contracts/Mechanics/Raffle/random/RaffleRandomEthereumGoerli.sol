@@ -13,31 +13,26 @@ import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumer
 import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import { LotteryRandom } from "../LotteryRandom.sol";
-import { LotteryConfig } from "../interfaces/ILottery.sol";
-import { InvalidSubscription } from "../../../utils/errors.sol";
+import { RaffleRandom } from "../RaffleRandom.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
+import { InvalidSubscription } from "../../../utils/errors.sol";
 
-contract LotteryRandomGoerli is LotteryRandom, ChainLinkGoerliV2 {
-  constructor(
-    LotteryConfig memory config
-  ) LotteryRandom(config) ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
+contract RaffleRandomEthereumGoerli is RaffleRandom, ChainLinkGoerliV2 {
+  constructor() RaffleRandom() ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
-  function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2) returns (uint256 requestId) {
+  function getRandomNumber() internal override(RaffleRandom, ChainLinkBaseV2) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
     uint256[] memory randomWords
-  ) internal override(LotteryRandom, VRFConsumerBaseV2) {
+  ) internal override(RaffleRandom, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 
   function setDummyRound(
-    bytes32 ticket,
-    uint8[6] calldata values,
-    uint8[7] calldata aggregation,
+    uint256 prizeNumber,
     uint256 requestId,
     Asset memory item,
     Asset memory price,
@@ -49,25 +44,18 @@ contract LotteryRandomGoerli is LotteryRandom, ChainLinkGoerliV2 {
     uint256 roundNumber = _rounds.length - 1;
     Round storage currentRound = _rounds[roundNumber];
 
+    currentRound.roundId = roundNumber;
     currentRound.maxTicket = maxTicket;
     currentRound.startTimestamp = block.timestamp;
     currentRound.endTimestamp = block.timestamp + 1;
     currentRound.balance = 10000 ether;
     currentRound.total = 10000 ether;
-    currentRound.total -= (currentRound.total * comm) / 100;
-    currentRound.tickets.push(ticket);
-    currentRound.values = values;
     currentRound.ticketAsset = item;
     currentRound.acceptedAsset = price;
     // prize numbers
-    currentRound.aggregation = aggregation;
+    currentRound.tickets.push(prizeNumber);
+    currentRound.prizeNumber = prizeNumber;
     currentRound.requestId = requestId;
-  }
-
-  function setDummyTicket(bytes32 ticket) external {
-    uint256 roundNumber = _rounds.length - 1;
-    Round storage currentRound = _rounds[roundNumber];
-    currentRound.tickets.push(ticket);
   }
 
   /**
@@ -75,7 +63,7 @@ contract LotteryRandomGoerli is LotteryRandom, ChainLinkGoerliV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, LotteryRandom) returns (bool) {
+  ) public view virtual override(AccessControl, RaffleRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }
