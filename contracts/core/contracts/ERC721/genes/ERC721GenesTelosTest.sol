@@ -6,12 +6,13 @@
 
 pragma solidity ^0.8.20;
 
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 import { ChainLinkTelosTestV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkTelosTestV2.sol";
 
-import { InvalidSubscription } from "../../utils/errors.sol";
 import { ERC721Genes } from "../ERC721Genes.sol";
 
 contract ERC721GenesTelosTest is ERC721Genes, ChainLinkTelosTestV2 {
@@ -21,16 +22,6 @@ contract ERC721GenesTelosTest is ERC721Genes, ChainLinkTelosTestV2 {
     uint96 royalty,
     string memory baseTokenURI
   ) ERC721Genes(name, symbol, royalty, baseTokenURI) ChainLinkTelosTestV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
-
-  // OWNER MUST SET A VRF SUBSCRIPTION ID AFTER DEPLOY
-  event VrfSubscriptionSet(uint64 subId);
-  function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    if (subId == 0) {
-      revert InvalidSubscription();
-    }
-    _subId = subId;
-    emit VrfSubscriptionSet(_subId);
-  }
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721Genes) returns (uint256 requestId) {
     if (_subId == 0) {
@@ -44,5 +35,14 @@ contract ERC721GenesTelosTest is ERC721Genes, ChainLinkTelosTestV2 {
     uint256[] memory randomWords
   ) internal override(ERC721Genes, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
+  }
+
+  /**
+* @dev See {IERC165-supportsInterface}.
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControl, ERC721Genes) returns (bool) {
+    return super.supportsInterface(interfaceId);
   }
 }
