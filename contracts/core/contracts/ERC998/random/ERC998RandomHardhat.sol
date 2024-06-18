@@ -23,7 +23,7 @@ contract ERC998RandomHardhat is ERC998Random, ChainLinkHardhatV2 {
     string memory baseTokenURI
   )
     ERC998Random(name, symbol, royalty, baseTokenURI)
-    ChainLinkHardhatV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkHardhatV2(uint64(1), uint16(6), uint32(600000), uint32(1))
   {}
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Random) returns (uint256 requestId) {
     return super.getRandomNumber();

@@ -2216,6 +2216,426 @@ describe("Diamond Exchange Utils", function () {
       });
     });
 
+    describe("acquireFrom", function () {
+      describe("ETH", function () {
+        it("should mint: ETH => EOA", async function () {
+          const [owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const lib = await ethers.getContractAt("ExchangeUtils", await exchangeInstance.getAddress(), owner);
+
+          const tx1 = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            enabled,
+            { value: amount },
+          );
+
+          await expect(tx1).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
+          await expect(tx1).changeEtherBalances([owner, receiver], [-amount, amount]);
+        });
+      });
+
+      describe("ERC20", function () {
+        it("should mint: ERC20 => EOA", async function () {
+          const [owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20("ERC20Mock");
+          await erc20Instance.mint(owner.address, amount);
+
+          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 1,
+                token: await erc20Instance.getAddress(),
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(owner.address, receiver.address, amount);
+
+          await expect(tx).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
+        });
+      });
+
+      describe("ERC721", function () {
+        let vrfInstance: VRFCoordinatorV2Mock;
+
+        before(async function () {
+          await network.provider.send("hardhat_reset");
+
+          // https://github.com/NomicFoundation/hardhat/issues/2980
+          ({ vrfInstance } = await loadFixture(function staking() {
+            return deployLinkVrfFixture();
+          }));
+        });
+
+        it("should mint: ERC721 => EOA (Simple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount: 1,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+          const balance = await erc721Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC721 => EOA (Random)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Random");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          await erc721Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          // await erc721Instance.setSubscriptionId(subscriptionId);
+          await vrfInstance.addConsumer(subscriptionId, await erc721Instance.getAddress());
+
+          await exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount: 1,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await randomRequest(erc721Instance, vrfInstance);
+
+          // await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+          const balance = await erc721Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC721 => EOA (Multiple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount: 3,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 1)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 2)
+            .to.emit(erc721Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 3);
+
+          const balance = await erc721Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(3);
+        });
+      });
+
+      describe("ERC998", function () {
+        let vrfInstance: VRFCoordinatorV2Mock;
+
+        before(async function () {
+          await network.provider.send("hardhat_reset");
+
+          // https://github.com/NomicFoundation/hardhat/issues/2980
+          ({ vrfInstance } = await loadFixture(function staking() {
+            return deployLinkVrfFixture();
+          }));
+        });
+
+        it("should mint: ERC998 => EOA (Simple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 3,
+                token: await erc998Instance.getAddress(),
+                tokenId: templateId,
+                amount: 1n,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx).to.emit(erc998Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+          const balance = await erc998Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC998 => EOA (Random)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Random");
+          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          // Set VRFV2 Subscription
+          await erc998Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          // await erc998Instance.setSubscriptionId(subscriptionId);
+          await vrfInstance.addConsumer(subscriptionId, await erc998Instance.getAddress());
+
+          await exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 3,
+                token: await erc998Instance.getAddress(),
+                tokenId: templateId,
+                amount: 1n,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await randomRequest(erc998Instance, vrfInstance);
+
+          // await expect(tx).to.emit(erc998Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+          const balance = await erc998Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(1);
+        });
+
+        it("should mint: ERC998 => EOA (Multiple)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 3,
+                token: await erc998Instance.getAddress(),
+                tokenId: templateId,
+                amount: 3n,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 1)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 2)
+            .to.emit(erc998Instance, "Transfer")
+            .withArgs(ZeroAddress, receiver.address, 3);
+
+          const balance = await erc998Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(3);
+        });
+      });
+
+      describe("ERC1155", function () {
+        it("should mint: ERC1155 => EOA", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc1155Instance = await deployERC1155("ERC1155Simple");
+          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 4,
+                token: await erc1155Instance.getAddress(),
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.emit(erc1155Instance, "TransferSingle")
+            .withArgs(await exchangeInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
+
+          const balance = await erc1155Instance.balanceOf(receiver.address, tokenId);
+          expect(balance).to.equal(amount);
+        });
+      });
+
+      describe("Disabled", function () {
+        it("should fail acquire: ETH", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            disabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
+        });
+
+        it("should fail acquire: ERC20", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20("ERC20Mock");
+          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 1,
+                token: await erc20Instance.getAddress(),
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            disabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
+        });
+
+        it("should fail acquire: ERC721", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount,
+              },
+            ],
+            receiver.address,
+            disabled,
+          );
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
+        });
+
+        it("should fail acquire: ERC998", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 3,
+                token: await erc998Instance.getAddress(),
+                tokenId: templateId,
+                amount,
+              },
+            ],
+            receiver.address,
+            disabled,
+          );
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
+        });
+
+        it("should fail acquire: ERC1155", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc1155Instance = await deployERC1155("ERC1155Simple");
+          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 4,
+                token: await erc1155Instance.getAddress(),
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            disabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
+        });
+      });
+    });
+
     describe("burnFrom", function () {
       describe("ETH", function () {
         it("should burnFrom: ETH", async function () {
