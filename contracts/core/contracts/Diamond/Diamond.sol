@@ -10,6 +10,7 @@ pragma solidity ^0.8.0;
 
 import {  LibDiamond  } from "./lib/LibDiamond.sol";
 import {  IDiamondCut  } from "./interfaces/IDiamondCut.sol";
+import { FunctionDoesNotExist } from "../utils/errors.sol";
 
 contract Diamond {
 
@@ -39,7 +40,9 @@ contract Diamond {
         }
         // get facet from function selector
         address facet = ds.selectorToFacetAndPosition[msg.sig].facetAddress;
-        require(facet != address(0), "Diamond: Function does not exist");
+        if(facet == address(0)) {
+            revert FunctionDoesNotExist(msg.sig);
+        }
         // Execute external function from facet using delegatecall and return any value.
         assembly {
             // copy function selector and any arguments

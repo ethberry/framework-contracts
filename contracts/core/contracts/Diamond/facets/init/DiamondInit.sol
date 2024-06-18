@@ -7,11 +7,14 @@
 pragma solidity ^0.8.0;
 
 import { InitialiseStorage } from "../../storage/InitStorage.sol";
+import { DiamondAlreadyInitialised } from "../../../utils/errors.sol";
 
 contract DiamondInit {
     function init() public virtual {
         InitialiseStorage.Layout storage s = InitialiseStorage.layout();
-        require(!s._initialised, "DiamondInit already initialised");
+        if(s._initialised) {
+            revert DiamondAlreadyInitialised();
+        }
         s._initialised = true;
     }
 }
