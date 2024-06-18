@@ -1,13 +1,13 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-import { parseEther, ZeroAddress } from "ethers";
+import { Contract, parseEther, ZeroAddress } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { VRFCoordinatorV2Mock } from "../../../../../../typechain-types";
 import { subscriptionId, templateId, tokenId } from "../../../../../constants";
-import { randomRequest } from "../../../../../shared/randomRequest";
+import { randomFixRequest, randomRequest } from "../../../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../../../shared/link";
 import { deployERC1155 } from "../../../../../ERC1155/shared/fixtures";
 import { deployERC721 } from "../../../../../ERC721/shared/fixtures";
@@ -49,14 +49,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         { value: parseEther("1.0") },
       );
 
-      const tx1 = lootBoxInstance.mintBox(owner.address, templateId, [
-        {
-          tokenType: 0,
-          token: ZeroAddress,
-          tokenId: templateId,
-          amount,
-        },
-      ]);
+      const tx1 = lootBoxInstance.mintBox(
+        owner.address,
+        templateId,
+        [
+          {
+            tokenType: 0,
+            token: ZeroAddress,
+            tokenId: templateId,
+            amount,
+          },
+        ],
+        { min: 1, max: 1 },
+      );
       await expect(tx1).to.emit(lootBoxInstance, "Transfer").withArgs(ZeroAddress, owner.address, tokenId);
 
       const tx2 = lootBoxInstance.connect(receiver).unpack(tokenId);
@@ -82,14 +87,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           { value: parseEther("1.0") },
         );
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: templateId,
-            amount,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 0,
+              token: ZeroAddress,
+              tokenId: templateId,
+              amount,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
         const tx2 = lootboxInstance.connect(receiver).unpack(tokenId);
@@ -111,14 +121,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await erc20SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
         await erc20SimpleInstance.mint(await lootboxInstance.getAddress(), amount);
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 1,
-            token: await erc20SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 1,
+              token: await erc20SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
         const tx2 = lootboxInstance.connect(receiver).unpack(tokenId);
@@ -140,14 +155,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         const erc721SimpleInstance = await erc721Factory("ERC721Simple");
         await erc721SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 2,
-            token: await erc721SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 2,
+              token: await erc721SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -177,14 +197,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           .to.emit(vrfInstance, "SubscriptionConsumerAdded")
           .withArgs(1, await erc721RandomInstance.getAddress());
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 2,
-            token: await erc721RandomInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 2,
+              token: await erc721RandomInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -213,14 +238,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         const erc998SimpleInstance = await erc998Factory("ERC998Simple");
         await erc998SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 2,
-            token: await erc998SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 2,
+              token: await erc998SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -250,14 +280,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           .to.emit(vrfInstance, "SubscriptionConsumerAdded")
           .withArgs(1, await erc998RandomInstance.getAddress());
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 2,
-            token: await erc998RandomInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 2,
+              token: await erc998RandomInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -284,14 +319,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
 
         await erc1155SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 4,
-            token: await erc1155SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 4,
+              token: await erc1155SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -336,38 +376,43 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         );
         await erc20SimpleInstance.mint(await lootboxInstance.getAddress(), amount);
 
-        const tx1 = lootboxInstance.mintBox(receiver.address, templateId, [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: templateId,
-            amount,
-          },
-          {
-            tokenType: 1,
-            token: await erc20SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
-          {
-            tokenType: 2,
-            token: await erc721SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-          {
-            tokenType: 3,
-            token: await erc998SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount: 1n,
-          },
-          {
-            tokenType: 4,
-            token: await erc1155SimpleInstance.getAddress(),
-            tokenId: templateId,
-            amount,
-          },
-        ]);
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 0,
+              token: ZeroAddress,
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 1,
+              token: await erc20SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 2,
+              token: await erc721SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 3,
+              token: await erc998SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 4,
+              token: await erc1155SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+          ],
+          { min: 5, max: 5 },
+        );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
@@ -386,6 +431,111 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           .to.emit(erc1155SimpleInstance, "TransferSingle")
           .withArgs(await lootboxInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
         await expect(tx2).to.changeEtherBalances([receiver, lootboxInstance], [amount, -amount]);
+      });
+    });
+
+    describe("MIX RANDOM", function () {
+      let vrfInstance: VRFCoordinatorV2Mock;
+
+      before(async function () {
+        await network.provider.send("hardhat_reset");
+
+        // https://github.com/NomicFoundation/hardhat/issues/2980
+        ({ vrfInstance } = await loadFixture(function shouldMintRandom() {
+          return deployLinkVrfFixture();
+        }));
+      });
+
+      async function setChainLink(contractInstance: Contract) {
+        // Set VRFV2 Subscription
+        const tx01 = contractInstance.setSubscriptionId(subscriptionId);
+        await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
+
+        // Add Consumer to VRFV2
+        const tx02 = vrfInstance.addConsumer(subscriptionId, await contractInstance.getAddress());
+        await expect(tx02)
+          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
+          .withArgs(subscriptionId, await contractInstance.getAddress());
+      }
+
+      it("should mint:5, unpack: 1-5", async function () {
+        const [_owner, receiver] = await ethers.getSigners();
+
+        const lootboxInstance = await factory();
+
+        const erc20SimpleInstance = await erc20Factory("ERC20Simple");
+
+        const erc721SimpleInstance = await erc721Factory("ERC721Simple");
+        const erc998SimpleInstance = await erc721Factory("ERC998Simple");
+        const erc1155SimpleInstance = await erc1155Factory("ERC1155Simple");
+
+        await erc20SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
+        await erc721SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
+        await erc998SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
+        await erc1155SimpleInstance.grantRole(MINTER_ROLE, await lootboxInstance.getAddress());
+
+        // Set ChainLink
+        await setChainLink(lootboxInstance);
+
+        await lootboxInstance.topUp(
+          [
+            {
+              tokenType: 0,
+              token: ZeroAddress,
+              tokenId: 0,
+              amount: parseEther("1.0"),
+            },
+          ],
+          { value: parseEther("1.0") },
+        );
+        await erc20SimpleInstance.mint(await lootboxInstance.getAddress(), amount);
+
+        const tx1 = lootboxInstance.mintBox(
+          receiver.address,
+          templateId,
+          [
+            {
+              tokenType: 0,
+              token: ZeroAddress,
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 1,
+              token: await erc20SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 2,
+              token: await erc721SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 3,
+              token: await erc998SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 4,
+              token: await erc1155SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+          ],
+          { min: 1, max: 1 },
+        );
+
+        await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+        const tx2 = lootboxInstance.connect(receiver).unpack(tokenId);
+        await expect(tx2).to.emit(lootboxInstance, "UnpackLootBox").withArgs(receiver.address, tokenId);
+
+        if (network.name === "hardhat") {
+          await randomFixRequest(lootboxInstance, vrfInstance);
+        }
       });
     });
   });

@@ -11,7 +11,7 @@ import { customMint } from "./shared/simple/customMintFn";
 import { shouldBehaveLikeERC721LootBoxPausable } from "./shared/pausable/unpack";
 
 describe("ERC721LootBoxPausable", function () {
-  const factory = () => deployERC721("ERC721LootBoxPausable");
+  const factory = () => deployERC721("ERC721LootBoxPausableHardhat");
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
 

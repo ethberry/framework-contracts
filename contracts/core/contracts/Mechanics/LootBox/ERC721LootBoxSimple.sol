@@ -11,15 +11,16 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
 
-import { IERC721LootBox } from "./interfaces/IERC721LootBox.sol";
+import { IERC721LootBox, MinMax } from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { Asset, DisabledTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
-import { MethodNotSupported, NoContent, InvalidSubscription} from "../../utils/errors.sol";
+import { MethodNotSupported, NoContent, InvalidSubscription } from "../../utils/errors.sol";
+import "hardhat/console.sol";
 
-contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, ChainLinkGemunionV2, TopUp {
+abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   using Address for address;
 
   struct Request {
@@ -29,9 +30,12 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, ChainLinkGemunionV
 
   mapping(uint256 => Asset[]) internal _itemData;
   mapping(uint256 => Request) internal _queue;
+  mapping(uint256 => MinMax) internal _minMax;
 
   event UnpackLootBox(address account, uint256 tokenId);
   event VrfSubscriptionSet(uint64 subId);
+
+  error InvalidMinMax();
 
   constructor(
     string memory name,
@@ -39,25 +43,33 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, ChainLinkGemunionV
     uint96 royalty,
     string memory baseTokenURI
   )
-  ERC721Simple(name, symbol, royalty, baseTokenURI)
-  ChainLinkGemunionV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ERC721Simple(name, symbol, royalty, baseTokenURI)
   {}
 
   function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory items, MinMax calldata minMax) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-  if (items.length == 0) {
+    uint256 contentLength = items.length;
+    if (contentLength == 0) {
       revert NoContent();
     }
+
+    // Min suppose to be less or equal than max
+    // Max suppose to be less or equal than contentLength
+    if (minMax.min > minMax.max || minMax.max > contentLength || minMax.max == 0 ) {
+      revert InvalidMinMax();
+    }
+
+    _minMax[tokenId] = minMax;
 
     // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
     // _itemData[tokenId] = items;
 
-    uint256 length = items.length;
+    uint256 length = contentLength;
     for (uint256 i = 0; i < length; ) {
       _itemData[tokenId].push(items[i]);
       unchecked {
@@ -73,39 +85,76 @@ contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, ChainLinkGemunionV
 
     _burn(tokenId);
 
-    _queue[getRandomNumber()] = Request(_msgSender(), tokenId);
-  }
+    MinMax storage minMax = _minMax[tokenId];
 
-  function getRandomNumber() internal override returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
+    if (minMax.min == minMax.max && minMax.min == _itemData[tokenId].length) {
+      // if min == max and minMax == items.length, no need to call random function.
+      ExchangeUtils.acquire(
+        _itemData[tokenId],
+        _msgSender(),
+        DisabledTokenTypes(false, false, false, false, false)
+      );
+    } else {
+      _queue[getRandomNumber()] = Request(_msgSender(), tokenId);
     }
-    return super.getRandomNumber();
   }
 
-  function fulfillRandomWords(
-    uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override {
+  function getRandomNumber() internal virtual returns (uint256 requestId);
+
+  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
     Request memory request = _queue[requestId];
+    uint256 tokenId = request.tokenId;
 
     delete _queue[requestId];
 
-    uint256 min = 1;
-    uint256 max = 1;
+    uint256 randomValue = randomWords[0];
+    MinMax storage minMax = _minMax[tokenId];
+    Asset[] storage items = _itemData[tokenId];
+    uint256 itemsLength = items.length; // store in seperate variable to save gas.
 
-    for (uint256 i = min; i <= max; i++) {
-      ExchangeUtils.acquire(ExchangeUtils._toArray(_itemData[request.tokenId][i]), request.account, DisabledTokenTypes(true, true, false, false, true));
+    console.log("RANDOM VALUE:", randomValue);
+
+    // Get randomValue between min & max;
+    uint256 actualCount = (randomValue % (minMax.max - minMax.min + 1)) + minMax.min;
+    console.log("actualCount:", actualCount);
+
+    // mint all items in the actualCount(max) == items.length;
+    if (actualCount == itemsLength) {
+       return ExchangeUtils.acquire(
+        items,
+        request.account,
+        DisabledTokenTypes(false, false, false, false, false)
+      );
     }
-  }
+    
+    // Array of items, that would be randomly picked and minted
+    Asset[] memory itemsToMint = new Asset[](actualCount);
+    // Array of availableIndexes, is used to identify unique indexes
+    uint256[] memory availableIndexes = new uint256[](itemsLength);
 
-	function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
-		if (subId == 0) {
-			revert InvalidSubscription();
-		}
-		_subId = subId;
-		emit VrfSubscriptionSet(_subId);
-	}
+    // Initialize available indexes
+    for (uint256 i = 0; i < itemsLength; i++) {
+        availableIndexes[i] = i;
+    }
+
+    for (uint256 i = 0; i < actualCount; i++) {
+        // Generate a random index within the current range of available indexes
+        uint256 randomIndex = randomValue % (itemsLength - i);
+        // Select the index at the random position (availableIndexes[randomIndex])
+        // And grab the Item by this index
+        itemsToMint[i] = items[availableIndexes[randomIndex]];
+        // Replace the used index with the last available index in the current range
+        availableIndexes[randomIndex] = availableIndexes[itemsLength - i - 1];
+        console.log("ITEM TO MINT:", uint256(itemsToMint[i].tokenType), itemsToMint[i].token);
+    }
+
+    // Mint randomly selected items.
+    ExchangeUtils.acquire(
+      itemsToMint,
+      request.account,
+      DisabledTokenTypes(false, false, false, false, false)
+    );
+  }
 
   /**
    * @dev See {IERC165-supportsInterface}.
