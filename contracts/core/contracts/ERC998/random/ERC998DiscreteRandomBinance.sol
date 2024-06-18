@@ -41,7 +41,7 @@ contract ERC998DiscreteRandomGemunion is ERC998DiscreteRandom, ChainLinkBinanceV
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998DiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC998DiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

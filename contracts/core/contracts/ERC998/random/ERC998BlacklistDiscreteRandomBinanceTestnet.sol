@@ -59,7 +59,7 @@ contract ERC998BlacklistDiscreteRandomBinanceTestnet is ERC998BlacklistDiscreteR
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998BlacklistDiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC998BlacklistDiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

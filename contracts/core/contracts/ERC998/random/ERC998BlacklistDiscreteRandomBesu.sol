@@ -59,7 +59,7 @@ contract ERC998BlacklistDiscreteRandomBesu is ERC998BlacklistDiscreteRandom, Cha
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998BlacklistDiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC998BlacklistDiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

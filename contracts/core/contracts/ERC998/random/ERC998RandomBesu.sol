@@ -41,7 +41,7 @@ contract ERC998RandomBesu is ERC998Random, ChainLinkBesuV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Random) returns (bool) {
+  ) public view virtual override(ERC998Random) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

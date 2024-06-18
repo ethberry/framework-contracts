@@ -41,7 +41,7 @@ contract ERC721RandomBinanceTestnet is ERC721Random, ChainLinkBinanceTestnetV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721Random) returns (bool) {
+  ) public view virtual override(ERC721Random) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

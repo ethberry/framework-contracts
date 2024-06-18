@@ -35,7 +35,7 @@ contract RaffleRandomBinance is RaffleRandom, ChainLinkBinanceV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, RaffleRandom) returns (bool) {
+  ) public view virtual override(RaffleRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

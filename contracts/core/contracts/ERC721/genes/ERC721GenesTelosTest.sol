@@ -24,9 +24,6 @@ contract ERC721GenesTelosTest is ERC721Genes, ChainLinkTelosTestV2 {
   ) ERC721Genes(name, symbol, royalty, baseTokenURI) ChainLinkTelosTestV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721Genes) returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -42,7 +39,7 @@ contract ERC721GenesTelosTest is ERC721Genes, ChainLinkTelosTestV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721Genes) returns (bool) {
+  ) public view virtual override(ERC721Genes) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

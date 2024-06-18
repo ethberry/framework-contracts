@@ -10,12 +10,12 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkEthereumGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkEthereumGoerliV2.sol";
+import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC721DiscreteRandom } from "../ERC721DiscreteRandom.sol";
 
-contract ERC721DiscreteRandomEthereumGoerli is ERC721DiscreteRandom, ChainLinkEthereumGoerliV2 {
+contract ERC721DiscreteRandomEthereumGoerli is ERC721DiscreteRandom, ChainLinkGoerliV2 {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,7 +23,7 @@ contract ERC721DiscreteRandomEthereumGoerli is ERC721DiscreteRandom, ChainLinkEt
     string memory baseTokenURI
   )
     ERC721DiscreteRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkEthereumGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1))
   {}
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721DiscreteRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
@@ -41,7 +41,7 @@ contract ERC721DiscreteRandomEthereumGoerli is ERC721DiscreteRandom, ChainLinkEt
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721DiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC721DiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

@@ -41,7 +41,7 @@ contract ERC721BlacklistRandomBesu is ERC721BlacklistRandom, ChainLinkBesuV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721BlacklistRandom) returns (bool) {
+  ) public view virtual override(ERC721BlacklistRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

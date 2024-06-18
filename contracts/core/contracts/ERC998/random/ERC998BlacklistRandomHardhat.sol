@@ -41,7 +41,7 @@ contract ERC998BlacklistRandomHardhat is ERC998BlacklistRandom, ChainLinkHardhat
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998BlacklistRandom) returns (bool) {
+  ) public view virtual override(ERC998BlacklistRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

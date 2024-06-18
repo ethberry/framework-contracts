@@ -41,7 +41,7 @@ contract ERC998GenesBesu is ERC998Genes, ChainLinkBesuV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Genes) returns (bool) {
+  ) public view virtual override(ERC998Genes) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

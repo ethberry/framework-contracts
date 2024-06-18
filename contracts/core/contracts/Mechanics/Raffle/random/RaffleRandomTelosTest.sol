@@ -20,9 +20,6 @@ contract RaffleRandomTelosTest is RaffleRandom, ChainLinkTelosTestV2 {
   constructor() RaffleRandom() ChainLinkTelosTestV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(RaffleRandom, ChainLinkBaseV2) returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -65,7 +62,7 @@ contract RaffleRandomTelosTest is RaffleRandom, ChainLinkTelosTestV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, RaffleRandom) returns (bool) {
+  ) public view virtual override(RaffleRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

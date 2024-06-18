@@ -45,7 +45,7 @@ contract ERC721BlacklistDiscreteRandomHardhat is ERC721BlacklistDiscreteRandom, 
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721BlacklistDiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC721BlacklistDiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

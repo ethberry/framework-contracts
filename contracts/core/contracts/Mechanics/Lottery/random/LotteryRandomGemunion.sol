@@ -74,7 +74,7 @@ contract LotteryRandomGemunion is LotteryRandom, ChainLinkGemunionV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, LotteryRandom) returns (bool) {
+  ) public view virtual override(LotteryRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

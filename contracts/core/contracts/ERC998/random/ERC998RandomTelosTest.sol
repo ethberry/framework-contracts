@@ -27,9 +27,6 @@ contract ERC998RandomTelosTest is ERC998Random, ChainLinkTelosTestV2 {
   {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Random) returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -66,7 +63,7 @@ contract ERC998RandomTelosTest is ERC998Random, ChainLinkTelosTestV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Random) returns (bool) {
+  ) public view virtual override(ERC998Random) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

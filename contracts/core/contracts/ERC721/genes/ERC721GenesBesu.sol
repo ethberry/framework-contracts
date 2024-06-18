@@ -42,7 +42,7 @@ contract ERC721GenesBesu is ERC721Genes, ChainLinkBesuV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721Genes) returns (bool) {
+  ) public view virtual override(ERC721Genes) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

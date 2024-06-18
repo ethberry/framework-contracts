@@ -10,18 +10,18 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkEthereumGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkEthereumGoerliV2.sol";
+import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC998Genes } from "../ERC998Genes.sol";
 
-contract ERC998GenesEthereumGoerli is ERC998Genes, ChainLinkEthereumGoerliV2 {
+contract ERC998GenesEthereumGoerli is ERC998Genes, ChainLinkGoerliV2 {
   constructor(
     string memory name,
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC998Genes(name, symbol, royalty, baseTokenURI) ChainLinkEthereumGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
+  ) ERC998Genes(name, symbol, royalty, baseTokenURI) ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Genes) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
@@ -38,7 +38,7 @@ contract ERC998GenesEthereumGoerli is ERC998Genes, ChainLinkEthereumGoerliV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Genes) returns (bool) {
+  ) public view virtual override(ERC998Genes) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

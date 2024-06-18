@@ -41,7 +41,7 @@ contract ERC721DiscreteRandomGemunion is ERC721DiscreteRandom, ChainLinkGemunion
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721DiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC721DiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

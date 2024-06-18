@@ -41,7 +41,7 @@ contract ERC721DiscreteRandomPolygon is ERC721DiscreteRandom, ChainLinkPolygonV2
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721DiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC721DiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

@@ -10,17 +10,17 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkPolygonAmoyV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonAmoyV2.sol";
+import { ChainLinkPolygonTestnetV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonTestnetV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { LotteryConfig } from "../interfaces/ILottery.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
-contract LotteryRandomPolygonAmoy is LotteryRandom, ChainLinkPolygonAmoyV2 {
+contract LotteryRandomPolygonAmoy is LotteryRandom, ChainLinkPolygonTestnetV2 {
   constructor(
     LotteryConfig memory config
-  ) LotteryRandom(config) ChainLinkPolygonAmoyV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
+  ) LotteryRandom(config) ChainLinkPolygonTestnetV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2) returns (uint256 requestId) {
     return super.getRandomNumber();
@@ -74,7 +74,7 @@ contract LotteryRandomPolygonAmoy is LotteryRandom, ChainLinkPolygonAmoyV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, LotteryRandom) returns (bool) {
+  ) public view virtual override(LotteryRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

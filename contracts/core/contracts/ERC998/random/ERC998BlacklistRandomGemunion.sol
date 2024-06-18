@@ -55,7 +55,7 @@ contract ERC998BlacklistRandomGemunion is ERC998BlacklistRandom, ChainLinkGemuni
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998BlacklistRandom) returns (bool) {
+  ) public view virtual override(ERC998BlacklistRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

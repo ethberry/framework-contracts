@@ -10,12 +10,12 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkPolygonAmoyV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonAmoyV2.sol";
+import { ChainLinkPolygonTestnetV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonTestnetV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC998BlacklistDiscreteRandom } from "../ERC998BlacklistDiscreteRandom.sol";
 
-contract ERC998BlacklistDiscreteRandomPolygonAmoy is ERC998BlacklistDiscreteRandom, ChainLinkPolygonAmoyV2 {
+contract ERC998BlacklistDiscreteRandomPolygonAmoy is ERC998BlacklistDiscreteRandom, ChainLinkPolygonTestnetV2 {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,7 +23,7 @@ contract ERC998BlacklistDiscreteRandomPolygonAmoy is ERC998BlacklistDiscreteRand
     string memory baseTokenURI
   )
     ERC998BlacklistDiscreteRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkPolygonAmoyV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkPolygonTestnetV2(uint64(0), uint16(6), uint32(600000), uint32(1))
   {}
   function getRandomNumber()
     internal
@@ -59,7 +59,7 @@ contract ERC998BlacklistDiscreteRandomPolygonAmoy is ERC998BlacklistDiscreteRand
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998BlacklistDiscreteRandom) returns (bool) {
+  ) public view virtual override(ERC998BlacklistDiscreteRandom) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

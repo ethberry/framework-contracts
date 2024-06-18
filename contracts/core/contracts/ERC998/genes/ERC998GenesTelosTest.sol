@@ -24,9 +24,6 @@ contract ERC998GenesTelosTest is ERC998Genes, ChainLinkTelosTestV2 {
   ) ERC998Genes(name, symbol, royalty, baseTokenURI) ChainLinkTelosTestV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Genes) returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -63,7 +60,7 @@ contract ERC998GenesTelosTest is ERC998Genes, ChainLinkTelosTestV2 {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC998Genes) returns (bool) {
+  ) public view virtual override(ERC998Genes) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }
