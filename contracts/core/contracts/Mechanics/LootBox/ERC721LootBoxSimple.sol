@@ -139,7 +139,9 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
 
     for (uint256 i = 0; i < actualCount; i++) {
         // Generate a random index within the current range of available indexes
+        randomValue = uint256(keccak256(abi.encodePacked(randomValue, i+1)));
         uint256 randomIndex = randomValue % (itemsLength - i);
+        console.log("RANDOM/AVAILABLE INDEX:", randomIndex, availableIndexes[randomIndex], randomValue);
         // Select the index at the random position (availableIndexes[randomIndex])
         // And grab the Item by this index
         itemsToMint[i] = items[availableIndexes[randomIndex]];

@@ -434,7 +434,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       });
     });
 
-    describe("MIX RANDOM", function () {
+    describe.only("MIX RANDOM", function () {
       let vrfInstance: VRFCoordinatorV2Mock;
 
       before(async function () {
@@ -524,8 +524,38 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
               tokenId: templateId,
               amount,
             },
+            {
+              tokenType: 0,
+              token: ZeroAddress,
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 1,
+              token: await erc20SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
+            {
+              tokenType: 2,
+              token: await erc721SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 3,
+              token: await erc998SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount: 1n,
+            },
+            {
+              tokenType: 4,
+              token: await erc1155SimpleInstance.getAddress(),
+              tokenId: templateId,
+              amount,
+            },
           ],
-          { min: 1, max: 1 },
+          { min: 0, max: 10 },
         );
 
         await expect(tx1).to.emit(lootboxInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
