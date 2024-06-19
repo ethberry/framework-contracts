@@ -172,7 +172,7 @@ library LibDiamond {
     }
 
     function addFacet(DiamondStorage storage ds, address _facetAddress) internal {
-        enforceHasContractCode(_facetAddress, "New facet has no code");
+        enforceHasContractCode(_facetAddress);
         ds.facetFunctionSelectors[_facetAddress].facetAddressPosition = ds.facetAddresses.length;
         ds.facetAddresses.push(_facetAddress);
     }
@@ -228,7 +228,7 @@ library LibDiamond {
         if (_init == address(0)) {
             return;
         }
-        enforceHasContractCode(_init, "_init address has no code");
+        enforceHasContractCode(_init);
         (bool success, bytes memory error) = _init.delegatecall(_calldata);
         if (!success) {
             if (error.length > 0) {
@@ -244,13 +244,13 @@ library LibDiamond {
         }
     }
 
-    function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {
+    function enforceHasContractCode(address _contract) internal view {
         uint256 contractSize;
         assembly {
         contractSize := extcodesize(_contract)
         }
         if (contractSize == 0) {
-        revert FacetHasNoCode(_errorMessage);
+        revert FacetHasNoCode();
         }
     }
 }

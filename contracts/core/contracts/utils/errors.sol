@@ -70,4 +70,4 @@ error ReplaceFunctionWithSameFunction();
 error RemoveFacetAddressMustBeAddressZero();
 error CantRemoveFunctionThatDoesntExist();
 error CantRemoveImmutableFunction();
-error FacetHasNoCode(string message);
+error FacetHasNoCode();
