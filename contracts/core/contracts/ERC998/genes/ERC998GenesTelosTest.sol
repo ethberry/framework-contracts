@@ -6,40 +6,24 @@
 
 pragma solidity ^0.8.20;
 
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkGoerliV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGoerliV2.sol";
+import { ChainLinkTelosTestV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkTelosTestV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import { InvalidSubscription } from "../../utils/errors.sol";
-import { ERC721BlacklistDiscreteRentableRandom } from "../ERC721BlacklistDiscreteRentableRandom.sol";
+import { ERC998Genes } from "../ERC998Genes.sol";
 
-contract ERC721BlacklistDiscreteRentableRandomGoerli is ERC721BlacklistDiscreteRentableRandom, ChainLinkGoerliV2 {
+contract ERC998GenesTelosTest is ERC998Genes, ChainLinkTelosTestV2 {
   constructor(
     string memory name,
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  )
-    ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkGoerliV2(uint64(0), uint16(6), uint32(600000), uint32(1))
-  {}
+  ) ERC998Genes(name, symbol, royalty, baseTokenURI) ChainLinkTelosTestV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
 
-  // OWNER MUST SET A VRF SUBSCRIPTION ID AFTER DEPLOY
-  event VrfSubscriptionSet(uint64 subId);
-  function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    if (subId == 0) {
-      revert InvalidSubscription();
-    }
-    _subId = subId;
-    emit VrfSubscriptionSet(_subId);
-  }
-
-  function getRandomNumber()
-    internal
-    override(ChainLinkBaseV2, ERC721BlacklistDiscreteRentableRandom)
-    returns (uint256 requestId)
-  {
+  function getRandomNumber() internal override(ChainLinkBaseV2, ERC998Genes) returns (uint256 requestId) {
     if (_subId == 0) {
       revert InvalidSubscription();
     }
@@ -49,7 +33,7 @@ contract ERC721BlacklistDiscreteRentableRandomGoerli is ERC721BlacklistDiscreteR
   function fulfillRandomWords(
     uint256 requestId,
     uint256[] memory randomWords
-  ) internal override(ERC721BlacklistDiscreteRentableRandom, VRFConsumerBaseV2) {
+  ) internal override(ERC998Genes, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 
@@ -72,5 +56,14 @@ contract ERC721BlacklistDiscreteRentableRandomGoerli is ERC721BlacklistDiscreteR
    */
   function _baseURI() internal view virtual override returns (string memory) {
     return super._baseURI();
+  }
+
+  /**
+* @dev See {IERC165-supportsInterface}.
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControl, ERC998Genes) returns (bool) {
+    return super.supportsInterface(interfaceId);
   }
 }

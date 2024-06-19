@@ -6,13 +6,14 @@
 
 pragma solidity ^0.8.20;
 
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
 import { ERC998BlacklistDiscreteRandom } from "../ERC998BlacklistDiscreteRandom.sol";
-import { InvalidSubscription } from "../../utils/errors.sol";
 
 contract ERC998BlacklistDiscreteRandomGemunion is ERC998BlacklistDiscreteRandom, ChainLinkGemunionV2 {
   constructor(
@@ -24,25 +25,11 @@ contract ERC998BlacklistDiscreteRandomGemunion is ERC998BlacklistDiscreteRandom,
     ERC998BlacklistDiscreteRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkGemunionV2(uint64(0), uint16(6), uint32(600000), uint32(1))
   {}
-
-  // OWNER MUST SET A VRF SUBSCRIPTION ID AFTER DEPLOY
-  event VrfSubscriptionSet(uint64 subId);
-  function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    if (subId == 0) {
-      revert InvalidSubscription();
-    }
-    _subId = subId;
-    emit VrfSubscriptionSet(_subId);
-  }
-
   function getRandomNumber()
     internal
     override(ChainLinkBaseV2, ERC998BlacklistDiscreteRandom)
     returns (uint256 requestId)
   {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -65,5 +52,14 @@ contract ERC998BlacklistDiscreteRandomGemunion is ERC998BlacklistDiscreteRandom,
    */
   function _baseURI() internal view virtual override returns (string memory) {
     return super._baseURI();
+  }
+
+  /**
+   * @dev See {IERC165-supportsInterface}.
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControl, ERC998BlacklistDiscreteRandom) returns (bool) {
+    return super.supportsInterface(interfaceId);
   }
 }

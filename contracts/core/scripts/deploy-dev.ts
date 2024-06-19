@@ -17,7 +17,7 @@ const delay = 1; // block delay
 const delayMs = 300; // block delay ms (low for localhost, high for binance etc.)
 
 // VRF CONFIG
-const vrfSubId = network.name === "besu" ? 1n : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
+const vrfSubId = network.name === "besu" || network.name === "telos_test" ? 1n : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
 
 // COLLECTION size
 const batchSize = 3; // Generative collection size
@@ -62,7 +62,9 @@ async function main() {
       ? "0xa50a51c09a5c451c52bb714527e1974b686d8e77" // vrf besu localhost
       : network.name === "gemunion"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
-        : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
+        : network.name === "telos_test"
+          ? "0x33040c29f57F126B90d9528A5Ee659D7a604B835" // telostest (our own contract deployed from p.key staging)
+          : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
   const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfAddr);
 
   // DIAMOND CM
@@ -372,14 +374,17 @@ async function main() {
   );
   await debug(contracts);
 
-  const erc998Owner1155and20Factory = await ethers.getContractFactory("ERC998ERC1155ERC20Simple");
-  contracts.erc998OwnerErc1155Erc20 = await erc998Owner1155and20Factory.deploy(
-    "OWNER FULL",
-    "OWNFULL",
-    royalty,
-    getBaseTokenURI(chainId),
-  );
-  await debug(contracts);
+  if (network.name !== "telos_test") {
+    // contract size too big EVM Execution Error: Code is larger than max code size, out of gas!
+    const erc998Owner1155and20Factory = await ethers.getContractFactory("ERC998ERC1155ERC20Simple");
+    contracts.erc998OwnerErc1155Erc20 = await erc998Owner1155and20Factory.deploy(
+      "OWNER FULL",
+      "OWNFULL",
+      royalty,
+      getBaseTokenURI(chainId),
+    );
+    await debug(contracts);
+  }
 
   const erc1155SimpleFactory = await ethers.getContractFactory("ERC1155Simple");
   contracts.erc1155Simple = await erc1155SimpleFactory.deploy(royalty, getBaseTokenURI(chainId));
@@ -687,11 +692,7 @@ async function main() {
 
   const ponziFactory = await ethers.getContractFactory("Ponzi");
   contracts.ponzi = await ponziFactory.deploy(
-    [
-      "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73",
-      "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
-      "0x61284003e50b2d7ca2b95f93857abb78a1b0f3ca",
-    ],
+    ["0xfe3b557e8fb62b89f4916b721be55ceb828dbd73", "0x627306090abaB3A6e1400e9345bC60c78a8BEf57", owner.address],
     [1, 5, 95],
   );
   await debug(contracts);
@@ -726,7 +727,7 @@ async function main() {
       await contracts.erc998Discrete.getAddress(),
       await contracts.erc998Genes.getAddress(),
       await contracts.erc998Rentable.getAddress(),
-      await contracts.erc998OwnerErc1155Erc20.getAddress(),
+      // await contracts.erc998OwnerErc1155Erc20.getAddress(),
       await contracts.erc998OwnerErc1155.getAddress(),
       await contracts.erc998OwnerErc20.getAddress(),
       await contracts.erc721MysteryboxBlacklistPausable.getAddress(),

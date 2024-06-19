@@ -49,6 +49,9 @@ task("get-sub", "Prints a VRF subscription data")
       case "gemunionprod":
         vrfContractAddr = "0x86c86939c631d53c6d812625bd6ccd5bf5beb774";
         break;
+      case "telos_test":
+        vrfContractAddr = "0x33040c29f57F126B90d9528A5Ee659D7a604B835";
+        break;
       default:
         // default to besu
         vrfContractAddr = "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
