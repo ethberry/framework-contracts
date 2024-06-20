@@ -33,7 +33,6 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   mapping(uint256 => MinMax) internal _minMax;
 
   event UnpackLootBox(address account, uint256 tokenId);
-  event VrfSubscriptionSet(uint64 subId);
 
   error InvalidMinMax();
 
