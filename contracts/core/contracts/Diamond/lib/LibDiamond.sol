@@ -118,7 +118,7 @@ library LibDiamond {
             address oldFacetAddress = ds.selectorToFacetAndPosition[selector].facetAddress;
 
             if (oldFacetAddress != address(0)) {
-                revert FunctionAlreadyExists(selector, oldFacetAddress);
+                revert FunctionAlreadyExists();
             }
 
             addFunction(ds, selector, selectorPosition, _facetAddress);

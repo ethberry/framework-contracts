@@ -54,7 +54,7 @@ error WrongPrice();
 error NotInList();
 
 // Diamond
-error FunctionDoesNotExist(bytes4 selector);
+error FunctionDoesNotExist();
 
 // DiamonInit
 error DiamondAlreadyInitialised();
@@ -64,7 +64,7 @@ error MustBeContractOwner();
 error IncorrectFacetCutAction();
 error NoSelectorsInFacet();
 error AddFacetCantBeAddressZero();
-error FunctionAlreadyExists(bytes4 selector, address facet);
+error FunctionAlreadyExists();
 error ReplaceFacetCantBeAddressZero();
 error ReplaceFunctionWithSameFunction();
 error RemoveFacetAddressMustBeAddressZero();
