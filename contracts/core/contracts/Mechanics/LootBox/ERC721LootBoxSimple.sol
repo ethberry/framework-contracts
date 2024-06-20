@@ -52,14 +52,14 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   function mintBox(address account, uint256 templateId, Asset[] memory items, MinMax calldata minMax) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-    uint256 contentLength = items.length;
-    if (contentLength == 0) {
+    uint256 length = items.length;
+    if (length == 0) {
       revert NoContent();
     }
 
     // Min suppose to be less or equal than max
-    // Max suppose to be less or equal than contentLength
-    if (minMax.min > minMax.max || minMax.max > contentLength || minMax.max == 0 ) {
+    // Max suppose to be less or equal than length
+    if (minMax.min > minMax.max || minMax.max > length || minMax.max == 0 ) {
       revert InvalidMinMax();
     }
 
@@ -68,7 +68,6 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
     // _itemData[tokenId] = items;
 
-    uint256 length = contentLength;
     for (uint256 i = 0; i < length; ) {
       _itemData[tokenId].push(items[i]);
       unchecked {
