@@ -2216,7 +2216,7 @@ describe("Diamond Exchange Utils", function () {
       });
     });
 
-    describe.only("acquireFrom", function () {
+    describe("acquireFrom", function () {
       describe("ETH", function () {
         it("should mint: ETH => EOA", async function () {
           const [owner, receiver] = await ethers.getSigners();
