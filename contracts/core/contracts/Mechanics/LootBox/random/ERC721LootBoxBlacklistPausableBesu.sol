@@ -15,6 +15,7 @@ import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/ext
 import { InvalidSubscription } from "../../../utils/errors.sol";
 import { ERC721LootBoxBlacklistPausable } from "../ERC721LootBoxBlacklistPausable.sol";
 import { ERC721LootBoxSimple } from "../ERC721LootBoxSimple.sol";
+import { ERC721LootBoxBlacklist } from "../ERC721LootBoxBlacklist.sol";
 
 contract ERC721LootBoxBlacklistPausableBesu is ERC721LootBoxBlacklistPausable, ChainLinkBesuV2 {
   constructor(
@@ -27,20 +28,7 @@ contract ERC721LootBoxBlacklistPausableBesu is ERC721LootBoxBlacklistPausable, C
     ChainLinkBesuV2(uint64(0), uint16(6), uint32(600000), uint32(1))
   {}
 
-  // OWNER MUST SET A VRF SUBSCRIPTION ID AFTER DEPLOY
-  // event VrfSubscriptionSet(uint64 subId);
-  function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    if (subId == 0) {
-      revert InvalidSubscription();
-    }
-    _subId = subId;
-    emit VrfSubscriptionSet(_subId);
-  }
-
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721LootBoxSimple) returns (uint256 requestId) {
-    if (_subId == 0) {
-      revert InvalidSubscription();
-    }
     return super.getRandomNumber();
   }
 
@@ -56,7 +44,7 @@ contract ERC721LootBoxBlacklistPausableBesu is ERC721LootBoxBlacklistPausable, C
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721LootBoxBlacklistPausable) returns (bool) {
+  ) public view virtual override(AccessControl, ERC721LootBoxBlacklist) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }
