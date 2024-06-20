@@ -44,6 +44,11 @@ contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
     ExchangeUtils.acquire(price, receiver, disabled);
   }
 
+  function testAcquireFrom(Asset[] memory price, address receiver, DisabledTokenTypes memory disabled) external payable {
+    // Mint new tokens for receiver & transferFrom NATIVE & ERC20 
+    ExchangeUtils.acquireFrom(price, _msgSender(), receiver, disabled);
+  }
+
   /**
    * @dev Allows to top-up the contract with tokens (NATIVE and ERC20 only).
    * @param price An array of Asset representing the tokens to be transferred.
