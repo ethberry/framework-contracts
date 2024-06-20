@@ -6,6 +6,7 @@
 
 pragma solidity ^0.8.20;
 
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
 import { ChainLinkPolygonAmoyV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonAmoyV2.sol";
@@ -28,7 +29,7 @@ contract ERC721LootBoxBlacklistPolygonAmoy is ERC721LootBoxBlacklist, ChainLinkP
 
   // OWNER MUST SET A VRF SUBSCRIPTION ID AFTER DEPLOY
   // event VrfSubscriptionSet(uint64 subId);
-  function setSubscriptionId(uint64 subId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+  function setSubscriptionId(uint64 subId) public override onlyRole(DEFAULT_ADMIN_ROLE) {
     if (subId == 0) {
       revert InvalidSubscription();
     }
@@ -48,5 +49,14 @@ contract ERC721LootBoxBlacklistPolygonAmoy is ERC721LootBoxBlacklist, ChainLinkP
     uint256[] memory randomWords
   ) internal override(ERC721LootBoxSimple, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
+  }
+
+  /**
+   * @dev See {IERC165-supportsInterface}.
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControl, ERC721LootBoxBlacklist) returns (bool) {
+    return super.supportsInterface(interfaceId);
   }
 }
