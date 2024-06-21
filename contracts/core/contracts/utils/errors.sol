@@ -53,3 +53,21 @@ error WrongPrice();
 // WaitList
 error NotInList();
 
+// Diamond
+error FunctionDoesNotExist();
+
+// DiamonInit
+error DiamondAlreadyInitialised();
+
+// DiamondLib
+error MustBeContractOwner();
+error IncorrectFacetCutAction();
+error NoSelectorsInFacet();
+error AddFacetCantBeAddressZero();
+error FunctionAlreadyExists();
+error ReplaceFacetCantBeAddressZero();
+error ReplaceFunctionWithSameFunction();
+error RemoveFacetAddressMustBeAddressZero();
+error CantRemoveFunctionThatDoesntExist();
+error CantRemoveImmutableFunction();
+error FacetHasNoCode();
