@@ -32,7 +32,7 @@ library ExchangeUtils {
   event PaymentEthSent(address to, uint256 amount);
 
   /**
-   * @dev transfer `Assets` from `spender` to `receiver`.
+   * @dev Transfer all types of tokens from `spender` to `receiver`.
    *
    * @param price An array of assets to transfer
    * @param spender Address of spender
@@ -106,7 +106,7 @@ library ExchangeUtils {
   }
 
   /**
-   * @dev burn or transfer `Assets`.
+   * @dev Burn all types of tokens.
    * @dev burn ERC721, ERC998, ERC1155 or transfer NATIVE, ERC20 to `receiver`.
    *
    * @param price An array of assets to transfer
@@ -152,7 +152,7 @@ library ExchangeUtils {
   }
 
   /**
-   * @dev transfer `Assets` from `this contract` to `receiver`.
+   * @dev Transfer all types of tokens from `this contract` to `receiver`.
    *
    * @param price An array of assets to transfer
    * @param receiver Address of receiver
@@ -211,7 +211,7 @@ library ExchangeUtils {
   }
 
   /**
-   * @dev Mints array of `Assets` to `receiver`.
+   * @dev Transfer currency tokens from `this contract` to `receiver` and mints new NFTs to `receiver`.
    *
    * @param items An array of assets to mint.
    * @param receiver Address of receiver
@@ -262,7 +262,7 @@ library ExchangeUtils {
   }
 
   /**
-   * @dev Mints array of `Assets` from 'spender' to `receiver`.
+   * @dev Transfer currency tokens from `spender` to `receiver` and mints new NFTs to `receiver`.
    *
    * @param items An array of assets to mint.
    * @param receiver Address of receiver
