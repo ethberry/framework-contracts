@@ -64,7 +64,6 @@ contract LootBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     grantFactoryMintPermission(account);
     grantFactoryMetadataPermission(account);
     fixPermissions(account, roles);
-    EnumerableSet.add(CMStorage.layout()._minters, account);
   }
 
   function _hashLootbox(Params calldata params, LootArgs calldata args) internal view returns (bytes32) {

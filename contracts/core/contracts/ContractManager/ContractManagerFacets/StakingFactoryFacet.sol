@@ -53,7 +53,6 @@ contract StakingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     roles[1] = DEFAULT_ADMIN_ROLE;
 
     fixPermissions(account, roles);
-    EnumerableSet.add(CMStorage.layout()._minters, account);
   }
 
   function _hashStaking(Params calldata params, StakingArgs calldata args) internal view returns (bytes32) {

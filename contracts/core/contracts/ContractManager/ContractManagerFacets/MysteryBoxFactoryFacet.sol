@@ -64,7 +64,6 @@ contract MysteryBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     grantFactoryMintPermission(account);
     grantFactoryMetadataPermission(account);
     fixPermissions(account, roles);
-    EnumerableSet.add(CMStorage.layout()._minters, account);
   }
 
   function _hashMysterybox(Params calldata params, MysteryArgs calldata args) internal view returns (bytes32) {

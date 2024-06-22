@@ -1,8 +1,7 @@
 import { ethers } from "hardhat";
 import fs from "fs";
 import { camelToSnakeCase } from "@gemunion/contracts-helpers";
-import { debug } from "../utils/deploy-utils";
-import { addFacetDiamond, deployDiamond, updateFacetDiamond, removeFacetDiamond } from "../../test/Exchange/shared";
+import { updateFacetDiamond } from "../../test/Exchange/shared";
 
 const currentBlock: { number: number } = { number: 1 };
 const contracts: Record<string, any> = {};

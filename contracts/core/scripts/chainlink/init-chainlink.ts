@@ -30,7 +30,7 @@ const debug = async (obj: IObj | Record<string, Contract> | TransactionResponse,
 const contracts: Record<string, any> = {};
 
 async function main() {
-  const [owner, _receiver, moneybag, stranger2] = await ethers.getSigners();
+  const [owner, _receiver, moneybag, _stranger2] = await ethers.getSigners();
   // const besuOwner = network.name === "besu" ? owner : stranger2;
   const besuOwner = owner;
   console.info("besuOwner", besuOwner.address);
@@ -83,7 +83,7 @@ async function main() {
    */
   await debug(await vrfInstance.connect(besuOwner).setConfig(3, 1000000, 1, 1, 1), "setConfig");
 
-  if (network.name !== "besu" && network.name !== "telos_test") {
+  if (network.name !== "besu" && network.name !== "telos_test" && network.name !== "manta_test") {
     // SEND ETH to FW OWNER on gemunion besu only
     const ethAmount = WeiPerEther * 1000n;
     await debug(
