@@ -10,7 +10,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { IERC721LootBox, MinMax } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
+import { IERC721LootBox, BoxConfig } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
@@ -24,7 +24,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
     Params memory params,
     Asset[] memory items,
     Asset[] memory price,
-    MinMax calldata minMax,
+    BoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
     if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
@@ -49,7 +49,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    IERC721LootBox(box.token).mintBox(_msgSender(), box.tokenId, lootItems, minMax);
+    IERC721LootBox(box.token).mintBox(_msgSender(), box.tokenId, lootItems, boxConfig);
 
     emit PurchaseLootBox(_msgSender(), params.externalId, items, price);
 
