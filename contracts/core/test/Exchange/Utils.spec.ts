@@ -2218,7 +2218,7 @@ describe("Diamond Exchange Utils", function () {
 
     describe("acquireFrom", function () {
       describe("ETH", function () {
-        it("should mint: ETH => EOA", async function () {
+        it("should fail: UnsoportedTokenType", async function () {
           const [owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -2238,9 +2238,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
             { value: amount },
           );
-
-          await expect(tx1).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
-          await expect(tx1).changeEtherBalances([owner, receiver], [-amount, amount]);
+          await expect(tx1).to.revertedWithCustomError(exchangeInstance, "UnsupportedTokenType");
         });
       });
 
