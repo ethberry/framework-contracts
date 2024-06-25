@@ -53,6 +53,3 @@ error WrongPrice();
 // WaitList
 error NotInList();
 
-// ChainLink
-error InvalidSubscription();
-
