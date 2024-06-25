@@ -273,11 +273,7 @@ library ExchangeUtils {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = items[i];
 
-      // If the token is an NATIVE token, transfer tokens to the receiver.
-      if (item.tokenType == TokenType.NATIVE && !disabled.native) {
-        spendFrom(_toArray(item), spender, receiver, disabled);
-        // If the `Asset` is an ERC20 token.
-      } else if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
+      if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
         spendFrom(_toArray(item), spender, receiver, disabled);
       } else if (
         (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
@@ -302,7 +298,7 @@ library ExchangeUtils {
       } else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
         IERC1155Simple(item.token).mint(receiver, item.tokenId, item.amount, "0x");
       } else {
-        // should never happen
+        // NATIVE
         revert UnsupportedTokenType();
       }
 
