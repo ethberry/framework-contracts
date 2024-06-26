@@ -10,7 +10,7 @@ import { shouldBehaveLikeERC721LootBox } from "./shared/simple/base";
 import { customMint } from "./shared/simple/customMintFn";
 
 describe("ERC721LootBoxSimple", function () {
-  const factory = () => deployERC721("ERC721LootBoxSimple");
+  const factory = () => deployERC721("ERC721LootBoxSimpleHardhat");
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
 

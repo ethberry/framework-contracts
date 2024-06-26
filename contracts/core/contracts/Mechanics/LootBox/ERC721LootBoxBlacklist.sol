@@ -12,7 +12,7 @@ import { BlackList } from "@gemunion/contracts-access/contracts/extension/BlackL
 
 import {ERC721LootBoxSimple} from "./ERC721LootBoxSimple.sol";
 
-contract ERC721LootBoxBlacklist is ERC721LootBoxSimple, BlackList {
+abstract contract ERC721LootBoxBlacklist is ERC721LootBoxSimple, BlackList {
   constructor(
     string memory name,
     string memory symbol,
