@@ -7,33 +7,33 @@
 pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+
 import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 
-import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
+import { ChainLinkHardhatV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkHardhatV2.sol";
 import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
 
-import { ERC721LootBoxBlacklist } from "../ERC721LootBoxBlacklist.sol";
-import { ERC721LootBoxSimple } from "../ERC721LootBoxSimple.sol";
+import { ERC721LootBoxSimpleA } from "../ERC721LootBoxSimpleA.sol";
 
-contract ERC721LootBoxBlacklistGemunion is ERC721LootBoxBlacklist, ChainLinkGemunionV2 {
+contract ERC721LootBoxSimpleAHardhat is ERC721LootBoxSimpleA, ChainLinkHardhatV2 {
   constructor(
     string memory name,
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
   )
-    ERC721LootBoxBlacklist(name, symbol, royalty, baseTokenURI)
-    ChainLinkGemunionV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ERC721LootBoxSimpleA(name, symbol, royalty, baseTokenURI)
+    ChainLinkHardhatV2(uint64(0), uint16(6), uint32(600000), uint32(1))
   {}
 
-  function getRandomNumber() internal override(ChainLinkBaseV2, ERC721LootBoxSimple) returns (uint256 requestId) {
+  function getRandomNumber() internal override(ChainLinkBaseV2, ERC721LootBoxSimpleA) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
     uint256[] memory randomWords
-  ) internal override(ERC721LootBoxSimple, VRFConsumerBaseV2) {
+  ) internal override(ERC721LootBoxSimpleA, VRFConsumerBaseV2) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 
@@ -42,7 +42,7 @@ contract ERC721LootBoxBlacklistGemunion is ERC721LootBoxBlacklist, ChainLinkGemu
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, ERC721LootBoxBlacklist) returns (bool) {
+  ) public view virtual override(AccessControl, ERC721LootBoxSimpleA) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

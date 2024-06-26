@@ -16,3 +16,7 @@ struct BoxConfig {
 interface IERC721LootBox {
   function mintBox(address to, uint256 templateId, Asset[] memory items, BoxConfig calldata boxConfig) external;
 }
+
+interface IERC721LootBoxA {
+  function mintBox(address to, uint256 templateId, Asset[] memory items, BoxConfig[] calldata boxConfig) external;
+}

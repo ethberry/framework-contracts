@@ -16,7 +16,7 @@ import { ERC721LootBoxBlacklistPausable } from "../ERC721LootBoxBlacklistPausabl
 import { ERC721LootBoxSimple } from "../ERC721LootBoxSimple.sol";
 import { ERC721LootBoxBlacklist } from "../ERC721LootBoxBlacklist.sol";
 
-contract ERC721LootBoxBlacklistPausableHardhat is ERC721LootBoxBlacklistPausable, ChainLinkGemunionV2 {
+contract ERC721LootBoxBlacklistPausableGemunion is ERC721LootBoxBlacklistPausable, ChainLinkGemunionV2 {
   constructor(
     string memory name,
     string memory symbol,

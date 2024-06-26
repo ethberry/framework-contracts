@@ -15,7 +15,7 @@ import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/ext
 import { ERC721LootBoxPausable } from "../ERC721LootBoxPausable.sol";
 import { ERC721LootBoxSimple } from "../ERC721LootBoxSimple.sol";
 
-contract ERC721LootBoxPausableHardhat is ERC721LootBoxPausable, ChainLinkGemunionV2 {
+contract ERC721LootBoxPausableGemunion is ERC721LootBoxPausable, ChainLinkGemunionV2 {
   constructor(
     string memory name,
     string memory symbol,

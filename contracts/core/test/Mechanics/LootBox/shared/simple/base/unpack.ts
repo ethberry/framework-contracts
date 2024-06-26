@@ -434,7 +434,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
       });
     });
 
-    describe.only("MIX RANDOM", function () {
+    describe("MIX RANDOM", function () {
       let vrfInstance: VRFCoordinatorV2Mock;
 
       before(async function () {
