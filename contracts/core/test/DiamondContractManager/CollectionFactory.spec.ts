@@ -127,14 +127,12 @@ describe("CollectionFactoryDiamond", function () {
       const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
-        // Domain
         {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
           verifyingContract,
         },
-        // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
@@ -154,7 +152,6 @@ describe("CollectionFactoryDiamond", function () {
             { name: "contractTemplate", type: "string" },
           ],
         },
-        // Values
         {
           params: {
             nonce,
