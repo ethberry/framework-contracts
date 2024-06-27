@@ -1893,6 +1893,35 @@ describe("Diamond Exchange Utils", function () {
           expect(balance).to.equal(1);
         });
 
+        it("should mint: ERC721 => EOA (Simple) MULTIPLE", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+
+          const tx = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 2,
+                token: await erc721Instance.getAddress(),
+                tokenId: templateId,
+                amount: 3,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId + 1n);
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId + 2n);
+
+          const balance = await erc721Instance.balanceOf(receiver.address);
+          expect(balance).to.equal(3);
+        });
+
         it("should mint: ERC721 => EOA (Random)", async function () {
           const [_owner, receiver] = await ethers.getSigners();
 

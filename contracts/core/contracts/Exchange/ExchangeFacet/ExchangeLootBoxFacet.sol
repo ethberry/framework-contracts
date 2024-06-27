@@ -24,7 +24,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
     Params memory params,
     Asset[] memory items,
     Asset[] memory price,
-    BoxConfig calldata boxConfig,
+    BoxConfig[] calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
     if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {

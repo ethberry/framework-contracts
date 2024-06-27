@@ -24,7 +24,7 @@ contract ERC721LootBoxBlacklistPausableBesu is ERC721LootBoxBlacklistPausable, C
     string memory baseTokenURI
   )
     ERC721LootBoxBlacklistPausable(name, symbol, royalty, baseTokenURI)
-    ChainLinkBesuV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkBesuV2(uint64(0), uint16(6), uint32(3700000000), uint32(1))
   {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721LootBoxSimple) returns (uint256 requestId) {

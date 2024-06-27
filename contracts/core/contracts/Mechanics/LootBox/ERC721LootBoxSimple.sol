@@ -11,7 +11,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
 
-import { IERC721LootBox, BoxConfig } from "./interfaces/IERC721LootBox.sol";
+import { IERC721LootBox, BoxConfig, Request } from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
@@ -22,18 +22,14 @@ import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   using Address for address;
 
-  struct Request {
-    address account;
-    uint256 tokenId;
-  }
-
   mapping(uint256 => Asset[]) internal _itemData;
   mapping(uint256 => Request) internal _queue;
-  mapping(uint256 => BoxConfig) internal _boxConfig;
+  mapping(uint256 => BoxConfig[]) internal _boxConfig;
 
   event UnpackLootBox(address account, uint256 tokenId);
 
   error InvalidMinMax();
+  error InvalidConfigLen();
 
   constructor(
     string memory name,
@@ -48,7 +44,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items, BoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory items, BoxConfig[] calldata boxConfig) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     uint256 length = items.length;
@@ -56,13 +52,31 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
       revert NoContent();
     }
 
-    // Min suppose to be less or equal than max
-    // Max suppose to be less or equal than length
-    if (boxConfig.min > boxConfig.max || boxConfig.max > length || boxConfig.max == 0 ) {
-      revert InvalidMinMax();
+    uint256 configLength = boxConfig.length;
+    if (configLength != length) {
+      revert InvalidConfigLen();
     }
 
-    _boxConfig[tokenId] = boxConfig;
+    // Min suppose to be less or equal than max
+    // Max suppose to be less or equal than length
+    for (uint256 i = 0; i < length; ) {
+      if (boxConfig[i].min > boxConfig[i].max || boxConfig[i].max == 0 ) {
+        revert InvalidMinMax();
+      }
+      unchecked {
+        i++;
+      }
+    }
+
+    // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
+    // _boxConfig[tokenId] = boxConfig;
+
+    for (uint256 i = 0; i < configLength; ) {
+      _boxConfig[tokenId].push(boxConfig[i]);
+      unchecked {
+        i++;
+      }
+    }
 
     // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
     // _itemData[tokenId] = items;
@@ -82,10 +96,16 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
 
     _burn(tokenId);
 
-    BoxConfig storage minMax = _boxConfig[tokenId];
+    BoxConfig[] storage minMax = _boxConfig[tokenId];
+    uint256 itemsLength = minMax.length;
+    uint256 minMaxSum = 0;
 
-    if (minMax.min == minMax.max && minMax.min == _itemData[tokenId].length) {
-      // if min == max and minMax == items.length, no need to call random function.
+    // if ALL min == max, no need to call random function.
+    for (uint256 i = 0; i < itemsLength; i++) {
+      minMaxSum = minMaxSum + minMax[i].max - minMax[i].min;
+    }
+
+    if (minMaxSum == 0 ) {
       ExchangeUtils.acquire(
         _itemData[tokenId],
         _msgSender(),
@@ -105,46 +125,47 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     delete _queue[requestId];
 
     uint256 randomValue = randomWords[0];
-    BoxConfig storage boxConfig = _boxConfig[tokenId];
-    Asset[] storage items = _itemData[tokenId];
-    uint256 itemsLength = items.length; // store in seperate variable to save gas.
 
-    // Get randomValue between min & max;
-    uint256 actualCount = (randomValue % (boxConfig.max - boxConfig.min + 1)) + boxConfig.min;
+    BoxConfig[] storage boxConfig = _boxConfig[tokenId]; // get min-max[] config
 
-    // mint all items in the actualCount(max) == items.length;
-    if (actualCount == itemsLength) {
-       return ExchangeUtils.acquire(
-        items,
-        request.account,
-        DisabledTokenTypes(false, false, false, false, false)
-      );
-    }
-    
-    // Array of items, that would be randomly picked and minted
-    Asset[] memory itemsToMint = new Asset[](actualCount);
-    // Array of availableIndexes, is used to identify unique indexes
-    uint256[] memory availableIndexes = new uint256[](itemsLength);
+    Asset[] storage items = _itemData[tokenId]; // get items[]
+    uint256 itemsLength = items.length; // store in separate variable to save gas.
 
-    // Initialize available indexes
+    // Array of items, that would plan to be minted (if random amount > 0)
+    Asset[] memory itemsToMint = new Asset[](itemsLength);
+
+    // Count items with non-zero amounts
+    uint256 nonZeroCount = 0;
+
     for (uint256 i = 0; i < itemsLength; i++) {
-        availableIndexes[i] = i;
+
+      uint128 boxMax = boxConfig[i].max;
+      uint128 boxMin = boxConfig[i].min;
+
+      // Get Item's randomValue for between min & max;
+      uint256 actualCount = boxMax != boxMin ? ((randomValue % (boxMax - boxMin + 1)) + boxMin) : boxMax;
+
+      if ( actualCount > 0 ) {
+        itemsToMint[i] = items[i];
+        itemsToMint[i].amount = actualCount;
+        unchecked {
+          nonZeroCount++;
+        }
+      }
     }
 
-    for (uint256 i = 0; i < actualCount; i++) {
-        // Generate a random index within the current range of available indexes
-        randomValue = uint256(keccak256(abi.encodePacked(randomValue, i+1)));
-        uint256 randomIndex = randomValue % (itemsLength - i);
-        // Select the index at the random position (availableIndexes[randomIndex])
-        // And grab the Item by this index
-        itemsToMint[i] = items[availableIndexes[randomIndex]];
-        // Replace the used index with the last available index in the current range
-        availableIndexes[randomIndex] = availableIndexes[itemsLength - i - 1];
+    // Array of items, that would be actually minted (non-zero amounts)
+    Asset[] memory itemsToMintNZ = new Asset[](nonZeroCount);
+
+    for (uint256 i = 0; i < nonZeroCount; i++) {
+      if (itemsToMint[i].amount > 0) {
+        itemsToMintNZ[i] = itemsToMint[i];
+      }
     }
 
-    // Mint randomly selected items.
+    // Mint items with random amounts.
     ExchangeUtils.acquire(
-      itemsToMint,
+      itemsToMintNZ,
       request.account,
       DisabledTokenTypes(false, false, false, false, false)
     );

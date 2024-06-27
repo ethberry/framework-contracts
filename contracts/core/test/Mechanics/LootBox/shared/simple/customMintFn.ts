@@ -27,6 +27,6 @@ export const customMint = async (
         amount: 1n,
       },
     ],
-    { min: 1, max: 1 },
+    [{ min: 1, max: 1 }],
   ) as Promise<any>;
 };

@@ -24,7 +24,7 @@ contract ERC721LootBoxBlacklistPausablePolygon is ERC721LootBoxBlacklistPausable
     string memory baseTokenURI
   )
     ERC721LootBoxBlacklistPausable(name, symbol, royalty, baseTokenURI)
-    ChainLinkPolygonV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkPolygonV2(uint64(0), uint16(6), uint32(30000000), uint32(1))
   {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2, ERC721LootBoxSimple) returns (uint256 requestId) {
