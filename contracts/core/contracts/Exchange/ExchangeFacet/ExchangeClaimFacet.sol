@@ -31,7 +31,7 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
 
     emit Claim(_msgSender(), params.externalId, items);
   }
@@ -48,7 +48,7 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.spendFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
 
     emit Claim(_msgSender(), params.externalId, items);
   }

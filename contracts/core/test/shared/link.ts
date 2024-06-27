@@ -12,7 +12,7 @@ export async function deployLinkVrfFixture() {
   const vrfInstance = await vrfFactory.deploy(await linkInstance.getAddress());
   await vrfInstance.waitForDeployment();
   // GET CHAIN_LINK V2 TO WORK
-  await vrfInstance.setConfig(3, 1000000, 1, 1, 1);
+  await vrfInstance.setConfig(3, 40000000, 1, 1, 1);
   await vrfInstance.createSubscription();
   const vrfEventFilter = vrfInstance.filters.SubscriptionCreated();
   const vrfEvents = await vrfInstance.queryFilter(vrfEventFilter);

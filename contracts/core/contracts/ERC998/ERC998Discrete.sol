@@ -64,25 +64,4 @@ contract ERC998Discrete is IERC721Discrete, ERC998Simple {
   function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC998Simple) returns (bool) {
     return interfaceId == IERC4906_ID || interfaceId == IERC721_DISCRETE_ID || super.supportsInterface(interfaceId);
   }
-
-  /**
-   * @dev See {ERC721-_update}.
-   */
-  function _update(address to, uint256 tokenId, address auth) internal virtual override returns (address) {
-    return super._update(to, tokenId, auth);
-  }
-
-  /**
-   * @dev See {ERC721-_increaseBalance}.
-   */
-  function _increaseBalance(address account, uint128 amount) internal virtual override {
-    super._increaseBalance(account, amount);
-  }
-
-  /**
-   * @dev See {ERC721-_baseURI}.
-   */
-  function _baseURI() internal view virtual override returns (string memory) {
-    return super._baseURI();
-  }
 }

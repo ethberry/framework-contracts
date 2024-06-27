@@ -8,6 +8,16 @@ pragma solidity ^0.8.20;
 
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
+  struct BoxConfig {
+    uint128 min;
+    uint128 max;
+  }
+
+  struct Request {
+    address account;
+    uint256 tokenId;
+  }
+
 interface IERC721LootBox {
-  function mintBox(address to, uint256 templateId, Asset[] memory items) external;
+  function mintBox(address to, uint256 templateId, Asset[] memory items, BoxConfig[] calldata boxConfig) external;
 }

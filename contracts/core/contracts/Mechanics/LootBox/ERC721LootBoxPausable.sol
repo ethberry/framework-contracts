@@ -12,7 +12,7 @@ import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import {ERC721LootBoxSimple} from "./ERC721LootBoxSimple.sol";
 
-contract ERC721LootBoxPausable is ERC721LootBoxSimple, Pausable {
+abstract contract ERC721LootBoxPausable is ERC721LootBoxSimple, Pausable {
   constructor(
     string memory name,
     string memory symbol,

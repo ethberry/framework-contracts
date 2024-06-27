@@ -12,7 +12,7 @@ import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import {ERC721LootBoxBlacklist} from "./ERC721LootBoxBlacklist.sol";
 
-contract ERC721LootBoxBlacklistPausable is ERC721LootBoxBlacklist, Pausable {
+abstract contract ERC721LootBoxBlacklistPausable is ERC721LootBoxBlacklist, Pausable {
   constructor(
     string memory name,
     string memory symbol,

@@ -1,4 +1,5 @@
-import { deployContract } from "@gemunion/contracts-mocks";
+import { deployContract } from "@gemunion/contracts-utils";
+
 import { shouldReceive } from "../shared/receive";
 import { shouldBehaveLikeTopUp } from "../shared/topUp";
 

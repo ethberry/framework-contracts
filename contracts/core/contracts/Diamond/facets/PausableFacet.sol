@@ -16,32 +16,32 @@ import { PausableInternal } from "../override/PausableInternal.sol";
  */
 contract PausableFacet is PausableInternal {
 
-    /**
-     * @dev Returns true if the contract is paused, and false otherwise.
-     */
-    function paused() public view virtual returns (bool) {
-        return _paused();
-    }
+  /**
+   * @dev Returns true if the contract is paused, and false otherwise.
+   */
+  function paused() public view virtual returns (bool) {
+    return _paused();
+  }
 
-    /**
-     * @dev Triggers stopped state.
-     *
-     * Requirements:
-     *
-     * - The contract must not be paused.
-     */
-    function pause() external virtual {
-        _pause();
-    }
+  /**
+   * @dev Triggers stopped state.
+   *
+   * Requirements:
+   *
+   * - The contract must not be paused.
+   */
+  function pause() external virtual {
+    _pause();
+  }
 
-    /**
-     * @dev Returns to normal state.
-     *
-     * Requirements:
-     *
-     * - The contract must be paused.
-     */
-    function unpause() external virtual {
-        _unpause();
-    }
+  /**
+   * @dev Returns to normal state.
+   *
+   * Requirements:
+   *
+   * - The contract must be paused.
+   */
+  function unpause() external virtual {
+    _unpause();
+  }
 }

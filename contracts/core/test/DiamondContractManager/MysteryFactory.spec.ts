@@ -3,7 +3,6 @@ import { ethers } from "hardhat";
 import { getAddress, ZeroAddress } from "ethers";
 
 import {
-  amount,
   baseTokenURI,
   DEFAULT_ADMIN_ROLE,
   nonce,
@@ -124,7 +123,7 @@ describe("MysteryBoxFactoryDiamond", function () {
           tokenType: 2,
           token: await erc721Instance.getAddress(),
           tokenId,
-          amount,
+          amount: 1n,
         },
       ]);
       await expect(tx3).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);

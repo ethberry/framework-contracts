@@ -3,7 +3,7 @@ import { ZeroAddress } from "ethers";
 
 import { amount } from "@gemunion/contracts-constants";
 import { blockAwait } from "@gemunion/contracts-helpers";
-import { deployContract } from "@gemunion/contracts-mocks";
+import { deployContract } from "@gemunion/contracts-utils";
 
 async function main() {
   const totalTransfers = 10n;

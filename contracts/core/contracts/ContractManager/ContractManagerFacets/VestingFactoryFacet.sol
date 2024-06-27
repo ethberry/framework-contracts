@@ -22,7 +22,7 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
 
   bytes private constant VESTING_ARGUMENTS_SIGNATURE =
-    "VestingArgs(address owner,uint64 startTimestamp,uint16 cliffInMonth,uint16 monthlyRelease)";
+    "VestingArgs(address owner,uint64 startTimestamp,uint16 cliffInMonth,uint16 monthlyRelease,string contractTemplate)";
   bytes32 private constant VESTING_ARGUMENTS_TYPEHASH = keccak256(VESTING_ARGUMENTS_SIGNATURE);
 
   bytes private constant ASSET_SIGNATURE = "Asset(uint256 tokenType,address token,uint256 tokenId,uint256 amount)";
@@ -44,6 +44,7 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     uint64 startTimestamp; // in sec
     uint16 cliffInMonth; // in sec
     uint16 monthlyRelease;
+    string contractTemplate;
   }
 
   event VestingDeployed(address account, uint256 externalId, VestingArgs args, Asset[] items);
@@ -125,7 +126,8 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
           args.owner,
           args.startTimestamp,
           args.cliffInMonth,
-          args.monthlyRelease
+          args.monthlyRelease,
+          keccak256(bytes(args.contractTemplate))
         )
       );
   }

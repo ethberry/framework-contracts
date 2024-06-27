@@ -17,16 +17,13 @@ import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
 
-  bytes private constant PREDICTION_ARGUMENTS_SIGNATURE =
-    "PredictionArgs(address[] payees,uint256[] shares,string contractTemplate)";
+  bytes private constant PREDICTION_ARGUMENTS_SIGNATURE = "PredictionArgs(string contractTemplate)";
   bytes32 private constant PREDICTION_ARGUMENTS_TYPEHASH = keccak256(PREDICTION_ARGUMENTS_SIGNATURE);
 
   bytes32 private immutable PREDICTION_PERMIT_SIGNATURE =
     keccak256(bytes.concat("EIP712(Params params,PredictionArgs args)", PARAMS_SIGNATURE, PREDICTION_ARGUMENTS_SIGNATURE));
 
   struct PredictionArgs {
-    address[] payees;
-    uint256[] shares;
     string contractTemplate;
   }
 
@@ -45,7 +42,7 @@ contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, abi.encode(args.payees, args.shares), params.nonce);
+    account = deploy2(params.bytecode, "", params.nonce);
 
     emit PredictionDeployed(account, params.externalId, args);
 
@@ -68,8 +65,6 @@ contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       keccak256(
         abi.encode(
           PREDICTION_ARGUMENTS_TYPEHASH,
-          keccak256(abi.encodePacked(args.payees)),
-          keccak256(abi.encodePacked(args.shares)),
           keccak256(bytes(args.contractTemplate))
         )
       );

@@ -3,7 +3,7 @@ import { toBeHex, hexlify, randomBytes } from "ethers";
 
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 
-export async function randomFixRequest(rndInstance: any, vrfInstance: VRFCoordinatorV2Mock) {
+export async function randomFixRequest(_rndInstance: any, vrfInstance: VRFCoordinatorV2Mock, fix?: number) {
   const eventFilter = vrfInstance.filters.RandomWordsRequested();
   const events = await vrfInstance.queryFilter(eventFilter);
   for (const e of events) {
@@ -13,7 +13,7 @@ export async function randomFixRequest(rndInstance: any, vrfInstance: VRFCoordin
 
     const blockNum = await ethers.provider.getBlockNumber();
     // ATTENTION: 32 is not random, fixed number is needed to test RARITY
-    await vrfInstance.fulfillRandomWords(requestId, keyHash, toBeHex(32), {
+    await vrfInstance.fulfillRandomWords(requestId, keyHash, toBeHex(fix || 32), {
       blockNum,
       subId,
       callbackGasLimit,
@@ -23,7 +23,7 @@ export async function randomFixRequest(rndInstance: any, vrfInstance: VRFCoordin
   }
 }
 
-export async function randomRequest(rndInstance: any, vrfInstance: VRFCoordinatorV2Mock, random?: string) {
+export async function randomRequest(_rndInstance: any, vrfInstance: VRFCoordinatorV2Mock, random?: string) {
   const eventFilter = vrfInstance.filters.RandomWordsRequested();
   const events = await vrfInstance.queryFilter(eventFilter);
   for (const e of events) {

@@ -1329,6 +1329,7 @@ describe("Ponzi", function () {
       await expect(tx11)
         .to.emit(ponziInstance, "ReferralEvent")
         .withArgs(
+          owner.address,
           receiver.address,
           isEqualEventArgArrObj({
             tokenType: 0n, // NATIVE
@@ -1348,6 +1349,7 @@ describe("Ponzi", function () {
       await expect(tx12)
         .to.emit(ponziInstance, "ReferralEvent")
         .withArgs(
+          stranger.address,
           owner.address,
           isEqualEventArgArrObj({
             tokenType: 0n, // NATIVE
@@ -1367,6 +1369,7 @@ describe("Ponzi", function () {
       await expect(tx13)
         .to.emit(ponziInstance, "ReferralEvent")
         .withArgs(
+          receiver.address,
           stranger.address,
           isEqualEventArgArrObj({
             tokenType: 0n, // NATIVE

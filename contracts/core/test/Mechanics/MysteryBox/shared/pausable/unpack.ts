@@ -17,26 +17,14 @@ export function shouldBehaveLikeERC721MysteryBoxPausable(
     it("should fail to unpack: paused", async function () {
       const [owner] = await ethers.getSigners();
 
-      const mysteryboxInstance = await factory();
-      await mysteryboxInstance.topUp(
-        [
-          {
-            tokenType: 0,
-            token: ZeroAddress,
-            tokenId: 0,
-            amount: parseEther("1.0"),
-          },
-        ],
-        { value: parseEther("1.0") },
-      );
+      const mysteryBoxInstance = await factory();
+      const tx1 = mint(mysteryBoxInstance, owner, owner.address);
+      await expect(tx1).to.emit(mysteryBoxInstance, "Transfer").withArgs(ZeroAddress, owner.address, tokenId);
 
-      const tx1 = mint(mysteryboxInstance, owner, owner.address);
-      await expect(tx1).to.emit(mysteryboxInstance, "Transfer").withArgs(ZeroAddress, owner.address, tokenId);
+      await mysteryBoxInstance.pause();
 
-      await mysteryboxInstance.pause();
-
-      const tx2 = mysteryboxInstance.unpack(tokenId);
-      await expect(tx2).to.be.revertedWithCustomError(mysteryboxInstance, "EnforcedPause");
+      const tx2 = mysteryBoxInstance.unpack(tokenId);
+      await expect(tx2).to.be.revertedWithCustomError(mysteryBoxInstance, "EnforcedPause");
     });
   });
 }

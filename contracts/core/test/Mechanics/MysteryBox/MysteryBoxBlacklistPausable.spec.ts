@@ -5,7 +5,6 @@ import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { FrameworkInterfaceId, tokenId } from "../../constants";
 import { deployERC721 } from "../../ERC721/shared/fixtures";
 import { shouldBehaveLikeERC721Blacklist } from "../../ERC721/shared/blacklist";
-import { shouldBehaveLikeTopUp } from "../../shared/topUp";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";
 import { shouldBehaveLikeERC721MysteryBox } from "./shared/simple/base";
 import { customMint } from "./shared/simple/customMintFn";
@@ -20,7 +19,6 @@ describe("ERC721MysteryBoxBlacklistPausable", function () {
   shouldBehaveLikeERC721Blacklist(factory, { mint: customMint });
   shouldBehaveLikeERC721MysteryBoxPausable(factory, { mint: customMint });
   shouldBehaveLikeERC721MysteryBox(factory);
-  shouldBehaveLikeTopUp(factory);
 
   shouldSupportsInterface(factory)([
     InterfaceId.IERC165,

@@ -39,8 +39,10 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride {
       revert NotExist();
     }
 
+    Asset[] memory _price = ExchangeUtils._toArray(price);
+
     ExchangeUtils.spendFrom(
-      ExchangeUtils._toArray(price),
+      _price,
       _msgSender(),
       params.receiver, // LOTTERY CONTRACT
       DisabledTokenTypes(false, false, false, false, false)
@@ -57,6 +59,6 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride {
 
     emit PurchaseLottery(_msgSender(), params.externalId, item, price, roundId, params.extra);
 
-    _afterPurchase(params.referrer, ExchangeUtils._toArray(price));
+    _afterPurchase(params.referrer, _price);
   }
 }

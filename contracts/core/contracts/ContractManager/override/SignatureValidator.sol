@@ -31,7 +31,6 @@ contract SignatureValidatorCM is EIP712, Context {
     uint256 externalId;
   }
 
-  // constructor() EIP712("ContractManager", "1.0.0") {}
   constructor() EIP712() {}
 
   /**

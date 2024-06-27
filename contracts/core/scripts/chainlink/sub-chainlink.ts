@@ -51,7 +51,7 @@ const contracts: Record<string, any> = {};
 
 async function main() {
   const [owner, _receiver, _moneybag, stranger2] = await ethers.getSigners();
-  const besuOwner = network.name === "besu" ? owner : stranger2;
+  const besuOwner = network.name === "besu" || network.name === "telos_test" ? owner : stranger2;
   console.info("besuOwner", besuOwner.address);
   const block = await ethers.provider.getBlock("latest");
 
@@ -61,14 +61,18 @@ async function main() {
       ? "0x42699a7612a82f1d9c36148af9c77354759b210b"
       : network.name === "gemunion" || network.name === "gemunionprod"
         ? "0x1fa66727cdd4e3e4a6debe4adf84985873f6cd8a" // vrf besu gemunion
-        : "0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc"; // binance test
+        : network.name === "telos_test"
+          ? "0x6eab1c5259173c4fea5667b4aad6529f4fc3176e" // telostest (our own contract deployed from p.key staging)
+          : "0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc"; // binance test
 
   const vrfAddr =
     network.name === "besu"
       ? "0xa50a51c09a5c451c52bb714527e1974b686d8e77" // vrf besu localhost
       : network.name === "gemunion" || network.name === "gemunionprod"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
-        : "0x4d2d24899c0b115a1fce8637fca610fe02f1909e"; // binance test
+        : network.name === "telos_test"
+          ? "0x33040c29f57f126b90d9528a5ee659d7a604b835" // telostest (our own contract deployed from p.key staging)
+          : "0x4d2d24899c0b115a1fce8637fca610fe02f1909e"; // binance test
 
   const linkInstance = await ethers.getContractAt("LinkToken", linkAddr);
   console.info(`LINK_ADDR=${linkAddr}`);
@@ -81,7 +85,7 @@ async function main() {
     await debug(await linkInstance.connect(besuOwner).transfer(owner.address, linkAmount), "transfer1000LinkToOwner");
   }
   // GET ETH TOKEN to OWNER
-  if (network.name !== "besu") {
+  if (network.name !== "besu" && network.name !== "telos_test") {
     // SEND ETH to FW OWNER on gemunion besu only
     const ethAmount = WeiPerEther * 1000n;
     await debug(

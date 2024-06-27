@@ -89,25 +89,4 @@ abstract contract ERC721BlacklistDiscreteRentableRandom is
   }
 
   function getRandomNumber() internal virtual returns (uint256 requestId);
-
-  /**
-   * @dev See {ERC721-_update}.
-   */
-  function _update(address to, uint256 tokenId, address auth) internal virtual override returns (address) {
-    return super._update(to, tokenId, auth);
-  }
-
-  /**
-   * @dev See {ERC721-_increaseBalance}.
-   */
-  function _increaseBalance(address account, uint128 amount) internal virtual override {
-    super._increaseBalance(account, amount);
-  }
-
-  /**
-   * @dev See {ERC721-_baseURI}.
-   */
-  function _baseURI() internal view virtual override returns (string memory) {
-    return super._baseURI();
-  }
 }

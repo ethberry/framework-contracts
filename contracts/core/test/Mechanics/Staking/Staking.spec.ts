@@ -135,7 +135,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -151,7 +151,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
       const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
       const stakeRule1: IStakingRule = {
         deposit: [
@@ -187,7 +187,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount,
           },
@@ -264,7 +264,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -294,7 +294,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -327,7 +327,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -361,7 +361,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -400,7 +400,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -480,7 +480,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [[]],
@@ -597,7 +597,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -630,7 +630,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -663,7 +663,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -708,7 +708,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -716,7 +716,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -764,7 +764,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -801,7 +801,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -847,7 +847,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1082,7 +1082,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -1090,7 +1090,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1808,7 +1808,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1877,7 +1877,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -1928,9 +1928,9 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -1944,7 +1944,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount,
           },
@@ -1993,11 +1993,11 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
       await expect(tx2).to.changeEtherBalances([owner, stakingInstance], [amount, -amount]);
 
-      const balance = await mysteryboxInstance.balanceOf(owner.address);
+      const balance = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance).to.equal(cycles);
     });
 
@@ -2268,7 +2268,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -2344,7 +2344,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -2402,9 +2402,9 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -2418,7 +2418,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount,
           },
@@ -2472,10 +2472,10 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc20Instance.balanceOf(owner.address);
       expect(balance4).to.equal(amount);
@@ -2487,9 +2487,9 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc20Instance = await erc20Factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -2509,7 +2509,7 @@ describe("Staking", function () {
           },
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount,
           },
@@ -2574,12 +2574,12 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId)
         .to.emit(erc20Instance, "Transfer")
         .withArgs(await stakingInstance.getAddress(), owner.address, amount * BigInt(cycles));
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc20Instance.balanceOf(owner.address);
       expect(balance4).to.equal(amount * BigInt(cycles) + amount /* deposit */);
@@ -2883,7 +2883,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -2966,7 +2966,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3143,7 +3143,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3151,7 +3151,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3215,7 +3215,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3223,7 +3223,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3279,9 +3279,9 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
       const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3295,7 +3295,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount: 1n,
           },
@@ -3347,10 +3347,10 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc721RandomInstance.balanceOf(owner.address);
       expect(balance4).to.equal(1);
@@ -3371,7 +3371,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3444,7 +3444,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3527,7 +3527,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3611,7 +3611,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3619,7 +3619,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3675,9 +3675,9 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory("ERC721Simple");
       const erc998Instance = await erc721Factory("ERC998Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3691,7 +3691,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount: 1n,
           },
@@ -3743,10 +3743,10 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc998Instance.balanceOf(owner.address);
       expect(balance4).to.equal(1);
@@ -3757,9 +3757,9 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
       const erc998Instance = await erc721Factory("ERC998Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3773,7 +3773,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount: 1n,
           },
@@ -3825,10 +3825,10 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc998Instance.balanceOf(owner.address);
       expect(balance4).to.equal(1);
@@ -3859,7 +3859,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3867,7 +3867,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -3931,7 +3931,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -3939,7 +3939,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4000,7 +4000,7 @@ describe("Staking", function () {
             tokenType: 3, // ERC998
             token: await erc998Instance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         reward: [
@@ -4268,7 +4268,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721RandomInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4348,7 +4348,7 @@ describe("Staking", function () {
             tokenType: 2, // ERC721
             token: await erc721SimpleInstance.getAddress(),
             tokenId,
-            amount,
+            amount: 1n,
           },
         ],
         content: [],
@@ -4396,7 +4396,9 @@ describe("Staking", function () {
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
         .to.emit(erc721SimpleInstance, "Transfer")
-        .withArgs(ZeroAddress, owner.address, tokenId);
+        .withArgs(ZeroAddress, owner.address, 1)
+        .to.emit(erc721SimpleInstance, "Transfer")
+        .withArgs(ZeroAddress, owner.address, 2);
 
       const balance3 = await erc721SimpleInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
@@ -4404,15 +4406,15 @@ describe("Staking", function () {
       expect(balance4).to.equal(amount);
     });
 
-    it("should stake ERC1155 & receive ERC721 Mysterybox", async function () {
+    it("should stake ERC1155 & receive ERC721 MysteryBox", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const mysteryboxInstance = await erc721Factory("ERC721MysteryBoxSimple");
+      const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
       const erc1155Instance = await erc1155Factory();
 
-      await mysteryboxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+      await mysteryBoxInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -4426,7 +4428,7 @@ describe("Staking", function () {
         reward: [
           {
             tokenType: 2, // ERC721
-            token: await mysteryboxInstance.getAddress(),
+            token: await mysteryBoxInstance.getAddress(),
             tokenId,
             amount: 1n,
           },
@@ -4484,10 +4486,10 @@ describe("Staking", function () {
         .withArgs(1, owner.address, endTimestamp)
         .to.emit(stakingInstance, "DepositFinish")
         .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(mysteryboxInstance, "Transfer")
+        .to.emit(mysteryBoxInstance, "Transfer")
         .withArgs(ZeroAddress, owner.address, tokenId);
 
-      const balance3 = await mysteryboxInstance.balanceOf(owner.address);
+      const balance3 = await mysteryBoxInstance.balanceOf(owner.address);
       expect(balance3).to.equal(cycles);
       const balance4 = await erc1155Instance.balanceOf(owner.address, 1);
       expect(balance4).to.equal(amount);

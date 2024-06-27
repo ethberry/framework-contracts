@@ -1,21 +1,27 @@
-import { BaseContract, Signer, ZeroAddress } from "ethers";
+import { BaseContract, Signer } from "ethers";
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-import { amount } from "@gemunion/contracts-constants";
+import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { templateId } from "../../../../constants";
+import { deployERC721 } from "../../../../ERC721/shared/fixtures";
 
-export const customMint = (
-  contractInstance: any,
+export const customMint = async (
+  mysteryBoxInstance: any,
   signer: Signer,
   receiver: SignerWithAddress | BaseContract | string,
 ) => {
-  return contractInstance.connect(signer).mintBox(receiver, templateId, [
+  const erc721Factory = (name: string) => deployERC721(name);
+
+  const erc721SimpleInstance = await erc721Factory("ERC721Simple");
+  await erc721SimpleInstance.grantRole(MINTER_ROLE, await mysteryBoxInstance.getAddress());
+
+  return mysteryBoxInstance.connect(signer).mintBox(receiver, templateId, [
     {
-      tokenType: 0,
-      token: ZeroAddress,
+      tokenType: 2,
+      token: await erc721SimpleInstance.getAddress(),
       tokenId: templateId,
-      amount,
+      amount: 1n,
     },
   ]) as Promise<any>;
 };
