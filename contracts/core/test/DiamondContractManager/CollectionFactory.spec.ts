@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getAddress, ZeroAddress } from "ethers";
 
 import {
   baseTokenURI,
@@ -12,7 +12,7 @@ import {
   batchSize,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId } from "../constants";
+import { contractTemplate, externalId, templateId, tokenId } from "../constants";
 import { buildBytecode, buildCreate2Address } from "../utils";
 import { deployDiamond } from "./shared/fixture";
 
@@ -31,7 +31,7 @@ describe("CollectionFactoryDiamond", function () {
 
   describe("deployCollection", function () {
     it("should deploy a collection", async function () {
-      const [owner] = await ethers.getSigners();
+      const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
       const { bytecode } = await ethers.getContractFactory("ERC721Simple");
 
@@ -116,6 +116,14 @@ describe("CollectionFactoryDiamond", function () {
 
       const hasRole2 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
+      const tx2 = collectionInstance.mintCommon(receiver.address, templateId);
+      await expect(tx2).to.emit(collectionInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+      const balance = await collectionInstance.balanceOf(receiver.address);
+      expect(balance).to.equal(1);
+
+      const uri = await collectionInstance.tokenURI(tokenId);
+      expect(uri).to.equal(`${baseTokenURI}/${(await collectionInstance.getAddress()).toLowerCase()}/${tokenId}`);
     });
 
     it("should fail: SignerMissingRole", async function () {
