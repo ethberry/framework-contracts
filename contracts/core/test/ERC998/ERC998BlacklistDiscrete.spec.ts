@@ -4,7 +4,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, METADATA_ROLE, MINTER_ROLE } from "@ge
 
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { FrameworkInterfaceId } from "../constants";
 import { shouldBehaveLikeERC721Blacklist } from "../ERC721/shared/blacklist";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";

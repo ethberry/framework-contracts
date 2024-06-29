@@ -13,7 +13,7 @@ import { FrameworkInterfaceId, templateId } from "../constants";
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
 import { shouldMintRandom } from "../ERC721/shared/random/mintRandom";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";
 
 describe("ERC998DiscreteRandom", function () {

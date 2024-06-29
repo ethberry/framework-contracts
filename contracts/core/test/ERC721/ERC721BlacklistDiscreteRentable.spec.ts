@@ -2,7 +2,7 @@ import { shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl, shouldBehaveLikeBlackList } from "@gemunion/contracts-access";
 import { DEFAULT_ADMIN_ROLE, InterfaceId, METADATA_ROLE, MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { FrameworkInterfaceId } from "../constants";
 import { deployERC721 } from "./shared/fixtures";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";

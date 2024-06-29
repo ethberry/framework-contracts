@@ -5,7 +5,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, METADATA_ROLE, MINTER_ROLE } from "@ge
 import { FrameworkInterfaceId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";
 
 describe("ERC998Discrete", function () {

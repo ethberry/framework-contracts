@@ -9,7 +9,7 @@ import {
   RARITY,
 } from "@gemunion/contracts-constants";
 
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { FrameworkInterfaceId, templateId } from "../constants";
 import { deployERC721 } from "./shared/fixtures";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";

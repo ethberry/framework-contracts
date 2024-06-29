@@ -188,9 +188,9 @@ async function main() {
   // console.info("templateKey", templateKey);
   //
   // // ERC721 getRecordField Template
-  // const gradeKey = await itemDiscreteInstance.GRADE();
+  // const discreteKey = await itemDiscreteInstance.GRADE();
   // // 0x76e34cd5c7c46b6bfe6b1da94d54447ea83a4af449bc62a0ef3ecae24c08031a
-  // console.info("gradeKey", gradeKey);
+  // console.info("discreteKey", discreteKey);
   //
   // // ERC721 getRecordField Rarity
   // const rarityKey = await itemRandomInstance.RARITY();

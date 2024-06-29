@@ -3,7 +3,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, METADATA_ROLE, MINTER_ROLE } from "@ge
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
 import { FrameworkInterfaceId } from "../constants";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { deployERC721 } from "./shared/fixtures";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";
 import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";

@@ -10,7 +10,7 @@ import {
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
 import { FrameworkInterfaceId, templateId } from "../constants";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Grade/upgrade";
+import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
 import { deployERC721 } from "./shared/fixtures";
 import { shouldMintRandom } from "./shared/random/mintRandom";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";
