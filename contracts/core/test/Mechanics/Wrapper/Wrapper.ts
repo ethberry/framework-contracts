@@ -3,9 +3,8 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
 import { amount, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { shouldSupportsInterface, deployContract } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { deployContract } from "@gemunion/contracts-utils";
 
 import { templateId, tokenId } from "../../constants";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";

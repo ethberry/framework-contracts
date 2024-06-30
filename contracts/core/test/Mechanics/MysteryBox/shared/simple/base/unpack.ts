@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-import { parseEther, ZeroAddress } from "ethers";
+import { ZeroAddress } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";

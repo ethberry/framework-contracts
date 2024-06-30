@@ -3,8 +3,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
 import { amount, InterfaceId } from "@gemunion/contracts-constants";
-import { deployContract } from "@gemunion/contracts-utils";
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { deployContract, shouldSupportsInterface } from "@gemunion/contracts-utils";
 
 import { FrameworkInterfaceId, templateId, tokenId } from "../../constants";
 import { deployERC20 } from "../../ERC20/shared/fixtures";

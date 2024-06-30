@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { parseEther, ZeroAddress } from "ethers";
+import { ZeroAddress } from "ethers";
 
 import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
 
