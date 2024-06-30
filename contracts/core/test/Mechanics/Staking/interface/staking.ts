@@ -1,7 +1,14 @@
+export interface IBlockchainAsset {
+  tokenType: number;
+  token: string;
+  tokenId: number;
+  amount: number;
+}
+
 export interface IStakingRule {
-  deposit: IAsset[];
-  reward: IAsset[];
-  content: IAsset[][];
+  deposit: IBlockchainAsset[];
+  reward: IBlockchainAsset[];
+  content: IBlockchainAsset[][];
   terms: {
     period: number;
     penalty: number;
@@ -10,11 +17,4 @@ export interface IStakingRule {
     advance: boolean;
   };
   active: boolean;
-}
-
-export interface IAsset {
-  tokenType: number;
-  token: string;
-  tokenId: bigint;
-  amount: bigint;
 }

@@ -1,17 +1,17 @@
+export interface IBlockchainAsset {
+  tokenType: number;
+  token: string;
+  tokenId: number;
+  amount: number;
+}
+
 export interface IRule {
-  deposit: IAsset;
-  reward: IAsset;
+  deposit: IBlockchainAsset;
+  reward: IBlockchainAsset;
   terms: {
     period: number;
     penalty: number;
     maxCycles: number;
   };
   active: boolean;
-}
-
-export interface IAsset {
-  tokenType: number;
-  token: string;
-  tokenId: number;
-  amount: number;
 }
