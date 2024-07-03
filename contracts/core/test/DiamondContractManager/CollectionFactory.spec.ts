@@ -1,18 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress, ZeroAddress } from "ethers";
+import { getAddress } from "ethers";
 
 import {
   baseTokenURI,
+  batchSize,
   DEFAULT_ADMIN_ROLE,
   nonce,
   royalty,
   tokenName,
   tokenSymbol,
-  batchSize,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId, templateId, tokenId } from "../constants";
+import { contractTemplate, externalId, tokenId } from "../constants";
 import { buildBytecode, buildCreate2Address } from "../utils";
 import { deployDiamond } from "./shared/fixture";
 
@@ -31,9 +31,9 @@ describe("CollectionFactoryDiamond", function () {
 
   describe("deployCollection", function () {
     it("should deploy a collection", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721Simple");
+      const { bytecode } = await ethers.getContractFactory("ERC721CSimple");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -109,18 +109,16 @@ describe("CollectionFactoryDiamond", function () {
         .to.emit(contractInstance, "CollectionDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, contractTemplate]);
 
-      const collectionInstance = await ethers.getContractAt("ERC721Simple", address);
+      const collectionInstance = await ethers.getContractAt("ERC721CSimple", address);
 
       const hasRole1 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
-      const tx2 = collectionInstance.mintCommon(receiver.address, templateId);
-      await expect(tx2).to.emit(collectionInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      const balance = await collectionInstance.balanceOf(receiver.address);
-      expect(balance).to.equal(1);
+      const balance = await collectionInstance.balanceOf(owner.address);
+      expect(balance).to.equal(batchSize);
 
       const uri = await collectionInstance.tokenURI(tokenId);
       expect(uri).to.equal(`${baseTokenURI}/${(await collectionInstance.getAddress()).toLowerCase()}/${tokenId}`);
