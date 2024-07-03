@@ -6,7 +6,7 @@
 
 pragma solidity ^0.8.20;
 
-import { MINTER_ROLE, DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { DEFAULT_ADMIN_ROLE, MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { SignerMissingRole } from "../../utils/errors.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -53,9 +53,10 @@ contract ERC998FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
 
     emit ERC998TokenDeployed(account, params.externalId, args);
 
-    bytes32[] memory roles = new bytes32[](2);
+    bytes32[] memory roles = new bytes32[](3);
     roles[0] = MINTER_ROLE;
-    roles[1] = DEFAULT_ADMIN_ROLE;
+    roles[1] = METADATA_ROLE;
+    roles[2] = DEFAULT_ADMIN_ROLE;
 
     grantFactoryMintPermission(account);
     grantFactoryMetadataPermission(account);

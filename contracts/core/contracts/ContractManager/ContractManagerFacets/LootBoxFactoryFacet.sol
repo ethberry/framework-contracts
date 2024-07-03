@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { METADATA_ROLE, MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { SignerMissingRole } from "../../utils/errors.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -56,10 +56,11 @@ contract LootBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
 
     emit LootBoxDeployed(account, params.externalId, args);
 
-    bytes32[] memory roles = new bytes32[](3);
+    bytes32[] memory roles = new bytes32[](4);
     roles[0] = MINTER_ROLE;
     roles[1] = PAUSER_ROLE;
-    roles[2] = DEFAULT_ADMIN_ROLE;
+    roles[2] = METADATA_ROLE;
+    roles[3] = DEFAULT_ADMIN_ROLE;
 
     grantFactoryMintPermission(account);
     grantFactoryMetadataPermission(account);

@@ -5,6 +5,7 @@ import { getAddress, ZeroAddress } from "ethers";
 import {
   baseTokenURI,
   DEFAULT_ADMIN_ROLE,
+  METADATA_ROLE,
   nonce,
   royalty,
   tokenName,
@@ -114,6 +115,12 @@ describe("ERC998FactoryDiamond", function () {
 
       const hasRole2 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
+
+      const hasRole3 = await erc998Instance.hasRole(METADATA_ROLE, owner.address);
+      expect(hasRole3).to.equal(true);
+
+      const hasRole4 = await erc998Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      expect(hasRole4).to.equal(false);
 
       const tx2 = erc998Instance.mintCommon(receiver.address, templateId);
       await expect(tx2).to.emit(erc998Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
