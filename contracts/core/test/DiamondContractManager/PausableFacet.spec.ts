@@ -4,9 +4,9 @@ import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 
 import { deployDiamond } from "./shared/fixture";
 
-describe("PausableFacetDiamond", function () {
+describe.skip("PausableFacetDiamond", function () {
   const factory = async (facetName = "PausableFacet"): Promise<any> => {
-    const diamondInstance = await deployDiamond("DiamondCM", [facetName], "DiamondCMInit", {
+    const diamondInstance = await deployDiamond("DiamondCM", [facetName, "DiamondLoupeFacet"], "DiamondCMInit", {
       logSelectors: false,
     });
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());

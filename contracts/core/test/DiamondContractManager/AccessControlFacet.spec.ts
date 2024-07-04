@@ -7,7 +7,7 @@ import { deployDiamond } from "./shared/fixture";
 
 describe("AccessControlFacetDiamond", function () {
   const factory = async (facetName = "AccessControlFacet"): Promise<any> => {
-    const diamondInstance = await deployDiamond("DiamondCM", [facetName], "DiamondCMInit", {
+    const diamondInstance = await deployDiamond("DiamondCM", [facetName, "DiamondLoupeFacet"], "DiamondCMInit", {
       logSelectors: false,
     });
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
