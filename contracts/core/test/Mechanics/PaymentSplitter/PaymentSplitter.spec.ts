@@ -4,7 +4,7 @@ import { deployPaymentSplitter } from "./fixture";
 import { shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { InterfaceId } from "@gemunion/contracts-constants";
 
-describe.only("PaymentSplitter", function () {
+describe("PaymentSplitter", function () {
   const factory = () => deployPaymentSplitter();
 
   shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IERC1363Receiver, InterfaceId.IERC1363Spender]);
