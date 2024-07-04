@@ -24,6 +24,7 @@ describe("ContractManagerDiamond", function () {
         "UseFactoryFacet",
         "AccessControlFacet",
         "PausableFacet",
+        "CollectionFactoryFacet",
       ],
       "DiamondCMInit",
       {
