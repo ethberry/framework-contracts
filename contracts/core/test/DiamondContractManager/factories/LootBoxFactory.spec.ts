@@ -32,7 +32,7 @@ describe("LootBoxFactoryDiamond", function () {
     it("should deploy contract", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimpleHardhat");
 
       const contractInstance = await factory();
 
@@ -107,7 +107,7 @@ describe("LootBoxFactoryDiamond", function () {
         .to.emit(contractInstance, "LootBoxDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, contractTemplate]);
 
-      const erc721Instance = await ethers.getContractAt("ERC721LootBoxSimple", address);
+      const erc721Instance = await ethers.getContractAt("ERC721LootBoxSimpleHardhat", address);
 
       const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
       expect(hasRole1).to.equal(false);
@@ -118,14 +118,19 @@ describe("LootBoxFactoryDiamond", function () {
       const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx2).to.be.revertedWithCustomError(erc721Instance, "MethodNotSupported");
 
-      const tx3 = erc721Instance.mintBox(receiver.address, templateId, [
-        {
-          tokenType: 2,
-          token: await erc721Instance.getAddress(),
-          tokenId,
-          amount: 1n,
-        },
-      ]);
+      const tx3 = erc721Instance.mintBox(
+        receiver.address,
+        templateId,
+        [
+          {
+            tokenType: 2,
+            token: await erc721Instance.getAddress(),
+            tokenId,
+            amount: 1n,
+          },
+        ],
+        { min: 1, max: 1 },
+      );
       await expect(tx3).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
       const balance = await erc721Instance.balanceOf(receiver.address);
@@ -138,7 +143,7 @@ describe("LootBoxFactoryDiamond", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimpleHardhat");
 
       const contractInstance = await factory();
 
