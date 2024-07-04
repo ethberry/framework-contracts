@@ -12,12 +12,12 @@ import {
   tokenSymbol,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId, templateId, tokenId } from "../constants";
-import { buildBytecode, buildCreate2Address } from "../utils";
-import { deployDiamond } from "./shared/fixture";
+import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
+import { buildBytecode, buildCreate2Address } from "../../utils";
+import { deployDiamond } from "../shared/fixture";
 
-describe("ERC998FactoryDiamond", function () {
-  const factory = async (facetName = "ERC998FactoryFacet"): Promise<any> => {
+describe("MysteryBoxFactoryDiamond", function () {
+  const factory = async (facetName = "MysteryBoxFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -29,14 +29,13 @@ describe("ERC998FactoryDiamond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployERC998Token", function () {
+  describe("deployMysteryToken", function () {
     it("should deploy contract", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC998Simple");
+      const { bytecode } = await ethers.getContractFactory("ERC721MysteryBoxSimple");
 
       const contractInstance = await factory();
-      const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
         // Domain
@@ -44,20 +43,20 @@ describe("ERC998FactoryDiamond", function () {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
-          verifyingContract,
+          verifyingContract: await contractInstance.getAddress(),
         },
         // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "Erc998Args" },
+            { name: "args", type: "MysteryArgs" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          Erc998Args: [
+          MysteryArgs: [
             { name: "name", type: "string" },
             { name: "symbol", type: "string" },
             { name: "royalty", type: "uint96" },
@@ -82,7 +81,7 @@ describe("ERC998FactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployERC998Token(
+      const tx = await contractInstance.deployMysterybox(
         {
           nonce,
           bytecode,
@@ -104,41 +103,51 @@ describe("ERC998FactoryDiamond", function () {
         bytecode,
       );
       const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+
       await expect(tx)
-        .to.emit(contractInstance, "ERC998TokenDeployed")
+        .to.emit(contractInstance, "MysteryBoxDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, contractTemplate]);
 
-      const erc998Instance = await ethers.getContractAt("ERC998Simple", address);
+      const erc721Instance = await ethers.getContractAt("ERC721MysteryBoxSimple", address);
 
-      const hasRole1 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
       expect(hasRole1).to.equal(false);
 
-      const hasRole2 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
 
-      const hasRole3 = await erc998Instance.hasRole(METADATA_ROLE, owner.address);
+      const hasRole3 = await erc721Instance.hasRole(METADATA_ROLE, owner.address);
       expect(hasRole3).to.equal(true);
 
-      const hasRole4 = await erc998Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
       expect(hasRole4).to.equal(false);
 
-      const tx2 = erc998Instance.mintCommon(receiver.address, templateId);
-      await expect(tx2).to.emit(erc998Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+      const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
+      await expect(tx2).to.be.revertedWithCustomError(erc721Instance, "MethodNotSupported");
 
-      const balance = await erc998Instance.balanceOf(receiver.address);
+      const tx3 = erc721Instance.mintBox(receiver.address, templateId, [
+        {
+          tokenType: 2,
+          token: await erc721Instance.getAddress(),
+          tokenId,
+          amount: 1n,
+        },
+      ]);
+      await expect(tx3).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+
+      const balance = await erc721Instance.balanceOf(receiver.address);
       expect(balance).to.equal(1);
 
-      const uri = await erc998Instance.tokenURI(tokenId);
-      expect(uri).to.equal(`${baseTokenURI}/${(await erc998Instance.getAddress()).toLowerCase()}/${tokenId}`);
+      const uri = await erc721Instance.tokenURI(tokenId);
+      expect(uri).to.equal(`${baseTokenURI}/${(await erc721Instance.getAddress()).toLowerCase()}/${tokenId}`);
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC998Simple");
+      const { bytecode } = await ethers.getContractFactory("ERC721MysteryBoxSimple");
 
       const contractInstance = await factory();
-      const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
         // Domain
@@ -146,20 +155,20 @@ describe("ERC998FactoryDiamond", function () {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
-          verifyingContract,
+          verifyingContract: await contractInstance.getAddress(),
         },
         // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "Erc998Args" },
+            { name: "args", type: "MysteryArgs" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          Erc998Args: [
+          MysteryArgs: [
             { name: "name", type: "string" },
             { name: "symbol", type: "string" },
             { name: "royalty", type: "uint96" },
@@ -187,7 +196,7 @@ describe("ERC998FactoryDiamond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployERC998Token(
+      const tx = contractInstance.deployMysterybox(
         {
           nonce,
           bytecode,

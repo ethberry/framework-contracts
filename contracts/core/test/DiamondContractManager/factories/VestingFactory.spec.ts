@@ -6,10 +6,10 @@ import { time } from "@openzeppelin/test-helpers";
 import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 import { decodeTraits } from "@gemunion/traits-v6";
 
-import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
-import { claimId, externalId, tokenId, userId, contractTemplate } from "../constants";
-import { deployERC20 } from "../ERC20/shared/fixtures";
-import { deployDiamond } from "./shared/fixture";
+import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
+import { claimId, externalId, tokenId, userId, contractTemplate } from "../../constants";
+import { deployERC20 } from "../../ERC20/shared/fixtures";
+import { deployDiamond } from "../shared/fixture";
 
 describe("VestingFactoryDiamond", function () {
   const factory = async (facetName = "VestingFactoryFacet"): Promise<any> => {

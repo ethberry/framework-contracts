@@ -2,6 +2,7 @@ import { ethers } from "hardhat";
 
 import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-constants";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
+
 import { deployDiamond } from "./shared/fixture";
 
 describe("AccessControlFacetDiamond", function () {

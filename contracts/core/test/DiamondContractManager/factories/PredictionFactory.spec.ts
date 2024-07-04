@@ -1,15 +1,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address, keccak256 } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { buildBytecode, buildCreate2Address, getContractName, isEqualArray, recursivelyDecodeResult } from "../utils";
-import { externalId } from "../constants";
-import { deployDiamond } from "./shared/fixture";
+import { contractTemplate, externalId } from "../../constants";
+import { deployDiamond } from "../shared/fixture";
 
-describe("LotteryFactoryDiamoond", function () {
-  const factory = async (facetName = "LotteryFactoryFacet"): Promise<any> => {
+describe("PredictionFactoryDiamond", function () {
+  const factory = async (facetName = "PredictionFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -21,11 +20,11 @@ describe("LotteryFactoryDiamoond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployLottery", function () {
+  describe("deployPrediction", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory("Prediction");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -42,18 +41,14 @@ describe("LotteryFactoryDiamoond", function () {
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "LotteryArgs" },
+            { name: "args", type: "PredictionArgs" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          LotteryArgs: [{ name: "config", type: "LotteryConfig" }],
-          LotteryConfig: [
-            { name: "timeLagBeforeRelease", type: "uint256" },
-            { name: "commission", type: "uint256" },
-          ],
+          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -63,49 +58,37 @@ describe("LotteryFactoryDiamoond", function () {
             externalId,
           },
           args: {
-            config: {
-              timeLagBeforeRelease: 100,
-              commission: 30,
-            },
+            payees: [owner.address],
+            shares: [1],
+            contractTemplate,
           },
         },
       );
 
-      const tx = await contractInstance.deployLottery(
+      const tx = await contractInstance.deployPrediction(
         {
           nonce,
           bytecode,
           externalId,
         },
         {
-          config: {
-            timeLagBeforeRelease: 100,
-            commission: 30,
-          },
+          contractTemplate,
         },
         signature,
       );
 
-      const buildByteCode = buildBytecode(["uint256", "uint256"], [100, 30], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = keccak256(bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
-        .to.emit(contractInstance, "LotteryDeployed")
-        .withArgs(address, externalId, isEqualArray(["100", "30"]));
-
-      const lotteryInstance = await ethers.getContractAt(getContractName("LotteryRandom", network.name), address);
-
-      const lotteryConfig = await lotteryInstance.getLotteryInfo();
-      expect(recursivelyDecodeResult(lotteryConfig)).deep.include({
-        timeLagBeforeRelease: 100n,
-        commission: 30n,
-      });
+        .to.emit(contractInstance, "PredictionDeployed")
+        .withArgs(address, externalId, [contractTemplate]);
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory("Prediction");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -122,18 +105,14 @@ describe("LotteryFactoryDiamoond", function () {
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "LotteryArgs" },
+            { name: "args", type: "PredictionArgs" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          LotteryArgs: [{ name: "config", type: "LotteryConfig" }],
-          LotteryConfig: [
-            { name: "timeLagBeforeRelease", type: "uint256" },
-            { name: "commission", type: "uint256" },
-          ],
+          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -143,10 +122,7 @@ describe("LotteryFactoryDiamoond", function () {
             externalId,
           },
           args: {
-            config: {
-              timeLagBeforeRelease: 100,
-              commission: 30,
-            },
+            contractTemplate,
           },
         },
       );
@@ -154,17 +130,16 @@ describe("LotteryFactoryDiamoond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployLottery(
+      const tx = contractInstance.deployPrediction(
         {
           nonce,
           bytecode,
           externalId,
         },
         {
-          config: {
-            timeLagBeforeRelease: 100,
-            commission: 30,
-          },
+          payees: [owner.address],
+          shares: [1],
+          contractTemplate,
         },
         signature,
       );

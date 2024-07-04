@@ -5,18 +5,19 @@ import { getAddress, ZeroAddress } from "ethers";
 import {
   baseTokenURI,
   DEFAULT_ADMIN_ROLE,
+  METADATA_ROLE,
   nonce,
   royalty,
   tokenName,
   tokenSymbol,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId, templateId, tokenId } from "../constants";
-import { buildBytecode, buildCreate2Address } from "../utils";
-import { deployDiamond } from "./shared/fixture";
+import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
+import { buildBytecode, buildCreate2Address } from "../../utils";
+import { deployDiamond } from "../shared/fixture";
 
-describe("LootBoxFactoryDiamond", function () {
-  const factory = async (facetName = "LootBoxFactoryFacet"): Promise<any> => {
+describe("ERC721FactoryDiamond", function () {
+  const factory = async (facetName = "ERC721FactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -28,13 +29,14 @@ describe("LootBoxFactoryDiamond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployLootToken", function () {
+  describe("deployERC721Token", function () {
     it("should deploy contract", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721Simple");
 
       const contractInstance = await factory();
+      const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
         // Domain
@@ -42,20 +44,20 @@ describe("LootBoxFactoryDiamond", function () {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
-          verifyingContract: await contractInstance.getAddress(),
+          verifyingContract,
         },
         // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "LootArgs" },
+            { name: "args", type: "Erc721Args" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          LootArgs: [
+          Erc721Args: [
             { name: "name", type: "string" },
             { name: "symbol", type: "string" },
             { name: "royalty", type: "uint96" },
@@ -80,7 +82,7 @@ describe("LootBoxFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployLootbox(
+      const tx = await contractInstance.deployERC721Token(
         {
           nonce,
           bytecode,
@@ -104,10 +106,10 @@ describe("LootBoxFactoryDiamond", function () {
       const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
 
       await expect(tx)
-        .to.emit(contractInstance, "LootBoxDeployed")
+        .to.emit(contractInstance, "ERC721TokenDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, contractTemplate]);
 
-      const erc721Instance = await ethers.getContractAt("ERC721LootBoxSimple", address);
+      const erc721Instance = await ethers.getContractAt("ERC721Simple", address);
 
       const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
       expect(hasRole1).to.equal(false);
@@ -115,18 +117,14 @@ describe("LootBoxFactoryDiamond", function () {
       const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
 
-      const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
-      await expect(tx2).to.be.revertedWithCustomError(erc721Instance, "MethodNotSupported");
+      const hasRole3 = await erc721Instance.hasRole(METADATA_ROLE, owner.address);
+      expect(hasRole3).to.equal(true);
 
-      const tx3 = erc721Instance.mintBox(receiver.address, templateId, [
-        {
-          tokenType: 2,
-          token: await erc721Instance.getAddress(),
-          tokenId,
-          amount: 1n,
-        },
-      ]);
-      await expect(tx3).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      expect(hasRole4).to.equal(false);
+
+      const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
+      await expect(tx2).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
       const balance = await erc721Instance.balanceOf(receiver.address);
       expect(balance).to.equal(1);
@@ -138,9 +136,10 @@ describe("LootBoxFactoryDiamond", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721Simple");
 
       const contractInstance = await factory();
+      const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
         // Domain
@@ -148,20 +147,20 @@ describe("LootBoxFactoryDiamond", function () {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
-          verifyingContract: await contractInstance.getAddress(),
+          verifyingContract,
         },
         // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "LootArgs" },
+            { name: "args", type: "Erc721Args" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          LootArgs: [
+          Erc721Args: [
             { name: "name", type: "string" },
             { name: "symbol", type: "string" },
             { name: "royalty", type: "uint96" },
@@ -189,7 +188,7 @@ describe("LootBoxFactoryDiamond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployLootbox(
+      const tx = contractInstance.deployERC721Token(
         {
           nonce,
           bytecode,

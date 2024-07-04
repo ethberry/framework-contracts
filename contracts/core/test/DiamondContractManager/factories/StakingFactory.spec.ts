@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getCreate2Address, keccak256 } from "ethers";
+import { keccak256, getCreate2Address } from "ethers";
 
-import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
-import { externalId } from "../constants";
-import { deployDiamond } from "./shared/fixture";
+import { DEFAULT_ADMIN_ROLE, PAUSER_ROLE, nonce } from "@gemunion/contracts-constants";
 
-describe("WaitListFactoryDiamond", function () {
-  const factory = async (facetName = "WaitListFactoryFacet"): Promise<any> => {
+import { contractTemplate, externalId } from "../../constants";
+import { deployDiamond } from "../shared/fixture";
+
+describe("StakingFactoryDiamond", function () {
+  const factory = async (facetName = "StakingFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -19,11 +20,11 @@ describe("WaitListFactoryDiamond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployWaitList", function () {
+  describe("deployStaking", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("WaitList");
+      const { bytecode } = await ethers.getContractFactory("Staking");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -38,12 +39,16 @@ describe("WaitListFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [{ name: "params", type: "Params" }],
+          EIP712: [
+            { name: "params", type: "Params" },
+            { name: "args", type: "StakingArgs" },
+          ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
+          StakingArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -52,14 +57,20 @@ describe("WaitListFactoryDiamond", function () {
             bytecode,
             externalId,
           },
+          args: {
+            contractTemplate,
+          },
         },
       );
 
-      const tx = await contractInstance.deployWaitList(
+      const tx = await contractInstance.deployStaking(
         {
           nonce,
           bytecode,
           externalId,
+        },
+        {
+          contractTemplate,
         },
         signature,
       );
@@ -67,13 +78,20 @@ describe("WaitListFactoryDiamond", function () {
       const initCodeHash = keccak256(bytecode);
       const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
-      await expect(tx).to.emit(contractInstance, "WaitListDeployed").withArgs(address, externalId);
+      await expect(tx).to.emit(contractInstance, "StakingDeployed").withArgs(address, externalId, [contractTemplate]);
+
+      // TEST ROLES
+      const staking = await ethers.getContractAt("Staking", address);
+      const hasRole1 = await staking.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole1).to.equal(true);
+      const hasRole2 = await staking.hasRole(PAUSER_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("WaitList");
+      const { bytecode } = await ethers.getContractFactory("Staking");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -88,12 +106,16 @@ describe("WaitListFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [{ name: "params", type: "Params" }],
+          EIP712: [
+            { name: "params", type: "Params" },
+            { name: "args", type: "StakingArgs" },
+          ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
+          StakingArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -102,17 +124,23 @@ describe("WaitListFactoryDiamond", function () {
             bytecode,
             externalId,
           },
+          args: {
+            contractTemplate,
+          },
         },
       );
 
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployWaitList(
+      const tx = contractInstance.deployStaking(
         {
           nonce,
           bytecode,
           externalId,
+        },
+        {
+          contractTemplate,
         },
         signature,
       );

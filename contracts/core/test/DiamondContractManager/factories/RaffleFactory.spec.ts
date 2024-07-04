@@ -4,11 +4,12 @@ import { getCreate2Address, keccak256 } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId } from "../constants";
-import { deployDiamond } from "./shared/fixture";
+import { getContractName, isContract } from "../../utils";
+import { externalId } from "../../constants";
+import { deployDiamond } from "../shared/fixture";
 
-describe("PredictionFactoryDiamond", function () {
-  const factory = async (facetName = "PredictionFactoryFacet"): Promise<any> => {
+describe("RaffleFactoryDiamond", function () {
+  const factory = async (facetName = "RaffleFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -20,11 +21,11 @@ describe("PredictionFactoryDiamond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployPrediction", function () {
+  describe("deployRaffle", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("Prediction");
+      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -39,16 +40,12 @@ describe("PredictionFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [
-            { name: "params", type: "Params" },
-            { name: "args", type: "PredictionArgs" },
-          ],
+          EIP712: [{ name: "params", type: "Params" }],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -57,22 +54,14 @@ describe("PredictionFactoryDiamond", function () {
             bytecode,
             externalId,
           },
-          args: {
-            payees: [owner.address],
-            shares: [1],
-            contractTemplate,
-          },
         },
       );
 
-      const tx = await contractInstance.deployPrediction(
+      const tx = await contractInstance.deployRaffle(
         {
           nonce,
           bytecode,
           externalId,
-        },
-        {
-          contractTemplate,
         },
         signature,
       );
@@ -80,15 +69,16 @@ describe("PredictionFactoryDiamond", function () {
       const initCodeHash = keccak256(bytecode);
       const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
-      await expect(tx)
-        .to.emit(contractInstance, "PredictionDeployed")
-        .withArgs(address, externalId, [contractTemplate]);
+      await expect(tx).to.emit(contractInstance, "RaffleDeployed").withArgs(address, externalId);
+
+      const isContractCheck = await isContract(address, ethers.provider);
+      expect(isContractCheck).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("Prediction");
+      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -103,16 +93,12 @@ describe("PredictionFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [
-            { name: "params", type: "Params" },
-            { name: "args", type: "PredictionArgs" },
-          ],
+          EIP712: [{ name: "params", type: "Params" }],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
         },
         // Values
         {
@@ -121,25 +107,17 @@ describe("PredictionFactoryDiamond", function () {
             bytecode,
             externalId,
           },
-          args: {
-            contractTemplate,
-          },
         },
       );
 
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployPrediction(
+      const tx = contractInstance.deployRaffle(
         {
           nonce,
           bytecode,
           externalId,
-        },
-        {
-          payees: [owner.address],
-          shares: [1],
-          contractTemplate,
         },
         signature,
       );

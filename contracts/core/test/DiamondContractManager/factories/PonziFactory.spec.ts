@@ -1,15 +1,15 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getCreate2Address, keccak256 } from "ethers";
+import { getAddress } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { getContractName, isContract } from "../utils";
-import { externalId } from "../constants";
-import { deployDiamond } from "./shared/fixture";
+import { contractTemplate, externalId } from "../../constants";
+import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
+import { deployDiamond } from "../shared/fixture";
 
-describe("RaffleFactoryDiamond", function () {
-  const factory = async (facetName = "RaffleFactoryFacet"): Promise<any> => {
+describe("PonziFactoryDiamond", function () {
+  const factory = async (facetName = "PonziFactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -21,11 +21,11 @@ describe("RaffleFactoryDiamond", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployRaffle", function () {
+  describe("deployPonzi", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory("Ponzi");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -40,11 +40,19 @@ describe("RaffleFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [{ name: "params", type: "Params" }],
+          EIP712: [
+            { name: "params", type: "Params" },
+            { name: "args", type: "PonziArgs" },
+          ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
+          ],
+          PonziArgs: [
+            { name: "payees", type: "address[]" },
+            { name: "shares", type: "uint256[]" },
+            { name: "contractTemplate", type: "string" },
           ],
         },
         // Values
@@ -54,31 +62,40 @@ describe("RaffleFactoryDiamond", function () {
             bytecode,
             externalId,
           },
+          args: {
+            payees: [owner.address],
+            shares: [1],
+            contractTemplate,
+          },
         },
       );
 
-      const tx = await contractInstance.deployRaffle(
+      const tx = await contractInstance.deployPonzi(
         {
           nonce,
           bytecode,
           externalId,
         },
+        {
+          payees: [owner.address],
+          shares: [1],
+          contractTemplate,
+        },
         signature,
       );
 
-      const initCodeHash = keccak256(bytecode);
-      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
+      const buildByteCode = buildBytecode(["address[]", "uint256[]"], [[owner.address], [1]], bytecode);
+      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
 
-      await expect(tx).to.emit(contractInstance, "RaffleDeployed").withArgs(address, externalId);
-
-      const isContractCheck = await isContract(address, ethers.provider);
-      expect(isContractCheck).to.equal(true);
+      await expect(tx)
+        .to.emit(contractInstance, "PonziDeployed")
+        .withArgs(address, externalId, isEqualArray([owner.address], [1n], contractTemplate));
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory("Ponzi");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -93,11 +110,19 @@ describe("RaffleFactoryDiamond", function () {
         },
         // Types
         {
-          EIP712: [{ name: "params", type: "Params" }],
+          EIP712: [
+            { name: "params", type: "Params" },
+            { name: "args", type: "PonziArgs" },
+          ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
+          ],
+          PonziArgs: [
+            { name: "payees", type: "address[]" },
+            { name: "shares", type: "uint256[]" },
+            { name: "contractTemplate", type: "string" },
           ],
         },
         // Values
@@ -106,6 +131,11 @@ describe("RaffleFactoryDiamond", function () {
             nonce,
             bytecode,
             externalId,
+          },
+          args: {
+            payees: [owner.address],
+            shares: [1],
+            contractTemplate,
           },
         },
       );
@@ -113,11 +143,16 @@ describe("RaffleFactoryDiamond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployRaffle(
+      const tx = contractInstance.deployPonzi(
         {
           nonce,
           bytecode,
           externalId,
+        },
+        {
+          payees: [owner.address],
+          shares: [1],
+          contractTemplate,
         },
         signature,
       );
