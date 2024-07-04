@@ -7,7 +7,7 @@ import {
   shouldBehaveLikeERC998ERC1155Enumerable,
   shouldBehaveLikeERC998ERC20,
   shouldBehaveLikeERC998ERC20Enumerable,
-  // shouldStateHash,
+  // shouldBehaveLikeStateHash,
 } from "@gemunion/contracts-erc998td";
 
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
@@ -28,7 +28,7 @@ describe("ERC998ERC1155ERC20HEnum", function () {
   shouldBehaveLikeERC998ERC20Enumerable(factory, options);
   shouldBehaveLikeERC998ERC1155(factory, options);
   shouldBehaveLikeERC998ERC1155Enumerable(factory, options);
-  // shouldStateHash(factory, options);
+  // shouldBehaveLikeStateHash(factory, options);
   shouldMintCommon(factory);
 
   shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
