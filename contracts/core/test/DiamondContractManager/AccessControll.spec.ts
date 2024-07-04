@@ -4,7 +4,7 @@ import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-constants";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { deployDiamond } from "./shared/fixture";
 
-describe("CollectionFactoryDiamond", function () {
+describe("AccessControlFacetDiamond", function () {
   const factory = async (facetName = "AccessControlFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond("DiamondCM", [facetName], "DiamondCMInit", {
       logSelectors: false,
