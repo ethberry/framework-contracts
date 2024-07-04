@@ -3,6 +3,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
 import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
+import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 
 import { tokenId } from "../../../../constants";
 import { customMint } from "../simple/customMintFn";
@@ -12,6 +13,8 @@ export function shouldBehaveLikeERC721MysteryBoxPausable(
   options: IERC721EnumOptions = {},
 ) {
   const { mint = customMint } = options;
+
+  shouldBehaveLikePausable(factory);
 
   describe("Unpack box", function () {
     it("should fail to unpack: paused", async function () {
