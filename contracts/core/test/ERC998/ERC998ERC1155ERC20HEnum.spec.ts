@@ -31,5 +31,20 @@ describe("ERC998ERC1155ERC20HEnum", function () {
   // shouldBehaveLikeStateHash(factory, options);
   shouldMintCommon(factory);
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC721,
+    InterfaceId.IERC721Enumerable,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IERC998TD,
+    InterfaceId.IERC998TDERC1155,
+    InterfaceId.IERC998TDERC1155Enumerable,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC998TDERC20Enumerable,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC998TDERC1155,
+    InterfaceId.IERC998TDERC1155Enumerable,
+    InterfaceId.IERC998WL,
+  ]);
 });
