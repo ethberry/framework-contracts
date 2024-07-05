@@ -10,11 +10,12 @@ import { tokenId } from "../constants";
 
 describe("ERC998StateHash", function () {
   const factory = () => deployERC721(this.title);
+  const options = { mint: customMintCommonERC721, tokenId };
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
 
   shouldBehaveLikeERC998Simple(factory);
-  shouldBehaveLikeStateHash(factory, { mint: customMintCommonERC721, tokenId });
+  shouldBehaveLikeStateHash(factory, options);
 
   shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
 });
