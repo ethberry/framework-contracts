@@ -7,7 +7,7 @@ import { shouldBehaveLikeERC721Burnable } from "./shared/simple/burnable";
 import { shouldBehaveLikeERC721Soulbound } from "./shared/soulbound";
 import { shouldMintCommon } from "./shared/simple/base/mintCommon";
 
-describe("ERC721SoulboundVotes", function () {
+describe("ERC721SoulboundWotes", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);

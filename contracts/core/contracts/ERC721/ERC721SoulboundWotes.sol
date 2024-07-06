@@ -15,7 +15,7 @@ import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721A
 import { ERC721Soulbound } from "./ERC721Soulbound.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 
-contract ERC721SoulboundVotes is ERC721Soulbound, ERC721Votes {
+contract ERC721SoulboundWotes is ERC721Soulbound, ERC721Votes {
   constructor(
     string memory name,
     string memory symbol,
