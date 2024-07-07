@@ -22,6 +22,13 @@ describe("ERC721LootBoxBlacklist", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
     FrameworkInterfaceId.ERC721Loot,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+    FrameworkInterfaceId.ERC721Loot,
+    InterfaceId.IBlackList,
   ]);
 });

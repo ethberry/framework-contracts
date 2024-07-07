@@ -21,7 +21,12 @@ describe("ERC998Discrete", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    InterfaceId.IERC4906,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC998TD,
+    InterfaceId.IERC998WL,
     FrameworkInterfaceId.ERC721Upgradable,
+    InterfaceId.IERC4906,
   ]);
 });

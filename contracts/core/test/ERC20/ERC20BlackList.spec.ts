@@ -20,5 +20,7 @@ describe("ERC20Blacklist", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC20,
     InterfaceId.IERC1363,
+    InterfaceId.IBlackList,
+    InterfaceId.IERC20Metadata,
   ]);
 });

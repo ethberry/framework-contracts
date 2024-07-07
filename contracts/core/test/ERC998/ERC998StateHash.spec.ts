@@ -6,7 +6,7 @@ import { shouldBehaveLikeStateHash } from "@gemunion/contracts-erc998td";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";
 import { customMintCommonERC721 } from "../ERC721/shared/customMintFn";
-import { tokenId } from "../constants";
+import { FrameworkInterfaceId, tokenId } from "../constants";
 
 describe("ERC998StateHash", function () {
   const factory = () => deployERC721(this.title);
@@ -16,5 +16,14 @@ describe("ERC998StateHash", function () {
   shouldBehaveLikeERC998Simple(factory);
   shouldBehaveLikeStateHash(factory, { mint: customMintCommonERC721, tokenId });
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC721,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC998TD,
+    InterfaceId.IERC998WL,
+  ]);
 });

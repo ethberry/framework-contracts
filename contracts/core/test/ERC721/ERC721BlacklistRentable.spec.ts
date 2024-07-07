@@ -7,6 +7,7 @@ import { shouldBehaveLikeERC721Simple } from "./shared/simple";
 import { shouldBehaveLikeERC721Blacklist } from "./shared/blacklist";
 import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";
 import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { FrameworkInterfaceId } from "../constants";
 
 describe("ERC721BlacklistRentable", function () {
   const factory = () => deployERC721(this.title);
@@ -23,6 +24,9 @@ describe("ERC721BlacklistRentable", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Enumerable,
+    InterfaceId.IERC721Metadata,
     InterfaceId.IERC4907,
   ]);
 });

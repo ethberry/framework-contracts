@@ -7,7 +7,7 @@ import {
   shouldBehaveLikeERC998ERC20Enumerable,
 } from "@gemunion/contracts-erc998td";
 
-import { tokenId } from "../constants";
+import { FrameworkInterfaceId, tokenId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { customMintCommonERC721 } from "../ERC721/shared/customMintFn";
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
@@ -25,5 +25,16 @@ describe("ERC998ERC20Enum", function () {
   shouldBehaveLikeERC998ERC20Enumerable(factory, options);
   shouldMintCommon(factory);
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC721,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC998TD,
+    InterfaceId.IERC998WL,
+    InterfaceId.IERC998TDERC20Enumerable,
+    InterfaceId.IERC998TDEnumerable,
+  ]);
 });

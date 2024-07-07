@@ -5,7 +5,7 @@ import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { shouldBehaveLikeERC20Simple } from "./shared/simple";
 import { deployERC1363 } from "./shared/fixtures";
 
-describe.only("ERC20Wotes", function () {
+describe("ERC20Wotes", function () {
   const factory = () => deployERC1363(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
@@ -17,5 +17,6 @@ describe.only("ERC20Wotes", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC20,
     InterfaceId.IERC1363,
+    InterfaceId.IERC20Metadata,
   ]);
 });

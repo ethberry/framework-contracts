@@ -12,5 +12,10 @@ describe("ERC20Ownable", function () {
 
   shouldBehaveLikeERC20Simple(factory);
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IERC20, InterfaceId.IERC1363]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IERC20,
+    InterfaceId.IERC1363,
+    InterfaceId.IERC20Metadata,
+  ]);
 });

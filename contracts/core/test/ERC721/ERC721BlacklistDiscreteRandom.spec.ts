@@ -39,5 +39,9 @@ describe("ERC721BlacklistDiscreteRandom", function () {
     InterfaceId.IERC4906,
     FrameworkInterfaceId.ERC721Upgradable,
     FrameworkInterfaceId.ERC721Random,
+    InterfaceId.IBlackList,
+    FrameworkInterfaceId.ERC721Simple,
+    InterfaceId.IERC721Enumerable,
+    InterfaceId.IERC721Metadata,
   ]);
 });
