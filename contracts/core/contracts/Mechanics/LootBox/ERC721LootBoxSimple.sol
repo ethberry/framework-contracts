@@ -11,7 +11,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
 
-import { IERC721LootBox, BoxConfig } from "./interfaces/IERC721LootBox.sol";
+import { IERC721LootBox, LootBoxConfig} from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
@@ -29,7 +29,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
 
   mapping(uint256 => Asset[]) internal _itemData;
   mapping(uint256 => Request) internal _queue;
-  mapping(uint256 => BoxConfig) internal _boxConfig;
+  mapping(uint256 => LootBoxConfig) internal _boxConfig;
 
   event UnpackLootBox(address account, uint256 tokenId);
 
@@ -48,7 +48,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items, BoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory items, LootBoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     uint256 length = items.length;
@@ -82,7 +82,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
 
     _burn(tokenId);
 
-    BoxConfig storage minMax = _boxConfig[tokenId];
+    LootBoxConfig storage minMax = _boxConfig[tokenId];
 
     if (minMax.min == minMax.max && minMax.min == _itemData[tokenId].length) {
       // if min == max and minMax == items.length, no need to call random function.
@@ -105,7 +105,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     delete _queue[requestId];
 
     uint256 randomValue = randomWords[0];
-    BoxConfig storage boxConfig = _boxConfig[tokenId];
+    LootBoxConfig storage boxConfig = _boxConfig[tokenId];
     Asset[] storage items = _itemData[tokenId];
     uint256 itemsLength = items.length; // store in seperate variable to save gas.
 
@@ -120,7 +120,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
         DisabledTokenTypes(false, false, false, false, false)
       );
     }
-    
+
     // Array of items, that would be randomly picked and minted
     Asset[] memory itemsToMint = new Asset[](actualCount);
     // Array of availableIndexes, is used to identify unique indexes
