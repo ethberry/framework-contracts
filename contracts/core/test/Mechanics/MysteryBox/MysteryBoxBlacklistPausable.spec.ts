@@ -24,11 +24,11 @@ describe("ERC721MysteryBoxBlacklistPausable", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    FrameworkInterfaceId.ERC721Simple,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
+    InterfaceId.IBlackList,
+    FrameworkInterfaceId.ERC721Simple,
     FrameworkInterfaceId.ERC721Simple,
     FrameworkInterfaceId.ERC721Mystery,
-    InterfaceId.IBlackList,
   ]);
 });

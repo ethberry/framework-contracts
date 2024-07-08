@@ -23,7 +23,6 @@ describe("ERC998BlacklistDiscrete", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    FrameworkInterfaceId.ERC721Simple,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
     InterfaceId.IERC998TD,
@@ -31,5 +30,6 @@ describe("ERC998BlacklistDiscrete", function () {
     InterfaceId.IBlackList,
     InterfaceId.IERC4906,
     FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

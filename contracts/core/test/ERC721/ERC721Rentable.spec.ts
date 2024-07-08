@@ -21,9 +21,9 @@ describe("ERC721Rentable", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    FrameworkInterfaceId.ERC721Simple,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
     InterfaceId.IERC4907,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

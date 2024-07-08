@@ -29,7 +29,6 @@ describe("ERC998ERC1155Enum", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    FrameworkInterfaceId.ERC721Simple,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
     InterfaceId.IERC998TD,
@@ -38,5 +37,6 @@ describe("ERC998ERC1155Enum", function () {
     InterfaceId.IERC998TDERC1155,
     InterfaceId.IERC998TDERC1155Enumerable,
     InterfaceId.IERC1155Receiver,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

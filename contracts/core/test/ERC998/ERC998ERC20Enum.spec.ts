@@ -29,12 +29,12 @@ describe("ERC998ERC20Enum", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
-    FrameworkInterfaceId.ERC721Simple,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
     InterfaceId.IERC998TD,
     InterfaceId.IERC998WL,
     InterfaceId.IERC998TDERC20Enumerable,
     InterfaceId.IERC998TDEnumerable,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });
