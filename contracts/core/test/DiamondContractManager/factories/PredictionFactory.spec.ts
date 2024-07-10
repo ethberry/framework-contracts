@@ -83,6 +83,12 @@ describe("PredictionFactoryDiamond", function () {
       await expect(tx)
         .to.emit(contractInstance, "PredictionDeployed")
         .withArgs(address, externalId, [contractTemplate]);
+
+      const predictionContract = await ethers.getContractAt("Prediction", address);
+      await predictionContract.pause();
+      expect(await predictionContract.paused()).to.equal(true);
+      await predictionContract.unpause();
+      expect(await predictionContract.paused()).to.equal(false);
     });
 
     it("should fail: SignerMissingRole", async function () {
