@@ -16,6 +16,8 @@ describe("Dispenser", function () {
 
   shouldReceive(factory);
 
+  shouldSupportsInterface(factory)([InterfaceId.IERC165, FrameworkInterfaceId.Dispenser]);
+
   describe("NATIVE", function () {
     it("should send ETH", async function () {
       const [owner, receiver] = await ethers.getSigners();

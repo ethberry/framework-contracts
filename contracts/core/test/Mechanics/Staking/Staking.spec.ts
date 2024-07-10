@@ -4,11 +4,12 @@ import { encodeBytes32String, parseEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
+import { shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import {
   amount,
   DEFAULT_ADMIN_ROLE,
+  InterfaceId,
   MINTER_ROLE,
   nonce,
   PAUSER_ROLE,
@@ -102,6 +103,15 @@ describe("Staking", function () {
   shouldBehaveLikePausable(factory);
   shouldBehaveLikeTopUp(factory);
   shouldHaveReentrancyGuard(factory);
+
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+    InterfaceId.IERC721Receiver,
+    InterfaceId.IERC1155Receiver,
+  ]);
 
   before(async function () {
     await network.provider.send("hardhat_reset");
