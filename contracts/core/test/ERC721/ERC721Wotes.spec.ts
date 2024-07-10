@@ -4,16 +4,15 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contract
 
 import { deployERC721 } from "./shared/fixtures";
 import { shouldBehaveLikeERC721Burnable } from "./shared/simple/burnable";
-import { shouldBehaveLikeERC721Soulbound } from "./shared/soulbound";
+// import { shouldBehaveLikeERC721Soulbound } from "./shared/soulbound";
 import { shouldMintCommon } from "./shared/simple/base/mintCommon";
 import { FrameworkInterfaceId } from "../constants";
 
-describe("ERC721SoulboundVotes", function () {
+describe("ERC721Wotes", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
 
-  shouldBehaveLikeERC721Soulbound(factory);
   shouldMintCommon(factory);
   shouldBehaveLikeERC721Burnable(factory);
 

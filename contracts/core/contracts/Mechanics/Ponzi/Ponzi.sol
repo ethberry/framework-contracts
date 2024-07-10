@@ -22,7 +22,7 @@ import { TopUp } from "../../utils/TopUp.sol";
 import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ZeroBalance, NotExist, NotActive, BalanceExceed, NotComplete, Expired, NotAnOwner, WrongStake } from "../../utils/errors.sol";
-import "../../Referral/Referral.sol";
+import { Referral } from "../../Referral/Referral.sol";
 
 contract Ponzi is
   IPonzi,

@@ -56,21 +56,6 @@ contract ERC998Simple is ERC721Simple, ERC998ERC721, WhiteListChild {
   }
 
   /**
-   * @dev See {ERC721-_beforeTokenTransfer}.
-   * Override that checks parent token
-   */
-// TODO FIX ME
-//  function _beforeTokenTransfer(
-//    address from,
-//    address to,
-//    uint256 firstTokenId,
-//    uint256 batchSize
-//  ) internal virtual override(ERC721ABER, ERC998ERC721) {
-//    ERC998ERC721._beforeTokenTransfer(from, to, firstTokenId, batchSize);
-//    super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
-//  }
-
-  /**
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(
