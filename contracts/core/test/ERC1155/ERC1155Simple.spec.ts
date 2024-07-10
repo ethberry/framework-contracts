@@ -12,5 +12,10 @@ describe("ERC1155Simple", function () {
 
   shouldBehaveLikeERC1155Simple(factory);
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC1155]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC1155,
+    InterfaceId.IERC1155Metadata,
+  ]);
 });

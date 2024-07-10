@@ -17,5 +17,6 @@ describe("ERC20Simple", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC20,
     InterfaceId.IERC1363,
+    InterfaceId.IERC20Metadata,
   ]);
 });

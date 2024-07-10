@@ -6,6 +6,7 @@ import { deployERC721 } from "./shared/fixtures";
 import { shouldBehaveLikeERC721Simple } from "./shared/simple";
 import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";
 import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { FrameworkInterfaceId } from "../constants";
 
 describe("ERC721Rentable", function () {
   const factory = () => deployERC721(this.title);
@@ -20,6 +21,9 @@ describe("ERC721Rentable", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
     InterfaceId.IERC4907,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

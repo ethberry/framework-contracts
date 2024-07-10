@@ -20,7 +20,10 @@ describe("ERC721MysteryBoxSimple", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
     FrameworkInterfaceId.ERC721Simple,
     FrameworkInterfaceId.ERC721Mystery,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

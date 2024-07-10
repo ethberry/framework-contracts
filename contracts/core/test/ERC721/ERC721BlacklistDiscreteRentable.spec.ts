@@ -27,7 +27,11 @@ describe("ERC721BlacklistDiscreteRentable", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
     InterfaceId.IERC4906,
+    InterfaceId.IBlackList,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IERC721Enumerable,
     InterfaceId.IERC4907,
     FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

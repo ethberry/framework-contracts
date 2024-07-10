@@ -24,6 +24,10 @@ describe("ERC721BlacklistDiscrete", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
     InterfaceId.IERC4906,
+    InterfaceId.IBlackList,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IERC721Enumerable,
     FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

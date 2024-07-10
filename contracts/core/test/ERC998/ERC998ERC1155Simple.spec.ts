@@ -7,7 +7,7 @@ import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";
 import { customMintCommonERC721 } from "../ERC721/shared/customMintFn";
-import { tokenId } from "../constants";
+import { FrameworkInterfaceId, tokenId } from "../constants";
 
 describe("ERC998ERC1155Simple", function () {
   const factory = () => deployERC721(this.title);
@@ -19,5 +19,16 @@ describe("ERC998ERC1155Simple", function () {
   shouldBehaveLikeERC998ERC1155(factory, options);
   shouldMintCommon(factory);
 
-  shouldSupportsInterface(factory)([InterfaceId.IERC165, InterfaceId.IAccessControl, InterfaceId.IERC721]);
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC721,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC998TD,
+    InterfaceId.IERC998WL,
+    InterfaceId.IERC998TDERC1155,
+    InterfaceId.IERC1155Receiver,
+    FrameworkInterfaceId.ERC721Simple,
+  ]);
 });

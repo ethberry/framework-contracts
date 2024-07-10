@@ -27,5 +27,6 @@ describe("ERC721CBlacklist", function () {
     InterfaceId.IERC721,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
+    InterfaceId.IBlackList,
   ]);
 });

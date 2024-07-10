@@ -3,8 +3,8 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
-import { deployContract, shouldBehaveLikePausable } from "@gemunion/contracts-utils";
+import { amount, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { deployContract, shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
 import { deployERC20 } from "../../ERC20/shared/fixtures";
@@ -21,6 +21,13 @@ describe("WaitList", function () {
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE);
   shouldBehaveLikePausable(factory);
   shouldBehaveLikeTopUp(factory);
+
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+  ]);
 
   describe("setReward", function () {
     it("should set reward", async function () {

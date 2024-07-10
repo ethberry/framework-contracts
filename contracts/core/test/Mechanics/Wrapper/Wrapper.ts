@@ -6,7 +6,7 @@ import { amount, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/
 import { shouldSupportsInterface, deployContract } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
-import { templateId, tokenId } from "../../constants";
+import { FrameworkInterfaceId, templateId, tokenId } from "../../constants";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { deployERC721 } from "../../ERC721/shared/fixtures";
 import { deployERC1155 } from "../../ERC1155/shared/fixtures";
@@ -29,6 +29,11 @@ describe("Wrapper", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
     InterfaceId.IERC1155Receiver,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IERC721Enumerable,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC1155Receiver,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 
   describe("mintBox", function () {

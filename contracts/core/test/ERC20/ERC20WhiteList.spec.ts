@@ -48,5 +48,7 @@ describe("ERC20Whitelist", function () {
     InterfaceId.IAccessControl,
     InterfaceId.IERC20,
     InterfaceId.IERC1363,
+    InterfaceId.IWhiteList,
+    InterfaceId.IERC20Metadata,
   ]);
 });

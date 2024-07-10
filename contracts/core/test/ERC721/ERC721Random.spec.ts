@@ -23,6 +23,9 @@ describe("ERC721Random", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
     FrameworkInterfaceId.ERC721Random,
+    FrameworkInterfaceId.ERC721Simple,
   ]);
 });

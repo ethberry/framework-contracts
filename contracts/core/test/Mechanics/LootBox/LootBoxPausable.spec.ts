@@ -24,6 +24,12 @@ describe("ERC721LootBoxPausable", function () {
     InterfaceId.IERC165,
     InterfaceId.IAccessControl,
     InterfaceId.IERC721,
+    InterfaceId.IERC721Metadata,
+    InterfaceId.IRoyalty,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+    FrameworkInterfaceId.ERC721Loot,
+    FrameworkInterfaceId.ERC721Simple,
     FrameworkInterfaceId.ERC721Loot,
   ]);
 });
