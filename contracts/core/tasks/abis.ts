@@ -125,6 +125,7 @@ export const fwEventNames = Object.keys(ContractEventSignatures).map(key => key.
 // LIST OF FUNCTIONS WE NEED TO INCLUDE TO @FW/PACKAGES
 export const fwFunctionNames = [
   "addConsumer",
+  "allowance",
   "approve",
   "balanceOf",
   "blacklist",
@@ -158,6 +159,7 @@ export const fwFunctionNames = [
   "getPrize",
   "getSubscription",
   "grantRole",
+  "isApprovedForAll",
   "lend",
   "merge",
   "mint",
