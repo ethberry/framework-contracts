@@ -245,7 +245,7 @@ task("abis", "Save all functions abi separately")
           }
 
           const funcFilePath = path.join(funcFolderPath, `${func.name}.json`);
-          fs.writeFileSync(funcFilePath, JSON.stringify([func], null, "\t"), {
+          fs.writeFileSync(funcFilePath, JSON.stringify([func]), {
             encoding: "utf-8",
             flag: "w+",
           });
