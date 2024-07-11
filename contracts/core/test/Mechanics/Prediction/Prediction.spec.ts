@@ -1,24 +1,27 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+
+import { deployContract } from "@gemunion/contracts-utils";
 
 describe("Prediction Contract Pause and Unpause", function () {
   let predictionContract;
 
   beforeEach(async function () {
-    const Prediction = await ethers.getContractFactory("Prediction");
-    predictionContract = await Prediction.deploy();
+    predictionContract = await deployContract("Prediction");
   });
 
   it("should pause and unpause the contract", async function () {
     // Check initial state
-    expect(await predictionContract.paused()).to.equal(false);
+    const initialPausedState = await predictionContract.paused();
+    expect(initialPausedState).to.equal(false);
 
     // Pause the contract
     await predictionContract.pause();
-    expect(await predictionContract.paused()).to.equal(true);
+    const pausedState = await predictionContract.paused();
+    expect(pausedState).to.equal(true);
 
     // Unpause the contract
     await predictionContract.unpause();
-    expect(await predictionContract.paused()).to.equal(false);
+    const unPausedState = await predictionContract.paused();
+    expect(unPausedState).to.equal(false);
   });
 });
