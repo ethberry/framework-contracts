@@ -80,7 +80,7 @@ describe("LootBoxFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployLootbox(
+      const tx = await contractInstance.deployLootBox(
         {
           nonce,
           bytecode,
@@ -194,7 +194,7 @@ describe("LootBoxFactoryDiamond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployLootbox(
+      const tx = contractInstance.deployLootBox(
         {
           nonce,
           bytecode,

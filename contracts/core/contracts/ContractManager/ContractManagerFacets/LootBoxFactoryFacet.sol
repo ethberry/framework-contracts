@@ -35,7 +35,7 @@ contract LootBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
 
   event LootBoxDeployed(address account, uint256 externalId, LootArgs args);
 
-  function deployLootbox(
+  function deployLootBox(
     Params calldata params,
     LootArgs calldata args,
     bytes calldata signature

@@ -81,7 +81,7 @@ describe("MysteryBoxFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployMysterybox(
+      const tx = await contractInstance.deployMysteryBox(
         {
           nonce,
           bytecode,
@@ -196,7 +196,7 @@ describe("MysteryBoxFactoryDiamond", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
-      const tx = contractInstance.deployMysterybox(
+      const tx = contractInstance.deployMysteryBox(
         {
           nonce,
           bytecode,

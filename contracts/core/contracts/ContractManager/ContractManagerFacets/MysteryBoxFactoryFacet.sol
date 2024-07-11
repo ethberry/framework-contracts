@@ -35,7 +35,7 @@ contract MysteryBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
 
   event MysteryBoxDeployed(address account, uint256 externalId, MysteryArgs args);
 
-  function deployMysterybox(
+  function deployMysteryBox(
     Params calldata params,
     MysteryArgs calldata args,
     bytes calldata signature

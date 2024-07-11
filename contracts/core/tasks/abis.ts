@@ -137,9 +137,12 @@ export const fwFunctionNames = [
   "deployERC20Token",
   "deployERC721Token",
   "deployERC998Token",
+  "deployLootBox",
   "deployLottery",
-  "deployMysterybox",
+  "deployMysteryBox",
+  "deployLootBox",
   "deployPaymentSplitter",
+  "deployPrediction",
   "deployPonzi",
   "deployRaffle",
   "deployStaking",
@@ -162,6 +165,7 @@ export const fwFunctionNames = [
   "mintCommon",
   "pause",
   "purchase",
+  "purchaseLoot",
   "purchaseLottery",
   "purchaseMystery",
   "purchaseRaffle",
@@ -211,23 +215,12 @@ task("abis", "Save all functions abi separately")
       .filter(art => art.includes(`${process.cwd()}/${files}`) || art.includes("@gemunion/contracts-chain-link-v2"))
       .filter(art => !art.includes(`/interfaces`));
 
-    const globFuncArr: Array<string> = [];
     const globEventArr: Array<string> = [];
-    const fwFuncArr: Array<string> = [];
     const fwEventArr: Array<IAbiObj> = [];
-
-    // const importArr: Array<string> = [];
-    // const exportArr: Array<string> = [];
 
     if (!fs.existsSync("./abis")) {
       fs.mkdirSync("./abis");
     }
-
-    // FW
-    // packages/abis/src/abis/balanceOf.json
-    // if (!fs.existsSync("../../packages/abis/src/abis")) {
-    //   fs.mkdirSync("../../packages/abis/src/abis");
-    // }
 
     for (const art of conart) {
       const name = path.parse(art).name;
@@ -235,75 +228,30 @@ task("abis", "Save all functions abi separately")
       const abif: IArtifact = JSON.parse(fs.readFileSync(art, "utf8"));
 
       // filer functions
-      const abifunct = abif.abi.filter(item => item.type === "function");
+      const abiFunctions = abif.abi.filter(item => item.type === "function");
       // filter events
-      const abievents = abif.abi.filter(item => item.type === "event");
+      const abiEvents = abif.abi.filter(item => item.type === "event");
 
       // functions
-      for (const func of abifunct) {
-        const isUnique = globFuncArr.indexOf(JSON.stringify(func)) === -1;
-
-        if (isUnique) {
-          globFuncArr.push(JSON.stringify(func));
-
-          const funcabifile = `${name}.${func.name}`;
-
-          if (fs.existsSync(`./abis/${funcabifile}.json`)) {
-            const abifile: Array<IAbiObj> = JSON.parse(fs.readFileSync(`./abis/${funcabifile}.json`, "utf8"));
-            const notIncludes = abifile.map(f => JSON.stringify(f)).indexOf(JSON.stringify(func)) === -1;
-
-            if (notIncludes) {
-              abifile.push(func);
-              fs.writeFileSync(`./abis/${funcabifile}.json`, JSON.stringify(abifile), {
-                encoding: "utf-8",
-                flag: "w+",
-              });
-            }
-          } else {
-            fs.writeFileSync(`./abis/${funcabifile}.json`, JSON.stringify([func]), { encoding: "utf-8", flag: "w+" });
+      for (const func of abiFunctions) {
+        // FRAMEWORK ABIS
+        if (fwFunctionNames.includes(func.name)) {
+          // create folder
+          const funcFolderPath = path.join(process.cwd(), `../../../packages/abis/json/${name}`);
+          if (!fs.existsSync(funcFolderPath)) {
+            fs.mkdirSync(funcFolderPath);
           }
 
-          // FRAMEWORK ABIS
-          if (fwFunctionNames.includes(func.name)) {
-            const unique = fwFuncArr.indexOf(JSON.stringify(func)) === -1;
-            if (unique) {
-              fwFuncArr.push(JSON.stringify(func));
-
-              // create folder
-              if (!fs.existsSync(`../../packages/abis/${func.name}`)) {
-                fs.mkdirSync(`../../packages/abis/${func.name}`);
-              }
-
-              // const filepath = `./abis/!fw/${func.name}.json`;
-              // const filepath = `../../packages/abis/src/abis/${func.name}.json`;
-              const filepath = `../../packages/abis/${func.name}/${name}.json`;
-
-              if (fs.existsSync(filepath)) {
-                const oldfile: Array<IAbiObj> = JSON.parse(fs.readFileSync(filepath, "utf8"));
-                const notIncludes = oldfile.map(f => JSON.stringify(f)).indexOf(JSON.stringify(func)) === -1;
-
-                if (notIncludes) {
-                  oldfile.push(func);
-                  fs.writeFileSync(filepath, JSON.stringify(oldfile), {
-                    encoding: "utf-8",
-                    flag: "w+",
-                  });
-                }
-              } else {
-                // exportArr.push(`export const ${func.name}${name}ABI = ${func.name}${name};`);
-                // importArr.push(`import ${func.name}${name} from "./abis/${func.name}/${name}.json";`);
-                fs.writeFileSync(filepath, JSON.stringify([func]), {
-                  encoding: "utf-8",
-                  flag: "w+",
-                });
-              }
-            }
-          }
+          const funcFilePath = path.join(funcFolderPath, `${func.name}.json`);
+          fs.writeFileSync(funcFilePath, JSON.stringify([func], null, "\t"), {
+            encoding: "utf-8",
+            flag: "w+",
+          });
         }
       }
 
       // events
-      for (const event of abievents) {
+      for (const event of abiEvents) {
         const isUnique = globEventArr.indexOf(JSON.stringify(event)) === -1;
 
         if (isUnique) {
@@ -313,24 +261,24 @@ task("abis", "Save all functions abi separately")
           if (fwEventNames.includes(event.name)) {
             const unique = fwEventArr.indexOf(event) === -1;
             if (unique) {
-              // fwEventArr.push(JSON.stringify(event));
               fwEventArr.push(event);
             }
           }
         }
       }
 
-      // create folder
-      if (!fs.existsSync(`../../packages/abis/events`)) {
-        fs.mkdirSync(`../../packages/abis/events`);
+      const eventsFolderPath = path.join(process.cwd(), `../../../packages/abis/json/events`);
+      if (!fs.existsSync(eventsFolderPath)) {
+        fs.mkdirSync(eventsFolderPath);
       }
-      const filepath = `../../packages/abis/events/fw-events.json`;
 
-      fs.writeFileSync(filepath, JSON.stringify(fwEventArr), {
+      const eventsFilePath = path.join(eventsFolderPath, "fw-events.json");
+
+      fs.writeFileSync(eventsFilePath, JSON.stringify(fwEventArr), {
         encoding: "utf-8",
         flag: "w+",
       });
     }
   });
 
-// hardhat abi contracts/ERC20/
+// hardhat abi artifacts/contracts/ERC20/
