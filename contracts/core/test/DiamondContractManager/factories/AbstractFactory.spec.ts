@@ -34,7 +34,7 @@ describe("CollectionFactoryDiamond", function () {
     it("should deploy a collection", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721CSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721Simple");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
