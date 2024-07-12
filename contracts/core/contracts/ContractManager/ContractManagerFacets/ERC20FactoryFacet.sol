@@ -52,7 +52,6 @@ contract ERC20FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     roles[0] = MINTER_ROLE;
     roles[1] = DEFAULT_ADMIN_ROLE;
 
-    grantFactoryMintPermission(account);
     fixPermissions(account, roles);
   }
 
