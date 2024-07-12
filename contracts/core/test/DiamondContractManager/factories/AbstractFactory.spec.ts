@@ -113,6 +113,14 @@ describe("AbstractFactoryFacet", function () {
       await expect(tx)
         .to.emit(contractInstance, "CollectionDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, contractTemplate]);
+
+      const collectionInstance = await ethers.getContractAt("ERC721Simple", address);
+
+      const hasRole1 = await collectionInstance.hasRole(MINTER_ROLE, receiver);
+      expect(hasRole1).to.equal(true);
+
+      const hasRole2 = await collectionInstance.hasRole(METADATA_ROLE, receiver);
+      expect(hasRole2).to.equal(true);
     });
   });
 });
