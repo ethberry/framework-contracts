@@ -4,7 +4,6 @@ import { getAddress } from "ethers";
 
 import {
   baseTokenURI,
-  batchSize,
   METADATA_ROLE,
   MINTER_ROLE,
   nonce,
@@ -18,7 +17,7 @@ import { buildBytecode, buildCreate2Address } from "../../utils";
 import { deployDiamond } from "../shared/fixture";
 
 describe("AbstractFactoryFacet", function () {
-  const factory = async (facetName = "CollectionFactoryFacet"): Promise<any> => {
+  const factory = async (facetName = "ERC721FactoryFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondCM",
       [facetName, "UseFactoryFacet", "AccessControlFacet", "PausableFacet"],
@@ -49,19 +48,18 @@ describe("AbstractFactoryFacet", function () {
         {
           EIP712: [
             { name: "params", type: "Params" },
-            { name: "args", type: "CollectionArgs" },
+            { name: "args", type: "Erc721Args" },
           ],
           Params: [
             { name: "nonce", type: "bytes32" },
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          CollectionArgs: [
+          Erc721Args: [
             { name: "name", type: "string" },
             { name: "symbol", type: "string" },
             { name: "royalty", type: "uint96" },
             { name: "baseTokenURI", type: "string" },
-            { name: "batchSize", type: "uint96" },
             { name: "contractTemplate", type: "string" },
           ],
         },
@@ -76,7 +74,6 @@ describe("AbstractFactoryFacet", function () {
             symbol: tokenSymbol,
             royalty,
             baseTokenURI,
-            batchSize,
             contractTemplate,
           },
         },
@@ -86,7 +83,7 @@ describe("AbstractFactoryFacet", function () {
       await factoryInstance.addFactory(receiver, METADATA_ROLE);
       await factoryInstance.addFactory(receiver, MINTER_ROLE);
 
-      const tx = await contractInstance.deployCollection(
+      const tx = await contractInstance.deployERC721Token(
         {
           nonce,
           bytecode,
@@ -97,29 +94,28 @@ describe("AbstractFactoryFacet", function () {
           symbol: tokenSymbol,
           royalty,
           baseTokenURI,
-          batchSize,
           contractTemplate,
         },
         signature,
       );
 
       const buildByteCode = buildBytecode(
-        ["string", "string", "uint256", "string", "uint256", "address"],
-        [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, owner.address],
+        ["string", "string", "uint256", "string", "address"],
+        [tokenName, tokenSymbol, royalty, baseTokenURI, owner.address],
         bytecode,
       );
       const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
 
       await expect(tx)
-        .to.emit(contractInstance, "CollectionDeployed")
-        .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, contractTemplate]);
+        .to.emit(contractInstance, "ERC721TokenDeployed")
+        .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, contractTemplate]);
 
-      const collectionInstance = await ethers.getContractAt("ERC721Simple", address);
+      const erc721Instance = await ethers.getContractAt("ERC721Simple", address);
 
-      const hasRole1 = await collectionInstance.hasRole(MINTER_ROLE, receiver);
+      const hasRole1 = await erc721Instance.hasRole(MINTER_ROLE, receiver);
       expect(hasRole1).to.equal(true);
 
-      const hasRole2 = await collectionInstance.hasRole(METADATA_ROLE, receiver);
+      const hasRole2 = await erc721Instance.hasRole(METADATA_ROLE, receiver);
       expect(hasRole2).to.equal(true);
     });
   });
