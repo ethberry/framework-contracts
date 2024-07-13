@@ -17,6 +17,7 @@
     "@gemunion/contracts-erc721c": "5.0.35",
     "@gemunion/contracts-erc721e": "5.0.35",
     "@gemunion/contracts-erc998td": "6.0.24",
+    "@gemunion/contracts-finance": "5.0.35",
     "@gemunion/contracts-helpers": "5.0.35",
     "@gemunion/contracts-mocks": "5.0.35",
     "@gemunion/contracts-utils": "5.0.35",
