@@ -8,10 +8,11 @@ pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { VestingWallet } from "@openzeppelin/contracts/finance/VestingWallet.sol";
+import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
 /**
  * @title Monthly Vesting
@@ -21,7 +22,7 @@ import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interface
  *      - TopUp (Gemunion)
  *      This contract abstracts all common functions and is used as an foundation for other vesting contracts
  */
-contract Vesting is VestingWallet, TopUp {
+contract Vesting is VestingWallet, CoinWallet, TopUp {
   using SafeCast for uint256;
 
   uint64 public constant _monthInSeconds = 2592000; // The number of seconds in month
@@ -58,17 +59,10 @@ contract Vesting is VestingWallet, TopUp {
   }
 
   /**
-   * @dev Allows to top-up the vesting contract with tokens (NATIVE and ERC20 only)
-   * @param price An array of Asset representing the tokens to be transferred.
+   * @notice No tipping!
+   * @dev Rejects any incoming ETH transfers
    */
-  function topUp(Asset[] memory price) external payable override {
-    ExchangeUtils.spendFrom(price, _msgSender(), address(this), DisabledTokenTypes(false, false, true, true, true));
-  }
-
-  /**
-   * @dev Restrict the contract to receive Ether (receive via topUp function only).
-   */
-  receive() external payable override(VestingWallet, TopUp) {
+  receive() external payable override(VestingWallet, NativeWallet) {
     revert();
   }
 

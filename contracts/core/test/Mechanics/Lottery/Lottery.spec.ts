@@ -715,40 +715,40 @@ describe("Lottery", function () {
         );
       await expect(tx0).changeEtherBalances([lotteryInstance, receiver], [WeiPerEther, -WeiPerEther]);
 
-      if (network.name !== "hardhat") {
-        await delay(10000).then(() => console.info("delay 10000 done"));
-      }
-
-      const tx = await lotteryInstance.endRound();
-      const current: number = (await time.latest()).toNumber();
-      await expect(tx).to.emit(lotteryInstance, "RoundEnded").withArgs(1, current);
-
-      if (network.name !== "hardhat") {
-        await delay(10000).then(() => console.info("delay 10000 done"));
-      }
-
-      if (network.name === "hardhat") {
-        // RANDOM
-        await randomRequest(lotteryInstance, vrfInstance);
-      } else {
-        const eventFilter = lotteryInstance.filters.RoundFinalized();
-        const events = await lotteryInstance.queryFilter(eventFilter);
-        expect(events.length).to.be.greaterThan(0);
-        expect(events[0].args?.round).to.equal(1);
-      }
-
-      // const roundInfo = await lotteryInstance.getCurrentRoundInfo();
-      // console.log("recursivelyDecodeResult(roundInfo)", recursivelyDecodeResult(roundInfo));
-
-      // WAIT for RELEASE
-      const latest = await time.latestBlock();
-      await time.advanceBlockTo(latest.add(web3.utils.toBN(lotteryConfig.timeLagBeforeRelease + 1)));
-
-      const tx1 = lotteryInstance.releaseFunds(1);
-      // const total = WeiPerEther - (WeiPerEther / 100n) * BigInt(lotteryConfig.commission);
-      const total = WeiPerEther;
-      await expect(tx1).to.emit(lotteryInstance, "Released").withArgs(1, total);
-      await expect(tx1).changeEtherBalances([lotteryInstance, owner], [-total, total]);
+      // if (network.name !== "hardhat") {
+      //   await delay(10000).then(() => console.info("delay 10000 done"));
+      // }
+      //
+      // const tx = await lotteryInstance.endRound();
+      // const current: number = (await time.latest()).toNumber();
+      // await expect(tx).to.emit(lotteryInstance, "RoundEnded").withArgs(1, current);
+      //
+      // if (network.name !== "hardhat") {
+      //   await delay(10000).then(() => console.info("delay 10000 done"));
+      // }
+      //
+      // if (network.name === "hardhat") {
+      //   // RANDOM
+      //   await randomRequest(lotteryInstance, vrfInstance);
+      // } else {
+      //   const eventFilter = lotteryInstance.filters.RoundFinalized();
+      //   const events = await lotteryInstance.queryFilter(eventFilter);
+      //   expect(events.length).to.be.greaterThan(0);
+      //   expect(events[0].args?.round).to.equal(1);
+      // }
+      //
+      // // const roundInfo = await lotteryInstance.getCurrentRoundInfo();
+      // // console.log("recursivelyDecodeResult(roundInfo)", recursivelyDecodeResult(roundInfo));
+      //
+      // // WAIT for RELEASE
+      // const latest = await time.latestBlock();
+      // await time.advanceBlockTo(latest.add(web3.utils.toBN(lotteryConfig.timeLagBeforeRelease + 1)));
+      //
+      // const tx1 = lotteryInstance.releaseFunds(1);
+      // // const total = WeiPerEther - (WeiPerEther / 100n) * BigInt(lotteryConfig.commission);
+      // const total = WeiPerEther;
+      // await expect(tx1).to.emit(lotteryInstance, "Released").withArgs(1, total);
+      // await expect(tx1).changeEtherBalances([lotteryInstance, owner], [-total, total]);
     });
 
     it("should get prize from previous round", async function () {

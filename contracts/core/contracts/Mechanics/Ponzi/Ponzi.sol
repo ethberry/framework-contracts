@@ -14,11 +14,11 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 import { PaymentSplitter } from "@gemunion/contracts-utils/contracts/PaymentSplitter.sol";
 
-import { IPonzi } from "./interfaces/IPonzi.sol";
 import { TopUp } from "../../utils/TopUp.sol";
+import { IPonzi } from "./interfaces/IPonzi.sol";
 import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ZeroBalance, NotExist, NotActive, BalanceExceed, NotComplete, Expired, NotAnOwner, WrongStake } from "../../utils/errors.sol";
@@ -29,8 +29,8 @@ contract Ponzi is
   AccessControl,
   Pausable,
   Referral,
+  CoinWallet,
   TopUp,
-  Wallet,
   PaymentSplitter,
   ReentrancyGuard
 {
@@ -308,7 +308,7 @@ contract Ponzi is
    * @notice No tipping!
    * @dev Rejects any incoming ETH transfers
    */
-  receive() external payable override(Wallet, TopUp, PaymentSplitter) {
+  receive() external payable override(PaymentSplitter, NativeWallet) {
     revert();
   }
 
@@ -340,7 +340,7 @@ contract Ponzi is
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, TopUp, Wallet) returns (bool) {
+  ) public view virtual override(AccessControl, CoinWallet) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

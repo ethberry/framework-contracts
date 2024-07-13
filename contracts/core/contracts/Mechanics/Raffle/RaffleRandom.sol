@@ -10,10 +10,9 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { CoinWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -22,9 +21,8 @@ import { IERC721RaffleTicket, TicketRaffle } from "./interfaces/IERC721RaffleTic
 import { RaffleRoundInfo } from "./interfaces/IRaffle.sol";
 import { NotInList, WrongToken, WrongRound, NotAnOwner, NotComplete, ZeroBalance, NotActive, NotExist, LimitExceed } from "../../utils/errors.sol";
 
-abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
+abstract contract RaffleRandom is AccessControl, Pausable, CoinWallet {
   using Address for address;
-  using SafeERC20 for IERC20;
 
   event RoundStarted(uint256 roundId, uint256 startTimestamp, uint256 maxTicket, Asset ticket, Asset price);
   event RoundEnded(uint256 round, uint256 endTimestamp);
@@ -167,7 +165,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
     } else if (len > 1) {
       // If more than one ticket sold, we have to call random function to figure out who is the winner
       currentRound.requestId = getRandomNumber();
-      requestToRoundNumber[currentRound.requestId] = roundNumber;      
+      requestToRoundNumber[currentRound.requestId] = roundNumber;
     } else {
      emit RoundFinalized(currentRound.roundId, 0, 0); // roundId, prizeIndex, prizeNumber
     }// if no ticket sold, we suppose to set endTimestamp and no need emit RoundFinalized
@@ -274,15 +272,18 @@ abstract contract RaffleRandom is AccessControl, Pausable, Wallet {
     _unpause();
   }
 
-  // COMMON
+  /**
+   * @notice No tipping!
+   * @dev Rejects any incoming ETH transfers
+   */
   receive() external payable override {
-    emit PaymentEthReceived(_msgSender(), msg.value);
+    revert();
   }
 
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, Wallet) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinWallet) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

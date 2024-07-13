@@ -10,8 +10,9 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { TopUp } from "../../utils/TopUp.sol";
 
-contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
+contract ExchangeMockFacet is SignatureValidator, DiamondOverride, TopUp {
 
   constructor() SignatureValidator() {}
 
@@ -45,15 +46,7 @@ contract ExchangeMockFacet is SignatureValidator, DiamondOverride {
   }
 
   function testAcquireFrom(Asset[] memory price, address receiver, DisabledTokenTypes memory disabled) external payable {
-    // Mint new tokens for receiver & transferFrom NATIVE & ERC20 
+    // Mint new tokens for receiver & transferFrom NATIVE & ERC20
     ExchangeUtils.acquireFrom(price, _msgSender(), receiver, disabled);
-  }
-
-  /**
-   * @dev Allows to top-up the contract with tokens (NATIVE and ERC20 only).
-   * @param price An array of Asset representing the tokens to be transferred.
-   */
-  function topUp(Asset[] memory price) external payable virtual {
-    ExchangeUtils.spendFrom(price, _msgSender(), address(this), DisabledTokenTypes(false, false, true, true, true));
   }
 }

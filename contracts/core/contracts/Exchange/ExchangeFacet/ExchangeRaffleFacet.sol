@@ -11,7 +11,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { IRaffle } from "../interfaces/IRaffle.sol";
+import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
 import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
 

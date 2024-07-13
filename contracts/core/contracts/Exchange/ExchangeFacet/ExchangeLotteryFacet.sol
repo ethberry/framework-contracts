@@ -11,7 +11,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { ILottery } from "../interfaces/ILottery.sol";
+import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
 
@@ -45,7 +45,7 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride {
       _price,
       _msgSender(),
       params.receiver, // LOTTERY CONTRACT
-      DisabledTokenTypes(false, false, false, false, false)
+      DisabledTokenTypes(false, false, true, true, true)
     );
 
     (uint256 tokenId, uint256 roundId) = ILottery(params.receiver).printTicket(

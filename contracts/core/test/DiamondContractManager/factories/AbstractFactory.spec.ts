@@ -29,8 +29,8 @@ describe("AbstractFactoryFacet", function () {
     return ethers.getContractAt(facetName, await diamondInstance.getAddress());
   };
 
-  describe("deployCollection", function () {
-    it("should deploy a collection", async function () {
+  describe("addFactory", function () {
+    it("should add roles to deployer", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
       const { bytecode } = await ethers.getContractFactory("ERC721Simple");
@@ -39,12 +39,14 @@ describe("AbstractFactoryFacet", function () {
       const verifyingContract = await contractInstance.getAddress();
 
       const signature = await owner.signTypedData(
+        // Domain
         {
           name: "CONTRACT_MANAGER",
           version: "1.0.0",
           chainId: network.chainId,
           verifyingContract,
         },
+        // Types
         {
           EIP712: [
             { name: "params", type: "Params" },
@@ -63,6 +65,7 @@ describe("AbstractFactoryFacet", function () {
             { name: "contractTemplate", type: "string" },
           ],
         },
+        // Values
         {
           params: {
             nonce,
@@ -100,8 +103,8 @@ describe("AbstractFactoryFacet", function () {
       );
 
       const buildByteCode = buildBytecode(
-        ["string", "string", "uint256", "string", "address"],
-        [tokenName, tokenSymbol, royalty, baseTokenURI, owner.address],
+        ["string", "string", "uint256", "string"],
+        [tokenName, tokenSymbol, royalty, baseTokenURI],
         bytecode,
       );
       const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));

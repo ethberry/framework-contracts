@@ -26,3 +26,11 @@ struct LotteryRoundInfo {
   Asset acceptedAsset;
   Asset ticketAsset;
 }
+
+interface ILottery {
+  function printTicket(
+    uint256 externalId,
+    address account,
+    bytes32 numbers
+  ) external returns (uint256 tokenId, uint256 roundId);
+}

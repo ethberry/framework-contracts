@@ -14,7 +14,7 @@ import { EnumerableMap } from "@openzeppelin/contracts/utils/structs/EnumerableM
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import { Wallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { AllTypesWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { IERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
@@ -38,7 +38,7 @@ import "../../Referral/Referral.sol";
  * The contract owner can set and update the rules for the staking system, as well as deposit and withdraw funds.
  * The staking contract is pausable in case of emergency situations or for maintenance purposes.
  */
-contract Staking is IStaking, AccessControl, Pausable, TopUp, Wallet, Referral, ReentrancyGuard {
+contract Staking is IStaking, AccessControl, Pausable, AllTypesWallet, TopUp, Referral, ReentrancyGuard {
   using Address for address;
   using EnumerableMap for EnumerableMap.AddressToUintMap;
   using EnumerableMap for EnumerableMap.UintToUintMap;
@@ -703,7 +703,7 @@ contract Staking is IStaking, AccessControl, Pausable, TopUp, Wallet, Referral, 
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, TopUp, Wallet) returns (bool) {
+  ) public view virtual override(AccessControl, AllTypesWallet) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
@@ -720,7 +720,7 @@ contract Staking is IStaking, AccessControl, Pausable, TopUp, Wallet, Referral, 
    * @notice No tipping!
    * @dev Rejects any incoming ETH transfers
    */
-  receive() external payable override(Wallet, TopUp) {
+  receive() external payable override {
     revert();
   }
 }

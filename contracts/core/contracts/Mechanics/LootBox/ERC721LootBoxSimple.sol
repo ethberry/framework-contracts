@@ -10,6 +10,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
+import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
 
 import { IERC721LootBox, LootBoxConfig} from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -19,7 +20,7 @@ import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.
 import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
 import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
-abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
+abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, CoinWallet, TopUp {
   using Address for address;
 
   struct Request {
@@ -40,9 +41,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  )
-    ERC721Simple(name, symbol, royalty, baseTokenURI)
-  {}
+  ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
 
   function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
     revert MethodNotSupported();
@@ -153,14 +152,15 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, TopUp {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, TopUp) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, CoinWallet) returns (bool) {
     return interfaceId == IERC721_LOOT_ID || super.supportsInterface(interfaceId);
   }
 
   /**
-   * @dev Restrict the contract to receive Ether (receive via topUp function only).
+   * @notice No tipping!
+   * @dev Rejects any incoming ETH transfers
    */
-  receive() external payable override(ERC721Simple, TopUp) {
+  receive() external payable override(ERC721Simple, NativeWallet) {
     revert();
   }
 }

@@ -18,3 +18,10 @@ struct RaffleRoundInfo {
   Asset acceptedAsset;
   Asset ticketAsset;
 }
+
+interface IRaffle {
+  function printTicket(
+    uint256 externalId,
+    address account
+  ) external returns (uint256 tokenId, uint256 roundId, uint256 index);
+}
