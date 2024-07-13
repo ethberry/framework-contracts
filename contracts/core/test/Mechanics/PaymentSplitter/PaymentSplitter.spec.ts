@@ -1,8 +1,10 @@
 import { expect } from "chai";
+import { ethers } from "hardhat";
+
+import { shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { amount, InterfaceId } from "@gemunion/contracts-constants";
 
 import { deployPaymentSplitter } from "./fixture";
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { InterfaceId } from "@gemunion/contracts-constants";
 
 describe("PaymentSplitter", function () {
   const factory = () => deployPaymentSplitter();
@@ -14,7 +16,23 @@ describe("PaymentSplitter", function () {
       const contractInstance = await deployPaymentSplitter();
 
       const totalShares = await contractInstance.totalShares();
-      expect(totalShares).to.equal(100);
+      expect(totalShares).to.equal(200);
+    });
+  });
+
+  describe("receive", function () {
+    it("should get total shares", async function () {
+      const [owner] = await ethers.getSigners();
+
+      const contractInstance = await deployPaymentSplitter();
+
+      const tx = owner.sendTransaction({
+        to: await contractInstance.getAddress(),
+        value: amount,
+      });
+
+      await expect(tx).to.emit(contractInstance, "PaymentReceived").withArgs(owner.address, amount);
+      await expect(tx).to.changeEtherBalances([owner, contractInstance], [-amount, amount]);
     });
   });
 });
