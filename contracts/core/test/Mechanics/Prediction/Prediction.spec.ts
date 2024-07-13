@@ -1,27 +1,15 @@
-import { expect } from "chai";
+import { deployContract, shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { InterfaceId } from "@gemunion/contracts-constants";
 
-import { deployContract } from "@gemunion/contracts-utils";
+describe("Prediction", function () {
+  const factory = () => deployContract("Prediction");
 
-describe("Prediction Contract Pause and Unpause", function () {
-  let predictionContract;
+  shouldBehaveLikePausable(factory);
 
-  beforeEach(async function () {
-    predictionContract = await deployContract("Prediction");
-  });
-
-  it("should pause and unpause the contract", async function () {
-    // Check initial state
-    const initialPausedState = await predictionContract.paused();
-    expect(initialPausedState).to.equal(false);
-
-    // Pause the contract
-    await predictionContract.pause();
-    const pausedState = await predictionContract.paused();
-    expect(pausedState).to.equal(true);
-
-    // Unpause the contract
-    await predictionContract.unpause();
-    const unPausedState = await predictionContract.paused();
-    expect(unPausedState).to.equal(false);
-  });
+  shouldSupportsInterface(factory)([
+    InterfaceId.IERC165,
+    InterfaceId.IAccessControl,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+  ]);
 });
