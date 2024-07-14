@@ -14,8 +14,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
-import { PaymentSplitter } from "@gemunion/contracts-utils/contracts/PaymentSplitter.sol";
+import { CoinHolder, NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { IPonzi } from "./interfaces/IPonzi.sol";
@@ -29,9 +28,9 @@ contract Ponzi is
   AccessControl,
   Pausable,
   Referral,
-  CoinWallet,
+  CoinHolder,
+  NativeRejector,
   TopUp,
-  PaymentSplitter,
   ReentrancyGuard
 {
   using Address for address;
@@ -55,7 +54,7 @@ contract Ponzi is
   //  event PaymentEthReceived(address from, uint256 amount);
   event PaymentEthSent(address to, uint256 amount);
 
-  constructor(address[] memory payees, uint256[] memory shares) PaymentSplitter(payees, shares) {
+  constructor() {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(PAUSER_ROLE, _msgSender());
   }
@@ -304,14 +303,6 @@ contract Ponzi is
     Address.sendValue(payable(_msgSender()), address(this).balance);
   }
 
-  /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override(PaymentSplitter, NativeWallet) {
-    revert();
-  }
-
   // PAUSE
   /**
    * @dev Triggers stopped state.
@@ -340,7 +331,7 @@ contract Ponzi is
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, CoinWallet) returns (bool) {
+  ) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

@@ -12,14 +12,14 @@ import { MerkleProof } from "@openzeppelin/contracts/utils/cryptography/MerklePr
 import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { CoinWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { Expired, NotInList, NotExist, WrongAmount, AlreadyExist } from "../../utils/errors.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
-contract WaitList is AccessControl, Pausable, CoinWallet, TopUp {
+contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp {
   mapping(uint256 => bytes32) internal _roots;
   mapping(uint256 => mapping(address => bool)) internal _expired;
   mapping(uint256 => Asset[]) internal _items;
@@ -80,19 +80,11 @@ contract WaitList is AccessControl, Pausable, CoinWallet, TopUp {
   }
 
   /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override {
-    revert();
-  }
-
-  /**
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, CoinWallet) returns (bool) {
+  ) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 

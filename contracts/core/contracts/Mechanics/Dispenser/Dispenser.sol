@@ -10,6 +10,8 @@ import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
+import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol";
+
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IDispenser } from "./interfaces/IDispenser.sol";
 import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
@@ -19,7 +21,7 @@ import { WrongArrayLength } from "../../utils/errors.sol";
  * @title Dispenser Contract
  * @dev A contract for dispersing ether, ERC20 tokens, ERC721 tokens, and ERC1155 tokens to multiple recipients.
  */
-contract Dispenser is IDispenser, ERC165, Context {
+contract Dispenser is IDispenser, ERC165, Context, NativeRejector {
   function disperse(Asset[] memory items, address[] calldata receivers) external payable override {
     if (items.length != receivers.length) {
       revert WrongArrayLength();
@@ -37,10 +39,6 @@ contract Dispenser is IDispenser, ERC165, Context {
         i++;
       }
     }
-  }
-
-  receive() external payable {
-    revert();
   }
 
   /**

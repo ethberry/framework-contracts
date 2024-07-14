@@ -3,12 +3,12 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
 import { amount } from "@gemunion/contracts-constants";
+import { deployERC1363, deployERC20, deployERC1155 } from "@gemunion/contracts-mocks";
 
 import { templateId, tokenId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { deployERC1363, deployERC20, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
+import { deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { deployERC998 } from "../ERC998/shared/fixtures";
-import { deployERC1155 } from "../ERC1155/shared/fixtures";
 import { shouldReceive } from "./receive";
 
 export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
@@ -198,8 +198,9 @@ export function shouldBehaveLikeTopUp(factory: () => Promise<any>) {
         },
       ]);
 
-      await expect(tx).to.revertedWithoutReason();
+      // I wish it throws UnsupportedTokenType but if fails even earlier
       // await expect(tx).to.be.revertedWithCustomError(contractInstance, "UnsupportedTokenType");
+      await expect(tx).to.revertedWithoutReason();
     });
   });
 

@@ -13,7 +13,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { CoinWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { NativeReceiver, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
@@ -22,7 +22,7 @@ import { LotteryConfig, LotteryRoundInfo } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
 import { ZeroBalance, NotComplete, WrongRound, BalanceExceed, WrongToken, NotAnOwner, Expired, NotActive, LimitExceed } from "../../utils/errors.sol";
 
-abstract contract LotteryRandom is AccessControl, Pausable, CoinWallet {
+abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeReceiver {
   using Address for address;
   using SafeERC20 for IERC20;
 
@@ -366,16 +366,9 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinWallet {
   }
 
   /**
-   * @dev This is here only because Exchange has to pass ticket price to lottery
-   */
-  receive() external payable override {
-    // revert();
-  }
-
-  /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinWallet) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

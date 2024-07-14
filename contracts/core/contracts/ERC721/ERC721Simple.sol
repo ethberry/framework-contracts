@@ -13,6 +13,7 @@ import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol
 import { ERC721ABaseUrl } from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
 import { ERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/extensions/ERC721GeneralizedCollection.sol";
 import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
+import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
@@ -20,7 +21,7 @@ import { IERC721_SIMPLE_ID } from "../utils/interfaces.sol";
 import { MethodNotSupported, TemplateZero } from "../utils/errors.sol";
 import { IERC721Simple } from "./interfaces/IERC721Simple.sol";
 
-contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721GeneralizedCollection {
+contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721GeneralizedCollection, NativeRejector {
   constructor(
     string memory name,
     string memory symbol,
@@ -78,9 +79,5 @@ contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721Genera
 
   function _baseURI() internal view virtual override(ERC721, ERC721ABaseUrl) returns (string memory) {
     return _baseURI(_baseTokenURI);
-  }
-
-  receive() external payable virtual {
-    revert();
   }
 }

@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { VestingWallet } from "@openzeppelin/contracts/finance/VestingWallet.sol";
-import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -22,7 +22,7 @@ import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfa
  *      - TopUp (Gemunion)
  *      This contract abstracts all common functions and is used as an foundation for other vesting contracts
  */
-contract Vesting is VestingWallet, CoinWallet, TopUp {
+contract Vesting is VestingWallet, NativeRejector, CoinHolder, TopUp {
   using SafeCast for uint256;
 
   uint64 public constant _monthInSeconds = 2592000; // The number of seconds in month
@@ -62,8 +62,8 @@ contract Vesting is VestingWallet, CoinWallet, TopUp {
    * @notice No tipping!
    * @dev Rejects any incoming ETH transfers
    */
-  receive() external payable override(VestingWallet, NativeWallet) {
-    revert();
+  receive() external payable  virtual override(VestingWallet, NativeRejector) {
+    revert PaymentRejected(_msgSender(), msg.value);
   }
 
   /**

@@ -7,9 +7,9 @@ import { blockAwait } from "@gemunion/contracts-helpers";
 
 import { tokenZero } from "../../constants";
 import type { IRule } from "./interface/staking";
-import { deployPonzi } from "./fixture";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { isEqualEventArgArrObj } from "../../utils";
+import { deployContract } from "@gemunion/contracts-utils";
 
 describe("Ponzi", function () {
   const period = 300;
@@ -20,7 +20,7 @@ describe("Ponzi", function () {
 
   describe("setRule", function () {
     it("should fail edit when Rule not exist", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -48,7 +48,7 @@ describe("Ponzi", function () {
     });
 
     it("should set one Rule", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -73,7 +73,7 @@ describe("Ponzi", function () {
     });
 
     it("should set multiple Rules", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -115,7 +115,7 @@ describe("Ponzi", function () {
     });
 
     it("should edit Rule", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -147,7 +147,7 @@ describe("Ponzi", function () {
     it("should fail for not existing rule", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -177,7 +177,7 @@ describe("Ponzi", function () {
     it("should fail for not active rule", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -207,7 +207,7 @@ describe("Ponzi", function () {
     it("should fail for wrong pay amount", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -237,7 +237,7 @@ describe("Ponzi", function () {
     it("should stake NATIVE", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -267,7 +267,7 @@ describe("Ponzi", function () {
     it("should stake ERC20", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -309,7 +309,7 @@ describe("Ponzi", function () {
     it("should fail for wrong staking id", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const stakeRule: IRule = {
         deposit: {
@@ -378,7 +378,7 @@ describe("Ponzi", function () {
     it("should fail for not an owner", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const stakeRule: IRule = {
         deposit: {
@@ -433,7 +433,7 @@ describe("Ponzi", function () {
     it("should fail for withdrawn already", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const stakeRule: IRule = {
         deposit: {
@@ -507,7 +507,7 @@ describe("Ponzi", function () {
     it("should stake NATIVE & receive NATIVE", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const stakeRule: IRule = {
         deposit: {
@@ -578,7 +578,7 @@ describe("Ponzi", function () {
     it("should stake NATIVE & receive ERC20", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -633,7 +633,7 @@ describe("Ponzi", function () {
     it("should stake ERC20 & receive NATIVE", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -698,7 +698,7 @@ describe("Ponzi", function () {
     it("should stake ERC20 & receive ERC20", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule: IRule = {
@@ -748,7 +748,7 @@ describe("Ponzi", function () {
     it("should fail send ETH", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const tx = owner.sendTransaction({
         to: await ponziInstance.getAddress(),
@@ -761,7 +761,7 @@ describe("Ponzi", function () {
     it("should fund ETH", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const tx = await ponziInstance.topUp(
         [
@@ -783,7 +783,7 @@ describe("Ponzi", function () {
     it("should finalize", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const tx = await ponziInstance.topUp(
         [
@@ -806,7 +806,7 @@ describe("Ponzi", function () {
     it("should finalize by Rule", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -882,7 +882,7 @@ describe("Ponzi", function () {
     it("should finalize by Token", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -956,7 +956,7 @@ describe("Ponzi", function () {
     });
 
     it("should fail finalize by Rule: 0 balance", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -1011,7 +1011,7 @@ describe("Ponzi", function () {
     });
 
     it("should fail finalize by Token: 0 balance", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -1068,7 +1068,7 @@ describe("Ponzi", function () {
 
   describe("Withdraw", function () {
     it("should Fund and Withdraw ETH", async function () {
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
 
       const amnt = parseEther("99.0");
       const amnt1 = parseEther("9.0");
@@ -1096,7 +1096,7 @@ describe("Ponzi", function () {
     it("should Withdraw after Deposit", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -1188,7 +1188,7 @@ describe("Ponzi", function () {
     it("should fail Withdraw: balance exceeded", async function () {
       const [owner] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1: IRule = {
@@ -1274,7 +1274,7 @@ describe("Ponzi", function () {
     it("should Deposit with Ref", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
-      const ponziInstance = await deployPonzi();
+      const ponziInstance = await deployContract("Ponzi");
       const erc20Instance = await erc20Factory();
 
       const stakeRule1 = {

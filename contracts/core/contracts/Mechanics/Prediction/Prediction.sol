@@ -11,20 +11,12 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { CoinWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-contract Prediction is AccessControl, Pausable, CoinWallet {
+contract Prediction is AccessControl, Pausable, NativeRejector, CoinHolder {
   constructor() {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(PAUSER_ROLE, _msgSender());
-  }
-
-  /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override {
-    revert();
   }
 
   // PAUSE
@@ -55,7 +47,7 @@ contract Prediction is AccessControl, Pausable, CoinWallet {
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, CoinWallet) returns (bool) {
+  ) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 
 import { amount } from "@gemunion/contracts-constants";
-import { deployJerk } from "@gemunion/contracts-mocks";
+import { deployRejector } from "@gemunion/contracts-finance";
 import type { IERC20Options } from "@gemunion/contracts-erc20";
 import { defaultMintERC20 } from "@gemunion/contracts-erc20";
 
@@ -47,7 +47,7 @@ export function shouldTransfer(factory: () => Promise<any>, options: IERC20Optio
     it("should transfer to contract", async function () {
       const [owner] = await ethers.getSigners();
       const contractInstance = await factory();
-      const erc20NonReceiverInstance = await deployJerk();
+      const erc20NonReceiverInstance = await deployRejector();
 
       await mint(contractInstance, owner, owner.address);
 

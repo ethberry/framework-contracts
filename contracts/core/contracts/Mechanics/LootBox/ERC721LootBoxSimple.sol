@@ -10,7 +10,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
-import { CoinWallet, NativeWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { AllTypesHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { IERC721LootBox, LootBoxConfig} from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -20,7 +20,7 @@ import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.
 import { IERC721_LOOT_ID } from "../../utils/interfaces.sol";
 import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
-abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, CoinWallet, TopUp {
+abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesHolder, TopUp {
   using Address for address;
 
   struct Request {
@@ -152,15 +152,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, CoinWalle
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, CoinWallet) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Simple, AllTypesHolder) returns (bool) {
     return interfaceId == IERC721_LOOT_ID || super.supportsInterface(interfaceId);
-  }
-
-  /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override(ERC721Simple, NativeWallet) {
-    revert();
   }
 }

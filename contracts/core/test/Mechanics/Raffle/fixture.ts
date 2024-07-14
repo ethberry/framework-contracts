@@ -1,7 +1,6 @@
 import "@nomicfoundation/hardhat-toolbox";
 
 import { ethers, network } from "hardhat";
-import { parseEther } from "ethers";
 
 import { getContractName } from "../../utils";
 import { deployERC721 } from "../../ERC721/shared/fixtures";
@@ -22,7 +21,7 @@ export async function deployRaffle(config: ILotteryConfig): Promise<{
   const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
 
-  const erc20Instance: any = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+  const erc20Instance: any = await deployERC20();
   const erc721TicketInstance: any = await deployERC721("ERC721RaffleTicket");
 
   const raffleInstance: any = await factory.deploy(config);

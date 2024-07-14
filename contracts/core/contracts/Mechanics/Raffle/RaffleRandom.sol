@@ -12,7 +12,7 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { CoinWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -21,7 +21,7 @@ import { IERC721RaffleTicket, TicketRaffle } from "./interfaces/IERC721RaffleTic
 import { RaffleRoundInfo } from "./interfaces/IRaffle.sol";
 import { NotInList, WrongToken, WrongRound, NotAnOwner, NotComplete, ZeroBalance, NotActive, NotExist, LimitExceed } from "../../utils/errors.sol";
 
-abstract contract RaffleRandom is AccessControl, Pausable, CoinWallet {
+abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinHolder {
   using Address for address;
 
   event RoundStarted(uint256 roundId, uint256 startTimestamp, uint256 maxTicket, Asset ticket, Asset price);
@@ -273,17 +273,9 @@ abstract contract RaffleRandom is AccessControl, Pausable, CoinWallet {
   }
 
   /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override {
-    revert();
-  }
-
-  /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinWallet) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

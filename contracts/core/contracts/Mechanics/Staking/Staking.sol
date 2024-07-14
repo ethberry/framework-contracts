@@ -14,7 +14,7 @@ import { EnumerableMap } from "@openzeppelin/contracts/utils/structs/EnumerableM
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import { AllTypesWallet } from "@gemunion/contracts-mocks/contracts/Wallet.sol";
+import { AllTypesHolder, NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { IERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
@@ -25,7 +25,7 @@ import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { ZeroBalance,NotExist,WrongRule,UnsupportedTokenType,NotComplete,Expired,NotAnOwner,WrongStake,WrongToken,LimitExceed,NotActive } from "../../utils/errors.sol";
+import { ZeroBalance, NotExist, WrongRule, UnsupportedTokenType, NotComplete, Expired, NotAnOwner, WrongStake, WrongToken, LimitExceed, NotActive } from "../../utils/errors.sol";
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IStaking } from "./interfaces/IStaking.sol";
 import { Asset,Params,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
@@ -38,7 +38,7 @@ import "../../Referral/Referral.sol";
  * The contract owner can set and update the rules for the staking system, as well as deposit and withdraw funds.
  * The staking contract is pausable in case of emergency situations or for maintenance purposes.
  */
-contract Staking is IStaking, AccessControl, Pausable, AllTypesWallet, TopUp, Referral, ReentrancyGuard {
+contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRejector, TopUp, Referral, ReentrancyGuard {
   using Address for address;
   using EnumerableMap for EnumerableMap.AddressToUintMap;
   using EnumerableMap for EnumerableMap.UintToUintMap;
@@ -703,7 +703,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesWallet, TopUp, Re
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(AccessControl, AllTypesWallet) returns (bool) {
+  ) public view virtual override(AccessControl, AllTypesHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
@@ -714,13 +714,5 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesWallet, TopUp, Re
    */
   function _afterPurchase(address referrer, Asset[] memory price) internal override(Referral) {
     return super._afterPurchase(referrer, price);
-  }
-
-  /**
-   * @notice No tipping!
-   * @dev Rejects any incoming ETH transfers
-   */
-  receive() external payable override {
-    revert();
   }
 }

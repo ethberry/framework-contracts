@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-import { Contract, encodeBytes32String, parseEther, ZeroAddress, ZeroHash } from "ethers";
+import { Contract, encodeBytes32String, ZeroAddress, ZeroHash } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
@@ -46,7 +46,7 @@ describe("Diamond Exchange Raffle", function () {
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
 
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -154,7 +154,7 @@ describe("Diamond Exchange Raffle", function () {
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
 
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -237,7 +237,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -320,7 +320,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -402,7 +402,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
 
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -456,7 +456,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -584,7 +584,7 @@ describe("Diamond Exchange Raffle", function () {
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
 
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -670,7 +670,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
@@ -753,7 +753,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20("ERC20Simple", { amount: parseEther("200000") });
+      const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
       const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
