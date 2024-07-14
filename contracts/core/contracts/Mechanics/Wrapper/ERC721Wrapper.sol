@@ -6,10 +6,7 @@
 
 pragma solidity ^0.8.20;
 
-import { ERC721Holder } from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
-import { ERC1155Holder } from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
-
-import { ERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/extensions/ERC1363Receiver.sol";
+import { AllTypesHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { IERC721Wrapper } from "./interfaces/IERC721Wrapper.sol";
@@ -18,7 +15,7 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
-contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, ERC1155Holder, ERC721Holder, ERC1363Receiver {
+contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
   mapping(uint256 => Asset[]) internal _itemData;
 
   constructor(
@@ -68,7 +65,7 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, ERC1155Holder, ERC721Hol
    */
   function supportsInterface(
     bytes4 interfaceId
-  ) public view virtual override(ERC721Simple, ERC1155Holder) returns (bool) {
+  ) public view virtual override(ERC721Simple, AllTypesHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }
