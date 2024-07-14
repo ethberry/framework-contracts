@@ -6,11 +6,14 @@
 
 pragma solidity ^0.8.20;
 
-import { AllTypesHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
+import { CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { IERC721Wrapper } from "../Mechanics/Wrapper/interfaces/IERC721Wrapper.sol";
 
-contract WrapperMock is AllTypesHolder {
+/**
+ * @dev Unpacker is used to test unpack method of LootBox and Wrapper
+ */
+contract Unpacker is CoinHolder {
   function unpack(address wrapper, uint256 tokenId) public {
     IERC721Wrapper(wrapper).unpack(tokenId);
   }

@@ -53,7 +53,7 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
   function unpack(uint256 tokenId) public {
     _checkAuthorized(_ownerOf(tokenId), _msgSender(), tokenId);
 
-    emit UnpackWrapper(tokenId);
+    emit UnpackWrapper(_msgSender(), tokenId);
 
     _burn(tokenId);
 

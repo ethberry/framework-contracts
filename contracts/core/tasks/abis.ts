@@ -39,7 +39,7 @@ export enum ContractEventSignatures {
   PurchaseRaffle = "PurchaseRaffle(address,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256),uint256,uint256)",
   Released = "Released(uint256,uint256)",
   Prize = "Prize(address,uint256,uint256,uint256)",
-  UnpackWrapper = "UnpackWrapper(uint256)",
+  UnpackWrapper = "UnpackWrapper(address,uint256)",
   UnpackMysteryBox = "UnpackMysteryBox(address,uint256)",
   Paused = "Paused(address)",
   Unpaused = "Unpaused(address)",

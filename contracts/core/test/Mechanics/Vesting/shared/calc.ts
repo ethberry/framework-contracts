@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers, web3 } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
 
-import { deployERC20 } from "@gemunion/contracts-mocks";
+import { deployERC20Mock } from "@gemunion/contracts-mocks";
 
 import { deployVesting } from "./fixture";
 
@@ -12,7 +12,7 @@ export const amount = 10000000;
 export async function calc(name: string, months: number, percent: number) {
   const [owner] = await ethers.getSigners();
   const vestingInstance = await deployVesting(name, months, percent);
-  const erc20Instance = await deployERC20();
+  const erc20Instance = await deployERC20Mock();
   await erc20Instance.mint(await vestingInstance.getAddress(), amount);
 
   const monthlyRelease = (amount * percent) / 10000;

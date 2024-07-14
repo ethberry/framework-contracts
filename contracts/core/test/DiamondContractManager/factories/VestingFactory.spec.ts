@@ -5,7 +5,7 @@ import { time } from "@openzeppelin/test-helpers";
 
 import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 import { decodeTraits } from "@gemunion/traits-v6";
-import { deployERC20 } from "@gemunion/contracts-mocks";
+import { deployERC20Mock } from "@gemunion/contracts-mocks";
 
 import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
 import { claimId, externalId, tokenId, userId, contractTemplate } from "../../constants";
@@ -32,7 +32,7 @@ describe("VestingFactoryDiamond", function () {
 
       const contractInstance = await factory();
 
-      const erc20Instance = await deployERC20();
+      const erc20Instance = await deployERC20Mock();
       await erc20Instance.mint(owner.address, amount);
       await erc20Instance.approve(await contractInstance.getAddress(), amount);
 
@@ -164,7 +164,7 @@ describe("VestingFactoryDiamond", function () {
 
       const contractInstance = await factory();
 
-      const erc20Instance = await deployERC20();
+      const erc20Instance = await deployERC20Mock();
       await erc20Instance.mint(owner.address, amount);
       await erc20Instance.approve(await contractInstance.getAddress(), amount);
 
