@@ -26,7 +26,7 @@ describe("MysteryBoxFactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployMysteryToken", function () {
@@ -110,7 +110,7 @@ describe("MysteryBoxFactoryDiamond", function () {
 
       const erc721Instance = await ethers.getContractAt("ERC721MysteryBoxSimple", address);
 
-      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -119,7 +119,7 @@ describe("MysteryBoxFactoryDiamond", function () {
       const hasRole3 = await erc721Instance.hasRole(METADATA_ROLE, owner.address);
       expect(hasRole3).to.equal(true);
 
-      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, contractInstance);
       expect(hasRole4).to.equal(false);
 
       const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -128,7 +128,7 @@ describe("MysteryBoxFactoryDiamond", function () {
       const tx3 = erc721Instance.mintBox(receiver.address, templateId, [
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
@@ -193,7 +193,7 @@ describe("MysteryBoxFactoryDiamond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployMysteryBox(

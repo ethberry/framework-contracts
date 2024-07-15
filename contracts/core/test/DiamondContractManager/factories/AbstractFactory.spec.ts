@@ -26,7 +26,7 @@ describe("AbstractFactoryFacet", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("addFactory", function () {
@@ -82,7 +82,7 @@ describe("AbstractFactoryFacet", function () {
         },
       );
 
-      const factoryInstance = await ethers.getContractAt("UseFactoryFacet", await contractInstance.getAddress());
+      const factoryInstance = await ethers.getContractAt("UseFactoryFacet", contractInstance);
       await factoryInstance.addFactory(receiver, METADATA_ROLE);
       await factoryInstance.addFactory(receiver, MINTER_ROLE);
 

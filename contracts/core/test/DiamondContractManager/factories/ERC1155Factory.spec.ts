@@ -92,7 +92,7 @@ describe("ERC1155FactoryDiamoond", function () {
 
       const erc1155Instance = await ethers.getContractAt("ERC1155Simple", address);
 
-      const hasRole1 = await erc1155Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc1155Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc1155Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -158,7 +158,7 @@ describe("ERC1155FactoryDiamoond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployERC1155Token(

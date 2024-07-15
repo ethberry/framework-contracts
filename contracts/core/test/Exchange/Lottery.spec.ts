@@ -21,7 +21,7 @@ describe("Diamond Exchange Lottery", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract, contractName = "EXCHANGE") => {
@@ -59,13 +59,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -108,18 +108,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -150,7 +150,7 @@ describe("Diamond Exchange Lottery", function () {
           params.extra,
         );
 
-      const balance = await erc20Instance.balanceOf(lotteryInstance.getAddress());
+      const balance = await erc20Instance.balanceOf(lotteryInstance);
       expect(balance).to.equal(amount * 1n);
     });
 
@@ -172,13 +172,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -226,13 +226,13 @@ describe("Diamond Exchange Lottery", function () {
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -259,13 +259,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -307,7 +307,7 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
@@ -318,7 +318,7 @@ describe("Diamond Exchange Lottery", function () {
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -346,13 +346,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -362,7 +362,7 @@ describe("Diamond Exchange Lottery", function () {
       await erc20Instance.mint(receiver.address, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
       await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.getAddress());
 
       const signature = await generateOneToOneSignature({
@@ -394,18 +394,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce1"), // wrong one
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 0n,
-          token: await lotteryInstance.getAddress(),
+          token: lotteryInstance,
           tokenId: 0,
           amount: 0,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -433,13 +433,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -454,7 +454,7 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
@@ -465,7 +465,7 @@ describe("Diamond Exchange Lottery", function () {
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -492,13 +492,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -540,18 +540,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -585,18 +585,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -623,13 +623,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -672,18 +672,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -691,7 +691,7 @@ describe("Diamond Exchange Lottery", function () {
       );
       await expect(tx1)
         .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-        .withArgs(await exchangeInstance.getAddress(), 0, amount);
+        .withArgs(exchangeInstance, 0, amount);
     });
 
     it("should fail: ERC20InsufficientBalance", async function () {
@@ -712,13 +712,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -760,18 +760,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -802,13 +802,13 @@ describe("Diamond Exchange Lottery", function () {
       await lotteryInstance.startRound(
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 1n,
           amount,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -845,7 +845,7 @@ describe("Diamond Exchange Lottery", function () {
         },
       });
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
       const tx1 = exchangeInstance.connect(receiver).purchaseLottery(
@@ -854,18 +854,18 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
         {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: erc721TicketInstance,
           tokenId: 0,
           amount: 1,
         },
         {
           tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId: 121n,
           amount,
         },
@@ -879,7 +879,7 @@ describe("Diamond Exchange Lottery", function () {
   describe("ERROR", function () {
     it("should fail: EnforcedPause", async function () {
       const exchangeInstance = await factory();
-      const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+      const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
 
       await pausableInstance.pause();
 

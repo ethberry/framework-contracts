@@ -21,7 +21,7 @@ describe("VestingFactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployVesting", function () {
@@ -34,7 +34,7 @@ describe("VestingFactoryDiamond", function () {
 
       const erc20Instance = await deployERC20Mock();
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
+      await erc20Instance.approve(contractInstance, amount);
 
       const current = await time.latest();
 
@@ -166,7 +166,7 @@ describe("VestingFactoryDiamond", function () {
 
       const erc20Instance = await deployERC20Mock();
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
+      await erc20Instance.approve(contractInstance, amount);
 
       const current = await time.latest();
       const signature = await owner.signTypedData(
@@ -228,7 +228,7 @@ describe("VestingFactoryDiamond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployVesting(

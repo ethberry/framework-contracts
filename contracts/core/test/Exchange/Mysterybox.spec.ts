@@ -19,7 +19,7 @@ describe("Diamond Exchange MysteryBox", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -93,13 +93,13 @@ describe("Diamond Exchange MysteryBox", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await mysteryBoxInstance.getAddress(),
+              token: mysteryBoxInstance,
               tokenId,
               amount: 1,
             },
@@ -165,7 +165,7 @@ describe("Diamond Exchange MysteryBox", function () {
         const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -225,19 +225,19 @@ describe("Diamond Exchange MysteryBox", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await mysteryBoxInstance.getAddress(),
+              token: mysteryBoxInstance,
               tokenId,
               amount: 1,
             },
@@ -251,7 +251,7 @@ describe("Diamond Exchange MysteryBox", function () {
             },
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -356,7 +356,7 @@ describe("Diamond Exchange MysteryBox", function () {
         ],
       });
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
       const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
@@ -371,13 +371,13 @@ describe("Diamond Exchange MysteryBox", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await mysteryBoxInstance.getAddress(),
+            token: mysteryBoxInstance,
             tokenId,
             amount: 1,
           },
@@ -405,7 +405,7 @@ describe("Diamond Exchange MysteryBox", function () {
       const exchangeInstance = await factory();
       const { generateManyToManySignature } = await getSignatures(exchangeInstance);
 
-      const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+      const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
@@ -443,13 +443,13 @@ describe("Diamond Exchange MysteryBox", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await mysteryBoxInstance.getAddress(),
+            token: mysteryBoxInstance,
             tokenId,
             amount: 1,
           },

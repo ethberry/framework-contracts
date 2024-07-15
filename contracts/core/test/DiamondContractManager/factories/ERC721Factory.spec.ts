@@ -26,7 +26,7 @@ describe("ERC721FactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployERC721Token", function () {
@@ -111,7 +111,7 @@ describe("ERC721FactoryDiamond", function () {
 
       const erc721Instance = await ethers.getContractAt("ERC721Simple", address);
 
-      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -120,7 +120,7 @@ describe("ERC721FactoryDiamond", function () {
       const hasRole3 = await erc721Instance.hasRole(METADATA_ROLE, owner.address);
       expect(hasRole3).to.equal(true);
 
-      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, contractInstance);
       expect(hasRole4).to.equal(false);
 
       const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -185,7 +185,7 @@ describe("ERC721FactoryDiamond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployERC721Token(

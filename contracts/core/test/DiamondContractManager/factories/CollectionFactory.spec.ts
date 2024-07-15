@@ -26,7 +26,7 @@ describe("CollectionFactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployCollection", function () {
@@ -111,7 +111,7 @@ describe("CollectionFactoryDiamond", function () {
 
       const collectionInstance = await ethers.getContractAt("ERC721CSimple", address);
 
-      const hasRole1 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -175,7 +175,7 @@ describe("CollectionFactoryDiamond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployCollection(

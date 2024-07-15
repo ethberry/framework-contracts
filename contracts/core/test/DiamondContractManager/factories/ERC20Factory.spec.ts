@@ -18,7 +18,7 @@ describe("ERC20FactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployERC20Token", function () {
@@ -95,7 +95,7 @@ describe("ERC20FactoryDiamond", function () {
 
       const erc20Instance = await ethers.getContractAt("ERC20Simple", address);
 
-      const hasRole1 = await erc20Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc20Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc20Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -157,7 +157,7 @@ describe("ERC20FactoryDiamond", function () {
         },
       );
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await contractInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", contractInstance);
       await accessInstance.renounceRole(DEFAULT_ADMIN_ROLE, owner.address);
 
       const tx = contractInstance.deployERC20Token(

@@ -33,10 +33,8 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
       await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
 
       // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(1, await contractInstance.getAddress());
-      await expect(tx02)
-        .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-        .withArgs(1, await contractInstance.getAddress());
+      const tx02 = vrfInstance.addConsumer(1, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, contractInstance);
       await contractInstance.mintRandom(receiver.address, templateId);
 
       if (network.name === "hardhat") {
@@ -70,7 +68,7 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await linkInstance.transfer(await contractInstance.getAddress(), WeiPerEther);
+      await linkInstance.transfer(contractInstance, WeiPerEther);
 
       const tx = contractInstance.mintRandom(receiver.address, 0);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "TemplateZero");

@@ -36,7 +36,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
 
         const stakingInstance = await factory();
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
@@ -76,7 +76,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const startTimestamp: number = (await time.latest()).toNumber();
         await expect(tx1)
           .to.emit(stakingInstance, "DepositStart")
-          .withArgs(1, tokenId, await attakerInstance.getAddress(), startTimestamp, tokenIds);
+          .withArgs(1, tokenId, attakerInstance, startTimestamp, tokenIds);
         await expect(tx1).to.changeEtherBalances([owner, stakingInstance], [-amount, amount]);
         // return
 
@@ -104,9 +104,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
 
         await expect(tx2).to.changeEtherBalances([attakerInstance, stakingInstance], [amount, -amount]);
         await expect(tx2).to.emit(attakerInstance, "Reentered").withArgs(false);
-        await expect(tx2)
-          .to.emit(stakingInstance, "DepositFinish")
-          .withArgs(1, await attakerInstance.getAddress(), endTimestamp, 1);
+        await expect(tx2).to.emit(stakingInstance, "DepositFinish").withArgs(1, attakerInstance, endTimestamp, 1);
       });
 
       it("should not call twice (ERC20)", async function () {
@@ -115,7 +113,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const erc20Instance = await erc20Factory();
 
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
@@ -129,7 +127,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           reward: [
             {
               tokenType: 1, // ERC20
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -155,12 +153,12 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const startTimestamp: number = (await time.latest()).toNumber();
         await expect(tx1)
           .to.emit(stakingInstance, "DepositStart")
-          .withArgs(1, tokenId, await attakerInstance.getAddress(), startTimestamp, tokenIds);
+          .withArgs(1, tokenId, attakerInstance, startTimestamp, tokenIds);
         await expect(tx1).to.changeEtherBalances([owner, stakingInstance], [-amount, amount]);
         // return
 
         // FUND REWARD
-        await erc20Instance.mint(await stakingInstance.getAddress(), amount * cycles);
+        await erc20Instance.mint(stakingInstance, amount * cycles);
 
         // TIME 1
         const current1 = await time.latestBlock();
@@ -176,9 +174,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           [amount, amount * -1n],
         );
         await expect(tx2).to.emit(attakerInstance, "Reentered").withArgs(false);
-        await expect(tx2)
-          .to.emit(stakingInstance, "DepositFinish")
-          .withArgs(1, await attakerInstance.getAddress(), endTimestamp, 1);
+        await expect(tx2).to.emit(stakingInstance, "DepositFinish").withArgs(1, attakerInstance, endTimestamp, 1);
       });
 
       it("should not call twice (ERC721)", async function () {
@@ -186,10 +182,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc721SimpleInstance = await erc721Factory("ERC721Simple");
 
-        await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+        await erc721SimpleInstance.grantRole(MINTER_ROLE, stakingInstance);
 
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
@@ -203,7 +199,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           reward: [
             {
               tokenType: 2,
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId,
               amount: 1n,
             },
@@ -229,7 +225,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const startTimestamp: number = (await time.latest()).toNumber();
         await expect(tx1)
           .to.emit(stakingInstance, "DepositStart")
-          .withArgs(1, tokenId, await attakerInstance.getAddress(), startTimestamp, tokenIds);
+          .withArgs(1, tokenId, attakerInstance, startTimestamp, tokenIds);
         await expect(tx1).to.changeEtherBalances([owner, stakingInstance], [-amount, amount]);
         // return
 
@@ -253,13 +249,11 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         // REWARD 1
         const tx2 = await attakerInstance.receiveReward(1, false, false);
         const endTimestamp: number = (await time.latest()).toNumber();
-        const balance = await erc721SimpleInstance.balanceOf(await attakerInstance.getAddress());
+        const balance = await erc721SimpleInstance.balanceOf(attakerInstance);
 
         expect(balance).to.be.equal(1);
         await expect(tx2).to.emit(attakerInstance, "Reentered").withArgs(false);
-        await expect(tx2)
-          .to.emit(stakingInstance, "DepositFinish")
-          .withArgs(1, await attakerInstance.getAddress(), endTimestamp, 1);
+        await expect(tx2).to.emit(stakingInstance, "DepositFinish").withArgs(1, attakerInstance, endTimestamp, 1);
 
         // await expect(tx2).to.changeEtherBalances([attakerInstance, stakingInstance], [amount, -amount]);
       });
@@ -269,10 +263,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc1155Instance = await erc1155Factory();
 
-        await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
+        await erc1155Instance.grantRole(MINTER_ROLE, stakingInstance);
 
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
@@ -286,7 +280,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           reward: [
             {
               tokenType: 4, // NATIVE
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -312,7 +306,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const startTimestamp: number = (await time.latest()).toNumber();
         await expect(tx1)
           .to.emit(stakingInstance, "DepositStart")
-          .withArgs(1, tokenId, await attakerInstance.getAddress(), startTimestamp, tokenIds);
+          .withArgs(1, tokenId, attakerInstance, startTimestamp, tokenIds);
         await expect(tx1).to.changeEtherBalances([owner, stakingInstance], [-amount, amount]);
         // return
 
@@ -336,13 +330,11 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         // REWARD 1
         const tx2 = await attakerInstance.receiveReward(1, false, false);
         const endTimestamp: number = (await time.latest()).toNumber();
-        const balance = await erc1155Instance.balanceOf(await attakerInstance.getAddress(), tokenId);
+        const balance = await erc1155Instance.balanceOf(attakerInstance, tokenId);
 
         expect(balance).to.be.equal(amount);
         await expect(tx2).to.emit(attakerInstance, "Reentered").withArgs(false);
-        await expect(tx2)
-          .to.emit(stakingInstance, "DepositFinish")
-          .withArgs(1, await attakerInstance.getAddress(), endTimestamp, 1);
+        await expect(tx2).to.emit(stakingInstance, "DepositFinish").withArgs(1, attakerInstance, endTimestamp, 1);
 
         // await expect(tx2).to.changeEtherBalances([attakerInstance, stakingInstance], [amount, -amount]);
       });
@@ -355,10 +347,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc721SimpleInstance = await erc721Factory("ERC721Simple");
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
-        await erc721SimpleInstance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
-        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
+        await erc721SimpleInstance.grantRole(MINTER_ROLE, stakingInstance);
+        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, attakerInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
@@ -372,7 +364,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           reward: [
             {
               tokenType: 2, // ERC721
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId,
               amount: 0n,
             },
@@ -431,7 +423,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx4).to.emit(attakerInstance, "Reentered").withArgs(false);
         await expect(tx4)
           .to.emit(stakingInstance, "BalanceWithdraw")
-          .withArgs(await attakerInstance.getAddress(), [0, ZeroAddress, tokenId, amount / 2n]);
+          .withArgs(attakerInstance, [0, ZeroAddress, tokenId, amount / 2n]);
       });
 
       it("should not call twice (ERC20)", async function () {
@@ -440,15 +432,15 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc20Instance = await erc20Factory();
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
-        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
+        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, attakerInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 1, // ERC20
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -477,10 +469,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx).to.emit(stakingInstance, "RuleCreated");
         // STAKE
         await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(await stakingInstance.getAddress(), amount);
+        await erc20Instance.approve(stakingInstance, amount);
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await stakingInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(stakingInstance, amount);
 
         const tx1 = await stakingInstance.deposit(params, tokenIds);
         const startTimestamp: number = (await time.latest()).toNumber();
@@ -511,7 +503,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         // WITHDRAW PENALTY
         const tx4 = attakerInstance.withdrawBalance({
           tokenType: 1,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId,
           amount,
         });
@@ -524,7 +516,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx4).to.emit(attakerInstance, "Reentered").withArgs(false);
         await expect(tx4)
           .to.emit(stakingInstance, "BalanceWithdraw")
-          .withArgs(await attakerInstance.getAddress(), [1, await erc20Instance.getAddress(), tokenId, amount / 2n]);
+          .withArgs(attakerInstance, [1, erc20Instance, tokenId, amount / 2n]);
       });
 
       it("should not call twice (ERC721)", async function () {
@@ -533,16 +525,16 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc721Instance = await erc721Factory("ERC721Simple");
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
-        await erc721Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
-        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
+        await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
+        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, attakerInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 2, // ERC721
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1n,
             },
@@ -571,10 +563,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx).to.emit(stakingInstance, "RuleCreated");
         // STAKE
         await erc721Instance.mintCommon(owner.address, templateId);
-        await erc721Instance.approve(await stakingInstance.getAddress(), tokenId);
+        await erc721Instance.approve(stakingInstance, tokenId);
 
         await erc721Instance.mintCommon(receiver.address, templateId);
-        await erc721Instance.connect(receiver).approve(await stakingInstance.getAddress(), tokenId + 1n);
+        await erc721Instance.connect(receiver).approve(stakingInstance, tokenId + 1n);
 
         const tx1 = await stakingInstance.deposit(params, [tokenId]);
         const startTimestamp: number = (await time.latest()).toNumber();
@@ -582,7 +574,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           .to.emit(stakingInstance, "DepositStart")
           .withArgs(1, 1, owner.address, startTimestamp, [tokenId]);
         const balance_11 = await erc721Instance.balanceOf(owner.address);
-        const balance_12 = await erc721Instance.balanceOf(await stakingInstance.getAddress());
+        const balance_12 = await erc721Instance.balanceOf(stakingInstance);
         expect(balance_11).to.be.equal(0);
         expect(balance_12).to.be.equal(1);
         // await expect(tx1).to.changeTokenBalances(erc20Instance, [owner, stakingInstance], [-amount, amount]);
@@ -593,7 +585,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           .to.emit(stakingInstance, "DepositStart")
           .withArgs(2, 1, receiver.address, startTimestamp2, [tokenId + 1n]);
         const balance_21 = await erc721Instance.balanceOf(owner.address);
-        const balance_22 = await erc721Instance.balanceOf(await stakingInstance.getAddress());
+        const balance_22 = await erc721Instance.balanceOf(stakingInstance);
         expect(balance_21).to.be.equal(0);
         expect(balance_22).to.be.equal(2);
         // await expect(tx1).to.changeTokenBalances(erc20Instance, [owner, stakingInstance], [-amount, amount]);
@@ -613,7 +605,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         // WITHDRAW PENALTY
         const tx4 = attakerInstance.withdrawBalance({
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         });
@@ -621,9 +613,9 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx4).to.emit(attakerInstance, "Reentered").withArgs(false);
         await expect(tx4)
           .to.emit(stakingInstance, "BalanceWithdraw")
-          .withArgs(await attakerInstance.getAddress(), [2, await erc721Instance.getAddress(), tokenId, 1]);
-        const balance_31 = await erc721Instance.balanceOf(await attakerInstance.getAddress());
-        const balance_32 = await erc721Instance.balanceOf(await stakingInstance.getAddress());
+          .withArgs(attakerInstance, [2, erc721Instance, tokenId, 1]);
+        const balance_31 = await erc721Instance.balanceOf(attakerInstance);
+        const balance_32 = await erc721Instance.balanceOf(stakingInstance);
         expect(balance_31).to.be.equal(1);
         expect(balance_32).to.be.equal(1);
       });
@@ -634,16 +626,16 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const stakingInstance = await factory();
         const erc1155Instance = await erc1155Factory();
         const Attaker = await ethers.getContractFactory("ReentrancyStakingReward");
-        const attakerInstance = await Attaker.deploy(await stakingInstance.getAddress());
+        const attakerInstance = await Attaker.deploy(stakingInstance);
 
-        await erc1155Instance.grantRole(MINTER_ROLE, await stakingInstance.getAddress());
-        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, await attakerInstance.getAddress());
+        await erc1155Instance.grantRole(MINTER_ROLE, stakingInstance);
+        await stakingInstance.grantRole(DEFAULT_ADMIN_ROLE, attakerInstance);
 
         const stakeRule: IStakingRule = {
           deposit: [
             {
               tokenType: 4, // ERC1155
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -672,10 +664,10 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx).to.emit(stakingInstance, "RuleCreated");
         // STAKE
         await erc1155Instance.mint(owner.address, tokenId, amount, "0x");
-        await erc1155Instance.setApprovalForAll(await stakingInstance.getAddress(), true);
+        await erc1155Instance.setApprovalForAll(stakingInstance, true);
 
         await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-        await erc1155Instance.connect(receiver).setApprovalForAll(await stakingInstance.getAddress(), true);
+        await erc1155Instance.connect(receiver).setApprovalForAll(stakingInstance, true);
 
         const tx1 = await stakingInstance.deposit(params, tokenIds);
         const startTimestamp: number = (await time.latest()).toNumber();
@@ -683,7 +675,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           .to.emit(stakingInstance, "DepositStart")
           .withArgs(1, 1, owner.address, startTimestamp, tokenIds);
         const balance_11 = await erc1155Instance.balanceOf(owner.address, tokenId);
-        const balance_12 = await erc1155Instance.balanceOf(await stakingInstance.getAddress(), tokenId);
+        const balance_12 = await erc1155Instance.balanceOf(stakingInstance, tokenId);
         expect(balance_11).to.be.equal(0);
         expect(balance_12).to.be.equal(amount);
         // await expect(tx1).to.changeTokenBalances(erc20Instance, [owner, stakingInstance], [-amount, amount]);
@@ -694,7 +686,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
           .to.emit(stakingInstance, "DepositStart")
           .withArgs(2, 1, receiver.address, startTimestamp2, tokenIds);
         const balance_21 = await erc1155Instance.balanceOf(owner.address, tokenId);
-        const balance_22 = await erc1155Instance.balanceOf(await stakingInstance.getAddress(), tokenId);
+        const balance_22 = await erc1155Instance.balanceOf(stakingInstance, tokenId);
         expect(balance_21).to.be.equal(0);
         expect(balance_22).to.be.equal(amount * 2n);
         // await expect(tx1).to.changeTokenBalances(erc20Instance, [owner, stakingInstance], [-amount, amount]);
@@ -714,7 +706,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         // WITHDRAW PENALTY
         const tx4 = attakerInstance.withdrawBalance({
           tokenType: 4,
-          token: await erc1155Instance.getAddress(),
+          token: erc1155Instance,
           tokenId,
           amount,
         });
@@ -722,9 +714,9 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         await expect(tx4).to.emit(attakerInstance, "Reentered").withArgs(false);
         await expect(tx4)
           .to.emit(stakingInstance, "BalanceWithdraw")
-          .withArgs(await attakerInstance.getAddress(), [4, await erc1155Instance.getAddress(), tokenId, amount]);
-        const balance_31 = await erc1155Instance.balanceOf(await attakerInstance.getAddress(), tokenId);
-        const balance_32 = await erc1155Instance.balanceOf(await stakingInstance.getAddress(), tokenId);
+          .withArgs(attakerInstance, [4, erc1155Instance, tokenId, amount]);
+        const balance_31 = await erc1155Instance.balanceOf(attakerInstance, tokenId);
+        const balance_32 = await erc1155Instance.balanceOf(stakingInstance, tokenId);
         expect(balance_31).to.be.equal(amount);
         expect(balance_32).to.be.equal(amount);
       });

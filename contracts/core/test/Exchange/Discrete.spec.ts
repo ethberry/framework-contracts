@@ -19,7 +19,7 @@ describe("Diamond Exchange Discrete", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -77,7 +77,7 @@ describe("Diamond Exchange Discrete", function () {
       });
 
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const tx2 = exchangeInstance.connect(receiver).upgrade(
         {
@@ -90,14 +90,14 @@ describe("Diamond Exchange Discrete", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -127,7 +127,7 @@ describe("Diamond Exchange Discrete", function () {
           1,
         )
         .to.emit(erc721Instance, "LevelUp")
-        .withArgs(await exchangeInstance.getAddress(), tokenId, extra, 1);
+        .withArgs(exchangeInstance, tokenId, extra, 1);
 
       await expect(tx2).changeTokenBalances(erc20Instance, [owner, receiver], [amount, -amount]);
     });
@@ -164,20 +164,20 @@ describe("Diamond Exchange Discrete", function () {
       });
 
       await erc20Instance.mint(receiver.address, amount);
-      // await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      // await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const tx2 = exchangeInstance.connect(receiver).upgrade(
         params,
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -187,7 +187,7 @@ describe("Diamond Exchange Discrete", function () {
 
       await expect(tx2)
         .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-        .withArgs(await exchangeInstance.getAddress(), 0, amount);
+        .withArgs(exchangeInstance, 0, amount);
     });
 
     it("should fail: ERC20InsufficientBalance", async function () {
@@ -229,7 +229,7 @@ describe("Diamond Exchange Discrete", function () {
       });
 
       // await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const tx2 = exchangeInstance.connect(receiver).upgrade(
         {
@@ -242,7 +242,7 @@ describe("Diamond Exchange Discrete", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
@@ -250,7 +250,7 @@ describe("Diamond Exchange Discrete", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -298,7 +298,7 @@ describe("Diamond Exchange Discrete", function () {
       });
 
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const tx2 = exchangeInstance.connect(receiver).upgrade(
         {
@@ -311,7 +311,7 @@ describe("Diamond Exchange Discrete", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
@@ -319,7 +319,7 @@ describe("Diamond Exchange Discrete", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -362,23 +362,23 @@ describe("Diamond Exchange Discrete", function () {
       });
 
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(METADATA_ROLE, owner.address);
 
       const tx2 = exchangeInstance.connect(receiver).upgrade(
         params,
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1n,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -395,7 +395,7 @@ describe("Diamond Exchange Discrete", function () {
       const [_owner] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+      const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
 
       const tx1 = exchangeInstance.upgrade(

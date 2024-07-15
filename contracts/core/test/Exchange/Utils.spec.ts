@@ -37,7 +37,7 @@ describe("Diamond Exchange Utils", function () {
     const diamondInstance = await deployDiamond("DiamondExchange", [facetName, "WalletFacet"], "DiamondExchangeInit", {
       logSelectors: false,
     });
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("ExchangeUtils", function () {
@@ -58,7 +58,7 @@ describe("Diamond Exchange Utils", function () {
               },
             ],
             owner.address,
-            await exchangeInstance.getAddress(),
+            exchangeInstance,
             enabled,
             { value: amount },
           );
@@ -127,7 +127,7 @@ describe("Diamond Exchange Utils", function () {
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
             { value: amount },
           );
@@ -151,7 +151,7 @@ describe("Diamond Exchange Utils", function () {
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
             { value: amount },
           );
@@ -169,25 +169,23 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await jerkInstance.getAddress(), amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(owner.address, jerkInstance, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [owner, jerkInstance], [-amount, amount]);
         });
 
@@ -199,25 +197,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await walletInstance.getAddress(), amount)
+            .withArgs(owner.address, walletInstance, amount)
             .not.to.emit(walletInstance, "TransferReceived");
           await expect(tx).changeTokenBalances(erc20Instance, [owner, walletInstance], [-amount, amount]);
         });
@@ -226,29 +224,29 @@ describe("Diamond Exchange Utils", function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
-          const walletInstance = await ethers.getContractAt("WalletFacet", await exchangeInstance.getAddress());
+          const walletInstance = await ethers.getContractAt("WalletFacet", exchangeInstance);
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await exchangeInstance.getAddress(),
+            exchangeInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await exchangeInstance.getAddress(), amount)
+            .withArgs(owner.address, exchangeInstance, amount)
             .not.to.emit(walletInstance, "TransferReceived");
           await expect(tx).changeTokenBalances(erc20Instance, [owner, exchangeInstance], [-amount, amount]);
         });
@@ -260,13 +258,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -287,13 +285,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           // await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -315,13 +313,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          // await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          // await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -333,7 +331,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-            .withArgs(await exchangeInstance.getAddress(), 0, amount);
+            .withArgs(exchangeInstance, 0, amount);
         });
 
         it("should spendFrom: ERC1363 => ERC1363 non Holder", async function () {
@@ -345,25 +343,23 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC1363("ERC20Simple");
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await jerkInstance.getAddress(), amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(owner.address, jerkInstance, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [owner, jerkInstance], [-amount, amount]);
         });
 
@@ -376,25 +372,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC1363("ERC20Simple");
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await walletInstance.getAddress(), amount)
+            .withArgs(owner.address, walletInstance, amount)
             .to.emit(walletInstance, "TransferReceived");
           await expect(tx).changeTokenBalances(erc20Instance, [owner, walletInstance], [-amount, amount]);
         });
@@ -403,29 +399,29 @@ describe("Diamond Exchange Utils", function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
-          const walletInstance = await ethers.getContractAt("WalletFacet", await exchangeInstance.getAddress());
+          const walletInstance = await ethers.getContractAt("WalletFacet", exchangeInstance);
 
           const erc20Instance = await deployERC1363("ERC20Simple");
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await exchangeInstance.getAddress(),
+            exchangeInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(owner.address, await exchangeInstance.getAddress(), amount)
+            .withArgs(owner.address, exchangeInstance, amount)
             .to.emit(walletInstance, "TransferReceived");
           await expect(tx).changeTokenBalances(erc20Instance, [owner, exchangeInstance], [-amount, amount]);
         });
@@ -437,13 +433,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC1363("ERC20Simple");
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -468,25 +464,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc721Instance, "ERC721InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spendFrom: ERC721 => Holder", async function () {
@@ -498,27 +494,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc721Instance, "Transfer")
-            .withArgs(owner.address, await walletInstance.getAddress(), tokenId);
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(owner.address, walletInstance, tokenId);
 
-          const balance = await erc721Instance.balanceOf(await walletInstance.getAddress());
+          const balance = await erc721Instance.balanceOf(walletInstance);
           expect(balance).to.equal(1);
         });
 
@@ -529,13 +523,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -563,7 +557,7 @@ describe("Diamond Exchange Utils", function () {
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -575,7 +569,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
 
         it("should spendFrom: ERC721 => EOA (not approved)", async function () {
@@ -585,13 +579,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          // await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          // await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -603,7 +597,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
       });
 
@@ -617,25 +611,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc998Instance, "ERC721InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spendFrom: ERC998 => Holder", async function () {
@@ -647,27 +641,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc998Instance, "Transfer")
-            .withArgs(owner.address, await walletInstance.getAddress(), tokenId);
+          await expect(tx).to.emit(erc998Instance, "Transfer").withArgs(owner.address, walletInstance, tokenId);
 
-          const balance = await erc998Instance.balanceOf(await walletInstance.getAddress());
+          const balance = await erc998Instance.balanceOf(walletInstance);
           expect(balance).to.equal(1);
         });
 
@@ -678,13 +670,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -712,7 +704,7 @@ describe("Diamond Exchange Utils", function () {
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -724,7 +716,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc998Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
 
         it("should spendFrom: ERC998 => EOA (not approved)", async function () {
@@ -734,13 +726,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          // await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          // await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -752,7 +744,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc998Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
       });
 
@@ -766,25 +758,25 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc1155Instance, "ERC1155InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spendFrom: ERC1155 => Holder", async function () {
@@ -796,33 +788,27 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(
-              await exchangeInstance.getAddress(),
-              owner.address,
-              await walletInstance.getAddress(),
-              tokenId,
-              amount,
-            );
+            .withArgs(exchangeInstance, owner.address, walletInstance, tokenId, amount);
 
-          const balance = await erc1155Instance.balanceOf(await walletInstance.getAddress(), templateId);
+          const balance = await erc1155Instance.balanceOf(walletInstance, templateId);
           expect(balance).to.equal(amount);
         });
 
@@ -833,13 +819,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.connect(receiver).testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -851,7 +837,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(await exchangeInstance.getAddress(), owner.address, receiver.address, tokenId, amount);
+            .withArgs(exchangeInstance, owner.address, receiver.address, tokenId, amount);
 
           const balance = await erc1155Instance.balanceOf(receiver.address, 1);
           expect(balance).to.equal(amount);
@@ -864,13 +850,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           // await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.connect(receiver).testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -892,13 +878,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          // await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          // await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.connect(receiver).testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -910,7 +896,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc1155Instance, "ERC1155MissingApprovalForAll")
-            .withArgs(await exchangeInstance.getAddress(), owner.address);
+            .withArgs(exchangeInstance, owner.address);
         });
       });
 
@@ -947,19 +933,19 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -975,19 +961,19 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -1003,19 +989,19 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -1031,19 +1017,19 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
             owner.address,
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -1071,11 +1057,9 @@ describe("Diamond Exchange Utils", function () {
             { value: amount },
           );
 
-          const lib = await ethers.getContractAt("ExchangeUtils", await exchangeInstance.getAddress(), owner);
+          const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
 
-          await expect(tx1)
-            .to.emit(lib, "PaymentEthReceived")
-            .withArgs(await exchangeInstance.getAddress(), amount);
+          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testSpend(
@@ -1114,7 +1098,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(exchangeInstance, "AddressInsufficientBalance")
-            .withArgs(await exchangeInstance.getAddress());
+            .withArgs(exchangeInstance);
         });
       });
 
@@ -1125,24 +1109,22 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await jerkInstance.getAddress(), amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, jerkInstance, amount);
 
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, jerkInstance], [-amount, amount]);
         });
@@ -1153,24 +1135,24 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
             ],
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await walletInstance.getAddress(), amount)
+            .withArgs(exchangeInstance, walletInstance, amount)
             .not.to.emit(walletInstance, "TransferReceived");
 
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, walletInstance], [-amount, amount]);
@@ -1182,13 +1164,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -1197,9 +1179,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), receiver.address, amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, receiver.address, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
         });
 
@@ -1209,13 +1189,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          // await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          // await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -1226,7 +1206,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientBalance")
-            .withArgs(await exchangeInstance.getAddress(), 0, amount);
+            .withArgs(exchangeInstance, 0, amount);
         });
 
         it("should spend: ERC1363 => ERC1363 non Holder", async function () {
@@ -1235,24 +1215,22 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC1363("ERC20Simple");
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await jerkInstance.getAddress(), amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, jerkInstance, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, jerkInstance], [-amount, amount]);
         });
 
@@ -1262,24 +1240,24 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC1363("ERC20Simple");
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
             ],
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await walletInstance.getAddress(), amount)
+            .withArgs(exchangeInstance, walletInstance, amount)
             .to.emit(walletInstance, "TransferReceived");
 
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, walletInstance], [-amount, amount]);
@@ -1291,13 +1269,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC1363("ERC20Simple");
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -1306,9 +1284,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), receiver.address, amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, receiver.address, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
         });
       });
@@ -1320,24 +1296,24 @@ describe("Diamond Exchange Utils", function () {
           const jerkInstance = await deployRejector();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc721Instance, "ERC721InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spend: ERC721 => Holder ", async function () {
@@ -1346,26 +1322,24 @@ describe("Diamond Exchange Utils", function () {
           const walletInstance = await deployHolder();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc721Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await walletInstance.getAddress(), tokenId);
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(exchangeInstance, walletInstance, tokenId);
 
-          const balance = await erc721Instance.balanceOf(await walletInstance.getAddress());
+          const balance = await erc721Instance.balanceOf(walletInstance);
           expect(balance).to.equal(1);
         });
 
@@ -1375,13 +1349,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -1390,9 +1364,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc721Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), receiver.address, tokenId);
+          await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(exchangeInstance, receiver.address, tokenId);
 
           const balance = await erc721Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
@@ -1410,7 +1382,7 @@ describe("Diamond Exchange Utils", function () {
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -1421,7 +1393,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
       });
 
@@ -1432,24 +1404,24 @@ describe("Diamond Exchange Utils", function () {
           const jerkInstance = await deployRejector();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc998Instance, "ERC721InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spend: ERC998 => Holder ", async function () {
@@ -1457,26 +1429,24 @@ describe("Diamond Exchange Utils", function () {
           const walletInstance = await deployHolder();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc998Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), await walletInstance.getAddress(), tokenId);
+          await expect(tx).to.emit(erc998Instance, "Transfer").withArgs(exchangeInstance, walletInstance, tokenId);
 
-          const balance = await erc998Instance.balanceOf(await walletInstance.getAddress());
+          const balance = await erc998Instance.balanceOf(walletInstance);
           expect(balance).to.equal(1);
         });
 
@@ -1486,13 +1456,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -1501,9 +1471,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc998Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), receiver.address, tokenId);
+          await expect(tx).to.emit(erc998Instance, "Transfer").withArgs(exchangeInstance, receiver.address, tokenId);
 
           const balance = await erc998Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
@@ -1521,7 +1489,7 @@ describe("Diamond Exchange Utils", function () {
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -1532,7 +1500,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc998Instance, "ERC721InsufficientApproval")
-            .withArgs(await exchangeInstance.getAddress(), tokenId);
+            .withArgs(exchangeInstance, tokenId);
         });
       });
 
@@ -1545,24 +1513,24 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.mint(await exchangeInstance.getAddress(), templateId, amount, "0x");
+          await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
           const tx = exchangeInstance.connect(receiver).testSpend(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             enabled,
           );
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc1155Instance, "ERC1155InvalidReceiver")
-            .withArgs(await jerkInstance.getAddress());
+            .withArgs(jerkInstance);
         });
 
         it("should spend: ERC1155 => Holder", async function () {
@@ -1573,32 +1541,26 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.mint(await exchangeInstance.getAddress(), templateId, amount, "0x");
+          await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
           const tx = exchangeInstance.connect(receiver).testSpend(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
-            await walletInstance.getAddress(),
+            walletInstance,
             enabled,
           );
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(
-              await exchangeInstance.getAddress(),
-              await exchangeInstance.getAddress(),
-              await walletInstance.getAddress(),
-              tokenId,
-              amount,
-            );
+            .withArgs(exchangeInstance, exchangeInstance, walletInstance, tokenId, amount);
 
-          const balance = await erc1155Instance.balanceOf(await walletInstance.getAddress(), templateId);
+          const balance = await erc1155Instance.balanceOf(walletInstance, templateId);
           expect(balance).to.equal(amount);
         });
 
@@ -1608,13 +1570,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.mint(await exchangeInstance.getAddress(), templateId, amount, "0x");
+          await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
           const tx = exchangeInstance.connect(receiver).testSpend(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -1625,13 +1587,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(
-              await exchangeInstance.getAddress(),
-              await exchangeInstance.getAddress(),
-              receiver.address,
-              tokenId,
-              amount,
-            );
+            .withArgs(exchangeInstance, exchangeInstance, receiver.address, tokenId, amount);
 
           const balance = await erc1155Instance.balanceOf(receiver.address, templateId);
           expect(balance).to.equal(amount);
@@ -1643,13 +1599,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          // await erc1155Instance.mint(await exchangeInstance.getAddress(), templateId, amount, "0x");
+          // await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
           const tx = exchangeInstance.connect(receiver).testSpend(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -1660,7 +1616,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.be.revertedWithCustomError(erc1155Instance, "ERC1155InsufficientBalance")
-            .withArgs(await exchangeInstance.getAddress(), 0, amount, tokenId);
+            .withArgs(exchangeInstance, 0, amount, tokenId);
         });
       });
 
@@ -1692,18 +1648,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -1714,18 +1670,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
             ],
-            await erc721Instance.getAddress(),
+            erc721Instance,
             disabled,
           );
 
@@ -1736,18 +1692,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.mintCommon(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.mintCommon(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
             ],
-            await erc998Instance.getAddress(),
+            erc998Instance,
             disabled,
           );
 
@@ -1762,18 +1718,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.mint(await exchangeInstance.getAddress(), templateId, amount, "0x");
+          await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
           const tx = exchangeInstance.connect(receiver).testSpend(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
             ],
-            await jerkInstance.getAddress(),
+            jerkInstance,
             disabled,
           );
 
@@ -1801,10 +1757,8 @@ describe("Diamond Exchange Utils", function () {
             { value: amount },
           );
 
-          const lib = await ethers.getContractAt("ExchangeUtils", await exchangeInstance.getAddress(), owner);
-          await expect(tx1)
-            .to.emit(lib, "PaymentEthReceived")
-            .withArgs(await exchangeInstance.getAddress(), amount);
+          const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
+          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testAcquire(
@@ -1832,13 +1786,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -1847,9 +1801,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx)
-            .to.emit(erc20Instance, "Transfer")
-            .withArgs(await exchangeInstance.getAddress(), receiver.address, amount);
+          await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, receiver.address, amount);
 
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
         });
@@ -1873,13 +1825,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 1,
               },
@@ -1900,17 +1852,17 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Random");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
-          await erc721Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
           await erc721Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, await erc721Instance.getAddress());
+          await vrfInstance.addConsumer(subscriptionId, erc721Instance);
 
           await exchangeInstance.testAcquire(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 1,
               },
@@ -1933,13 +1885,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 3,
               },
@@ -1979,13 +1931,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 1n,
               },
@@ -2006,18 +1958,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Random");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           // Set VRFV2 Subscription
-          await erc998Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
           await erc998Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, await erc998Instance.getAddress());
+          await vrfInstance.addConsumer(subscriptionId, erc998Instance);
 
           await exchangeInstance.testAcquire(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 1n,
               },
@@ -2040,13 +1992,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 3n,
               },
@@ -2075,13 +2027,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc1155Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -2092,7 +2044,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(await exchangeInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
+            .withArgs(exchangeInstance, ZeroAddress, receiver.address, tokenId, amount);
 
           const balance = await erc1155Instance.balanceOf(receiver.address, tokenId);
           expect(balance).to.equal(amount);
@@ -2127,13 +2079,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -2151,13 +2103,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount,
               },
@@ -2174,13 +2126,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount,
               },
@@ -2197,13 +2149,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc1155Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -2224,7 +2176,7 @@ describe("Diamond Exchange Utils", function () {
 
           const exchangeInstance = await factory();
 
-          await ethers.getContractAt("ExchangeUtils", await exchangeInstance.getAddress(), owner);
+          await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
 
           const tx1 = exchangeInstance.testAcquireFrom(
             [
@@ -2252,13 +2204,13 @@ describe("Diamond Exchange Utils", function () {
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
 
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -2291,13 +2243,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 1,
               },
@@ -2318,17 +2270,17 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Random");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
-          await erc721Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
           await erc721Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, await erc721Instance.getAddress());
+          await vrfInstance.addConsumer(subscriptionId, erc721Instance);
 
           await exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 1,
               },
@@ -2351,13 +2303,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount: 3,
               },
@@ -2397,13 +2349,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 1n,
               },
@@ -2424,18 +2376,18 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Random");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           // Set VRFV2 Subscription
-          await erc998Instance.grantRole(MINTER_ROLE, await vrfInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
           await erc998Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, await erc998Instance.getAddress());
+          await vrfInstance.addConsumer(subscriptionId, erc998Instance);
 
           await exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 1n,
               },
@@ -2458,13 +2410,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount: 3n,
               },
@@ -2493,13 +2445,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc1155Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquire(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -2510,7 +2462,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(await exchangeInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount);
+            .withArgs(exchangeInstance, ZeroAddress, receiver.address, tokenId, amount);
 
           const balance = await erc1155Instance.balanceOf(receiver.address, tokenId);
           expect(balance).to.equal(amount);
@@ -2545,13 +2497,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc20Instance = await deployERC20();
-          await erc20Instance.mint(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.mint(exchangeInstance, amount);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId,
                 amount,
               },
@@ -2569,13 +2521,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
-          await erc721Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId: templateId,
                 amount,
               },
@@ -2592,13 +2544,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
-          await erc998Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc998Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId: templateId,
                 amount,
               },
@@ -2615,13 +2567,13 @@ describe("Diamond Exchange Utils", function () {
           const exchangeInstance = await factory();
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
-          await erc1155Instance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+          await erc1155Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           const tx = exchangeInstance.testAcquireFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -2667,13 +2619,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -2695,13 +2647,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -2728,13 +2680,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -2761,13 +2713,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },
@@ -2778,7 +2730,7 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx)
             .to.emit(erc1155Instance, "TransferSingle")
-            .withArgs(await exchangeInstance.getAddress(), owner.address, ZeroAddress, tokenId, amount);
+            .withArgs(exchangeInstance, owner.address, ZeroAddress, tokenId, amount);
 
           const balance = await erc1155Instance.balanceOf(owner.address, tokenId);
           expect(balance).to.equal(0);
@@ -2815,13 +2767,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc20Instance = await deployERC20();
           await erc20Instance.mint(owner.address, amount);
-          await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+          await erc20Instance.approve(exchangeInstance, amount);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 1,
-                token: await erc20Instance.getAddress(),
+                token: erc20Instance,
                 tokenId: 0,
                 amount,
               },
@@ -2840,13 +2792,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(owner.address, templateId);
-          await erc721Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 2,
-                token: await erc721Instance.getAddress(),
+                token: erc721Instance,
                 tokenId,
                 amount,
               },
@@ -2865,13 +2817,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(owner.address, templateId);
-          await erc998Instance.approve(await exchangeInstance.getAddress(), templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 3,
-                token: await erc998Instance.getAddress(),
+                token: erc998Instance,
                 tokenId,
                 amount,
               },
@@ -2890,13 +2842,13 @@ describe("Diamond Exchange Utils", function () {
 
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
-          await erc1155Instance.setApprovalForAll(await exchangeInstance.getAddress(), true);
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
           const tx = exchangeInstance.testBurnFrom(
             [
               {
                 tokenType: 4,
-                token: await erc1155Instance.getAddress(),
+                token: erc1155Instance,
                 tokenId,
                 amount,
               },

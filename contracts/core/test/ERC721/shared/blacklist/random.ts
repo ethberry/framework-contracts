@@ -24,7 +24,7 @@ export function shouldBehaveLikeERC721BlacklistRandom(factory: () => Promise<any
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await vrfInstance.addConsumer(subscriptionId, await contractInstance.getAddress());
+      await vrfInstance.addConsumer(subscriptionId, contractInstance);
 
       await contractInstance.blacklist(receiver.address);
       const tx = contractInstance.mintRandom(receiver.address, templateId);

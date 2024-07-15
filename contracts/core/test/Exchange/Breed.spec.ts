@@ -26,7 +26,7 @@ describe("Diamond Exchange Breed", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -73,10 +73,8 @@ describe("Diamond Exchange Breed", function () {
         await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, await erc721Instance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721Instance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
 
         const genesis0 = {
           templateId: 128,
@@ -151,13 +149,13 @@ describe("Diamond Exchange Breed", function () {
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -213,10 +211,8 @@ describe("Diamond Exchange Breed", function () {
         await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, await erc721Instance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721Instance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
 
         await erc721Instance.mintCommon(receiver.address, 1);
         await erc721Instance.mintCommon(receiver.address, 2);
@@ -244,13 +240,13 @@ describe("Diamond Exchange Breed", function () {
           params,
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -317,13 +313,13 @@ describe("Diamond Exchange Breed", function () {
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -366,13 +362,13 @@ describe("Diamond Exchange Breed", function () {
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 4,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -393,10 +389,8 @@ describe("Diamond Exchange Breed", function () {
         await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, await erc721Instance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721Instance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
 
         await erc721Instance.mintCommon(receiver.address, 1);
         await erc721Instance.mintCommon(receiver.address, 2);
@@ -424,13 +418,13 @@ describe("Diamond Exchange Breed", function () {
           params,
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -496,13 +490,13 @@ describe("Diamond Exchange Breed", function () {
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -517,10 +511,8 @@ describe("Diamond Exchange Breed", function () {
         const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, await erc721Instance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721Instance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
 
         await erc721Instance.mintCommon(owner.address, 1);
         await erc721Instance.mintCommon(receiver.address, 2);
@@ -546,13 +538,13 @@ describe("Diamond Exchange Breed", function () {
           params,
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -590,13 +582,13 @@ describe("Diamond Exchange Breed", function () {
           params,
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -635,13 +627,13 @@ describe("Diamond Exchange Breed", function () {
           params,
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -663,10 +655,8 @@ describe("Diamond Exchange Breed", function () {
         await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, await erc721Instance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721Instance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
 
         const genesis0 = {
           templateId: 128,
@@ -731,7 +721,7 @@ describe("Diamond Exchange Breed", function () {
           },
         });
 
-        const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+        const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
         await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
         const tx1 = exchangeInstance.connect(receiver).breed(
@@ -745,13 +735,13 @@ describe("Diamond Exchange Breed", function () {
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 1,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -770,7 +760,7 @@ describe("Diamond Exchange Breed", function () {
       const [_owner] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+      const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
 
       const tx1 = exchangeInstance.breed(

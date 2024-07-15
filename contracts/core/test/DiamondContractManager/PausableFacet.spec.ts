@@ -9,7 +9,7 @@ describe.skip("PausableFacetDiamond", function () {
     const diamondInstance = await deployDiamond("DiamondCM", [facetName, "DiamondLoupeFacet"], "DiamondCMInit", {
       logSelectors: false,
     });
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   shouldBehaveLikePausable(factory);

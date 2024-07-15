@@ -20,7 +20,7 @@ describe("Diamond Exchange Rent", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -50,7 +50,7 @@ describe("Diamond Exchange Rent", function () {
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -88,7 +88,7 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
@@ -131,8 +131,8 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -177,14 +177,14 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -233,8 +233,8 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -279,14 +279,14 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -308,7 +308,7 @@ describe("Diamond Exchange Rent", function () {
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -335,7 +335,7 @@ describe("Diamond Exchange Rent", function () {
         price: [],
       });
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(METADATA_ROLE, owner.address);
 
       const tx1 = exchangeInstance.connect(receiver).lend(
@@ -349,7 +349,7 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
@@ -371,7 +371,7 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.approve(exchangeInstance, amount);
 
       // lend TIME
       const date = new Date();
@@ -416,14 +416,14 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -433,7 +433,7 @@ describe("Diamond Exchange Rent", function () {
 
       await expect(tx1)
         .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-        .withArgs(await exchangeInstance.getAddress(), tokenId);
+        .withArgs(exchangeInstance, tokenId);
     });
 
     it("should fail: SignerMissingRole", async function () {
@@ -445,7 +445,7 @@ describe("Diamond Exchange Rent", function () {
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -472,10 +472,7 @@ describe("Diamond Exchange Rent", function () {
         price: [],
       });
 
-      const accessControlInstance = await ethers.getContractAt(
-        "AccessControlFacet",
-        await exchangeInstance.getAddress(),
-      );
+      const accessControlInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
 
       await accessControlInstance.renounceRole(METADATA_ROLE, owner.address);
 
@@ -490,7 +487,7 @@ describe("Diamond Exchange Rent", function () {
         },
         {
           tokenType: 2,
-          token: await erc721Instance.getAddress(),
+          token: erc721Instance,
           tokenId,
           amount: 1,
         },
@@ -512,7 +509,7 @@ describe("Diamond Exchange Rent", function () {
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -553,7 +550,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
@@ -597,8 +594,8 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -646,7 +643,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
@@ -654,7 +651,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -703,8 +700,8 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -752,7 +749,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
@@ -760,7 +757,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -782,8 +779,8 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -826,7 +823,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -848,7 +845,7 @@ describe("Diamond Exchange Rent", function () {
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.approve(exchangeInstance, amount);
 
       // lend TIME
       const date = new Date();
@@ -897,7 +894,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
@@ -905,7 +902,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -915,7 +912,7 @@ describe("Diamond Exchange Rent", function () {
 
       await expect(tx1)
         .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-        .withArgs(await exchangeInstance.getAddress(), tokenId);
+        .withArgs(exchangeInstance, tokenId);
     });
 
     it("should fail: SignerMissingRole", async function () {
@@ -927,7 +924,7 @@ describe("Diamond Exchange Rent", function () {
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
 
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
       // lend TIME
       const date = new Date();
@@ -957,10 +954,7 @@ describe("Diamond Exchange Rent", function () {
         extra: expires,
       });
 
-      const accessControlInstance = await ethers.getContractAt(
-        "AccessControlFacet",
-        await exchangeInstance.getAddress(),
-      );
+      const accessControlInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
 
       await accessControlInstance.renounceRole(METADATA_ROLE, owner.address);
 
@@ -976,7 +970,7 @@ describe("Diamond Exchange Rent", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1,
           },
@@ -992,7 +986,7 @@ describe("Diamond Exchange Rent", function () {
   describe("ERROR", function () {
     it("should fail: EnforcedPause", async function () {
       const exchangeInstance = await factory();
-      const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+      const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
 
       const tx1 = exchangeInstance.lend(

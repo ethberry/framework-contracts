@@ -37,7 +37,7 @@ describe("Dispenser", function () {
         { value: amount },
       );
 
-      const lib = await ethers.getContractAt("ExchangeUtils", await contractInstance.getAddress(), owner);
+      const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
       await expect(tx).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
 
       await expect(tx).to.changeEtherBalances([owner, receiver], [-amount, amount]);
@@ -67,7 +67,7 @@ describe("Dispenser", function () {
         { value: amount * 2n },
       );
 
-      const lib = await ethers.getContractAt("ExchangeUtils", await contractInstance.getAddress(), owner);
+      const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
       await expect(tx)
         .to.emit(lib, "PaymentEthSent")
         .withArgs(receiver.address, amount)
@@ -122,7 +122,7 @@ describe("Dispenser", function () {
 
       await expect(tx)
         .to.be.revertedWithCustomError(contractInstance, "AddressInsufficientBalance")
-        .withArgs(await contractInstance.getAddress());
+        .withArgs(contractInstance);
     });
 
     it("should fail: WrongArrayLength", async function () {
@@ -151,9 +151,9 @@ describe("Dispenser", function () {
       const contractInstance = await factory();
 
       const attackerFactory = await ethers.getContractFactory("ReentrancyDispenser");
-      const attackerInstance = await attackerFactory.deploy(await contractInstance.getAddress(), ZeroAddress);
+      const attackerInstance = await attackerFactory.deploy(contractInstance, ZeroAddress);
       await owner.sendTransaction({
-        to: await attackerInstance.getAddress(),
+        to: attackerInstance,
         value: amount * 5n,
       });
 
@@ -166,17 +166,15 @@ describe("Dispenser", function () {
             amount,
           },
         ],
-        [await attackerInstance.getAddress()],
+        [attackerInstance],
         { value: amount * 5n },
       );
 
-      const lib = await ethers.getContractAt("ExchangeUtils", await contractInstance.getAddress(), owner);
-      await expect(tx)
-        .to.emit(lib, "PaymentEthSent")
-        .withArgs(await attackerInstance.getAddress(), amount);
+      const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
+      await expect(tx).to.emit(lib, "PaymentEthSent").withArgs(attackerInstance, amount);
 
       await expect(tx).to.changeEtherBalances(
-        [owner, await contractInstance.getAddress(), await attackerInstance.getAddress()],
+        [owner, contractInstance, attackerInstance],
         [-amount * 5n, amount * 4n, amount],
       );
     });
@@ -190,13 +188,13 @@ describe("Dispenser", function () {
 
       const erc20Instance = await deployERC20();
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
+      await erc20Instance.approve(contractInstance, amount);
 
       const tx = contractInstance.disperse(
         [
           {
             tokenType: 1,
-            token: await erc20Instance.getAddress(),
+            token: erc20Instance,
             tokenId,
             amount,
           },
@@ -216,13 +214,13 @@ describe("Dispenser", function () {
 
       const erc721Instance = await deployERC721();
       await erc721Instance.mintCommon(owner.address, templateId);
-      await erc721Instance.approve(await contractInstance.getAddress(), tokenId);
+      await erc721Instance.approve(contractInstance, tokenId);
 
       const tx = contractInstance.disperse(
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1n,
           },
@@ -239,30 +237,25 @@ describe("Dispenser", function () {
       const erc721Instance = await deployERC721();
 
       const attackerFactory = await ethers.getContractFactory("ReentrancyDispenser");
-      const attackerInstance = await attackerFactory.deploy(
-        await contractInstance.getAddress(),
-        await erc721Instance.getAddress(),
-      );
+      const attackerInstance = await attackerFactory.deploy(contractInstance, erc721Instance);
 
       await erc721Instance.mintCommon(owner.address, templateId);
       await erc721Instance.mintCommon(owner.address, templateId);
-      await erc721Instance.setApprovalForAll(await contractInstance.getAddress(), true);
+      await erc721Instance.setApprovalForAll(contractInstance, true);
 
       const tx = contractInstance.disperse(
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1n,
           },
         ],
-        [await attackerInstance.getAddress()],
+        [attackerInstance],
       );
 
-      await expect(tx)
-        .to.emit(erc721Instance, "Transfer")
-        .withArgs(owner.address, await attackerInstance.getAddress(), tokenId);
+      await expect(tx).to.emit(erc721Instance, "Transfer").withArgs(owner.address, attackerInstance, tokenId);
 
       const ownerOf = await erc721Instance.ownerOf(2);
       expect(ownerOf).to.be.equal(owner.address);
@@ -277,13 +270,13 @@ describe("Dispenser", function () {
 
       const erc1155Instance = await deployERC1155();
       await erc1155Instance.mint(owner.address, tokenId, amount, "0x");
-      await erc1155Instance.setApprovalForAll(await contractInstance.getAddress(), true);
+      await erc1155Instance.setApprovalForAll(contractInstance, true);
 
       const tx = contractInstance.disperse(
         [
           {
             tokenType: 4,
-            token: await erc1155Instance.getAddress(),
+            token: erc1155Instance,
             tokenId,
             amount,
           },
@@ -293,7 +286,7 @@ describe("Dispenser", function () {
 
       await expect(tx)
         .to.emit(erc1155Instance, "TransferSingle")
-        .withArgs(await contractInstance.getAddress(), owner.address, receiver.address, tokenId, amount);
+        .withArgs(contractInstance, owner.address, receiver.address, tokenId, amount);
     });
 
     it("should have reentrancy guard", async function () {
@@ -302,35 +295,26 @@ describe("Dispenser", function () {
       const erc1155Instance = await deployERC1155();
 
       const attackerFactory = await ethers.getContractFactory("ReentrancyDispenser");
-      const attackerInstance = await attackerFactory.deploy(
-        await contractInstance.getAddress(),
-        await erc1155Instance.getAddress(),
-      );
+      const attackerInstance = await attackerFactory.deploy(contractInstance, erc1155Instance);
 
       await erc1155Instance.mint(owner.address, tokenId, amount * 2n, "0x");
-      await erc1155Instance.setApprovalForAll(await contractInstance.getAddress(), true);
+      await erc1155Instance.setApprovalForAll(contractInstance, true);
 
       const tx = contractInstance.disperse(
         [
           {
             tokenType: 4,
-            token: await erc1155Instance.getAddress(),
+            token: erc1155Instance,
             tokenId,
             amount,
           },
         ],
-        [await attackerInstance.getAddress()],
+        [attackerInstance],
       );
 
       await expect(tx)
         .to.emit(erc1155Instance, "TransferSingle")
-        .withArgs(
-          await contractInstance.getAddress(),
-          owner.address,
-          await attackerInstance.getAddress(),
-          tokenId,
-          amount,
-        );
+        .withArgs(contractInstance, owner.address, attackerInstance, tokenId, amount);
     });
   });
 

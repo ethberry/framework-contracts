@@ -19,7 +19,7 @@ describe("Diamond Exchange Craft", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -86,7 +86,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -137,7 +137,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -199,7 +199,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -213,7 +213,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1n,
             },
@@ -221,7 +221,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -282,14 +282,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc20Instance.mint(receiver.address, amount);
-        // await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        // await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -297,7 +297,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -307,7 +307,7 @@ describe("Diamond Exchange Craft", function () {
 
         await expect(tx1)
           .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-          .withArgs(await exchangeInstance.getAddress(), 0, amount);
+          .withArgs(exchangeInstance, 0, amount);
       });
 
       it("should fail: ERC20InsufficientBalance", async function () {
@@ -346,7 +346,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         // await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -360,7 +360,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -368,7 +368,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -419,7 +419,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-        await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -433,7 +433,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -441,7 +441,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -469,7 +469,7 @@ describe("Diamond Exchange Craft", function () {
             }),
           )
           .to.emit(erc1155Instance, "TransferSingle")
-          .withArgs(await exchangeInstance.getAddress(), receiver.address, ZeroAddress, tokenId, amount);
+          .withArgs(exchangeInstance, receiver.address, ZeroAddress, tokenId, amount);
       });
 
       it("should fail: ERC1155MissingApprovalForAll", async function () {
@@ -501,14 +501,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-        // await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        // await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -516,7 +516,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -526,7 +526,7 @@ describe("Diamond Exchange Craft", function () {
 
         await expect(tx1)
           .to.be.revertedWithCustomError(erc1155Instance, "ERC1155MissingApprovalForAll")
-          .withArgs(await exchangeInstance.getAddress(), receiver.address);
+          .withArgs(exchangeInstance, receiver.address);
       });
 
       it("should fail: ERC1155InsufficientBalance", async function () {
@@ -558,14 +558,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         // await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-        await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
@@ -573,7 +573,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -624,7 +624,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -638,7 +638,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -646,7 +646,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -673,7 +673,7 @@ describe("Diamond Exchange Craft", function () {
             }),
           )
           .to.emit(erc1155Instance, "TransferSingle")
-          .withArgs(await exchangeInstance.getAddress(), ZeroAddress, receiver.address, tokenId, amount)
+          .withArgs(exchangeInstance, ZeroAddress, receiver.address, tokenId, amount)
           .to.emit(erc20Instance, "Transfer")
           .withArgs(receiver.address, ZeroAddress, amount);
       });
@@ -707,14 +707,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc20Instance.mint(receiver.address, amount);
-        // await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        // await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -722,7 +722,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -732,7 +732,7 @@ describe("Diamond Exchange Craft", function () {
 
         await expect(tx1)
           .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-          .withArgs(await exchangeInstance.getAddress(), 0, amount);
+          .withArgs(exchangeInstance, 0, amount);
       });
 
       it("should fail: ERC20InsufficientBalance", async function () {
@@ -771,7 +771,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         // await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -785,7 +785,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -793,7 +793,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
@@ -843,7 +843,7 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-        await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           {
@@ -857,7 +857,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId: 2,
               amount: 1,
             },
@@ -865,7 +865,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },
@@ -892,7 +892,7 @@ describe("Diamond Exchange Craft", function () {
             }),
           )
           .to.emit(erc1155Instance, "TransferSingle")
-          .withArgs(await exchangeInstance.getAddress(), receiver.address, ZeroAddress, tokenId, amount);
+          .withArgs(exchangeInstance, receiver.address, ZeroAddress, tokenId, amount);
       });
 
       it("should fail: ERC1155MissingApprovalForAll", async function () {
@@ -923,14 +923,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         await erc1155Instance.mint(receiver.address, 2, amount, "0x");
-        // await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        // await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId: 1,
               amount,
             },
@@ -938,7 +938,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId: 2,
               amount,
             },
@@ -948,7 +948,7 @@ describe("Diamond Exchange Craft", function () {
 
         await expect(tx1)
           .to.be.revertedWithCustomError(erc1155Instance, "ERC1155MissingApprovalForAll")
-          .withArgs(await exchangeInstance.getAddress(), receiver.address);
+          .withArgs(exchangeInstance, receiver.address);
       });
 
       it("should fail: ERC1155InsufficientBalance", async function () {
@@ -979,14 +979,14 @@ describe("Diamond Exchange Craft", function () {
         });
 
         // await erc1155Instance.mint(receiver.address, 2, amount, "0x");
-        await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+        await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
         const tx1 = exchangeInstance.connect(receiver).craft(
           params,
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId: 1,
               amount,
             },
@@ -994,7 +994,7 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId: 2,
               amount,
             },
@@ -1017,14 +1017,14 @@ describe("Diamond Exchange Craft", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.approve(exchangeInstance, amount);
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -1078,13 +1078,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 2, // crafted 721 token
               amount: 1,
             },
@@ -1092,13 +1092,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId, // price 721 token
               amount: 1,
             },
@@ -1158,14 +1158,14 @@ describe("Diamond Exchange Craft", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         await erc20Instance.mint(owner.address, amount);
-        // await erc20Instance.approve(await exchangeInstance.getAddress(), amount);
+        // await erc20Instance.approve(exchangeInstance, amount);
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -1219,13 +1219,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 2, // crafted 721 token
               amount: 1,
             },
@@ -1233,13 +1233,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId, // price 721 token
               amount: 1,
             },
@@ -1249,7 +1249,7 @@ describe("Diamond Exchange Craft", function () {
 
         await expect(tx1)
           .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientAllowance")
-          .withArgs(await exchangeInstance.getAddress(), 0, amount);
+          .withArgs(exchangeInstance, 0, amount);
       });
 
       it("should fail: ERC20InsufficientBalance", async function () {
@@ -1260,14 +1260,14 @@ describe("Diamond Exchange Craft", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         await erc20Instance.mint(owner.address, amount * 2n - 1n);
-        await erc20Instance.approve(await exchangeInstance.getAddress(), amount * 2n);
+        await erc20Instance.approve(exchangeInstance, amount * 2n);
 
         await erc20Instance.mint(receiver.address, amount);
-        await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+        await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
         const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -1321,13 +1321,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount: amount * 2n,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 2, // crafted 721 token
               amount: 1,
             },
@@ -1335,13 +1335,13 @@ describe("Diamond Exchange Craft", function () {
           [
             {
               tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              token: erc20Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId, // price 721 token
               amount: 1,
             },
@@ -1421,9 +1421,9 @@ describe("Diamond Exchange Craft", function () {
       });
 
       await erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-      await erc1155Instance.connect(receiver).setApprovalForAll(await exchangeInstance.getAddress(), true);
+      await erc1155Instance.connect(receiver).setApprovalForAll(exchangeInstance, true);
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
       const tx1 = exchangeInstance.connect(receiver).craft(
@@ -1431,7 +1431,7 @@ describe("Diamond Exchange Craft", function () {
         [
           {
             tokenType: 4,
-            token: await erc1155Instance.getAddress(),
+            token: erc1155Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -1439,7 +1439,7 @@ describe("Diamond Exchange Craft", function () {
         [
           {
             tokenType: 4,
-            token: await erc1155Instance.getAddress(),
+            token: erc1155Instance,
             tokenId,
             amount,
           },

@@ -25,7 +25,7 @@ describe("LootBoxFactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployLootToken", function () {
@@ -109,7 +109,7 @@ describe("LootBoxFactoryDiamond", function () {
 
       const erc721Instance = await ethers.getContractAt("ERC721LootBoxSimpleHardhat", address);
 
-      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -124,7 +124,7 @@ describe("LootBoxFactoryDiamond", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1n,
           },

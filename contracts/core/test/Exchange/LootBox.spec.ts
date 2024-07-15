@@ -19,7 +19,7 @@ describe("Diamond Exchange LootBox", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -46,7 +46,6 @@ describe("Diamond Exchange LootBox", function () {
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
-        const deployedLootBoxAddress = await lootBoxInstance.getAddress();
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -67,7 +66,7 @@ describe("Diamond Exchange LootBox", function () {
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: await lootBoxInstance.getAddress(),
               tokenId,
               amount: 1,
             },
@@ -99,13 +98,13 @@ describe("Diamond Exchange LootBox", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: lootBoxInstance,
               tokenId,
               amount: 1,
             },
@@ -139,7 +138,7 @@ describe("Diamond Exchange LootBox", function () {
               },
               {
                 tokenType: 2n,
-                token: deployedLootBoxAddress,
+                token: await lootBoxInstance.getAddress(),
                 tokenId,
                 amount: 1n,
               },
@@ -166,7 +165,6 @@ describe("Diamond Exchange LootBox", function () {
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
-        const deployedLootBoxAddress = await lootBoxInstance.getAddress();
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -187,7 +185,7 @@ describe("Diamond Exchange LootBox", function () {
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: await lootBoxInstance.getAddress(),
               tokenId,
               amount: 1,
             },
@@ -202,7 +200,7 @@ describe("Diamond Exchange LootBox", function () {
           ],
         });
 
-        const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+        const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
         await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
         const boxConfig = {
@@ -222,13 +220,13 @@ describe("Diamond Exchange LootBox", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: lootBoxInstance,
               tokenId,
               amount: 1,
             },
@@ -257,12 +255,11 @@ describe("Diamond Exchange LootBox", function () {
         const exchangeInstance = await factory();
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
 
-        const pausableInstance = await ethers.getContractAt("PausableFacet", await exchangeInstance.getAddress());
+        const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
         await pausableInstance.pause();
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
-        const deployedLootBoxAddress = await lootBoxInstance.getAddress();
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -276,7 +273,7 @@ describe("Diamond Exchange LootBox", function () {
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: await lootBoxInstance.getAddress(),
               tokenId,
               amount: 1,
             },
@@ -301,13 +298,13 @@ describe("Diamond Exchange LootBox", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: deployedLootBoxAddress,
+              token: lootBoxInstance,
               tokenId,
               amount: 1,
             },

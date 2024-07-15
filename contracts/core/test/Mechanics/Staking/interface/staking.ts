@@ -1,8 +1,8 @@
 export interface IBlockchainAsset {
   tokenType: number;
   token: string;
-  tokenId: number;
-  amount: number;
+  tokenId: bigint;
+  amount: bigint;
 }
 
 export interface IStakingRule {

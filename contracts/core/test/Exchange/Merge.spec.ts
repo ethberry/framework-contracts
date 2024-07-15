@@ -19,7 +19,7 @@ describe("Diamond Exchange Merge", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   const getSignatures = async (contractInstance: Contract) => {
@@ -49,19 +49,19 @@ describe("Diamond Exchange Merge", function () {
         await expect(tx01)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
         const tx02 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx02)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
         const tx03 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx03)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -115,7 +115,7 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 2,
               amount: 1,
             },
@@ -123,19 +123,19 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 0n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 1n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 2n,
               amount: 1,
             },
@@ -197,19 +197,19 @@ describe("Diamond Exchange Merge", function () {
         await expect(tx01)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
         const tx02 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx02)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
         const tx03 = erc721Instance.mintCommon(receiver.address, 123n); // different template
         await expect(tx03)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -263,7 +263,7 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 2,
               amount: 1,
             },
@@ -271,19 +271,19 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 0n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 1n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 2n,
               amount: 1,
             },
@@ -346,19 +346,19 @@ describe("Diamond Exchange Merge", function () {
         await expect(tx01)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
         const tx02 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx02)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
         const tx03 = erc721Instance.mintCommon(receiver.address, templateId);
         await expect(tx03)
           .to.emit(erc721Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-        await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+        await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -412,7 +412,7 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: 1,
               amount: 1,
             },
@@ -420,19 +420,19 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 0n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 1n,
               amount: 1,
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: tokenId + 2n,
               amount: 1,
             },
@@ -494,19 +494,19 @@ describe("Diamond Exchange Merge", function () {
         await expect(tx01)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
         const tx02 = erc998Instance.mintCommon(receiver.address, templateId);
         await expect(tx02)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
         const tx03 = erc998Instance.mintCommon(receiver.address, templateId);
         await expect(tx03)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -560,7 +560,7 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: 2,
               amount: 1,
             },
@@ -568,19 +568,19 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 0n,
               amount: 1,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 1n,
               amount: 1,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 2n,
               amount: 1,
             },
@@ -643,19 +643,19 @@ describe("Diamond Exchange Merge", function () {
         await expect(tx01)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
         const tx02 = erc998Instance.mintCommon(receiver.address, templateId);
         await expect(tx02)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
         const tx03 = erc998Instance.mintCommon(receiver.address, templateId);
         await expect(tx03)
           .to.emit(erc998Instance, "Transfer")
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-        await erc998Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+        await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -709,7 +709,7 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId: 1,
               amount: 1,
             },
@@ -717,19 +717,19 @@ describe("Diamond Exchange Merge", function () {
           [
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 0n,
               amount: 1,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 1n,
               amount: 1,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId: tokenId + 2n,
               amount: 1,
             },
@@ -792,14 +792,14 @@ describe("Diamond Exchange Merge", function () {
       await expect(tx01)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
       // different template
       const tx02 = erc721Instance.mintCommon(receiver.address, templateId + 1n);
       await expect(tx02)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
       const signature = await generateManyToManySignature({
         account: receiver.address,
@@ -847,7 +847,7 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -855,13 +855,13 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 0n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 1n,
             amount: 1,
           },
@@ -883,14 +883,14 @@ describe("Diamond Exchange Merge", function () {
       await expect(tx01)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
       // different contract
       const tx03 = erc721Instance2.mintCommon(receiver.address, 123n); // different template
       await expect(tx03)
         .to.emit(erc721Instance2, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-      await erc721Instance2.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+      await erc721Instance2.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
       const signature = await generateManyToManySignature({
         account: receiver.address,
@@ -938,7 +938,7 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -946,13 +946,13 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 0n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance2.getAddress(),
+            token: erc721Instance2,
             tokenId: tokenId + 0n,
             amount: 1,
           },
@@ -973,19 +973,19 @@ describe("Diamond Exchange Merge", function () {
       await expect(tx01)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
       const tx02 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx02)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
       const tx03 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx03)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
       const signature = await generateManyToManySignature({
         account: receiver.address,
@@ -1039,7 +1039,7 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -1047,19 +1047,19 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 0n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 1n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 2n,
             amount: 1,
           },
@@ -1081,7 +1081,7 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -1089,19 +1089,19 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 0n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 1n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 2n,
             amount: 1,
           },
@@ -1138,21 +1138,21 @@ describe("Diamond Exchange Merge", function () {
       await expect(tx01)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 0n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
       const tx02 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx02)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 1n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
       const tx03 = erc721Instance.mintCommon(receiver.address, templateId);
       await expect(tx03)
         .to.emit(erc721Instance, "Transfer")
         .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
-      await erc721Instance.connect(receiver).approve(await exchangeInstance.getAddress(), tokenId + 2n);
+      await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-      const accessInstance = await ethers.getContractAt("AccessControlFacet", await exchangeInstance.getAddress());
+      const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
       const signature = await generateManyToManySignature({
@@ -1207,7 +1207,7 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: 2,
             amount: 1,
           },
@@ -1215,19 +1215,19 @@ describe("Diamond Exchange Merge", function () {
         [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 0n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 1n,
             amount: 1,
           },
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId: tokenId + 2n,
             amount: 1,
           },

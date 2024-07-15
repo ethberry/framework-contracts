@@ -38,19 +38,13 @@ export function shouldTransferFrom(factory: () => Promise<any>, options: IERC20O
       await mint(contractInstance, owner, owner.address);
       await contractInstance.approve(receiver.address, amount);
 
-      const tx1 = contractInstance.whitelist(await erc20NonReceiverInstance.getAddress());
-      await expect(tx1)
-        .to.emit(contractInstance, "Whitelisted")
-        .withArgs(await erc20NonReceiverInstance.getAddress());
+      const tx1 = contractInstance.whitelist(erc20NonReceiverInstance);
+      await expect(tx1).to.emit(contractInstance, "Whitelisted").withArgs(erc20NonReceiverInstance);
 
-      const tx2 = contractInstance
-        .connect(receiver)
-        .transferFrom(owner.address, await erc20NonReceiverInstance.getAddress(), amount);
-      await expect(tx2)
-        .to.emit(contractInstance, "Transfer")
-        .withArgs(owner.address, await erc20NonReceiverInstance.getAddress(), amount);
+      const tx2 = contractInstance.connect(receiver).transferFrom(owner.address, erc20NonReceiverInstance, amount);
+      await expect(tx2).to.emit(contractInstance, "Transfer").withArgs(owner.address, erc20NonReceiverInstance, amount);
 
-      const nonReceiverBalance = await contractInstance.balanceOf(await erc20NonReceiverInstance.getAddress());
+      const nonReceiverBalance = await contractInstance.balanceOf(erc20NonReceiverInstance);
       expect(nonReceiverBalance).to.equal(amount);
       const balanceOfOwner = await contractInstance.balanceOf(owner.address);
       expect(balanceOfOwner).to.equal(0);

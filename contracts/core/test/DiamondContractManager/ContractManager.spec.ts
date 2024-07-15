@@ -31,7 +31,7 @@ describe("ContractManagerDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE);

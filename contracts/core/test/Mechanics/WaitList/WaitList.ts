@@ -36,7 +36,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -72,7 +72,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const leavesEntities = [[owner.address], [receiver.address], [stranger.address]];
 
@@ -99,7 +99,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const leavesEntities = [[owner.address], [receiver.address], [stranger.address]];
 
@@ -124,7 +124,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -218,7 +218,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc20Instance = await deployERC20();
 
-      await erc20Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc20Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -250,11 +250,11 @@ describe("WaitList", function () {
       const proof = merkleTree.getProof(merkleTree.leafLookup([owner.address]));
 
       await erc20Instance.mint(owner.address, amount);
-      await erc20Instance.approve(await contractInstance.getAddress(), amount);
+      await erc20Instance.approve(contractInstance, amount);
       await contractInstance.topUp([
         {
           tokenType: 1,
-          token: await erc20Instance.getAddress(),
+          token: erc20Instance,
           tokenId,
           amount,
         },
@@ -265,7 +265,7 @@ describe("WaitList", function () {
         .to.emit(contractInstance, "WaitListRewardClaimed")
         .withArgs(owner.address, externalId, isEqualEventArgArrObj(...items))
         .to.emit(erc20Instance, "Transfer")
-        .withArgs(await contractInstance.getAddress(), owner.address, amount);
+        .withArgs(contractInstance, owner.address, amount);
 
       await expect(tx2).changeTokenBalances(erc20Instance, [owner, contractInstance], [amount, -amount]);
     });
@@ -276,7 +276,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -321,7 +321,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc998Instance = await deployERC998();
 
-      await erc998Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc998Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -366,7 +366,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc1155Instance = await deployERC1155();
 
-      await erc1155Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc1155Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -402,7 +402,7 @@ describe("WaitList", function () {
         .to.emit(contractInstance, "WaitListRewardClaimed")
         .withArgs(owner.address, externalId, isEqualEventArgArrObj(...items))
         .to.emit(erc1155Instance, "TransferSingle")
-        .withArgs(await contractInstance.getAddress(), ZeroAddress, owner.address, tokenId, amount);
+        .withArgs(contractInstance, ZeroAddress, owner.address, tokenId, amount);
     });
 
     it("should claim reward as receiver", async function () {
@@ -411,7 +411,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -454,7 +454,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const leavesEntities = [[owner.address], [receiver.address], [stranger.address]];
 
@@ -473,7 +473,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const leavesEntities = [[owner.address], [receiver.address], [stranger.address]];
 
@@ -491,7 +491,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {
@@ -532,7 +532,7 @@ describe("WaitList", function () {
       const contractInstance = await factory();
       const erc721Instance = await deployERC721();
 
-      await erc721Instance.grantRole(MINTER_ROLE, await contractInstance.getAddress());
+      await erc721Instance.grantRole(MINTER_ROLE, contractInstance);
 
       const items = [
         {

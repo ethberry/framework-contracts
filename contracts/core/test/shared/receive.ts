@@ -9,7 +9,7 @@ export function shouldReceive(factory: () => Promise<any>) {
       const contractInstance = await factory();
 
       const tx = owner.sendTransaction({
-        to: await contractInstance.getAddress(),
+        to: contractInstance,
         value: WeiPerEther,
         gasLimit: 21000 + 61, // + revert
       });

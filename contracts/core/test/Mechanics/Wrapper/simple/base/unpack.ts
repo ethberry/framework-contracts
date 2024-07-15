@@ -120,7 +120,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await wrapperInstance.mintBox(owner, templateId, [
           {
             tokenType: 2,
-            token: await erc721Instance.getAddress(),
+            token: erc721Instance,
             tokenId,
             amount: 1n,
           },
@@ -147,7 +147,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await wrapperInstance.mintBox(owner, templateId, [
           {
             tokenType: 3,
-            token: await erc998Instance.getAddress(),
+            token: erc998Instance,
             tokenId,
             amount: 1n,
           },
@@ -174,7 +174,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await wrapperInstance.mintBox(owner, templateId, [
           {
             tokenType: 4,
-            token: await erc1155Instance.getAddress(),
+            token: erc1155Instance,
             tokenId,
             amount,
           },
@@ -236,19 +236,19 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             },
             {
               tokenType: 2,
-              token: await erc721Instance.getAddress(),
+              token: erc721Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 3,
-              token: await erc998Instance.getAddress(),
+              token: erc998Instance,
               tokenId,
               amount,
             },
             {
               tokenType: 4,
-              token: await erc1155Instance.getAddress(),
+              token: erc1155Instance,
               tokenId,
               amount,
             },

@@ -127,7 +127,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 1,
-              token: await erc20SimpleInstance.getAddress(),
+              token: erc20SimpleInstance,
               tokenId: templateId,
               amount,
             },
@@ -199,7 +199,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 2,
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
@@ -230,10 +230,8 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         const tx01 = erc721RandomInstance.setSubscriptionId(subscriptionId);
         await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(1);
 
-        const tx02 = vrfInstance.addConsumer(1, await erc721RandomInstance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc721RandomInstance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc721RandomInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721RandomInstance);
 
         const tx1 = lootboxInstance.mintBox(
           receiver,
@@ -241,7 +239,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 2,
-              token: await erc721RandomInstance.getAddress(),
+              token: erc721RandomInstance,
               tokenId: templateId,
               amount: 1n,
             },
@@ -282,7 +280,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 2,
-              token: await erc998SimpleInstance.getAddress(),
+              token: erc998SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
@@ -313,10 +311,8 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         const tx01 = erc998RandomInstance.setSubscriptionId(subscriptionId);
         await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(1);
 
-        const tx02 = vrfInstance.addConsumer(1, await erc998RandomInstance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(1, await erc998RandomInstance.getAddress());
+        const tx02 = vrfInstance.addConsumer(1, erc998RandomInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc998RandomInstance);
 
         const tx1 = lootboxInstance.mintBox(
           receiver,
@@ -324,7 +320,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 2,
-              token: await erc998RandomInstance.getAddress(),
+              token: erc998RandomInstance,
               tokenId: templateId,
               amount: 1n,
             },
@@ -363,7 +359,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
           [
             {
               tokenType: 4,
-              token: await erc1155SimpleInstance.getAddress(),
+              token: erc1155SimpleInstance,
               tokenId: templateId,
               amount,
             },
@@ -426,25 +422,25 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             },
             {
               tokenType: 1,
-              token: await erc20SimpleInstance.getAddress(),
+              token: erc20SimpleInstance,
               tokenId: templateId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 3,
-              token: await erc998SimpleInstance.getAddress(),
+              token: erc998SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 4,
-              token: await erc1155SimpleInstance.getAddress(),
+              token: erc1155SimpleInstance,
               tokenId: templateId,
               amount,
             },
@@ -490,10 +486,8 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(subscriptionId, await contractInstance.getAddress());
-        await expect(tx02)
-          .to.emit(vrfInstance, "SubscriptionConsumerAdded")
-          .withArgs(subscriptionId, await contractInstance.getAddress());
+        const tx02 = vrfInstance.addConsumer(subscriptionId, contractInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, contractInstance);
       }
 
       it("should mint:5, unpack: 1-5", async function () {
@@ -540,25 +534,25 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             },
             {
               tokenType: 1,
-              token: await erc20SimpleInstance.getAddress(),
+              token: erc20SimpleInstance,
               tokenId: templateId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 3,
-              token: await erc998SimpleInstance.getAddress(),
+              token: erc998SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 4,
-              token: await erc1155SimpleInstance.getAddress(),
+              token: erc1155SimpleInstance,
               tokenId: templateId,
               amount,
             },
@@ -570,25 +564,25 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
             },
             {
               tokenType: 1,
-              token: await erc20SimpleInstance.getAddress(),
+              token: erc20SimpleInstance,
               tokenId: templateId,
               amount,
             },
             {
               tokenType: 2,
-              token: await erc721SimpleInstance.getAddress(),
+              token: erc721SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 3,
-              token: await erc998SimpleInstance.getAddress(),
+              token: erc998SimpleInstance,
               tokenId: templateId,
               amount: 1n,
             },
             {
               tokenType: 4,
-              token: await erc1155SimpleInstance.getAddress(),
+              token: erc1155SimpleInstance,
               tokenId: templateId,
               amount,
             },

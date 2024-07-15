@@ -26,7 +26,7 @@ describe("ERC998FactoryDiamond", function () {
         logSelectors: false,
       },
     );
-    return ethers.getContractAt(facetName, await diamondInstance.getAddress());
+    return ethers.getContractAt(facetName, diamondInstance);
   };
 
   describe("deployERC998Token", function () {
@@ -110,7 +110,7 @@ describe("ERC998FactoryDiamond", function () {
 
       const erc998Instance = await ethers.getContractAt("ERC998Simple", address);
 
-      const hasRole1 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, await contractInstance.getAddress());
+      const hasRole1 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc998Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
@@ -119,7 +119,7 @@ describe("ERC998FactoryDiamond", function () {
       const hasRole3 = await erc998Instance.hasRole(METADATA_ROLE, owner.address);
       expect(hasRole3).to.equal(true);
 
-      const hasRole4 = await erc998Instance.hasRole(METADATA_ROLE, await contractInstance.getAddress());
+      const hasRole4 = await erc998Instance.hasRole(METADATA_ROLE, contractInstance);
       expect(hasRole4).to.equal(false);
 
       const tx2 = erc998Instance.mintCommon(receiver.address, templateId);

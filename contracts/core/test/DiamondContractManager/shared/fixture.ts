@@ -52,10 +52,10 @@ export async function deployDiamond(
   // cut Facets & Init
   if (log) console.info("");
   if (log) console.info("Diamond Cut:", cut);
-  const diamondCut = await ethers.getContractAt("IDiamondCut", await diamond.getAddress());
+  const diamondCut = await ethers.getContractAt("IDiamondCut", diamond);
   // upgrade diamond with facets & call to init function
   const functionCall = diamondInit.interface.encodeFunctionData("init");
-  const tx = await diamondCut.diamondCut(cut, await diamondInit.getAddress(), functionCall);
+  const tx = await diamondCut.diamondCut(cut, diamondInit, functionCall);
   // const tx = await diamondCut.diamondCut(cut, constants.AddressZero, "0x");
   if (log) console.info("Diamond cut tx: ", tx.hash);
   const receipt = await tx.wait();
