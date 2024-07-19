@@ -14,7 +14,6 @@ import { IERC721MysteryBox } from "./interfaces/IERC721MysteryBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { Asset, DisabledTokenTypes, TokenType } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
 import { MethodNotSupported, NoContent, UnsupportedTokenType } from "../../utils/errors.sol";
 
 contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
@@ -73,6 +72,6 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-    return interfaceId == IERC721_MYSTERY_ID || super.supportsInterface(interfaceId);
+    return interfaceId == type(IERC721MysteryBox).interfaceId || super.supportsInterface(interfaceId);
   }
 }

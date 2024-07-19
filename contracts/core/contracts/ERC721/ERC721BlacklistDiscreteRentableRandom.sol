@@ -9,7 +9,6 @@ pragma solidity ^0.8.20;
 import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { RARITY, TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
 import { ProtectedAttribute, TemplateZero } from "../utils/errors.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { IERC721Random } from "./interfaces/IERC721Random.sol";
@@ -85,7 +84,7 @@ abstract contract ERC721BlacklistDiscreteRentableRandom is
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-    return interfaceId == IERC721_RANDOM_ID || super.supportsInterface(interfaceId);
+    return interfaceId == type(IERC721Random).interfaceId || super.supportsInterface(interfaceId);
   }
 
   function getRandomNumber() internal virtual returns (uint256 requestId);

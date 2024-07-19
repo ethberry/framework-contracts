@@ -28,6 +28,6 @@ describe("ERC721DiscreteRentable", function () {
     InterfaceId.IERC4906,
     InterfaceId.IERC4907,
     FrameworkInterfaceId.ERC721Simple,
-    FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.IERC721Discrete,
   ]);
 });

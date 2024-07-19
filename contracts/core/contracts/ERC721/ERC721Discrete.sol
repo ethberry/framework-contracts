@@ -12,7 +12,6 @@ import { METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { IERC4906_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import { IERC721_DISCRETE_ID } from "../utils/interfaces.sol";
 import { ProtectedAttribute } from "../utils/errors.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 import { IERC721Discrete } from "./interfaces/IERC721Discrete.sol";
@@ -61,6 +60,6 @@ contract ERC721Discrete is IERC721Discrete, ERC721Simple {
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721Simple) returns (bool) {
-    return interfaceId == IERC4906_ID || interfaceId == IERC721_DISCRETE_ID || super.supportsInterface(interfaceId);
+    return interfaceId == IERC4906_ID || interfaceId == type(IERC721Discrete).interfaceId || super.supportsInterface(interfaceId);
   }
 }

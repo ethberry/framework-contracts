@@ -17,7 +17,6 @@ export const claimId = 1;
 export const amountWei = 10000000000000000n;
 export const tokenZero = "0x0000000000000000000000000000000000000000";
 export const period = 60 * 60 * 24 * 365; // a year in seconds
-export const _stakePeriod = 300; // 5 minutes in seconds
 
 export const defaultNumbers = getNumbers();
 export const span = 300;
@@ -55,10 +54,9 @@ export const subscriptionId = 1;
 
 export enum FrameworkInterfaceId {
   ERC721Simple = "0xbf290e49",
-  ERC721Upgradable = "0x45977d03",
   ERC721Random = "0x32034d27",
   ERC721Mystery = "0xf0f47261",
-  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
-  ERC721Loot = "0xf0f47261",
+  ERC721Loot = "0x3d97437a",
+  IERC721Discrete = "0x1b7abe93",
   Dispenser = "0x1f120210",
 }

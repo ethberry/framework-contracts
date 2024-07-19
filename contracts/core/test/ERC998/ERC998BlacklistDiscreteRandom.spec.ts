@@ -42,7 +42,7 @@ describe("ERC998BlacklistDiscreteRandom", function () {
     InterfaceId.IERC998WL,
     InterfaceId.IBlackList,
     InterfaceId.IERC4906,
-    FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.IERC721Discrete,
     FrameworkInterfaceId.ERC721Random,
     FrameworkInterfaceId.ERC721Simple,
   ]);

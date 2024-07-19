@@ -40,6 +40,6 @@ describe("ERC998DiscreteRandom", function () {
     InterfaceId.IERC4906,
     FrameworkInterfaceId.ERC721Random,
     FrameworkInterfaceId.ERC721Simple,
-    FrameworkInterfaceId.ERC721Upgradable,
+    FrameworkInterfaceId.IERC721Discrete,
   ]);
 });

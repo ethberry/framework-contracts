@@ -13,6 +13,7 @@ import { IERC721Discrete } from "../../ERC721/interfaces/IERC721Discrete.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 
 import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
+import { IERC721LootBox } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
 import { IDispenser } from "../../Mechanics/Dispenser/interfaces/IDispenser.sol";
 import { IERC721LotteryTicket } from "../../Mechanics/Lottery/interfaces/IERC721LotteryTicket.sol";
 import { IERC721RaffleTicket } from "../../Mechanics/Raffle/interfaces/IERC721RaffleTicket.sol";
@@ -28,10 +29,14 @@ contract InterfaceIdCalculator {
 
     console.logString("IERC721MysteryBox");
     console.logBytes4(type(IERC721MysteryBox).interfaceId);
+    console.logString("IERC721LootBox");
+    console.logBytes4(type(IERC721LootBox).interfaceId);
+
     console.logString("IERC721LotteryTicket");
     console.logBytes4(type(IERC721LotteryTicket).interfaceId);
     console.logString("IERC721RaffleTicket");
     console.logBytes4(type(IERC721RaffleTicket).interfaceId);
+
     console.logString("IDispenser");
     console.logBytes4(type(IDispenser).interfaceId);
   }
