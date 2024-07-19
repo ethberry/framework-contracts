@@ -25,7 +25,9 @@ describe("VestingFactoryDiamond", function () {
   };
 
   describe("deployVesting", function () {
-    it("should deploy contract", async function () {
+    // TODO deploy with ETH
+
+    it("should deploy contract (ERC20)", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
       const { bytecode } = await ethers.getContractFactory("Vesting");

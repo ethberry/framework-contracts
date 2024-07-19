@@ -17,7 +17,7 @@ import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contract
 import { Expired, NotInList, NotExist, WrongAmount, AlreadyExist } from "../../utils/errors.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, Params, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, Params, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
 contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp {
   mapping(uint256 => bytes32) internal _roots;
@@ -74,7 +74,7 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
 
     _expired[externalId][_msgSender()] = true;
 
-    ExchangeUtils.acquire(_items[externalId], _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.acquire(_items[externalId], _msgSender(), AllowedTokenTypes(true, true, true, true, true));
 
     emit WaitListRewardClaimed(_msgSender(), externalId, _items[externalId]);
   }

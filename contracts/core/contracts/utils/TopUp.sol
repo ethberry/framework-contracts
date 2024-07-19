@@ -10,7 +10,7 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
 import { ExchangeUtils } from "../Exchange/lib/ExchangeUtils.sol";
-import { Asset, DisabledTokenTypes } from "../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes } from "../Exchange/lib/interfaces/IAsset.sol";
 
 contract TopUp is Context {
   /**
@@ -18,6 +18,6 @@ contract TopUp is Context {
    * @param price An array of Asset representing the tokens to be transferred.
    */
   function topUp(Asset[] memory price) external payable virtual {
-    ExchangeUtils.spendFrom(price, _msgSender(), address(this), DisabledTokenTypes(false, false, true, true, true));
+    ExchangeUtils.spendFrom(price, _msgSender(), address(this), AllowedTokenTypes(true, true, false, false, false));
   }
 }

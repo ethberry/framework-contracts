@@ -22,7 +22,7 @@ import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { IERC721_RANDOM_ID } from "../../utils/interfaces.sol";
 import { UnsupportedTokenType, WrongAmount } from "../../utils/errors.sol";
-import { Asset, DisabledTokenTypes, TokenType } from "./interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
 library ExchangeUtils {
   using Address for address;
@@ -37,13 +37,13 @@ library ExchangeUtils {
    * @param price An array of assets to transfer
    * @param spender Address of spender
    * @param receiver Address of receiver
-   * @param disabled Disabled TokenTypes for spend from spender
+   * @param allowed Disabled TokenTypes for spend from spender
    */
   function spendFrom(
     Asset[] memory price,
     address spender,
     address receiver,
-    DisabledTokenTypes memory disabled
+    AllowedTokenTypes memory allowed
   ) internal {
     // The total amount of native tokens in the transaction.
     uint256 totalAmount;
@@ -53,12 +53,12 @@ library ExchangeUtils {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = price[i];
       // If the `Asset` token is native.
-      if (item.tokenType == TokenType.NATIVE && !disabled.native) {
+      if (item.tokenType == TokenType.NATIVE && allowed.native) {
         // increase the total amount.
         totalAmount = totalAmount + item.amount;
       }
       // If the `Asset` token is an ERC20 token.
-      else if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
+      else if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
         if (_isERC1363Supported(receiver, item.token)) {
           // Transfer the ERC20 token and emit event to notify server
           IERC1363(item.token).transferFromAndCall(spender, receiver, item.amount);
@@ -69,14 +69,14 @@ library ExchangeUtils {
       }
       // If the `Asset` token is an ERC721/ERC998 token.
       else if (
-        (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
-        (item.tokenType == TokenType.ERC998 && !disabled.erc998)
+        (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
+        (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
         // Transfer the ERC721/ERC998 token in a safe way
         IERC721(item.token).safeTransferFrom(spender, receiver, item.tokenId);
       }
       // If the `Asset` token is an ERC1155 token.
-      else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
+      else if (item.tokenType == TokenType.ERC1155 && allowed.erc1155) {
         // Transfer the ERC1155 token in a safe way
         IERC1155(item.token).safeTransferFrom(spender, receiver, item.tokenId, item.amount, "0x");
       } else {
@@ -111,12 +111,12 @@ library ExchangeUtils {
    *
    * @param price An array of assets to transfer
    * @param spender Address of spender
-   * @param disabled Disabled TokenTypes for spend from spender
+   * @param allowed Disabled TokenTypes for spend from spender
    */
   function burnFrom(
     Asset[] memory price,
     address spender,
-    DisabledTokenTypes memory disabled
+    AllowedTokenTypes memory allowed
   ) internal {
     // The total amount of native tokens in the transaction.
 
@@ -125,19 +125,19 @@ library ExchangeUtils {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = price[i];
       // If the `Asset` token is native.
-      if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
+      if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
         IERC20Burnable(item.token).burnFrom(spender, item.amount);
       }
       // If the `Asset` token is an ERC721/ERC998 token.
       else if (
-        (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
-        (item.tokenType == TokenType.ERC998 && !disabled.erc998)
+        (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
+        (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
         // BURN the ERC721/ERC998 token
         IERC721Simple(item.token).burn(item.tokenId);
       }
       // If the `Asset` token is an ERC1155 token.
-      else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
+      else if (item.tokenType == TokenType.ERC1155 && allowed.erc1155) {
         // BURN the ERC1155 token
         IERC1155Simple(item.token).burn(spender, item.tokenId, item.amount);
       } else {
@@ -156,8 +156,9 @@ library ExchangeUtils {
    *
    * @param price An array of assets to transfer
    * @param receiver Address of receiver
+   * @param allowed Disabled TokenTypes for spend from spender
    */
-  function spend(Asset[] memory price, address receiver, DisabledTokenTypes memory disabled) internal {
+  function spend(Asset[] memory price, address receiver, AllowedTokenTypes memory allowed) internal {
     // The total amount of native tokens in the transaction.
     uint256 totalAmount;
     // Loop through all assets
@@ -166,12 +167,12 @@ library ExchangeUtils {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = price[i];
       // If the `Asset` is native token.
-      if (item.tokenType == TokenType.NATIVE && !disabled.native) {
+      if (item.tokenType == TokenType.NATIVE && allowed.native) {
         // increase the total amount.
         totalAmount = totalAmount + item.amount;
       }
       // If the `Asset` is an ERC20 token.
-      else if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
+      else if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
         if (_isERC1363Supported(receiver, item.token)) {
           // Transfer the ERC20 token and emit event to notify server
           IERC1363(item.token).transferAndCall(receiver, item.amount);
@@ -182,14 +183,14 @@ library ExchangeUtils {
       }
       // If the `Asset` is an ERC721/ERC998 token.
       else if (
-        (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
-        (item.tokenType == TokenType.ERC998 && !disabled.erc998)
+        (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
+        (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
         // Transfer the ERC721/ERC998 token in a safe way
         IERC721(item.token).safeTransferFrom(address(this), receiver, item.tokenId);
       }
       // If the `Asset` is an ERC1155 token.
-      else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
+      else if (item.tokenType == TokenType.ERC1155 && allowed.erc1155) {
         // Transfer the ERC1155 token in a safe way
         IERC1155(item.token).safeTransferFrom(address(this), receiver, item.tokenId, item.amount, "0x");
       } else {
@@ -215,22 +216,23 @@ library ExchangeUtils {
    *
    * @param items An array of assets to mint.
    * @param receiver Address of receiver
+   * @param allowed Disabled TokenTypes for spend from spender
    */
-  function acquire(Asset[] memory items, address receiver, DisabledTokenTypes memory disabled) internal {
+  function acquire(Asset[] memory items, address receiver, AllowedTokenTypes memory allowed) internal {
     uint256 length = items.length;
 
     for (uint256 i = 0; i < length; ) {
       Asset memory item = items[i];
 
       // If the token is an NATIVE token, transfer tokens to the receiver.
-      if (item.tokenType == TokenType.NATIVE && !disabled.native) {
-        spend(_toArray(item), receiver, disabled);
+      if (item.tokenType == TokenType.NATIVE && allowed.native) {
+        spend(_toArray(item), receiver, allowed);
         // If the `Asset` is an ERC20 token.
-      } else if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
-        spend(_toArray(item), receiver, disabled);
+      } else if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
+        spend(_toArray(item), receiver, allowed);
       } else if (
-        (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
-        (item.tokenType == TokenType.ERC998 && !disabled.erc998)
+        (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
+        (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
         bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
         if (randomInterface) {
@@ -248,7 +250,7 @@ library ExchangeUtils {
             }
           }
         }
-      } else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
+      } else if (item.tokenType == TokenType.ERC1155 && allowed.erc1155) {
         IERC1155Simple(item.token).mint(receiver, item.tokenId, item.amount, "0x");
       } else {
         // should never happen
@@ -266,18 +268,19 @@ library ExchangeUtils {
    *
    * @param items An array of assets to mint.
    * @param receiver Address of receiver
+   * @param allowed Disabled TokenTypes for spend from spender
    */
-  function acquireFrom(Asset[] memory items, address spender, address receiver, DisabledTokenTypes memory disabled) internal {
+  function acquireFrom(Asset[] memory items, address spender, address receiver, AllowedTokenTypes memory allowed) internal {
     uint256 length = items.length;
 
     for (uint256 i = 0; i < length; ) {
       Asset memory item = items[i];
 
-      if (item.tokenType == TokenType.ERC20 && !disabled.erc20) {
-        spendFrom(_toArray(item), spender, receiver, disabled);
+      if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
+        spendFrom(_toArray(item), spender, receiver, allowed);
       } else if (
-        (item.tokenType == TokenType.ERC721 && !disabled.erc721) ||
-        (item.tokenType == TokenType.ERC998 && !disabled.erc998)
+        (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
+        (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
         bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
         if (randomInterface) {
@@ -295,7 +298,7 @@ library ExchangeUtils {
             }
           }
         }
-      } else if (item.tokenType == TokenType.ERC1155 && !disabled.erc1155) {
+      } else if (item.tokenType == TokenType.ERC1155 && allowed.erc1155) {
         IERC1155Simple(item.token).mint(receiver, item.tokenId, item.amount, "0x");
       } else {
         // NATIVE

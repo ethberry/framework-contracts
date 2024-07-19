@@ -18,7 +18,7 @@ import { CoinHolder, NativeRejector, CoinHolder } from "@gemunion/contracts-fina
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { IPonzi } from "./interfaces/IPonzi.sol";
-import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ZeroBalance, NotExist, NotActive, BalanceExceed, NotComplete, Expired, NotAnOwner, WrongStake } from "../../utils/errors.sol";
 import { Referral } from "../../Referral/Referral.sol";
@@ -49,7 +49,7 @@ contract Ponzi is
   event FinalizedToken(address token, uint256 amount);
 
   // ONLY NATIVE and ERC20 allowed
-  DisabledTokenTypes _disabledTypes = DisabledTokenTypes(false, false, true, true, true);
+  AllowedTokenTypes _allowedTypes = AllowedTokenTypes(true, true, false, false, false);
 
   //  event PaymentEthReceived(address from, uint256 amount);
   event PaymentEthSent(address to, uint256 amount);
@@ -87,7 +87,7 @@ contract Ponzi is
     emit StakingStart(stakeId, ruleId, _msgSender(), block.timestamp, 0);
 
     // Transfer tokens from user to this contract.
-    ExchangeUtils.spendFrom(ExchangeUtils._toArray(depositItem), _msgSender(), address(this), _disabledTypes);
+    ExchangeUtils.spendFrom(ExchangeUtils._toArray(depositItem), _msgSender(), address(this), _allowedTypes);
 
     _afterPurchase(referrer, ExchangeUtils._toArray(depositItem));
   }
@@ -134,7 +134,7 @@ contract Ponzi is
         // Empty current stake deposit storage
         depositItem.amount = 0;
         // Transfer the deposit Asset to the receiver.
-        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _disabledTypes);
+        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _allowedTypes);
       }
     } else {
       stake.startTimestamp = block.timestamp;
@@ -167,7 +167,7 @@ contract Ponzi is
       );
 
       // Transfer the reward Asset to the receiver.
-      ExchangeUtils.spend(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);
+      ExchangeUtils.spend(ExchangeUtils._toArray(rewardItem), receiver, _allowedTypes);
     }
 
     if (multiplier == 0 && !withdrawDeposit && !breakLastPeriod) {
@@ -227,7 +227,7 @@ contract Ponzi is
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.NATIVE, token, 0, amount)),
         _msgSender(),
-        _disabledTypes
+        _allowedTypes
       );
     } else {
       totalBalance = IERC20(token).balanceOf(address(this));
@@ -237,7 +237,7 @@ contract Ponzi is
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.ERC20, token, 0, amount)),
         _msgSender(),
-        _disabledTypes
+        _allowedTypes
       );
     }
 
@@ -282,7 +282,7 @@ contract Ponzi is
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.NATIVE, token, 0, finalBalance)),
         _msgSender(),
-        _disabledTypes
+        _allowedTypes
       );
     } else {
       finalBalance = IERC20(token).balanceOf(address(this));
@@ -292,7 +292,7 @@ contract Ponzi is
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.ERC20, token, 0, finalBalance)),
         _msgSender(),
-        _disabledTypes
+        _allowedTypes
       );
     }
     emit FinalizedToken(token, finalBalance);

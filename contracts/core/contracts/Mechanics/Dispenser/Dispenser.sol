@@ -14,7 +14,7 @@ import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol
 
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IDispenser } from "./interfaces/IDispenser.sol";
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { WrongArrayLength } from "../../utils/errors.sol";
 
 /**
@@ -33,7 +33,7 @@ contract Dispenser is IDispenser, ERC165, Context, NativeRejector {
         ExchangeUtils._toArray(items[i]),
         _msgSender(),
         receivers[i],
-        DisabledTokenTypes(false, false, false, false, false)
+        AllowedTokenTypes(true, true, true, true, true)
       );
       unchecked {
         i++;

@@ -16,7 +16,7 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { NativeReceiver, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { LotteryConfig, LotteryRoundInfo } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
@@ -276,7 +276,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
         ExchangeUtils.spend(
           ExchangeUtils._toArray(ticketRound.acceptedAsset),
           _msgSender(),
-          DisabledTokenTypes(false, false, false, false, false)
+          AllowedTokenTypes(true, true, false, false, true)
         );
       }
 
@@ -320,7 +320,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     ExchangeUtils.spend(
       ExchangeUtils._toArray(ticketRound.acceptedAsset),
       _msgSender(),
-      DisabledTokenTypes(false, false, false, false, false)
+      AllowedTokenTypes(true, true, false, false, true)
     );
 
     emit Released(roundNumber, roundBalance);

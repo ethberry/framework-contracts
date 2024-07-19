@@ -12,7 +12,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
 
 contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
@@ -34,7 +34,7 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
       revert WrongAmount();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, true, true, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     Asset memory box = items[items.length - 1];
 

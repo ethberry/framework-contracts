@@ -16,7 +16,7 @@ import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contract
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721RaffleTicket, TicketRaffle } from "./interfaces/IERC721RaffleTicket.sol";
 import { RaffleRoundInfo } from "./interfaces/IRaffle.sol";
 import { NotInList, WrongToken, WrongRound, NotAnOwner, NotComplete, ZeroBalance, NotActive, NotExist, LimitExceed } from "../../utils/errors.sol";
@@ -187,7 +187,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
     ExchangeUtils.spend(
       ExchangeUtils._toArray(currentRound.acceptedAsset),
       _msgSender(),
-      DisabledTokenTypes(false, false, false, false, false)
+      AllowedTokenTypes(true, true, true, true, true)
     );
 
     emit Released(roundNumber, roundBalance);

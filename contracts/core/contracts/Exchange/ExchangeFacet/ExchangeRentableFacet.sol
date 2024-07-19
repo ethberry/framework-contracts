@@ -14,7 +14,7 @@ import { METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
 
 contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
@@ -43,7 +43,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     IERC4907(item.token).setUser(
       item.tokenId,
@@ -77,7 +77,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
       revert WrongAmount();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     emit LendMany(
       _msgSender() /* from */,

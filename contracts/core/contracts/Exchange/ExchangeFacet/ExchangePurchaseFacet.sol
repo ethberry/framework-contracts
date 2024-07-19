@@ -12,7 +12,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist } from "../../utils/errors.sol";
 import "../../Referral/Referral.sol";
 
@@ -40,14 +40,14 @@ contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride {
       price,
       _msgSender(),
       params.receiver,
-      DisabledTokenTypes(false, false, false, false, false)
+      AllowedTokenTypes(true, true, false, false, true)
     );
 
     ExchangeUtils.acquireFrom(
       ExchangeUtils._toArray(item),
       params.receiver,
       _msgSender(),
-      DisabledTokenTypes(false, false, false, false, false)
+      AllowedTokenTypes(false, false, true, true, true)
     );
 
     emit Purchase(_msgSender(), params.externalId, item, price);

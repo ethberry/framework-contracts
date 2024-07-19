@@ -16,7 +16,7 @@ import { deployERC721 } from "../ERC721/shared/fixtures";
 import { deployERC1155 } from "../ERC1155/shared/fixtures";
 import { deployDiamond } from "./shared";
 
-const enabled = {
+const disabled = {
   native: false,
   erc20: false,
   erc721: false,
@@ -24,7 +24,7 @@ const enabled = {
   erc1155: false,
 };
 
-const disabled = {
+const enabled = {
   native: true,
   erc20: true,
   erc721: true,

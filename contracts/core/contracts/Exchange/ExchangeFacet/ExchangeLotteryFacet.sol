@@ -12,7 +12,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
 
 contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride {
@@ -45,7 +45,7 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride {
       _price,
       _msgSender(),
       params.receiver, // LOTTERY CONTRACT
-      DisabledTokenTypes(false, false, true, true, true)
+      AllowedTokenTypes(true, true, false, false, true)
     );
 
     (uint256 tokenId, uint256 roundId) = ILottery(params.receiver).printTicket(

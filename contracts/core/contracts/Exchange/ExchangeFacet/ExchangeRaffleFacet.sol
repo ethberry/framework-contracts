@@ -12,7 +12,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride {
@@ -45,7 +45,7 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride {
       _price,
       _msgSender(),
       params.receiver, // RAFFLE CONTRACT
-      DisabledTokenTypes(false, false, false, false, false)
+      AllowedTokenTypes(true, true, false, false, true)
     );
 
     (uint256 tokenId, uint256 roundId, uint256 index) = IRaffle(params.receiver).printTicket(

@@ -28,7 +28,7 @@ import { TopUp } from "../../utils/TopUp.sol";
 import { ZeroBalance, NotExist, WrongRule, UnsupportedTokenType, NotComplete, Expired, NotAnOwner, WrongStake, WrongToken, LimitExceed, NotActive } from "../../utils/errors.sol";
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IStaking } from "./interfaces/IStaking.sol";
-import { Asset,Params,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset,Params,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import "../../Referral/Referral.sol";
 
 /**
@@ -58,7 +58,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
   //  mapping(address => uint256) internal _stakeCounter;
   mapping(address => EnumerableMap.UintToUintMap) internal _stakeCounter;
 
-  DisabledTokenTypes _disabledTypes = DisabledTokenTypes(false, false, false, false, false);
+  AllowedTokenTypes _allowedTypes = AllowedTokenTypes(true, true, true, true, true);
 
   event RuleCreated(uint256 ruleId, Rule rule);
   event RuleUpdated(uint256 ruleId, bool active);
@@ -154,7 +154,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
         }
 
         // Transfer tokens from user to this contract.
-        ExchangeUtils.spendFrom(ExchangeUtils._toArray(depositItem), _msgSender(), address(this), _disabledTypes);
+        ExchangeUtils.spendFrom(ExchangeUtils._toArray(depositItem), _msgSender(), address(this), _allowedTypes);
         // Save deposit balance
         (, uint256 balance) = _depositBalancesMap.tryGet(depositItem.token);
         _depositBalancesMap.set(depositItem.token, balance + depositItem.amount);
@@ -344,7 +344,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
         // Empty current stake deposit storage
         depositItem.amount = 0;
         // Transfer the deposit Asset to the receiver.
-        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _disabledTypes);
+        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _allowedTypes);
 
         if (depositTokenType == TokenType.ERC20 || depositTokenType == TokenType.NATIVE) {
           // Deduct deposit balance
@@ -384,7 +384,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
       bool balanceCheck = checkBalance(rewardItem);
       // If contract balance is enough - transfer reward
       if (balanceCheck) {
-        ExchangeUtils.spend(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);
+        ExchangeUtils.spend(ExchangeUtils._toArray(rewardItem), receiver, _allowedTypes);
       } else {
         // If contract balance is not enough for reward - emergency return deposit to receiver
         returnDeposit(stakeId, receiver);
@@ -401,11 +401,11 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
           }
         } else {
           // If the token does not support the Mysterybox interface, call the acquire function to mint NFTs to the receiver.
-          ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);
+          ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _allowedTypes);
         }
     } else if (rewardItem.tokenType == TokenType.ERC1155) {
       // If the token is an ERC1155 token, call the acquire function to transfer the tokens to the receiver.
-      ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _disabledTypes);
+      ExchangeUtils.acquire(ExchangeUtils._toArray(rewardItem), receiver, _allowedTypes);
     } else {
       // should never happen
       revert UnsupportedTokenType();
@@ -439,7 +439,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
         // Empty current stake deposit storage
         depositItem.amount = 0;
         // Transfer the deposit Asset to the receiver.
-        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _disabledTypes);
+        ExchangeUtils.spend(ExchangeUtils._toArray(depositItemWithdraw), receiver, _allowedTypes);
         if (depositItem.tokenType == TokenType.ERC20 || depositItem.tokenType == TokenType.NATIVE) {
           // Deduct deposit balance
           (, uint256 balance) = _depositBalancesMap.tryGet(depositItemWithdraw.token);
@@ -661,7 +661,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // clean penalty balance in _penalties mapping storage
     _penalties[item.token][item.tokenId] = 0;
 
-    ExchangeUtils.spend(ExchangeUtils._toArray(item), _msgSender(), _disabledTypes);
+    ExchangeUtils.spend(ExchangeUtils._toArray(item), _msgSender(), _allowedTypes);
   }
 
   /**

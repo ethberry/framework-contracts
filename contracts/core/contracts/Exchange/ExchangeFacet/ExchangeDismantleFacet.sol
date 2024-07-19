@@ -12,7 +12,7 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
@@ -32,10 +32,8 @@ contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    // burn price (721, 998, 1155) or send price to receiver
-    ExchangeUtils.burnFrom(_price, _msgSender(), DisabledTokenTypes(true, true, false, false, false));
-    // send items to sender from receiver
-    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
+    ExchangeUtils.burnFrom(_price, _msgSender(), AllowedTokenTypes(false, false, true, true, true));
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
     emit Dismantle(_msgSender(), params.externalId, items, _price);
 

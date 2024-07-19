@@ -12,7 +12,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { IERC721Wrapper } from "./interfaces/IERC721Wrapper.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
 contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
@@ -47,7 +47,7 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
       }
     }
 
-    ExchangeUtils.spendFrom(items, _msgSender(), address(this), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(items, _msgSender(), address(this), AllowedTokenTypes(true, true, true, true, true));
   }
 
   function unpack(uint256 tokenId) public {
@@ -57,7 +57,7 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
 
     _burn(tokenId);
 
-    ExchangeUtils.spend(_itemData[tokenId], _msgSender(), DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spend(_itemData[tokenId], _msgSender(), AllowedTokenTypes(true, true, true, true, true));
   }
 
   /**

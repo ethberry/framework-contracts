@@ -11,7 +11,7 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { ExpiredSignature, SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
@@ -31,7 +31,7 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
     emit Claim(_msgSender(), params.externalId, items);
   }
@@ -48,7 +48,7 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.spendFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
+    ExchangeUtils.spendFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
     emit Claim(_msgSender(), params.externalId, items);
   }

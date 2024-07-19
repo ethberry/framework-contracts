@@ -12,7 +12,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IERC721Discrete } from "../../ERC721/interfaces/IERC721Discrete.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeGradeFacet is SignatureValidator, DiamondOverride {
@@ -30,7 +30,7 @@ contract ExchangeGradeFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, DisabledTokenTypes(false, false, false, false, false));
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     uint256 level = IERC721Discrete(item.token).upgrade(item.tokenId, params.extra);
 

@@ -12,7 +12,7 @@ import { SignerMissingRole } from "../../utils/errors.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
 import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
 /**
  * @title VestingFactory
@@ -80,7 +80,7 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       params.nonce
     );
 
-    ExchangeUtils.spendFrom(items, signer, account, DisabledTokenTypes(true, false, true, true, true));
+    ExchangeUtils.spendFrom(items, signer, account, AllowedTokenTypes(false, true, false, false, false));
 
     // Notify our server about successful deployment
     emit VestingDeployed(account, params.externalId, args, items);

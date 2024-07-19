@@ -14,7 +14,7 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, Params, DisabledTokenTypes } from "../lib/interfaces/IAsset.sol";
+import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongToken } from "../../utils/errors.sol";
 
 contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
@@ -57,8 +57,8 @@ contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.burnFrom(price, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
-    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), DisabledTokenTypes(true, false, false, false, false));
+    ExchangeUtils.burnFrom(price, _msgSender(), AllowedTokenTypes(false, false, true, true, false));
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, false, true, true, false));
 
     emit Merge(_msgSender(), params.externalId, items, price);
 

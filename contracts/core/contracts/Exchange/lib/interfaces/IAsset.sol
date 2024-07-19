@@ -30,7 +30,7 @@ struct Params {
   address referrer;
 }
 
-struct DisabledTokenTypes {
+struct AllowedTokenTypes {
   bool native;
   bool erc20;
   bool erc721;

@@ -12,7 +12,7 @@ import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contract
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { Asset, TokenType, DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
 /**
  * @title Monthly Vesting
