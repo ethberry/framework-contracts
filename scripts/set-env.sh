@@ -27,7 +27,7 @@ touch ./services/admin-api/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/admin-api/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/admin-api/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/admin-api/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/admin-api/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/admin-api/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/admin-api/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/admin-api/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/admin-api/.env.$WMODE
@@ -80,7 +80,7 @@ touch ./services/admin-ui/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/admin-ui/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/admin-ui/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/admin-ui/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/admin-ui/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/admin-ui/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/admin-ui/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/admin-ui/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/admin-ui/.env.$WMODE
@@ -131,7 +131,7 @@ touch ./services/market-ui/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/market-ui/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/market-ui/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/market-ui/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/market-ui/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/market-ui/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/market-ui/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/market-ui/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/market-ui/.env.$WMODE
@@ -182,7 +182,7 @@ touch ./services/market-api/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/market-api/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/market-api/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/market-api/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/market-api/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/market-api/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/market-api/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/market-api/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/market-api/.env.$WMODE
@@ -233,7 +233,7 @@ touch ./services/core-eth/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/core-eth/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/core-eth/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/core-eth/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/core-eth/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/core-eth/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/core-eth/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/core-eth/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/core-eth/.env.$WMODE
@@ -285,7 +285,7 @@ touch ./services/office-ui/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/office-ui/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/office-ui/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/office-ui/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/office-ui/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/office-ui/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/office-ui/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/office-ui/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/office-ui/.env.$WMODE
@@ -336,7 +336,7 @@ touch ./services/office-api/.env.$WMODE
 echo STARTING_BLOCK=$STARTING_BLOCK >>./services/office-api/.env.$WMODE
 echo CONTRACT_MANAGER_ADDR=$CONTRACT_MANAGER_ADDR  >>./services/office-api/.env.$WMODE
 echo EXCHANGE_ADDR=$EXCHANGE_ADDR  >>./services/office-api/.env.$WMODE
-echo EXCHANGE_BINANCE_ADDR=$EXCHANGE_BINANCE_ADDR  >>./services/office-api/.env.$WMODE
+echo EXCHANGE_ADDR_BINANCE=$EXCHANGE_ADDR_BINANCE  >>./services/office-api/.env.$WMODE
 echo ERC20_SIMPLE_ADDR=$ERC20_SIMPLE_ADDR  >>./services/office-api/.env.$WMODE
 echo ERC20_INACTIVE_ADDR=$ERC20_INACTIVE_ADDR  >>./services/office-api/.env.$WMODE
 echo ERC20_NEW_ADDR=$ERC20_NEW_ADDR  >>./services/office-api/.env.$WMODE

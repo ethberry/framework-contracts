@@ -34,10 +34,10 @@ async function main() {
   // const diamondContract = await ethers.getContractAt("DiamondLoupeFacet", exchangeAddr);
 
   // # AMOY
-  //   STARTING_BLOCK_AMOY=8387563
-  //   CONTRACT_MANAGER_AMOY_ADDR=0xd76746ff27eee2bbbe37228571b0b322d73976ed
-  //   EXCHANGE_AMOY_ADDR=0xa712c7640a579967c2f7c6dbeb384a613b0a61aa
-  //   DISPENSER_AMOY_ADDR=0xd210e407f0c1dd693990708ef0a59a06c775a8fb
+  //   STARTING_BLOCK_POLYGON_AMOY=8387563
+  //   CONTRACT_MANAGER_ADDR_POLYGON_AMOY=0xd76746ff27eee2bbbe37228571b0b322d73976ed
+  //   EXCHANGE_ADDR_AMOY=0xa712c7640a579967c2f7c6dbeb384a613b0a61aa
+  //   DISPENSER_ADDR_POLYGON_AMOY=0xd210e407f0c1dd693990708ef0a59a06c775a8fb
 
   const cmFactoryFacet = await ethers.getContractAt("UseFactoryFacet", cmAddr);
 

@@ -19,7 +19,7 @@ export default {
       gas: "auto",
     },
     besu: {
-      url: process.env.JSON_RPC_ADDR_BESU,
+      url: process.env.JSON_RPC_ADDR_GEMUNION_BESU,
       timeout: 142000,
       accounts: [
         "0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63", // 0xfe3b557e8fb62b89f4916b721be55ceb828dbd73
@@ -28,11 +28,6 @@ export default {
       ],
     },
     gemunion: {
-      url: process.env.JSON_RPC_ADDR_GEMUNION,
-      timeout: 30000,
-      accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY1, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3],
-    },
-    gemunionprod: {
       url: process.env.JSON_RPC_ADDR_GEMUNION,
       timeout: 30000,
       accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY1, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3],
@@ -52,23 +47,18 @@ export default {
       gasPrice: 5000000000,
       accounts: [process.env.PRIVATE_KEY],
     },
-    goerli: {
-      url: process.env.JSON_RPC_ADDR_GOERLY,
-      accounts: [process.env.PRIVATE_KEY],
-      timeout: 142000,
-    },
-    mumbai: {
-      url: process.env.JSON_RPC_ADDR_MUMBAI,
-      accounts: [process.env.PRIVATE_KEY],
-      timeout: 142000,
-    },
     polygon: {
       url: process.env.JSON_RPC_ADDR_POLYGON,
       accounts: [process.env.PRIVATE_KEY],
       timeout: 142000,
     },
+    amoy: {
+      url: process.env.JSON_RPC_ADDR_POLYGON_AMOY,
+      accounts: [process.env.PRIVATE_KEY],
+      timeout: 142000,
+    },
     sepolia: {
-      url: process.env.JSON_RPC_ADDR_SEPOLIA,
+      url: process.env.JSON_RPC_ADDR_ETHEREUM_SEPOLIA,
       chainId: 11155111,
       accounts: [
         process.env.PRIVATE_KEY, //
@@ -88,15 +78,6 @@ export default {
       },
       {
         version: "0.8.20",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 1000, // DO NOT CHANGE
-          },
-        },
-      },
-      {
-        version: "0.8.22",
         settings: {
           optimizer: {
             enabled: true,
