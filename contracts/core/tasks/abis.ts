@@ -238,14 +238,17 @@ task("abis", "Save all functions abi separately")
       for (const func of abiFunctions) {
         // FRAMEWORK ABIS
         if (fwFunctionNames.includes(func.name)) {
+          const funcName = func.name;
           // create folder
           const funcFolderPath = path.join(process.cwd(), `../../../packages/abis/json/${name}`);
           if (!fs.existsSync(funcFolderPath)) {
             fs.mkdirSync(funcFolderPath);
           }
 
+          const funcArray = abiFunctions.filter(func => func.name === funcName);
+
           const funcFilePath = path.join(funcFolderPath, `${func.name}.json`);
-          fs.writeFileSync(funcFilePath, JSON.stringify([func]), {
+          fs.writeFileSync(funcFilePath, JSON.stringify(funcArray), {
             encoding: "utf-8",
             flag: "w+",
           });
