@@ -11,10 +11,11 @@ import { expiresAt, externalId } from "../test/constants";
 import { deployDiamond } from "../test/Exchange/shared";
 import { debug, grantRoles, recursivelyDecodeResult } from "./utils/deploy-utils";
 import { getBaseTokenURI } from "../test/shared/uri";
+import { TypedContractEvent, TypedEventLog } from "../typechain-types/common";
 
 // DELAY CONFIG
-const delay = 1; // block delay
-const delayMs = 300; // block delay ms (low for localhost, high for binance etc.)
+const delay = 2; // block delay
+const delayMs = 600; // block delay ms (low for localhost, high for binance etc.)
 
 // VRF CONFIG
 const vrfSubId = network.name === "besu" || network.name === "telos_test" ? 1n : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
@@ -98,6 +99,7 @@ async function main() {
   );
   contracts.contractManager = cmInstance;
   await debug(contracts);
+
   const factoryInstance = await ethers.getContractAt("UseFactoryFacet", await contracts.contractManager.getAddress());
 
   // console.info("contracts.contractManager.address", contracts.contractManager.address);
@@ -106,18 +108,20 @@ async function main() {
   const exchangeInstance = await deployDiamond(
     "DiamondExchange",
     [
-      "ExchangePurchaseFacet",
-      "ExchangeClaimFacet",
       "ExchangeBreedFacet",
+      "ExchangeClaimFacet",
       "ExchangeCraftFacet",
       "ExchangeDismantleFacet",
       "ExchangeGradeFacet",
-      "ExchangeLotteryFacet",
-      "ExchangeRaffleFacet",
       "ExchangeLootBoxFacet",
-      "ExchangeMysteryBoxFacet",
-      "ExchangeRentableFacet",
+      "ExchangeLotteryFacet",
       "ExchangeMergeFacet",
+      "ExchangeMockFacet",
+      "ExchangeMysteryBoxFacet",
+      "ExchangePurchaseFacet",
+      // "ExchangePurchaseVestingFacet",
+      "ExchangeRaffleFacet",
+      "ExchangeRentableFacet",
       "PausableFacet",
       "AccessControlFacet",
       "DiamondLoupeFacet",
@@ -237,7 +241,10 @@ async function main() {
   );
   await blockAwait(delay, delayMs);
   const eventFilter = vrfInstance.filters.SubscriptionConsumerAdded();
-  const events = await vrfInstance.queryFilter(eventFilter, currentBlock.number);
+  const events: Array<TypedEventLog<TypedContractEvent<any>>> = await vrfInstance.queryFilter(
+    eventFilter,
+    currentBlock.number,
+  );
   const { subId, consumer } = recursivelyDecodeResult(events[0].args as unknown as Result);
   console.info("SubscriptionConsumerAdded", subId, consumer);
 
@@ -374,17 +381,17 @@ async function main() {
   );
   await debug(contracts);
 
-  if (network.name !== "telos_test") {
-    // contract size too big EVM Execution Error: Code is larger than max code size, out of gas!
-    const erc998Owner1155and20Factory = await ethers.getContractFactory("ERC998ERC1155ERC20Simple");
-    contracts.erc998OwnerErc1155Erc20 = await erc998Owner1155and20Factory.deploy(
-      "OWNER FULL",
-      "OWNFULL",
-      royalty,
-      getBaseTokenURI(chainId),
-    );
-    await debug(contracts);
-  }
+  // if (network.name !== "telos_test") {
+  //   // contract size too big EVM Execution Error: Code is larger than max code size, out of gas!
+  //   const erc998Owner1155and20Factory = await ethers.getContractFactory("ERC998ERC1155ERC20Simple");
+  //   contracts.erc998OwnerErc1155Erc20 = await erc998Owner1155and20Factory.deploy(
+  //     "OWNER FULL",
+  //     "OWNFULL",
+  //     royalty,
+  //     getBaseTokenURI(chainId),
+  //   );
+  //   await debug(contracts);
+  // }
 
   const erc1155SimpleFactory = await ethers.getContractFactory("ERC1155Simple");
   contracts.erc1155Simple = await erc1155SimpleFactory.deploy(royalty, getBaseTokenURI(chainId));
@@ -416,10 +423,10 @@ async function main() {
   contracts.erc721MysteryboxSimple = mysteryboxSimpleInstance;
   await debug(contracts);
 
-  await debug(
-    await factoryInstance.addFactory(await mysteryboxSimpleInstance.getAddress(), MINTER_ROLE),
-    "contractManager.addFactory",
-  );
+  // await debug(
+  //   await factoryInstance.addFactory(await mysteryboxSimpleInstance.getAddress(), MINTER_ROLE),
+  //   "contractManager.addFactory",
+  // );
 
   const mysteryboxPausableFactory = await ethers.getContractFactory("ERC721MysteryBoxPausable");
   const mysteryboxPausableInstance = await mysteryboxPausableFactory.deploy(
@@ -431,10 +438,10 @@ async function main() {
   contracts.erc721MysteryboxPausable = mysteryboxPausableInstance;
   await debug(contracts);
 
-  await debug(
-    await factoryInstance.addFactory(await mysteryboxPausableInstance.getAddress(), MINTER_ROLE),
-    "contractManager.addFactory",
-  );
+  // await debug(
+  //   await factoryInstance.addFactory(await mysteryboxPausableInstance.getAddress(), MINTER_ROLE),
+  //   "contractManager.addFactory",
+  // );
 
   const mysteryboxBlacklistFactory = await ethers.getContractFactory("ERC721MysteryBoxBlacklist");
   const mysteryboxBlacklistInstance = await mysteryboxBlacklistFactory.deploy(
@@ -446,10 +453,10 @@ async function main() {
   contracts.erc721MysteryboxBlacklist = mysteryboxBlacklistInstance;
   await debug(contracts);
 
-  await debug(
-    await factoryInstance.addFactory(await mysteryboxBlacklistInstance.getAddress(), MINTER_ROLE),
-    "contractManager.addFactory",
-  );
+  // await debug(
+  //   await factoryInstance.addFactory(await mysteryboxBlacklistInstance.getAddress(), MINTER_ROLE),
+  //   "contractManager.addFactory",
+  // );
 
   const mysteryboxBlacklistPausableFactory = await ethers.getContractFactory("ERC721MysteryBoxBlacklistPausable");
   const mysteryboxBlacklistPausableInstance = await mysteryboxBlacklistPausableFactory.deploy(
@@ -461,10 +468,10 @@ async function main() {
   contracts.erc721MysteryboxBlacklistPausable = mysteryboxBlacklistPausableInstance;
   await debug(contracts);
 
-  await debug(
-    await factoryInstance.addFactory(await mysteryboxBlacklistPausableInstance.getAddress(), MINTER_ROLE),
-    "contractManager.addFactory",
-  );
+  // await debug(
+  //   await factoryInstance.addFactory(await mysteryboxBlacklistPausableInstance.getAddress(), MINTER_ROLE),
+  //   "contractManager.addFactory",
+  // );
 
   const stakingFactory = await ethers.getContractFactory("Staking");
   const stakingInstance = await stakingFactory.deploy();
@@ -582,10 +589,10 @@ async function main() {
     "stakingInstance.setRules",
   );
 
-  await debug(
-    await factoryInstance.addFactory(await stakingInstance.getAddress(), MINTER_ROLE),
-    "contractManager.addFactory",
-  );
+  // await debug(
+  //   await factoryInstance.addFactory(await stakingInstance.getAddress(), MINTER_ROLE),
+  //   "contractManager.addFactory",
+  // );
 
   // LOTTERY
   const erc721LotteryTicketFactory = await ethers.getContractFactory("ERC721LotteryTicket");
@@ -691,10 +698,7 @@ async function main() {
   await debug(contracts);
 
   const ponziFactory = await ethers.getContractFactory("Ponzi");
-  contracts.ponzi = await ponziFactory.deploy(
-    ["0xfe3b557e8fb62b89f4916b721be55ceb828dbd73", "0x627306090abaB3A6e1400e9345bC60c78a8BEf57", owner.address],
-    [1, 5, 95],
-  );
+  contracts.ponzi = await ponziFactory.deploy();
   await debug(contracts);
 
   const dispenserFactory = await ethers.getContractFactory("Dispenser");
