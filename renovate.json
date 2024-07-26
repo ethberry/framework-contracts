@@ -1,4 +1,14 @@
 {
   "extends": ["github>gemunion/renovate-config"],
-  "baseBranches": ["dev"]
+  "baseBranches": ["dev"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["hardhat-gas-reporter"],
+      "allowedVersions": "<=1.0.9"
+    },
+    {
+      "matchPackageNames": ["solidity-coverage"],
+      "allowedVersions": "<=0.8.5"
+    }
+  ]
 }
