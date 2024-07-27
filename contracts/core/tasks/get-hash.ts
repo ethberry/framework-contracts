@@ -6,11 +6,5 @@ task("get-hash", "Prints an keccak hash")
   .setAction(async (args, hre) => {
     const { key } = args;
 
-    await hre.ethers.getContractFactory("ERC20ACBCS");
-    // const coinInstance = coinFactory.attach(contract);
-    // const accBalance = await coinInstance.balanceOf(account);
-
-    const labelhash = keccak256(toUtf8Bytes(key));
-
-    console.info("hash:", labelhash);
+    console.info("hash:", keccak256(toUtf8Bytes(key)));
   });
