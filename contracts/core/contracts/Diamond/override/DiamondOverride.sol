@@ -6,9 +6,9 @@
 
 pragma solidity ^0.8.20;
 
-import "./AccessControlInternal.sol";
-import "./PausableInternal.sol";
-import "../../Referral/Referral.sol";
+import { AccessControlInternal } from "./AccessControlInternal.sol";
+import { PausableInternal } from "./PausableInternal.sol";
+import { Referral } from "../../Referral/Referral.sol";
 
 
 abstract contract DiamondOverride is AccessControlInternal, PausableInternal, Referral  {

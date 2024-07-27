@@ -8,7 +8,6 @@ pragma solidity ^0.8.20;
 
 import { CoinHolder, NativeReceiver } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-import { IERC721Wrapper } from "../Mechanics/Wrapper/interfaces/IERC721Wrapper.sol";
 import { TopUp } from "../utils/TopUp.sol";
 
 contract TopUpMock is CoinHolder, NativeReceiver, TopUp {

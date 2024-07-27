@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 
 import { amount } from "@gemunion/contracts-constants";
 
-export function shouldBehaveLikeERC20BlackList(factory: () => Promise<any>) {
+export function shouldBlacklist(factory: () => Promise<any>) {
   describe("Black list", function () {
     it("should fail: BlackListError (transfer from)", async function () {
       const [owner, receiver] = await ethers.getSigners();

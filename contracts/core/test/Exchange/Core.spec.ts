@@ -6,13 +6,19 @@ import { time } from "@openzeppelin/test-helpers";
 
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
+import {
+  deployDiamond,
+  deployErc20Base,
+  deployErc721Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
 import { expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { isEqualEventArgArrObj, isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
@@ -68,7 +74,7 @@ describe("Diamond Exchange Core", function () {
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const erc20Instance = await deployERC1363("ERC20Blacklist");
+      const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
@@ -145,7 +151,7 @@ describe("Diamond Exchange Core", function () {
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const erc20Instance = await deployERC1363("ERC20Blacklist");
+      const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
