@@ -28,6 +28,9 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
     LootBoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
+
+    // TODO need to validate LootBoxConfig
+
     if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
       revert SignerMissingRole();
     }

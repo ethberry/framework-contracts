@@ -86,7 +86,7 @@ abstract contract AccessControlInternal is Context {
      * @dev Returns `true` if `account` has been granted `role`.
      */
     function _hasRole(bytes32 role, address account) internal view virtual returns (bool) {
-    return ACStorage.layout()._roles[role].members[account];
+      return ACStorage.layout()._roles[role].members[account];
     }
 
     /**
