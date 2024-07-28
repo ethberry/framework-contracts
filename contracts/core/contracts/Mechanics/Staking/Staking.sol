@@ -29,7 +29,7 @@ import { ZeroBalance, NotExist, WrongRule, UnsupportedTokenType, NotComplete, Ex
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IStaking } from "./interfaces/IStaking.sol";
 import { Asset,Params,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 /**
  * @dev This contract implements a staking system where users can stake their tokens for a specific period of time
