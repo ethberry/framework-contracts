@@ -4,12 +4,12 @@ import { parseEther, WeiPerEther, ZeroAddress } from "ethers";
 
 import { time } from "@openzeppelin/test-helpers";
 import { blockAwait } from "@gemunion/contracts-helpers";
+import { deployContract } from "@gemunion/contracts-utils";
 
 import { tokenZero } from "../../constants";
 import type { IRule } from "./interface/staking";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { isEqualEventArgArrObj } from "../../utils";
-import { deployContract } from "@gemunion/contracts-utils";
 
 describe("Ponzi", function () {
   const period = 300;
@@ -143,7 +143,7 @@ describe("Ponzi", function () {
     });
   });
 
-  describe("Staking", function () {
+  describe("deposit", function () {
     it("should fail for not existing rule", async function () {
       const [owner] = await ethers.getSigners();
 
@@ -231,7 +231,9 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 1, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "WrongAmount");
+      await expect(tx1)
+        .to.be.revertedWithCustomError(ponziInstance, "ETHInsufficientBalance")
+        .withArgs(owner, 100, 1000);
     });
 
     it("should stake NATIVE", async function () {

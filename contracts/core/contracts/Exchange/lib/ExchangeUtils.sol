@@ -21,7 +21,7 @@ import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { IERC721_RANDOM_ID } from "../../utils/interfaces.sol";
-import { UnsupportedTokenType, WrongAmount } from "../../utils/errors.sol";
+import { UnsupportedTokenType, ETHInvalidReceiver, ETHInsufficientBalance } from "../../utils/errors.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
 library ExchangeUtils {
@@ -94,10 +94,11 @@ library ExchangeUtils {
       // Verify the total amount of native tokens matches the amount sent with the transaction.
       // This basically protects against reentrancy attack.
       if (totalAmount > msg.value) {
-        revert WrongAmount();
-      }
-      if (address(this) == receiver) {
+        revert ETHInsufficientBalance(spender, msg.value, totalAmount);
+      } else if (address(this) == receiver) {
         emit PaymentEthReceived(receiver, msg.value);
+      } else if (receiver == address(0)) {
+        revert ETHInvalidReceiver(address(0));
       } else {
         Address.sendValue(payable(receiver), totalAmount);
         emit PaymentEthSent(receiver, totalAmount);
@@ -205,9 +206,12 @@ library ExchangeUtils {
 
     // If there is any native token in the transaction.
     if (totalAmount > 0) {
-      // Send the total amount to the receiver
-      Address.sendValue(payable(receiver), totalAmount);
-      emit PaymentEthSent(receiver, totalAmount);
+      if (receiver == address(0)) {
+        revert ETHInvalidReceiver(address(0));
+      } else {
+        Address.sendValue(payable(receiver), totalAmount);
+        emit PaymentEthSent(receiver, totalAmount);
+      }
     }
   }
 

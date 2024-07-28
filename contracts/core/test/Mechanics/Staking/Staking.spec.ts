@@ -623,6 +623,7 @@ describe("Staking", function () {
     });
 
     it("should fail for wrong pay amount", async function () {
+      const [owner] = await ethers.getSigners();
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
@@ -651,8 +652,10 @@ describe("Staking", function () {
       const tx = stakingInstance.setRules([stakeRule]);
       await expect(tx).to.emit(stakingInstance, "RuleCreated");
 
-      const tx1 = stakingInstance.deposit(params, tokenIds, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongAmount");
+      const tx1 = stakingInstance.deposit(params, tokenIds, { value: amount / 2n });
+      await expect(tx1)
+        .to.be.revertedWithCustomError(stakingInstance, "ETHInsufficientBalance")
+        .withArgs(owner, amount / 2n, amount);
     });
 
     it("should fail for limit exceed", async function () {

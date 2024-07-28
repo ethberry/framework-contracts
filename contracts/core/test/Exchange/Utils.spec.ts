@@ -88,29 +88,6 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).changeEtherBalances([owner, receiver], [-amount, amount]);
         });
 
-        it("should spendFrom: ETH => EOA (wrong amount)", async function () {
-          const [owner, receiver] = await ethers.getSigners();
-
-          const exchangeInstance = await factory();
-
-          const tx = exchangeInstance.testSpendFrom(
-            [
-              {
-                tokenType: 0,
-                token: ZeroAddress,
-                tokenId: 0,
-                amount,
-              },
-            ],
-            owner.address,
-            receiver.address,
-            enabled,
-            { value: 0 },
-          );
-
-          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "WrongAmount");
-        });
-
         it("should spendFrom: ETH => Holder", async function () {
           const [owner] = await ethers.getSigners();
 
@@ -133,6 +110,51 @@ describe("Diamond Exchange Utils", function () {
           );
 
           await expect(tx).changeEtherBalances([owner, walletInstance], [-amount, amount]);
+        });
+
+        it("should spendFrom: ETH => ZeroAddress (ETHInvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId: 0,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+            { value: amount },
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver").withArgs(ZeroAddress);
+        });
+
+        it("should spendFrom: ETH => EOA (ETHInsufficientBalance)", async function () {
+          const [owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId: 0,
+                amount,
+              },
+            ],
+            owner.address,
+            receiver.address,
+            enabled,
+            { value: 0 },
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "ETHInsufficientBalance");
         });
 
         it("should spendFrom: ETH => Reverter (FailedInnerCall)", async function () {
@@ -220,7 +242,7 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).changeTokenBalances(erc20Instance, [owner, walletInstance], [-amount, amount]);
         });
 
-        it("should spendFrom: ERC20 => Self", async function () {
+        it("should spendFrom: ERC20 => SELF", async function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -278,7 +300,33 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
         });
 
-        it("should spendFrom: ERC20 => EOA (insufficient amount)", async function () {
+        it("should spendFrom: ERC20 => ZeroAddress (ERC20InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20();
+          await erc20Instance.mint(owner.address, amount);
+          await erc20Instance.approve(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId: 0,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
+        });
+
+        it("should spendFrom: ERC20 => EOA (ERC20InsufficientBalance)", async function () {
           const [owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -395,7 +443,7 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).changeTokenBalances(erc20Instance, [owner, walletInstance], [-amount, amount]);
         });
 
-        it("should spendFrom: ERC1363 => Self", async function () {
+        it("should spendFrom: ERC1363 => SELF", async function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -451,6 +499,32 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(owner.address, receiver.address, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
+        });
+
+        it("should spendFrom: ERC1363 => ZeroAddress (ERC20InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC1363("ERC20Simple");
+          await erc20Instance.mint(owner.address, amount);
+          await erc20Instance.approve(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId: 0,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
         });
       });
 
@@ -545,13 +619,40 @@ describe("Diamond Exchange Utils", function () {
           expect(balance).to.equal(1);
         });
 
-        it("should spendFrom: ERC721 => EOA (not an owner)", async function () {
+        it("should spendFrom: ERC721 => ZeroAddress (ERC721InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.mintCommon(owner.address, templateId);
+          await erc721Instance.approve(exchangeInstance, templateId);
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 2,
+                token: erc721Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc721Instance, "ERC721InvalidReceiver").withArgs(ZeroAddress);
+        });
+
+        it("should spendFrom: ERC721 => EOA (ERC721IncorrectOwner)", async function () {
           const [owner, receiver, stranger] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
 
           const erc721Instance = await deployERC721("ERC721Simple");
           await erc721Instance.mintCommon(stranger.address, templateId);
+          await erc721Instance.connect(stranger).approve(exchangeInstance, tokenId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
@@ -568,11 +669,11 @@ describe("Diamond Exchange Utils", function () {
           );
 
           await expect(tx)
-            .to.be.revertedWithCustomError(erc721Instance, "ERC721InsufficientApproval")
-            .withArgs(exchangeInstance, tokenId);
+            .to.be.revertedWithCustomError(erc721Instance, "ERC721IncorrectOwner")
+            .withArgs(owner, tokenId, stranger);
         });
 
-        it("should spendFrom: ERC721 => EOA (not approved)", async function () {
+        it("should spendFrom: ERC721 => EOA (ERC721InsufficientApproval)", async function () {
           const [owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -692,13 +793,40 @@ describe("Diamond Exchange Utils", function () {
           expect(balance).to.equal(1);
         });
 
-        it("should spendFrom: ERC998 => EOA (not an owner)", async function () {
+        it("should spendFrom: ERC998 => ZeroAddress (ERC721InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.mintCommon(owner.address, templateId);
+          await erc998Instance.approve(exchangeInstance, templateId);
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 3,
+                token: erc998Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc998Instance, "ERC721InvalidReceiver").withArgs(ZeroAddress);
+        });
+
+        it("should spendFrom: ERC998 => EOA (ERC721IncorrectOwner)", async function () {
           const [owner, receiver, stranger] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
 
           const erc998Instance = await deployERC721("ERC998Simple");
           await erc998Instance.mintCommon(stranger.address, templateId);
+          await erc998Instance.connect(stranger).approve(exchangeInstance, tokenId);
 
           const tx = exchangeInstance.testSpendFrom(
             [
@@ -715,11 +843,11 @@ describe("Diamond Exchange Utils", function () {
           );
 
           await expect(tx)
-            .to.be.revertedWithCustomError(erc998Instance, "ERC721InsufficientApproval")
-            .withArgs(exchangeInstance, tokenId);
+            .to.be.revertedWithCustomError(erc998Instance, "ERC721IncorrectOwner")
+            .withArgs(owner, tokenId, stranger);
         });
 
-        it("should spendFrom: ERC998 => EOA (not approved)", async function () {
+        it("should spendFrom: ERC998 => EOA (ERC721InsufficientApproval)", async function () {
           const [owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -821,7 +949,7 @@ describe("Diamond Exchange Utils", function () {
           await erc1155Instance.mint(owner.address, templateId, amount, "0x");
           await erc1155Instance.setApprovalForAll(exchangeInstance, true);
 
-          const tx = exchangeInstance.connect(receiver).testSpendFrom(
+          const tx = exchangeInstance.testSpendFrom(
             [
               {
                 tokenType: 4,
@@ -843,7 +971,35 @@ describe("Diamond Exchange Utils", function () {
           expect(balance).to.equal(amount);
         });
 
-        it("should spendFrom: ERC1155 => EOA (insufficient amount)", async function () {
+        it("should spendFrom: ERC1155 => ZeroAddress (ERC1155InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc1155Instance = await deployERC1155("ERC1155Simple");
+          await erc1155Instance.mint(owner.address, templateId, amount, "0x");
+          await erc1155Instance.setApprovalForAll(exchangeInstance, true);
+
+          const tx = exchangeInstance.testSpendFrom(
+            [
+              {
+                tokenType: 4,
+                token: erc1155Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            owner.address,
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.be.revertedWithCustomError(erc1155Instance, "ERC1155InvalidReceiver")
+            .withArgs(ZeroAddress);
+        });
+
+        it("should spendFrom: ERC1155 => EOA (ERC1155InsufficientBalance)", async function () {
           const [owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -1041,6 +1197,44 @@ describe("Diamond Exchange Utils", function () {
     describe("spend", function () {
       describe("ETH", function () {
         it("should spend: ETH => EOA", async function () {
+          const [owner, receiver] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const tx1 = await exchangeInstance.topUp(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            { value: amount },
+          );
+
+          const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
+
+          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
+
+          const tx2 = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            receiver.address,
+            enabled,
+          );
+
+          await expect(tx2).changeEtherBalances([exchangeInstance, receiver], [-amount, amount]);
+        });
+
+        it("should spend: ETH => ZeroAddress (ETHInvalidReceiver)", async function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -1071,15 +1265,15 @@ describe("Diamond Exchange Utils", function () {
                 amount,
               },
             ],
-            owner.address,
+            ZeroAddress,
             enabled,
           );
 
-          await expect(tx2).changeEtherBalances([exchangeInstance, owner], [-amount, amount]);
+          await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver").withArgs(ZeroAddress);
         });
 
-        it("should spend: ETH => EOA (insufficient amount)", async function () {
-          const [owner] = await ethers.getSigners();
+        it("should spend: ETH => EOA (AddressInsufficientBalance)", async function () {
+          const [_owner, receiver] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
 
@@ -1092,7 +1286,7 @@ describe("Diamond Exchange Utils", function () {
                 amount,
               },
             ],
-            owner.address,
+            receiver.address,
             enabled,
           );
 
@@ -1183,7 +1377,29 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
         });
 
-        it("should spend: ERC20 => EOA (insufficient amount)", async function () {
+        it("should spend: ERC20 => ZeroAddress (ERC20InvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20();
+          await erc20Instance.mint(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
+        });
+
+        it("should spend: ERC20 => EOA (ERC20InsufficientBalance)", async function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();
@@ -1287,6 +1503,28 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, receiver.address, amount);
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
         });
+
+        it("should spend: ERC1363 => ZeroAddress (ERC20InvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC1363("ERC20Simple");
+          await erc20Instance.mint(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
+        });
       });
 
       describe("ERC721", function () {
@@ -1316,7 +1554,7 @@ describe("Diamond Exchange Utils", function () {
             .withArgs(jerkInstance);
         });
 
-        it("should spend: ERC721 => Holder ", async function () {
+        it("should spend: ERC721 => Holder", async function () {
           const exchangeInstance = await factory();
 
           const walletInstance = await deployHolder();
@@ -1368,6 +1606,28 @@ describe("Diamond Exchange Utils", function () {
 
           const balance = await erc721Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
+        });
+
+        it("should spend: ERC721 => ZeroAddress (ERC721InvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc721Instance = await deployERC721("ERC721Simple");
+          await erc721Instance.mintCommon(exchangeInstance, templateId);
+
+          const tx = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 2,
+                token: erc721Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc721Instance, "ERC721InvalidReceiver").withArgs(ZeroAddress);
         });
 
         it("should spend: ERC721 => EOA (ERC721InsufficientApproval)", async function () {
@@ -1424,7 +1684,7 @@ describe("Diamond Exchange Utils", function () {
             .withArgs(jerkInstance);
         });
 
-        it("should spend: ERC998 => Holder ", async function () {
+        it("should spend: ERC998 => Holder", async function () {
           const exchangeInstance = await factory();
           const walletInstance = await deployHolder();
 
@@ -1475,6 +1735,28 @@ describe("Diamond Exchange Utils", function () {
 
           const balance = await erc998Instance.balanceOf(receiver.address);
           expect(balance).to.equal(1);
+        });
+
+        it("should spend: ERC998 => ZeroAddress (ERC721InvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc998Instance = await deployERC721("ERC998Simple");
+          await erc998Instance.mintCommon(exchangeInstance, templateId);
+
+          const tx = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 2,
+                token: erc998Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc998Instance, "ERC721InvalidReceiver").withArgs(ZeroAddress);
         });
 
         it("should spend: ERC998 => EOA (ERC721InsufficientApproval)", async function () {
@@ -1572,7 +1854,7 @@ describe("Diamond Exchange Utils", function () {
           const erc1155Instance = await deployERC1155("ERC1155Simple");
           await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
 
-          const tx = exchangeInstance.connect(receiver).testSpend(
+          const tx = exchangeInstance.testSpend(
             [
               {
                 tokenType: 4,
@@ -1591,6 +1873,30 @@ describe("Diamond Exchange Utils", function () {
 
           const balance = await erc1155Instance.balanceOf(receiver.address, templateId);
           expect(balance).to.equal(amount);
+        });
+
+        it("should spend: ERC1155 => ZeroAdress (ERC1155InvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc1155Instance = await deployERC1155("ERC1155Simple");
+          await erc1155Instance.mint(exchangeInstance, templateId, amount, "0x");
+
+          const tx = exchangeInstance.testSpend(
+            [
+              {
+                tokenType: 4,
+                token: erc1155Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx)
+            .to.be.revertedWithCustomError(erc1155Instance, "ERC1155InvalidReceiver")
+            .withArgs(ZeroAddress);
         });
 
         it("should spend: ERC1155 => EOA (ERC1155InsufficientBalance)", async function () {
@@ -1777,6 +2083,43 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx2).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
           await expect(tx2).changeEtherBalances([exchangeInstance, receiver], [-amount, amount]);
         });
+
+        it("should mint: ETH => ZeroAddress (ETHInvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const tx1 = await exchangeInstance.topUp(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            { value: amount },
+          );
+
+          const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
+          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
+
+          const tx2 = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 0,
+                token: ZeroAddress,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver").withArgs(ZeroAddress);
+        });
       });
 
       describe("ERC20", function () {
@@ -1804,6 +2147,28 @@ describe("Diamond Exchange Utils", function () {
           await expect(tx).to.emit(erc20Instance, "Transfer").withArgs(exchangeInstance, receiver.address, amount);
 
           await expect(tx).changeTokenBalances(erc20Instance, [exchangeInstance, receiver], [-amount, amount]);
+        });
+
+        it("should mint: ERC20 => ZeroAddress (ETHInvalidReceiver)", async function () {
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20();
+          await erc20Instance.mint(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testAcquire(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
         });
       });
 
@@ -2223,6 +2588,32 @@ describe("Diamond Exchange Utils", function () {
 
           await expect(tx).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
         });
+
+        it("should mint: ERC20 => ZeroAddress (ERC20InvalidReceiver)", async function () {
+          const [owner] = await ethers.getSigners();
+
+          const exchangeInstance = await factory();
+
+          const erc20Instance = await deployERC20();
+          await erc20Instance.mint(owner.address, amount);
+
+          await erc20Instance.approve(exchangeInstance, amount);
+
+          const tx = exchangeInstance.testAcquireFrom(
+            [
+              {
+                tokenType: 1,
+                token: erc20Instance,
+                tokenId,
+                amount,
+              },
+            ],
+            ZeroAddress,
+            enabled,
+          );
+
+          await expect(tx).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver").withArgs(ZeroAddress);
+        });
       });
 
       describe("ERC721", function () {
@@ -2589,7 +2980,7 @@ describe("Diamond Exchange Utils", function () {
 
     describe("burnFrom", function () {
       describe("ETH", function () {
-        it("should burnFrom: ETH", async function () {
+        it("should burnFrom: ETH (UnsupportedTokenType)", async function () {
           const [owner] = await ethers.getSigners();
 
           const exchangeInstance = await factory();

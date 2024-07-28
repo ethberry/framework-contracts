@@ -32,10 +32,12 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {
       revert SignerMissingRole();
     }
 
+    // this is questionable
     if (item.token == address(0)) {
       revert WrongToken();
     }
 
+    // Double-check lottery address
     if (params.receiver == address(0)) {
       revert NotExist();
     }
