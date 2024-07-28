@@ -36,7 +36,5 @@ contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
     ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
     emit Dismantle(_msgSender(), params.externalId, items, _price);
-
-    _afterPurchase(params.referrer, _price);
   }
 }

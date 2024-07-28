@@ -7,8 +7,16 @@ import { amount, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { VRFCoordinatorV2Mock } from "../../typechain-types";
 import { expiresAt, externalId, extra, params, subscriptionId, templateId, tokenId } from "../constants";
-import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base, deployErc998Base } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import {
+  deployDiamond,
+  deployErc1155Base,
+  deployErc20Base,
+  deployErc721Base,
+  deployErc998Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
 import { isEqualEventArgArrObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
@@ -58,154 +66,6 @@ describe("Diamond Exchange Claim", function () {
   });
 
   describe("claim", function () {
-    describe("ERC20", function () {
-      it("should claim", async function () {
-        const [owner, receiver] = await ethers.getSigners();
-
-        const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
-
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
-
-        const signature = await generateManyToManySignature({
-          account: receiver.address,
-          params: {
-            nonce: encodeBytes32String("nonce"),
-            externalId,
-            expiresAt,
-            receiver: owner.address, // spender
-            referrer: ZeroAddress,
-            extra,
-          },
-          items: [
-            {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
-              tokenId,
-              amount,
-            },
-          ],
-          price: [],
-        });
-
-        const tx1 = exchangeInstance.connect(receiver).claim(
-          {
-            nonce: encodeBytes32String("nonce"),
-            externalId,
-            expiresAt,
-            receiver: owner.address, // spender
-            referrer: ZeroAddress,
-            extra,
-          },
-          [
-            {
-              tokenType: 1,
-              token: erc20Instance,
-              tokenId,
-              amount,
-            },
-          ],
-          signature,
-        );
-
-        await expect(tx1)
-          .to.emit(exchangeInstance, "Claim")
-          .withArgs(
-            receiver.address,
-            externalId,
-            isEqualEventArgArrObj({
-              tokenType: 1n,
-              token: await erc20Instance.getAddress(),
-              tokenId,
-              amount,
-            }),
-          )
-          .to.emit(erc20Instance, "Transfer")
-          .withArgs(owner.address, receiver.address, amount);
-
-        await expect(tx1).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
-
-        const balance = await erc20Instance.balanceOf(receiver.address);
-        expect(balance).to.equal(amount);
-      });
-
-      it("should claim (extra)", async function () {
-        const [owner, receiver] = await ethers.getSigners();
-
-        const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
-
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
-
-        const extra = zeroPadValue(toBeHex(Math.ceil(new Date("2030-01-01T00:00:00.000Z").getTime() / 1000)), 32);
-
-        const signature = await generateManyToManySignature({
-          account: receiver.address,
-          params: {
-            nonce,
-            externalId,
-            expiresAt,
-            receiver: owner.address,
-            referrer: ZeroAddress,
-            extra,
-          },
-          items: [
-            {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
-              tokenId,
-              amount,
-            },
-          ],
-          price: [],
-        });
-
-        const tx1 = exchangeInstance.connect(receiver).claim(
-          {
-            nonce,
-            externalId,
-            expiresAt,
-            receiver: owner.address,
-            referrer: ZeroAddress,
-            extra,
-          },
-          [
-            {
-              tokenType: 1,
-              token: erc20Instance,
-              tokenId,
-              amount,
-            },
-          ],
-          signature,
-        );
-
-        await expect(tx1)
-          .to.emit(exchangeInstance, "Claim")
-          .withArgs(
-            receiver.address,
-            externalId,
-            isEqualEventArgArrObj({
-              tokenType: 1n,
-              token: await erc20Instance.getAddress(),
-              tokenId,
-              amount,
-            }),
-          )
-          .to.emit(erc20Instance, "Transfer")
-          .withArgs(owner.address, receiver.address, amount);
-
-        await expect(tx1).changeTokenBalances(erc20Instance, [owner, receiver], [-amount, amount]);
-
-        const balance = await erc20Instance.balanceOf(receiver.address);
-        expect(balance).to.equal(amount);
-      });
-    });
-
     describe("ERC721", function () {
       it("should claim (Simple)", async function () {
         const [_owner, receiver] = await ethers.getSigners();
@@ -493,13 +353,11 @@ describe("Diamond Exchange Claim", function () {
 
     describe("ERROR", function () {
       it("should fail: Expired signature 1", async function () {
-        const [owner, receiver] = await ethers.getSigners();
+        const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
 
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
+        const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -513,10 +371,10 @@ describe("Diamond Exchange Claim", function () {
           },
           items: [
             {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              tokenType: 2,
+              token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           price: [],
@@ -533,10 +391,10 @@ describe("Diamond Exchange Claim", function () {
           },
           [
             {
-              tokenType: 1,
-              token: erc20Instance,
+              tokenType: 2,
+              token: erc721Instance,
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           signature,
@@ -546,81 +404,11 @@ describe("Diamond Exchange Claim", function () {
       });
 
       it("should fail: Expired signature 2", async function () {
-        const [owner, receiver] = await ethers.getSigners();
+        const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
 
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
-
-        const signature = await generateManyToManySignature({
-          account: receiver.address,
-          params: {
-            nonce: encodeBytes32String("nonce"),
-            externalId,
-            expiresAt,
-            receiver: owner.address, // spender
-            referrer: ZeroAddress,
-            extra,
-          },
-          items: [
-            {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
-              tokenId,
-              amount,
-            },
-          ],
-          price: [],
-        });
-
-        const tx1 = exchangeInstance.connect(receiver).claim(
-          {
-            nonce: encodeBytes32String("nonce"),
-            externalId,
-            expiresAt,
-            receiver: owner.address, // spender
-            referrer: ZeroAddress,
-            extra,
-          },
-          [
-            {
-              tokenType: 1,
-              token: erc20Instance,
-              tokenId,
-              amount,
-            },
-          ],
-          signature,
-        );
-
-        await expect(tx1).to.emit(exchangeInstance, "Claim");
-
-        const tx2 = exchangeInstance.connect(receiver).claim(
-          params,
-          [
-            {
-              tokenType: 1,
-              token: erc20Instance,
-              tokenId,
-              amount,
-            },
-          ],
-          signature,
-        );
-
-        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
-      });
-
-      it("should fail: Expired signature 3", async function () {
-        const [owner, receiver] = await ethers.getSigners();
-        const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
-
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
+        const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         const extra = zeroPadValue(toBeHex(Math.ceil(new Date("2000-01-01T00:00:00.000Z").getTime() / 1000)), 32);
 
@@ -636,10 +424,10 @@ describe("Diamond Exchange Claim", function () {
           },
           items: [
             {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              tokenType: 2,
+              token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           price: [],
@@ -656,10 +444,10 @@ describe("Diamond Exchange Claim", function () {
           },
           [
             {
-              tokenType: 1,
-              token: erc20Instance,
+              tokenType: 2,
+              token: erc721Instance,
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           signature,
@@ -673,19 +461,17 @@ describe("Diamond Exchange Claim", function () {
         const exchangeInstance = await factory();
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
 
-        const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-        await erc20Instance.mint(owner.address, amount);
-        await erc20Instance.approve(exchangeInstance, amount);
+        const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
           params,
           items: [
             {
-              tokenType: 1,
-              token: await erc20Instance.getAddress(),
+              tokenType: 2,
+              token: await erc721Instance.getAddress(),
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           price: [],
@@ -698,10 +484,10 @@ describe("Diamond Exchange Claim", function () {
           params,
           [
             {
-              tokenType: 1,
-              token: erc20Instance,
+              tokenType: 2,
+              token: erc721Instance,
               tokenId,
-              amount,
+              amount: 1,
             },
           ],
           signature,
@@ -712,17 +498,16 @@ describe("Diamond Exchange Claim", function () {
 
       it("should fail: EnforcedPause", async function () {
         const diamondInstance = await factory();
-        const diamondAddress = diamondInstance;
 
-        const exchangeInstance = await ethers.getContractAt("ExchangeClaimFacet", diamondAddress);
-        const pausableInstance = await ethers.getContractAt("PausableFacet", diamondAddress);
+        const exchangeInstance = await ethers.getContractAt("ExchangeClaimFacet", diamondInstance);
+        const pausableInstance = await ethers.getContractAt("PausableFacet", diamondInstance);
         await pausableInstance.pause();
 
         const tx1 = exchangeInstance.claim(
           params,
           [
             {
-              tokenType: 0,
+              tokenType: 1,
               token: ZeroAddress,
               tokenId,
               amount,
@@ -1391,10 +1176,9 @@ describe("Diamond Exchange Claim", function () {
 
       it("should fail: EnforcedPause", async function () {
         const diamondInstance = await factory();
-        const diamondAddress = await diamondInstance.getAddress();
 
-        const exchangeInstance = await ethers.getContractAt("ExchangeClaimFacet", diamondAddress);
-        const pausableInstance = await ethers.getContractAt("PausableFacet", diamondAddress);
+        const exchangeInstance = await ethers.getContractAt("ExchangeClaimFacet", diamondInstance);
+        const pausableInstance = await ethers.getContractAt("PausableFacet", diamondInstance);
         await pausableInstance.pause();
 
         const tx1 = exchangeInstance.spend(

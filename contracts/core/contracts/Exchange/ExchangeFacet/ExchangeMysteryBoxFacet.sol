@@ -14,8 +14,9 @@ import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
+import { Referral } from "../../Referral/Referral.sol";
 
-contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
+contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseMysteryBox(address account, uint256 externalId, Asset[] items, Asset[] price);
 
   constructor() SignatureValidator() {}
@@ -51,7 +52,5 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride {
     IERC721MysteryBox(box.token).mintBox(_msgSender(), box.tokenId, mysteryItems);
 
     emit PurchaseMysteryBox(_msgSender(), params.externalId, items, price);
-
-    _afterPurchase(params.referrer, price);
   }
 }

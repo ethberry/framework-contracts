@@ -14,8 +14,9 @@ import { IERC721LootBox, LootBoxConfig} from "../../Mechanics/LootBox/interfaces
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
+import { Referral } from "../../Referral/Referral.sol";
 
-contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride {
+contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseLootBox(address account, uint256 externalId, Asset[] items, Asset[] price);
 
   constructor() SignatureValidator() {}

@@ -35,7 +35,5 @@ contract ExchangeGradeFacet is SignatureValidator, DiamondOverride {
     uint256 level = IERC721Discrete(item.token).upgrade(item.tokenId, params.extra);
 
     emit Upgrade(_msgSender(), params.externalId, item, price, params.extra, level);
-
-    _afterPurchase(params.referrer, price);
   }
 }

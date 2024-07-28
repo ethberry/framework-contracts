@@ -34,7 +34,5 @@ contract ExchangeCraftFacet is SignatureValidator, DiamondOverride {
     ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
     emit Craft(_msgSender(), params.externalId, items, price);
-
-    _afterPurchase(params.referrer, price);
   }
 }

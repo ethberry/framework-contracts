@@ -55,8 +55,6 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     IERC721Random(item.token).mintRandom(_msgSender(), params.externalId);
 
     emit Breed(_msgSender(), params.externalId, item, price);
-
-    _afterPurchase(params.referrer, ExchangeUtils._toArrayConcat(item, price));
   }
 
   function pregnancyCheckup(Asset memory matron, Asset memory sire) internal {

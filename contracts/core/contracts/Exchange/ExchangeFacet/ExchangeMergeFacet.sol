@@ -61,7 +61,5 @@ contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
     ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, false, true, true, false));
 
     emit Merge(_msgSender(), params.externalId, items, price);
-
-    _afterPurchase(params.referrer, price);
   }
 }

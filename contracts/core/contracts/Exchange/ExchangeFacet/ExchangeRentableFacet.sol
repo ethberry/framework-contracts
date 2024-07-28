@@ -59,8 +59,6 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
       item,
       price
     );
-
-    _afterPurchase(params.referrer, price);
   }
 
   function lendMany(
@@ -79,18 +77,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    emit LendMany(
-      _msgSender() /* from */,
-      params.referrer /* to */,
-      uint256(params.extra).toUint64() /* lend expires */,
-      params.externalId /* lendRule db id */,
-      items,
-      price
-    );
-
-    _afterPurchase(params.referrer, price);
-
-  for (uint256 i = 0; i < items.length; ) {
+    for (uint256 i = 0; i < items.length; ) {
       IERC4907(items[i].token).setUser(
         items[i].tokenId,
         params.referrer /* to */,
@@ -100,5 +87,14 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
         i++;
       }
     }
+
+    emit LendMany(
+      _msgSender() /* from */,
+      params.referrer /* to */,
+      uint256(params.extra).toUint64() /* lend expires */,
+      params.externalId /* lendRule db id */,
+      items,
+      price
+    );
   }
 }
