@@ -4,12 +4,19 @@ import { Contract, encodeBytes32String, ZeroAddress } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
-import { isEqualEventArgArrObj } from "../utils";
+import {
+  deployDiamond,
+  deployErc20Base,
+  deployErc721Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToManyToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
+import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 
-describe("Diamond Exchange MysteryBox", function () {
+describe.only("Diamond Exchange MysteryBox", function () {
   const factory = async (facetName = "ExchangeMysteryBoxFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
@@ -29,25 +36,27 @@ describe("Diamond Exchange MysteryBox", function () {
     const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
     const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
     const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
+    const generateOneToManyToManySignature = wrapOneToManyToManySignature(network, contractInstance, "EXCHANGE", owner);
 
     return {
       generateOneToOneSignature,
       generateOneToManySignature,
       generateManyToManySignature,
+      generateOneToManyToManySignature,
     };
   };
 
   describe("MysteryBox", function () {
-    describe("NATIVE > MYSTERYBOX (ERC721)", function () {
+    describe("NATIVE > MYSTERYBOX > ERC721", function () {
       it("should purchase mysterybox", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateOneToManyToManySignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -57,26 +66,26 @@ describe("Diamond Exchange MysteryBox", function () {
             referrer: ZeroAddress,
             extra,
           },
-          items: [
-            {
-              tokenType: 2,
-              token: await erc721Instance.getAddress(),
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 2,
-              token: await mysteryBoxInstance.getAddress(),
-              tokenId,
-              amount: 1,
-            },
-          ],
+          item: {
+            tokenType: 2,
+            token: await mysteryBoxInstance.getAddress(),
+            tokenId,
+            amount: 1,
+          },
           price: [
             {
               tokenType: 0,
               token: ZeroAddress,
               tokenId,
               amount,
+            },
+          ],
+          content: [
+            {
+              tokenType: 2,
+              token: await erc721Instance.getAddress(),
+              tokenId,
+              amount: 1,
             },
           ],
         });
@@ -90,26 +99,26 @@ describe("Diamond Exchange MysteryBox", function () {
             referrer: ZeroAddress,
             extra,
           },
-          [
-            {
-              tokenType: 2,
-              token: erc721Instance,
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 2,
-              token: mysteryBoxInstance,
-              tokenId,
-              amount: 1,
-            },
-          ],
+          {
+            tokenType: 2,
+            token: mysteryBoxInstance,
+            tokenId,
+            amount: 1,
+          },
           [
             {
               tokenType: 0,
               token: ZeroAddress,
               tokenId,
               amount,
+            },
+          ],
+          [
+            {
+              tokenType: 2,
+              token: erc721Instance,
+              tokenId,
+              amount: 1,
             },
           ],
           signature,
@@ -124,25 +133,23 @@ describe("Diamond Exchange MysteryBox", function () {
           .withArgs(
             receiver.address,
             externalId,
-            isEqualEventArgArrObj(
-              {
-                tokenType: 2n,
-                token: await erc721Instance.getAddress(),
-                tokenId,
-                amount: 1n,
-              },
-              {
-                tokenType: 2n,
-                token: await mysteryBoxInstance.getAddress(),
-                tokenId,
-                amount: 1n,
-              },
-            ),
+            isEqualEventArgObj({
+              tokenType: 2n,
+              token: await mysteryBoxInstance.getAddress(),
+              tokenId,
+              amount: 1n,
+            }),
             isEqualEventArgArrObj({
               tokenType: 0n,
               token: ZeroAddress,
               tokenId,
               amount,
+            }),
+            isEqualEventArgArrObj({
+              tokenType: 2n,
+              token: await erc721Instance.getAddress(),
+              tokenId,
+              amount: 1n,
             }),
           )
           .to.emit(mysteryBoxInstance, "Transfer")
@@ -152,11 +159,11 @@ describe("Diamond Exchange MysteryBox", function () {
       });
     });
 
-    describe("(NATIVE ERC20) > MYSTERYBOX MIXED (ERC721 + ERC998)", function () {
+    describe("NATIVE + ERC20 > MYSTERYBOX > ERC721 + ERC998", function () {
       it("should purchase mysterybox", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
 
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
@@ -167,7 +174,7 @@ describe("Diamond Exchange MysteryBox", function () {
         await erc20Instance.mint(receiver.address, amount);
         await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateOneToManyToManySignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -177,26 +184,12 @@ describe("Diamond Exchange MysteryBox", function () {
             referrer: ZeroAddress,
             extra,
           },
-          items: [
-            {
-              tokenType: 2,
-              token: await erc721Instance.getAddress(),
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 3,
-              token: await erc998Instance.getAddress(),
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 2,
-              token: await mysteryBoxInstance.getAddress(),
-              tokenId,
-              amount: 1,
-            },
-          ],
+          item: {
+            tokenType: 2,
+            token: await mysteryBoxInstance.getAddress(),
+            tokenId,
+            amount: 1,
+          },
           price: [
             {
               tokenType: 0,
@@ -211,6 +204,20 @@ describe("Diamond Exchange MysteryBox", function () {
               amount,
             },
           ],
+          content: [
+            {
+              tokenType: 2,
+              token: await erc721Instance.getAddress(),
+              tokenId,
+              amount: 1,
+            },
+            {
+              tokenType: 3,
+              token: await erc998Instance.getAddress(),
+              tokenId,
+              amount: 1,
+            },
+          ],
         });
 
         const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
@@ -222,26 +229,12 @@ describe("Diamond Exchange MysteryBox", function () {
             referrer: ZeroAddress,
             extra,
           },
-          [
-            {
-              tokenType: 2,
-              token: erc721Instance,
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 3,
-              token: erc998Instance,
-              tokenId,
-              amount: 1,
-            },
-            {
-              tokenType: 2,
-              token: mysteryBoxInstance,
-              tokenId,
-              amount: 1,
-            },
-          ],
+          {
+            tokenType: 2,
+            token: mysteryBoxInstance,
+            tokenId,
+            amount: 1,
+          },
           [
             {
               tokenType: 0,
@@ -256,6 +249,20 @@ describe("Diamond Exchange MysteryBox", function () {
               amount,
             },
           ],
+          [
+            {
+              tokenType: 2,
+              token: erc721Instance,
+              tokenId,
+              amount: 1,
+            },
+            {
+              tokenType: 3,
+              token: erc998Instance,
+              tokenId,
+              amount: 1,
+            },
+          ],
           signature,
           {
             value: amount,
@@ -263,31 +270,16 @@ describe("Diamond Exchange MysteryBox", function () {
         );
 
         await expect(tx1)
-          // .to.changeEtherBalance(receiver, -amount)
           .to.emit(exchangeInstance, "PurchaseMysteryBox")
           .withArgs(
             receiver.address,
             externalId,
-            isEqualEventArgArrObj(
-              {
-                tokenType: 2n,
-                token: await erc721Instance.getAddress(),
-                tokenId,
-                amount: 1n,
-              },
-              {
-                tokenType: 3n,
-                token: await erc998Instance.getAddress(),
-                tokenId,
-                amount: 1n,
-              },
-              {
-                tokenType: 2n,
-                token: await mysteryBoxInstance.getAddress(),
-                tokenId,
-                amount: 1n,
-              },
-            ),
+            isEqualEventArgObj({
+              tokenType: 2n,
+              token: await mysteryBoxInstance.getAddress(),
+              tokenId,
+              amount: 1n,
+            }),
             isEqualEventArgArrObj(
               {
                 tokenType: 0n,
@@ -300,6 +292,20 @@ describe("Diamond Exchange MysteryBox", function () {
                 token: await erc20Instance.getAddress(),
                 tokenId,
                 amount,
+              },
+            ),
+            isEqualEventArgArrObj(
+              {
+                tokenType: 2n,
+                token: await erc721Instance.getAddress(),
+                tokenId,
+                amount: 1n,
+              },
+              {
+                tokenType: 3n,
+                token: await erc998Instance.getAddress(),
+                tokenId,
+                amount: 1n,
               },
             ),
           )
@@ -317,12 +323,12 @@ describe("Diamond Exchange MysteryBox", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
       const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateOneToManyToManySignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -332,26 +338,26 @@ describe("Diamond Exchange MysteryBox", function () {
           referrer: ZeroAddress,
           extra,
         },
-        items: [
-          {
-            tokenType: 2,
-            token: await erc721Instance.getAddress(),
-            tokenId,
-            amount: 1,
-          },
-          {
-            tokenType: 2,
-            token: await mysteryBoxInstance.getAddress(),
-            tokenId,
-            amount: 1,
-          },
-        ],
+        item: {
+          tokenType: 2,
+          token: await mysteryBoxInstance.getAddress(),
+          tokenId,
+          amount: 1,
+        },
         price: [
           {
             tokenType: 0,
             token: ZeroAddress,
             tokenId,
             amount,
+          },
+        ],
+        content: [
+          {
+            tokenType: 2,
+            token: await erc721Instance.getAddress(),
+            tokenId,
+            amount: 1,
           },
         ],
       });
@@ -368,26 +374,26 @@ describe("Diamond Exchange MysteryBox", function () {
           referrer: ZeroAddress,
           extra,
         },
-        [
-          {
-            tokenType: 2,
-            token: erc721Instance,
-            tokenId,
-            amount: 1,
-          },
-          {
-            tokenType: 2,
-            token: mysteryBoxInstance,
-            tokenId,
-            amount: 1,
-          },
-        ],
+        {
+          tokenType: 2,
+          token: mysteryBoxInstance,
+          tokenId,
+          amount: 1,
+        },
         [
           {
             tokenType: 0,
             token: ZeroAddress,
             tokenId,
             amount,
+          },
+        ],
+        [
+          {
+            tokenType: 2,
+            token: erc721Instance,
+            tokenId,
+            amount: 1,
           },
         ],
         signature,
@@ -403,7 +409,7 @@ describe("Diamond Exchange MysteryBox", function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
 
       const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
@@ -411,23 +417,15 @@ describe("Diamond Exchange MysteryBox", function () {
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
       const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateOneToManyToManySignature({
         account: receiver.address,
         params,
-        items: [
-          {
-            tokenType: 2,
-            token: await erc721Instance.getAddress(),
-            tokenId,
-            amount: 1,
-          },
-          {
-            tokenType: 2,
-            token: await mysteryBoxInstance.getAddress(),
-            tokenId,
-            amount: 1,
-          },
-        ],
+        item: {
+          tokenType: 2,
+          token: await mysteryBoxInstance.getAddress(),
+          tokenId,
+          amount: 1,
+        },
         price: [
           {
             tokenType: 0,
@@ -436,30 +434,38 @@ describe("Diamond Exchange MysteryBox", function () {
             amount,
           },
         ],
-      });
-
-      const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
-        params,
-        [
+        content: [
           {
             tokenType: 2,
-            token: erc721Instance,
-            tokenId,
-            amount: 1,
-          },
-          {
-            tokenType: 2,
-            token: mysteryBoxInstance,
+            token: await erc721Instance.getAddress(),
             tokenId,
             amount: 1,
           },
         ],
+      });
+
+      const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
+        params,
+        {
+          tokenType: 2,
+          token: mysteryBoxInstance,
+          tokenId,
+          amount: 1,
+        },
         [
           {
             tokenType: 0,
             token: ZeroAddress,
             tokenId,
             amount,
+          },
+        ],
+        [
+          {
+            tokenType: 2,
+            token: erc721Instance,
+            tokenId,
+            amount: 1,
           },
         ],
         signature,

@@ -17,45 +17,34 @@ import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
 import { Referral } from "../../Referral/Referral.sol";
 
 contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
-  event PurchaseLootBox(address account, uint256 externalId, Asset[] items, Asset[] price);
+  event PurchaseLootBox(address account, uint256 externalId, Asset item, Asset[] price, Asset[] content);
 
   constructor() SignatureValidator() {}
 
   function purchaseLoot(
     Params memory params,
-    Asset[] memory items,
+    Asset memory item,
     Asset[] memory price,
+    Asset[] memory content,
     LootBoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
 
     // TODO need to validate LootBoxConfig
 
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    if (!_hasRole(MINTER_ROLE, _recoverOneToManyToManySignature(params, item, price, content, signature))) {
       revert SignerMissingRole();
     }
 
-    if (items.length == 0) {
+    if (content.length == 0) {
       revert WrongAmount();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    Asset memory box = items[items.length - 1];
+    IERC721LootBox(item.token).mintBox(_msgSender(), item.tokenId, content, boxConfig);
 
-    // pop from array is not supported
-    Asset[] memory lootItems = new Asset[](items.length - 1);
-    uint256 length = items.length;
-    for (uint256 i = 0; i < length - 1; ) {
-      lootItems[i] = items[i];
-      unchecked {
-        i++;
-      }
-    }
-
-    IERC721LootBox(box.token).mintBox(_msgSender(), box.tokenId, lootItems, boxConfig);
-
-    emit PurchaseLootBox(_msgSender(), params.externalId, items, price);
+    emit PurchaseLootBox(_msgSender(), params.externalId, item, price, content);
 
     _afterPurchase(params.referrer, price);
   }

@@ -23,7 +23,7 @@ import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures"
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
 
-describe("Diamond Exchange Core", function () {
+describe("Diamond Exchange Purchase", function () {
   const factory = async (facetName = "ExchangePurchaseFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",

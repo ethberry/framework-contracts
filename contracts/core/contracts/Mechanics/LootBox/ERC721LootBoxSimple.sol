@@ -46,10 +46,10 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items, LootBoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory content, LootBoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-    uint256 length = items.length;
+    uint256 length = content.length;
     if (length == 0) {
       revert NoContent();
     }
@@ -66,7 +66,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     // _itemData[tokenId] = items;
 
     for (uint256 i = 0; i < length; ) {
-      _itemData[tokenId].push(items[i]);
+      _itemData[tokenId].push(content[i]);
       unchecked {
         i++;
       }

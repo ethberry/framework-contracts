@@ -8,7 +8,7 @@ import { shouldBehaveLikeERC721Simple } from "../../ERC721/shared/simple";
 import { customMintBoxERC721 } from "./simple/customMintFn";
 import { shouldBehaveLikeERC721WrapperBox } from "./simple/base";
 
-describe("Wrapper", function () {
+describe.only("Wrapper", function () {
   const factory = () => deployERC721("ERC721Wrapper");
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
