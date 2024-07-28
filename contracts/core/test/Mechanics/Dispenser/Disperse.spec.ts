@@ -75,8 +75,8 @@ describe("Dispenser", function () {
         .withArgs(stranger.address, amount);
     });
 
-    it("should fail: WrongAmount", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
+    it("should fail: ETHInsufficientBalance", async function () {
+      const [owner, receiver] = await ethers.getSigners();
 
       const contractInstance = await factory();
 
@@ -93,7 +93,9 @@ describe("Dispenser", function () {
         { value: amount / 2n },
       );
 
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "WrongAmount");
+      await expect(tx)
+        .to.be.revertedWithCustomError(contractInstance, "ETHInsufficientBalance")
+        .withArgs(owner, amount / 2n, amount);
     });
 
     it("should fail: insufficient balance", async function () {

@@ -13,7 +13,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NotExist } from "../../utils/errors.sol";
+import { SignerMissingRole } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride, Referral {
@@ -30,10 +30,6 @@ contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride, Referral 
     address signer = _recoverOneToManySignature(params, item, price, signature);
     if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
-    }
-
-    if (params.receiver == address(0)) {
-      revert NotExist();
     }
 
     ExchangeUtils.spendFrom(

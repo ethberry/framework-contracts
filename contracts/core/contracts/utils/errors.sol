@@ -15,6 +15,8 @@ error UnsupportedTokenType();
 error SignerMissingRole();
 error ExpiredSignature();
 error WrongRole();
+error ETHInvalidReceiver(address receiver);
+error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed);
 
 // Lottery, Ponzi, Staking
 error NotExist();
