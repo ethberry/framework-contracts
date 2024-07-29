@@ -12,7 +12,7 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset,TokenType,DisabledTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import "./extension/WestingWalletApproved.sol";
+import "./extension/VestingWalletApproved.sol";
 
 /**
  * @title Vesting
