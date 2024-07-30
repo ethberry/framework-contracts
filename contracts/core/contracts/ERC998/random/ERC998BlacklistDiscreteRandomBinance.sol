@@ -8,14 +8,14 @@ pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkBinanceV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBinanceV2.sol";
-import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkBinanceV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBinanceV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC998BlacklistDiscreteRandom } from "../ERC998BlacklistDiscreteRandom.sol";
 
-contract ERC998BlacklistDiscreteRandomBinance is ERC998BlacklistDiscreteRandom, ChainLinkBinanceV2 {
+contract ERC998BlacklistDiscreteRandomBinance is ERC998BlacklistDiscreteRandom, ChainLinkBinanceV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,11 +23,11 @@ contract ERC998BlacklistDiscreteRandomBinance is ERC998BlacklistDiscreteRandom, 
     string memory baseTokenURI
   )
     ERC998BlacklistDiscreteRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkBinanceV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkBinanceV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
   function getRandomNumber()
     internal
-    override(ChainLinkBaseV2, ERC998BlacklistDiscreteRandom)
+    override(ChainLinkBaseV2Plus, ERC998BlacklistDiscreteRandom)
     returns (uint256 requestId)
   {
     return super.getRandomNumber();
@@ -35,8 +35,8 @@ contract ERC998BlacklistDiscreteRandomBinance is ERC998BlacklistDiscreteRandom, 
 
   function fulfillRandomWords(
     uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override(ERC998BlacklistDiscreteRandom, VRFConsumerBaseV2) {
+    uint256[] calldata randomWords
+  ) internal override(ERC998BlacklistDiscreteRandom, VRFConsumerBaseV2Plus) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 

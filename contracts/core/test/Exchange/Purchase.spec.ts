@@ -14,9 +14,9 @@ import {
   wrapOneToManySignature,
   wrapOneToOneSignature,
 } from "./shared";
-import { expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../constants";
+import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
-import { VRFCoordinatorV2Mock } from "../../typechain-types";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { isEqualEventArgArrObj, isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
@@ -51,13 +51,14 @@ describe("Diamond Exchange Purchase", function () {
     };
   };
 
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   before(async function () {
     await network.provider.send("hardhat_reset");
 
     // https://github.com/NomicFoundation/hardhat/issues/2980
-    ({ vrfInstance } = await loadFixture(function exchange() {
+    ({ vrfInstance, subId } = await loadFixture(function exchange() {
       return deployLinkVrfFixture();
     }));
   });
@@ -246,11 +247,11 @@ describe("Diamond Exchange Purchase", function () {
       expect(erc20Allowance).to.equal(amount);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
-      const tx02 = vrfInstance.addConsumer(subscriptionId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const signature = await generateOneToManySignature({
         account: receiver.address,
@@ -339,11 +340,11 @@ describe("Diamond Exchange Purchase", function () {
       expect(erc20Allowance).to.equal(amount);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
-      const tx02 = vrfInstance.addConsumer(subscriptionId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const signature = await generateOneToManySignature({
         account: receiver.address,
@@ -436,12 +437,12 @@ describe("Diamond Exchange Purchase", function () {
       expect(usdtAllowance).to.equal(amount);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // ADD CONSUMER TO VRFV2
-      const tx02 = vrfInstance.addConsumer(subscriptionId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const signature = await generateOneToManySignature({
         account: receiver.address,
@@ -530,12 +531,12 @@ describe("Diamond Exchange Purchase", function () {
       expect(wethAllowance).to.equal(amount);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // ADD CONSUMER TO VRFV2
-      const tx02 = vrfInstance.addConsumer(subscriptionId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const signature = await generateOneToManySignature({
         account: receiver.address,
@@ -805,11 +806,11 @@ describe("Diamond Exchange Purchase", function () {
       });
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const tx1 = exchangeInstance.connect(receiver).purchase(
         {

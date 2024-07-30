@@ -8,7 +8,7 @@ pragma solidity ^0.8.20;
 
 import { AllTypesHolder, NftHolder, CoinHolder, NativeRejector, NativeReceiver } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-import { VRFCoordinatorV2Mock } from "@gemunion/contracts-chain-link-v2/contracts/mocks/VRFCoordinatorV2.sol";
+import { VRFCoordinatorV2PlusMock } from "@gemunion/contracts-chain-link-v2-plus/contracts/mocks/VRFCoordinatorV2Plus.sol";
 
 import { ERC998ERC721ABERS } from "@gemunion/contracts-erc998td/contracts/preset/ERC998ERC721ABERS.sol";
 import { ERC721ABEC } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABEC.sol";

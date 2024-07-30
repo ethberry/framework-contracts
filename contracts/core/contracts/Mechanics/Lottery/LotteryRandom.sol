@@ -169,15 +169,16 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   }
 
   // RANDOM
-  function fulfillRandomWords(uint256, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256, uint256[] calldata randomWords) internal virtual {
     Round storage currentRound = _rounds[_rounds.length - 1];
 
     // calculate wining numbers
     bool[36] memory tmp1;
+    uint256 tmp2 = randomWords[0];
     uint8 i = 0;
     while (i < 6) {
-      uint256 number = randomWords[0] % 36;
-      randomWords[0] = randomWords[0] / 37;
+      uint256 number = tmp2 % 36;
+      tmp2 = tmp2 / 37;
       if (!tmp1[number]) {
         currentRound.values[i] = uint8(number);
         tmp1[number] = true;

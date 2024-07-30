@@ -46,7 +46,7 @@ abstract contract ERC998Random is IERC721Random, ERC998Simple, Rarity {
     _queue[getRandomNumber()] = Request(account, templateId);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

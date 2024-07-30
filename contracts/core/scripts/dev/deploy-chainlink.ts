@@ -73,7 +73,7 @@ async function main() {
   const linkAddress = await contracts.link.getAddress();
   await debug(contracts);
   console.info(`LINK_ADDR=${linkAddress}`);
-  const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2Mock");
+  const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2PlusMock");
   const vrfInstance = await vrfFactory.deploy(linkAddress);
 
   // const vrfInstance = vrfFactory.attach(vrfAddr);

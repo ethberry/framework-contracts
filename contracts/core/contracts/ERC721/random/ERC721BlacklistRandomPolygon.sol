@@ -8,14 +8,14 @@ pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkPolygonV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonV2.sol";
-import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkPolygonV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkPolygonV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC721BlacklistRandom } from "../ERC721BlacklistRandom.sol";
 
-contract ERC721BlacklistRandomPolygon is ERC721BlacklistRandom, ChainLinkPolygonV2 {
+contract ERC721BlacklistRandomPolygon is ERC721BlacklistRandom, ChainLinkPolygonV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,16 +23,16 @@ contract ERC721BlacklistRandomPolygon is ERC721BlacklistRandom, ChainLinkPolygon
     string memory baseTokenURI
   )
     ERC721BlacklistRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkPolygonV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkPolygonV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
-  function getRandomNumber() internal override(ChainLinkBaseV2, ERC721BlacklistRandom) returns (uint256 requestId) {
+  function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC721BlacklistRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override(ERC721BlacklistRandom, VRFConsumerBaseV2) {
+    uint256[] calldata randomWords
+  ) internal override(ERC721BlacklistRandom, VRFConsumerBaseV2Plus) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 

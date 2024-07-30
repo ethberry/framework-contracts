@@ -50,7 +50,7 @@ async function main() {
   // contracts.link = linkInstance;
   // await debug(contracts);
   // console.info(`LINK_ADDR=${contracts.link.address}`);
-  // const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2Mock");
+  // const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2PlusMock");
   // contracts.vrf = await vrfFactory.deploy(contracts.link.address);
   // await debug(contracts);
   // console.info(`VRF_ADDR=${contracts.vrf.address}`);
@@ -66,7 +66,7 @@ async function main() {
         : network.name === "telos_test"
           ? "0x33040c29f57F126B90d9528A5Ee659D7a604B835" // telostest (our own contract deployed from p.key staging)
           : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
-  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfAddr);
+  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2PlusMock", vrfAddr);
 
   // DIAMOND CM
   const cmInstance = await deployDiamond(

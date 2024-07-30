@@ -69,7 +69,7 @@ async function main() {
         : "0xa50a51c09a5c451C52BB714527E1974b686D8e77";
 
   const linkInstance = await ethers.getContractAt("LinkToken", linkAddr);
-  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfAddr);
+  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2PlusMock", vrfAddr);
 
   const linkAmount = WeiPerEther * 100n;
 

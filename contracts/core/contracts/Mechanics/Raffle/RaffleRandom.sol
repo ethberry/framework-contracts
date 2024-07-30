@@ -194,7 +194,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
   }
 
   // ROUND
-  function fulfillRandomWords(uint256 requiestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requiestId, uint256[] calldata randomWords) internal virtual {
     uint256 roundNumber = requestToRoundNumber[requiestId];
     Round storage currentRound = _rounds[roundNumber];
     // calculate wining numbers - uint256(uint8(randomWords[0] % tickets.length))

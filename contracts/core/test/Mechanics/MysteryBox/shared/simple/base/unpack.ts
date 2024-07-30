@@ -5,8 +5,8 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import { VRFCoordinatorV2Mock } from "../../../../../../typechain-types";
-import { subscriptionId, templateId, tokenId } from "../../../../../constants";
+import { VRFCoordinatorV2PlusMock } from "../../../../../../typechain-types";
+import { templateId, tokenId } from "../../../../../constants";
 import { randomRequest } from "../../../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../../../shared/link";
 import { deployERC1155 } from "../../../../../ERC1155/shared/fixtures";
@@ -14,7 +14,8 @@ import { deployERC721 } from "../../../../../ERC721/shared/fixtures";
 import { deployERC1363 } from "../../../../../ERC20/shared/fixtures";
 
 export function shouldUnpackBox(factory: () => Promise<any>) {
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   const erc20Factory = (name: string) => deployERC1363(name);
   const erc721Factory = (name: string) => deployERC721(name);
@@ -27,7 +28,7 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await network.provider.send("hardhat_reset");
 
         // https://github.com/NomicFoundation/hardhat/issues/2980
-        ({ vrfInstance } = await loadFixture(function mysterybox() {
+        ({ vrfInstance, subId } = await loadFixture(function mysterybox() {
           return deployLinkVrfFixture();
         }));
       }
@@ -132,11 +133,11 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await erc721RandomInstance.grantRole(MINTER_ROLE, mysteryBoxInstance);
 
         // Set VRFV2 Subscription
-        const tx01 = erc721RandomInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = erc721RandomInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
-        const tx02 = vrfInstance.addConsumer(1, erc721RandomInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721RandomInstance);
+        const tx02 = vrfInstance.addConsumer(subId, erc721RandomInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721RandomInstance);
 
         const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {
@@ -203,11 +204,11 @@ export function shouldUnpackBox(factory: () => Promise<any>) {
         await erc998RandomInstance.grantRole(MINTER_ROLE, mysteryBoxInstance);
 
         // Set VRFV2 Subscription
-        const tx01 = erc998RandomInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = erc998RandomInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
-        const tx02 = vrfInstance.addConsumer(1, erc998RandomInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc998RandomInstance);
+        const tx02 = vrfInstance.addConsumer(subId, erc998RandomInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc998RandomInstance);
 
         const tx1 = mysteryBoxInstance.mintBox(receiver.address, templateId, [
           {

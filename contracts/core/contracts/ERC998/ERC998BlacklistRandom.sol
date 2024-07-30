@@ -51,7 +51,7 @@ abstract contract ERC998BlacklistRandom is IERC721Random, ERC998Blacklist, Rarit
     _queue[getRandomNumber()] = Request(account, templateId);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);
