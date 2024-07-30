@@ -16,7 +16,7 @@ export async function randomRequest(_rndInstance: any, vrfInstance: VRFCoordinat
         // minimumRequestConfirmations,
         callbackGasLimit,
         numWords,
-        // extraArgs,
+        extraArgs,
         sender,
       },
     } = e;
@@ -43,7 +43,7 @@ export async function randomRequest(_rndInstance: any, vrfInstance: VRFCoordinat
         callbackGasLimit,
         numWords,
         sender,
-        extraArgs: "0x",
+        extraArgs,
       },
       // onlyPremium
       false,
