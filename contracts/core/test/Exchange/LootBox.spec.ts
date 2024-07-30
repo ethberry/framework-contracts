@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { Contract, encodeBytes32String, ZeroAddress } from "ethers";
+import { AbiCoder, Contract, encodeBytes32String, keccak256, ZeroAddress } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
@@ -55,6 +55,11 @@ describe("Diamond Exchange LootBox", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
 
+        const boxConfig = {
+          max: 1,
+          min: 1,
+        };
+
         const signature = await generateOneToManyToManySignature({
           account: receiver.address,
           params: {
@@ -87,12 +92,8 @@ describe("Diamond Exchange LootBox", function () {
               amount: 1,
             },
           ],
+          config: keccak256(AbiCoder.defaultAbiCoder().encode(["uint128", "uint128"], [boxConfig.min, boxConfig.max])),
         });
-
-        const boxConfig = {
-          max: 1,
-          min: 1,
-        };
 
         const tx1 = exchangeInstance.connect(receiver).purchaseLoot(
           {
@@ -172,6 +173,11 @@ describe("Diamond Exchange LootBox", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
 
+        const boxConfig = {
+          min: 1,
+          max: 5,
+        };
+
         const signature = await generateOneToManyToManySignature({
           account: receiver.address,
           params: {
@@ -204,15 +210,11 @@ describe("Diamond Exchange LootBox", function () {
               amount: 1,
             },
           ],
+          config: keccak256(AbiCoder.defaultAbiCoder().encode(["uint128", "uint128"], [boxConfig.min, boxConfig.max])),
         });
 
         const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
         await accessInstance.renounceRole(MINTER_ROLE, owner.address);
-
-        const boxConfig = {
-          min: 1,
-          max: 5,
-        };
 
         const tx1 = exchangeInstance.connect(receiver).purchaseLoot(
           {
@@ -267,6 +269,11 @@ describe("Diamond Exchange LootBox", function () {
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
 
+        const boxConfig = {
+          min: 1,
+          max: 5,
+        };
+
         const signature = await generateOneToManyToManySignature({
           account: receiver.address,
           params,
@@ -292,12 +299,8 @@ describe("Diamond Exchange LootBox", function () {
               amount: 1,
             },
           ],
+          config: keccak256(AbiCoder.defaultAbiCoder().encode(["uint128", "uint128"], [boxConfig.min, boxConfig.max])),
         });
-
-        const boxConfig = {
-          min: 1,
-          max: 5,
-        };
 
         const tx1 = exchangeInstance.connect(receiver).purchaseLoot(
           params,

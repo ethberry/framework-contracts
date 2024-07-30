@@ -29,10 +29,9 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
     LootBoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
+    bytes32 config = keccak256(abi.encode(boxConfig.min, boxConfig.max));
 
-    // TODO need to validate LootBoxConfig
-
-    if (!_hasRole(MINTER_ROLE, _recoverOneToManyToManySignature(params, item, price, content, signature))) {
+    if (!_hasRole(MINTER_ROLE, _recoverOneToManyToManySignature(params, item, price, content, config, signature))) {
       revert SignerMissingRole();
     }
 

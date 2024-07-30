@@ -161,6 +161,7 @@ export const wrapOneToManyToManySignature = (
           { name: "item", type: "Asset" },
           { name: "price", type: "Asset[]" },
           { name: "content", type: "Asset[]" },
+          { name: "config", type: "bytes32" },
         ],
         Params: [
           { name: "externalId", type: "uint256" },

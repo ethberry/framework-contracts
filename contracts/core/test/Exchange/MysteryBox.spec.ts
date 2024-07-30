@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { Contract, encodeBytes32String, ZeroAddress } from "ethers";
+import { AbiCoder, Contract, encodeBytes32String, keccak256, ZeroAddress } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
@@ -16,7 +16,7 @@ import {
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 
-describe.only("Diamond Exchange MysteryBox", function () {
+describe("Diamond Exchange MysteryBox", function () {
   const factory = async (facetName = "ExchangeMysteryBoxFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
@@ -88,6 +88,7 @@ describe.only("Diamond Exchange MysteryBox", function () {
               amount: 1,
             },
           ],
+          config: keccak256(AbiCoder.defaultAbiCoder().encode([], [])),
         });
 
         const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
@@ -128,7 +129,6 @@ describe.only("Diamond Exchange MysteryBox", function () {
         );
 
         await expect(tx1)
-          // .to.changeEtherBalance(receiver, -amount)
           .to.emit(exchangeInstance, "PurchaseMysteryBox")
           .withArgs(
             receiver.address,
@@ -218,6 +218,7 @@ describe.only("Diamond Exchange MysteryBox", function () {
               amount: 1,
             },
           ],
+          config: keccak256(AbiCoder.defaultAbiCoder().encode([], [])),
         });
 
         const tx1 = exchangeInstance.connect(receiver).purchaseMystery(
@@ -360,6 +361,7 @@ describe.only("Diamond Exchange MysteryBox", function () {
             amount: 1,
           },
         ],
+        config: keccak256(AbiCoder.defaultAbiCoder().encode([], [])),
       });
 
       const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
@@ -442,6 +444,7 @@ describe.only("Diamond Exchange MysteryBox", function () {
             amount: 1,
           },
         ],
+        config: keccak256(AbiCoder.defaultAbiCoder().encode([], [])),
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseMystery(

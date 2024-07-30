@@ -45,7 +45,7 @@ contract SignatureValidator is EIP712, Context {
   bytes32 private immutable ONE_TO_MANY_TO_MANY_TYPEHASH =
     keccak256(
       bytes.concat(
-        "EIP712(address account,Params params,Asset item,Asset[] price,Asset[] content)",
+        "EIP712(address account,Params params,Asset item,Asset[] price,Asset[] content,bytes32 config)",
         ASSET_SIGNATURE,
         PARAMS_SIGNATURE
       )
@@ -118,6 +118,7 @@ contract SignatureValidator is EIP712, Context {
     Asset memory item,
     Asset[] memory price,
     Asset[] memory content,
+    bytes32 config,
     bytes calldata signature
   ) internal returns (address) {
     if (SigValStorage.layout()._expired[params.nonce]) {
@@ -131,7 +132,7 @@ contract SignatureValidator is EIP712, Context {
       }
     }
 
-    return _recoverSigner(_hashOneToManyToMany(_msgSender(), params, item, price, content), signature);
+    return _recoverSigner(_hashOneToManyToMany(_msgSender(), params, item, price, content, config), signature);
   }
 
   function _recoverSigner(bytes32 digest, bytes memory signature) private pure returns (address) {
@@ -203,21 +204,23 @@ contract SignatureValidator is EIP712, Context {
     Params memory params,
     Asset memory item,
     Asset[] memory price,
-    Asset[] memory content
+    Asset[] memory content,
+    bytes32 config
   ) private view returns (bytes32) {
     return
       _hashTypedDataV4(
-      keccak256(
-        abi.encode(
-          ONE_TO_MANY_TO_MANY_TYPEHASH,
-          account,
-          _hashParamsStruct(params),
-          _hashAssetStruct(item),
-          _hashAssetStructArray(price),
-          _hashAssetStructArray(content)
+        keccak256(
+          abi.encode(
+            ONE_TO_MANY_TO_MANY_TYPEHASH,
+            account,
+            _hashParamsStruct(params),
+            _hashAssetStruct(item),
+            _hashAssetStructArray(price),
+            _hashAssetStructArray(content),
+            config
+          )
         )
-      )
-    );
+      );
   }
 
   function _hashParamsStruct(Params memory params) private pure returns (bytes32) {
