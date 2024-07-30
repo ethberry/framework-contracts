@@ -3,7 +3,6 @@ import { toUtf8Bytes, WeiPerEther, ZeroAddress, ZeroHash, zeroPadValue } from "e
 import { nonce } from "@gemunion/contracts-constants";
 
 import { TokenMetadata } from "./types";
-import { getNumbers } from "./utils";
 
 export const tokenId = 1n;
 export const tokenIds = [1];
@@ -18,7 +17,6 @@ export const amountWei = 10000000000000000n;
 export const tokenZero = "0x0000000000000000000000000000000000000000";
 export const period = 60 * 60 * 24 * 365; // a year in seconds
 
-export const defaultNumbers = getNumbers();
 export const span = 300;
 export const maxStake = 5;
 
@@ -49,8 +47,6 @@ export const tokenAttributes = {
   TRAITS: zeroPadValue(toUtf8Bytes(TokenMetadata.TRAITS), 32),
   TEMPLATE_ID: zeroPadValue(toUtf8Bytes(TokenMetadata.TEMPLATE_ID), 32),
 };
-
-export const subscriptionId = 1;
 
 export enum FrameworkInterfaceId {
   ERC721Simple = "0xbf290e49",

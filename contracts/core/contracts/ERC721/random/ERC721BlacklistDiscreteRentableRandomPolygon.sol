@@ -8,17 +8,17 @@ pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkPolygonV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonV2.sol";
-import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkPolygonV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkPolygonV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC721BlacklistDiscreteRentableRandom } from "../ERC721BlacklistDiscreteRentableRandom.sol";
 
 /**
  * @dev An implementation of ERC721BlacklistDiscreteRentableRandom for Polygon mainnet
  */
-contract ERC721BlacklistDiscreteRentableRandomPolygon is ERC721BlacklistDiscreteRentableRandom, ChainLinkPolygonV2 {
+contract ERC721BlacklistDiscreteRentableRandomPolygon is ERC721BlacklistDiscreteRentableRandom, ChainLinkPolygonV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -26,14 +26,14 @@ contract ERC721BlacklistDiscreteRentableRandomPolygon is ERC721BlacklistDiscrete
     string memory baseTokenURI
   )
     ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkPolygonV2(uint64(0), uint16(3), uint32(700000), uint32(1))
+    ChainLinkPolygonV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
   /**
    * @dev See {ERC721Random-getRandomNumber}.
    */
   function getRandomNumber()
     internal
-    override(ChainLinkBaseV2, ERC721BlacklistDiscreteRentableRandom)
+    override(ChainLinkBaseV2Plus, ERC721BlacklistDiscreteRentableRandom)
     returns (uint256 requestId)
   {
     return super.getRandomNumber();
@@ -44,8 +44,8 @@ contract ERC721BlacklistDiscreteRentableRandomPolygon is ERC721BlacklistDiscrete
    */
   function fulfillRandomWords(
     uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override(ERC721BlacklistDiscreteRentableRandom, VRFConsumerBaseV2) {
+    uint256[] calldata randomWords
+  ) internal override(ERC721BlacklistDiscreteRentableRandom, VRFConsumerBaseV2Plus) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 

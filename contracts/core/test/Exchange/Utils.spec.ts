@@ -7,8 +7,8 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { deployRejector, deployHolder } from "@gemunion/contracts-finance";
 import { deployContract } from "@gemunion/contracts-utils";
 
-import { VRFCoordinatorV2Mock } from "../../typechain-types";
-import { subscriptionId, templateId, tokenId } from "../constants";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
+import { templateId, tokenId } from "../constants";
 import { deployERC1363, deployERC20 } from "../ERC20/shared/fixtures";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
@@ -2173,13 +2173,14 @@ describe("Diamond Exchange Utils", function () {
       });
 
       describe("ERC721", function () {
-        let vrfInstance: VRFCoordinatorV2Mock;
+        let vrfInstance: VRFCoordinatorV2PlusMock;
+        let subId: bigint;
 
         before(async function () {
           await network.provider.send("hardhat_reset");
 
           // https://github.com/NomicFoundation/hardhat/issues/2980
-          ({ vrfInstance } = await loadFixture(function staking() {
+          ({ vrfInstance, subId } = await loadFixture(function staking() {
             return deployLinkVrfFixture();
           }));
         });
@@ -2220,8 +2221,8 @@ describe("Diamond Exchange Utils", function () {
           await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
-          await erc721Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, erc721Instance);
+          await erc721Instance.setSubscriptionId(subId);
+          await vrfInstance.addConsumer(subId, erc721Instance);
 
           await exchangeInstance.testAcquire(
             [
@@ -2279,13 +2280,14 @@ describe("Diamond Exchange Utils", function () {
       });
 
       describe("ERC998", function () {
-        let vrfInstance: VRFCoordinatorV2Mock;
+        let vrfInstance: VRFCoordinatorV2PlusMock;
+        let subId: bigint;
 
         before(async function () {
           await network.provider.send("hardhat_reset");
 
           // https://github.com/NomicFoundation/hardhat/issues/2980
-          ({ vrfInstance } = await loadFixture(function staking() {
+          ({ vrfInstance, subId } = await loadFixture(function staking() {
             return deployLinkVrfFixture();
           }));
         });
@@ -2327,8 +2329,8 @@ describe("Diamond Exchange Utils", function () {
 
           // Set VRFV2 Subscription
           await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
-          await erc998Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, erc998Instance);
+          await erc998Instance.setSubscriptionId(subId);
+          await vrfInstance.addConsumer(subId, erc998Instance);
 
           await exchangeInstance.testAcquire(
             [
@@ -2617,13 +2619,14 @@ describe("Diamond Exchange Utils", function () {
       });
 
       describe("ERC721", function () {
-        let vrfInstance: VRFCoordinatorV2Mock;
+        let vrfInstance: VRFCoordinatorV2PlusMock;
+        let subId: bigint;
 
         before(async function () {
           await network.provider.send("hardhat_reset");
 
           // https://github.com/NomicFoundation/hardhat/issues/2980
-          ({ vrfInstance } = await loadFixture(function staking() {
+          ({ vrfInstance, subId } = await loadFixture(function staking() {
             return deployLinkVrfFixture();
           }));
         });
@@ -2664,8 +2667,8 @@ describe("Diamond Exchange Utils", function () {
           await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
 
           await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
-          await erc721Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, erc721Instance);
+          await erc721Instance.setSubscriptionId(subId);
+          await vrfInstance.addConsumer(subId, erc721Instance);
 
           await exchangeInstance.testAcquireFrom(
             [
@@ -2723,13 +2726,14 @@ describe("Diamond Exchange Utils", function () {
       });
 
       describe("ERC998", function () {
-        let vrfInstance: VRFCoordinatorV2Mock;
+        let vrfInstance: VRFCoordinatorV2PlusMock;
+        let subId: bigint;
 
         before(async function () {
           await network.provider.send("hardhat_reset");
 
           // https://github.com/NomicFoundation/hardhat/issues/2980
-          ({ vrfInstance } = await loadFixture(function staking() {
+          ({ vrfInstance, subId } = await loadFixture(function staking() {
             return deployLinkVrfFixture();
           }));
         });
@@ -2771,8 +2775,8 @@ describe("Diamond Exchange Utils", function () {
 
           // Set VRFV2 Subscription
           await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
-          await erc998Instance.setSubscriptionId(subscriptionId);
-          await vrfInstance.addConsumer(subscriptionId, erc998Instance);
+          await erc998Instance.setSubscriptionId(subId);
+          await vrfInstance.addConsumer(subId, erc998Instance);
 
           await exchangeInstance.testAcquireFrom(
             [

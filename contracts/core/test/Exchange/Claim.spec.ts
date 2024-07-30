@@ -5,8 +5,8 @@ import { Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, zeroPadV
 
 import { amount, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { VRFCoordinatorV2Mock } from "../../typechain-types";
-import { expiresAt, externalId, extra, params, subscriptionId, templateId, tokenId } from "../constants";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
+import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import {
   deployDiamond,
   deployErc1155Base,
@@ -50,13 +50,14 @@ describe("Diamond Exchange Claim", function () {
     };
   };
 
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   before(async function () {
     await network.provider.send("hardhat_reset");
 
     // https://github.com/NomicFoundation/hardhat/issues/2980
-    ({ vrfInstance } = await loadFixture(function exchange() {
+    ({ vrfInstance, subId } = await loadFixture(function exchange() {
       return deployLinkVrfFixture();
     }));
   });
@@ -126,12 +127,12 @@ describe("Diamond Exchange Claim", function () {
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
-        const tx02 = await vrfInstance.addConsumer(subscriptionId, erc721Instance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc721Instance);
+        const tx02 = await vrfInstance.addConsumer(subId, erc721Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
         // Set VRFV2 Subscription
-        const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = erc721Instance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,
@@ -241,12 +242,12 @@ describe("Diamond Exchange Claim", function () {
         const { generateManyToManySignature } = await getSignatures(exchangeInstance);
         const erc998Instance = await deployErc998Base("ERC998RandomHardhat", exchangeInstance);
 
-        const tx02 = await vrfInstance.addConsumer(subscriptionId, erc998Instance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, erc998Instance);
+        const tx02 = await vrfInstance.addConsumer(subId, erc998Instance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc998Instance);
 
         // Set VRFV2 Subscription
-        const tx01 = erc998Instance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(erc998Instance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = erc998Instance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(erc998Instance, "VrfSubscriptionSet").withArgs(subId);
 
         const signature = await generateManyToManySignature({
           account: receiver.address,

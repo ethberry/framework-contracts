@@ -8,22 +8,23 @@ import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
 
-import { expiresAt, extra, subscriptionId, tokenId } from "../../constants";
+import { expiresAt, extra, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
-import { IERC721Random, VRFCoordinatorV2Mock } from "../../../typechain-types";
-import { randomFixRequest, randomRequest } from "../../shared/randomRequest";
+import { IERC721Random, VRFCoordinatorV2PlusMock } from "../../../typechain-types";
+import { randomRequest } from "../../shared/randomRequest";
 import { deployRaffle } from "./fixture";
-import { wrapOneToOneSignature } from "../../Exchange/shared/utils";
+import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
 import { isEqualEventArgObj, recursivelyDecodeResult } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
-import { deployDiamond } from "../../Exchange/shared";
 
 const delay = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 describe("Raffle", function () {
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
+
   const dbRoundId = 101;
   const winnerTokenId = 3;
 
@@ -50,7 +51,7 @@ describe("Raffle", function () {
       await network.provider.send("hardhat_reset");
 
       // https://github.com/NomicFoundation/hardhat/issues/2980
-      ({ vrfInstance } = await loadFixture(function chainlink() {
+      ({ vrfInstance, subId } = await loadFixture(function chainlink() {
         return deployLinkVrfFixture();
       }));
     }
@@ -170,12 +171,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       const tx = await raffleInstance.endRound();
@@ -237,12 +238,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance.getAddress());
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       const tx = await raffleInstance.endRound();
@@ -417,12 +418,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance.getAddress());
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       const tx = await raffleInstance.endRound();
@@ -674,12 +675,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance.getAddress());
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       const tx = await raffleInstance.endRound();
@@ -748,12 +749,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance.getAddress());
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {
@@ -869,12 +870,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {
@@ -1014,12 +1015,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {
@@ -1228,12 +1229,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       // ROUND 1
@@ -1471,7 +1472,7 @@ describe("Raffle", function () {
       }
       if (network.name === "hardhat") {
         // RANDOM
-        await randomFixRequest(raffleInstance as IERC721Random, vrfInstance);
+        await randomRequest(raffleInstance as IERC721Random, vrfInstance);
       } else {
         const eventFilter = raffleInstance.filters.RoundFinalized();
         const events = await raffleInstance.queryFilter(eventFilter);
@@ -1528,12 +1529,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {
@@ -1758,12 +1759,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {
@@ -1896,12 +1897,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
 
       // ROUND 1
@@ -2061,12 +2062,12 @@ describe("Raffle", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = raffleInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = raffleInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(raffleInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, raffleInstance.getAddress());
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, raffleInstance);
+        const tx02 = vrfInstance.addConsumer(subId, raffleInstance.getAddress());
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, raffleInstance);
       }
       await raffleInstance.startRound(
         {

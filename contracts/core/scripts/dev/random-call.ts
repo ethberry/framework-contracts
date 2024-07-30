@@ -1,7 +1,7 @@
 import { ethers, network } from "hardhat";
 import { hexlify, randomBytes, Result, toBeHex, WeiPerEther, zeroPadValue } from "ethers";
 import { blockAwait } from "@gemunion/contracts-helpers";
-import { ERC721RandomBesu, VRFCoordinatorV2Mock } from "../../typechain-types";
+import { ERC721RandomBesu, VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { baseTokenURI, royalty } from "@gemunion/contracts-constants";
 import { recursivelyDecodeResult } from "../../test/utils";
 
@@ -15,8 +15,8 @@ async function main() {
   const [_owner, _receiver, _stranger1, stranger2] = await ethers.getSigners();
   const linkOwner = network.name === "besu" ? _owner : stranger2;
 
-  const vrfInstance: VRFCoordinatorV2Mock = await ethers.getContractAt(
-    "VRFCoordinatorV2Mock",
+  const vrfInstance: VRFCoordinatorV2PlusMock = await ethers.getContractAt(
+    "VRFCoordinatorV2PlusMock",
     "0xa50a51c09a5c451c52bb714527e1974b686d8e77",
   );
   const subs = await vrfInstance.getSubscription(SUB_ID);

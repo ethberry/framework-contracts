@@ -124,89 +124,113 @@ export const fwEventNames = Object.keys(ContractEventSignatures).map(key => key.
 
 // LIST OF FUNCTIONS WE NEED TO INCLUDE TO @FW/PACKAGES
 export const fwFunctionNames = [
-  "addConsumer",
-  "allowance",
-  "approve",
-  "balanceOf",
-  "blacklist",
-  "breed",
-  "claim",
-  "craft",
-  "createSubscription",
-  "deployCollection",
-  "deployERC1155Token",
-  "deployERC20Token",
-  "deployERC721Token",
-  "deployERC998Token",
-  "deployLootBox",
-  "deployLottery",
-  "deployMysteryBox",
-  "deployLootBox",
-  "deployPaymentSplitter",
-  "deployPrediction",
-  "deployPonzi",
-  "deployRaffle",
-  "deployStaking",
-  "deployVesting",
-  "deployWaitList",
-  "deposit",
-  "dismantle",
-  "disperse",
-  "endRound",
-  "getERC20",
-  "getBalance",
-  "getPenalty",
-  "getPrize",
-  "getSubscription",
-  "grantRole",
-  "isApprovedForAll",
-  "lend",
-  "merge",
-  "mint",
-  "mintBox",
-  "mintCommon",
-  "pause",
-  "purchase",
-  "purchaseLoot",
-  "purchaseLottery",
-  "purchaseMystery",
-  "purchaseRaffle",
-  "receiveReward",
-  "releasable",
-  "release",
-  "releaseFunds",
-  "renounceRole",
-  "revokeRole",
-  "safeTransferChild",
-  "safeTransferFrom",
-  "safeTransferFromERC1155",
-  "setApprovalForAll",
-  "setBaseURI",
-  "setDefaultRoyalty",
-  "setPregnancyLimits",
-  "setReward",
-  "setRules",
-  "setSubscriptionId",
-  "spend",
-  "startRound",
-  "topUp",
-  "transfer",
-  "transferAndCall",
-  "transferERC20",
-  "transferOwnership",
-  "unBlacklist",
-  "unWhitelist",
-  "unWhitelistChild",
-  "unpack",
-  "unpause",
-  "updateRule",
-  "upgrade",
-  "userOf",
-  "whiteListChild",
-  "whitelist",
-  "withdrawBalance",
-  "withdrawReward",
-  "withdrawToken",
+  "ERC20Simple:transfer",
+  "ERC20Simple:approve",
+  "ERC20Simple:mint",
+  "ERC20Simple:balanceOf",
+  "ERC20Whitelist:unWhitelist",
+  "ERC20Whitelist:whitelist",
+
+  "ERC721Simple:safeTransferFrom",
+  "ERC721Simple:mintCommon",
+  "ERC721Simple:setBaseURI",
+  "ERC721Simple:safeTransferFrom",
+  "ERC721Simple:approve",
+  "ERC721RandomGemunion:setSubscriptionId",
+  "ERC721LootBoxSimple:mintBox",
+  "ERC721LootBoxSimple:unpack",
+  "ERC721MysteryBoxSimple:mintBox",
+  "ERC721MysteryBoxSimple:unpack",
+  "ERC721Wrapper:mintBox",
+  "ERC721Wrapper:unpack",
+
+  "ERC998Simple:unWhitelistChild",
+  "ERC998Simple:whiteListChild",
+  "ERC998Simple:safeTransferChild",
+  "ERC998Simple:whitelist",
+  "ERC998ERC1155ERC20Enum:getERC20",
+  "ERC998ERC1155ERC20Enum:safeTransferFromERC1155",
+  "ERC998ERC1155ERC20Enum:transferERC20",
+
+  "ERC1155Simple:setDefaultRoyalty",
+  "ERC1155Simple:safeTransferFrom",
+  "ERC1155Simple:setApprovalForAll",
+  "ERC1155Simple:mint",
+  "ERC1155Blacklist:blacklist",
+  "ERC1155Blacklist:unBlacklist",
+
+  "AccessControlFacet:grantRole",
+  "AccessControlFacet:renounceRole",
+  "AccessControlFacet:revokeRole",
+  "Ownable:transferOwnership",
+  "Pausable:pause",
+  "Pausable:unpause",
+
+  "Vesting:releasable",
+  "Vesting:release",
+
+  "VRFCoordinatorV2PlusMock:getSubscription",
+  "VRFCoordinatorV2PlusMock:addConsumer",
+  "VRFCoordinatorV2PlusMock:createSubscription",
+  "ERC677:transferAndCall",
+
+  "Dispenser:disperse",
+
+  "LotteryRandom:releaseFunds",
+  "LotteryRandom:endRound",
+  "LotteryRandom:startRound",
+  "LotteryRandom:getPrize",
+
+  "RaffleRandom:startRound",
+  "RaffleRandom:endRound",
+
+  "Ponzi:updateRule",
+  "Ponzi:setRules",
+  "Ponzi:updateRule",
+  "Ponzi:deposit",
+  "Ponzi:withdrawToken",
+
+  "Staking:getPenalty",
+  "Staking:setRules",
+  "Staking:withdrawBalance",
+  "Staking:receiveReward",
+  "Staking:deposit",
+
+  "WaitList:setReward",
+  "WaitList:claim",
+
+  "ERC20FactoryFacet:deployERC20Token",
+  "ERC721FactoryFacet:deployERC721Token",
+  "ERC998FactoryFacet:deployERC998Token",
+  "ERC1155FactoryFacet:deployERC1155Token",
+  "LootBoxFactoryFacet:deployLootBox",
+  "MysteryBoxFactoryFacet:deployMysteryBox",
+  "PredictionFactoryFacet:deployPrediction",
+  "StakingFactoryFacet:deployStaking",
+  "PonziFactoryFacet:deployPonzi",
+  "PaymentSplitterFactoryFacet:deployPaymentSplitter",
+  "CollectionFactoryFacet:deployCollection",
+  "LotteryFactoryFacet:deployLottery",
+  "VestingFactoryFacet:deployVesting",
+  "WaitListFactoryFacet:deployWaitList",
+  "RaffleFactoryFacet:deployRaffle",
+
+  "TopUp:topUp",
+
+  "ExchangeBreedFacet:setPregnancyLimits",
+  "ExchangeBreedFacet:breed",
+  "ExchangePurchaseFacet:purchase",
+  "ExchangeRentableFacet:lend",
+  "ExchangeClaimFacet:claim",
+  "ExchangeClaimFacet:spend",
+  "ExchangeGradeFacet:upgrade",
+  "ExchangeLootBoxFacet:purchaseLoot",
+  "ExchangeLotteryFacet:purchaseLottery",
+  "ExchangeMysteryBoxFacet:purchaseMystery",
+  "ExchangeRaffleFacet:purchaseRaffle",
+  "ExchangeCraftFacet:craft",
+  "ExchangeMergeFacet:merge",
+  "ExchangeDismantleFacet:dismantle",
 ];
 
 task("abis", "Save all functions abi separately")
@@ -214,7 +238,9 @@ task("abis", "Save all functions abi separately")
   .setAction(async ({ files = "artifacts/contracts/" }, hre) => {
     const artfcts = await hre.artifacts.getArtifactPaths();
     const conart = artfcts
-      .filter(art => art.includes(`${process.cwd()}/${files}`) || art.includes("@gemunion/contracts-chain-link-v2"))
+      .filter(
+        art => art.includes(`${process.cwd()}/${files}`) || art.includes("@gemunion/contracts-chain-link-v2-plus"),
+      )
       .filter(art => !art.includes(`/interfaces`));
 
     const globEventArr: Array<string> = [];
@@ -237,7 +263,7 @@ task("abis", "Save all functions abi separately")
       // functions
       for (const func of abiFunctions) {
         // FRAMEWORK ABIS
-        if (fwFunctionNames.includes(func.name)) {
+        if (fwFunctionNames.includes(`${name}:${func.name}`)) {
           const funcName = func.name;
           // create folder
           const funcFolderPath = path.join(process.cwd(), `../../../packages/abis/json/${name}`);
@@ -286,4 +312,4 @@ task("abis", "Save all functions abi separately")
     }
   });
 
-// hardhat abi artifacts/contracts/ERC20/
+// hardhat abis

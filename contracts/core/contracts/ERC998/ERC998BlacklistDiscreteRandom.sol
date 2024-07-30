@@ -64,7 +64,7 @@ abstract contract ERC998BlacklistDiscreteRandom is IERC721Random, ERC998Blacklis
     return _upgrade(tokenId, attribute);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

@@ -5,7 +5,7 @@ task("calc-error-id", "Prints Errors enum").setAction(async (args, hre) => {
   // const linkInstance = await linkFactory.deploy();
   // const linkAddress = await linkInstance.getAddress();
   //
-  // const errFactory = await hre.ethers.getContractFactory("VRFCoordinatorV2Mock");
+  // const errFactory = await hre.ethers.getContractFactory("VRFCoordinatorV2PlusMock");
   // const errInstance = await errFactory.deploy(linkAddress);
   const errFactory = await hre.ethers.getContractFactory("ErrorsIdCalculator");
   const errInstance = await errFactory.deploy();

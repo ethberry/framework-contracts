@@ -1,15 +1,6 @@
 import { expect } from "chai";
 import { ethers, network, web3 } from "hardhat";
-import {
-  encodeBytes32String,
-  getUint,
-  hexlify,
-  parseEther,
-  toBeHex,
-  toQuantity,
-  WeiPerEther,
-  ZeroAddress,
-} from "ethers";
+import { encodeBytes32String, getUint, parseEther, toBeHex, toQuantity, WeiPerEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
@@ -17,22 +8,22 @@ import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
 
-import { expiresAt, externalId, extra, params, subscriptionId, tokenId } from "../../constants";
+import { expiresAt, externalId, extra, params, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
-import { VRFCoordinatorV2Mock } from "../../../typechain-types";
+import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLottery } from "./fixture";
-import { wrapOneToOneSignature } from "../../Exchange/shared/utils";
+import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj, recursivelyDecodeResult } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
-import { deployDiamond } from "../../Exchange/shared";
 
 const delay = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
 };
 
 describe("Lottery", function () {
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   const lotteryConfig = {
     timeLagBeforeRelease: 100, // production: release after 2592000 seconds = 30 days
@@ -57,7 +48,7 @@ describe("Lottery", function () {
       await network.provider.send("hardhat_reset");
 
       // https://github.com/NomicFoundation/hardhat/issues/2980
-      ({ vrfInstance } = await loadFixture(function chainlink() {
+      ({ vrfInstance, subId } = await loadFixture(function chainlink() {
         return deployLinkVrfFixture();
       }));
     }
@@ -178,12 +169,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       const tx = await lotteryInstance.endRound();
@@ -246,12 +237,12 @@ describe("Lottery", function () {
       }
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       const values = [1, 2, 3, 4, 5, 6];
@@ -322,8 +313,8 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -444,12 +435,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -600,12 +591,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       await lotteryInstance.startRound(
@@ -755,12 +746,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       // ROUND 1
@@ -873,7 +864,7 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // RANDOM
-        await randomRequest(lotteryInstance, vrfInstance, hexlify(nonce));
+        await randomRequest(lotteryInstance, vrfInstance, BigInt(nonce));
       } else {
         const eventFilter = lotteryInstance.filters.RoundFinalized();
         const events = await lotteryInstance.queryFilter(eventFilter);
@@ -947,12 +938,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       // ROUND 1
@@ -1126,12 +1117,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
 
       // ROUND 1
@@ -1309,12 +1300,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -1451,12 +1442,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -1566,7 +1557,7 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // RANDOM
-        await randomRequest(lotteryInstance, vrfInstance, hexlify(nonce));
+        await randomRequest(lotteryInstance, vrfInstance, BigInt(nonce));
       } else {
         const eventFilter = lotteryInstance.filters.RoundFinalized();
         const events = await lotteryInstance.queryFilter(eventFilter);
@@ -1612,8 +1603,8 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -1838,12 +1829,12 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subscriptionId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(1);
+        const tx01 = lotteryInstance.setSubscriptionId(subId);
+        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {
@@ -2029,8 +2020,8 @@ describe("Lottery", function () {
 
       if (network.name === "hardhat") {
         // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(1, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, lotteryInstance);
+        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
       }
       await lotteryInstance.startRound(
         {

@@ -5,21 +5,22 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import { LinkToken, VRFCoordinatorV2Mock } from "../../../../typechain-types";
+import { LinkToken, VRFCoordinatorV2PlusMock } from "../../../../typechain-types";
 import { deployLinkVrfFixture } from "../../../shared/link";
-import { subscriptionId, templateId, tokenAttributes, tokenId } from "../../../constants";
-import { randomFixRequest } from "../../../shared/randomRequest";
+import { templateId, tokenAttributes, tokenId } from "../../../constants";
+import { randomRequest } from "../../../shared/randomRequest";
 
 export function shouldMintRandom(factory: () => Promise<any>) {
   describe("mintRandom", function () {
     let linkInstance: LinkToken;
-    let vrfInstance: VRFCoordinatorV2Mock;
+    let vrfInstance: VRFCoordinatorV2PlusMock;
+    let subId: bigint;
 
     before(async function () {
       await network.provider.send("hardhat_reset");
 
       // https://github.com/NomicFoundation/hardhat/issues/2980
-      ({ linkInstance, vrfInstance } = await loadFixture(function shouldMintRandom() {
+      ({ linkInstance, vrfInstance, subId } = await loadFixture(function shouldMintRandom() {
         return deployLinkVrfFixture();
       }));
     });
@@ -29,16 +30,16 @@ export function shouldMintRandom(factory: () => Promise<any>) {
       const contractInstance = await factory();
 
       // Set VRFV2 Subscription
-      const tx01 = contractInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = contractInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(subscriptionId, contractInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subscriptionId, contractInstance);
+      const tx02 = vrfInstance.addConsumer(subId, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
       await contractInstance.mintRandom(receiver.address, templateId);
 
       if (network.name === "hardhat") {
-        await randomFixRequest(contractInstance, vrfInstance);
+        await randomRequest(contractInstance, vrfInstance);
       }
 
       const balance = await contractInstance.balanceOf(receiver.address);
@@ -60,8 +61,8 @@ export function shouldMintRandom(factory: () => Promise<any>) {
       // await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
 
       // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(1, contractInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, contractInstance);
+      const tx02 = vrfInstance.addConsumer(subId, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
 
       const tx03 = contractInstance.mintRandom(receiver.address, templateId);
       await expect(tx03).to.be.revertedWithCustomError(contractInstance, "InvalidSubscription");
@@ -104,13 +105,14 @@ export function shouldMintRandom(factory: () => Promise<any>) {
 export function shouldMintRandomGenes(factory: () => Promise<any>) {
   describe("mintRandom (genes)", function () {
     let linkInstance: LinkToken;
-    let vrfInstance: VRFCoordinatorV2Mock;
+    let vrfInstance: VRFCoordinatorV2PlusMock;
+    let subId: bigint;
 
     before(async function () {
       await network.provider.send("hardhat_reset");
 
       // https://github.com/NomicFoundation/hardhat/issues/2980
-      ({ linkInstance, vrfInstance } = await loadFixture(function shouldMintRandom() {
+      ({ linkInstance, vrfInstance, subId } = await loadFixture(function shouldMintRandom() {
         return deployLinkVrfFixture();
       }));
     });
@@ -120,16 +122,16 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
       const contractInstance = await factory();
 
       // Set VRFV2 Subscription
-      const tx01 = contractInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = contractInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(1, contractInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, contractInstance);
+      const tx02 = vrfInstance.addConsumer(subId, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
       await contractInstance.mintRandom(receiver.address, templateId);
 
       if (network.name === "hardhat") {
-        await randomFixRequest(contractInstance, vrfInstance);
+        await randomRequest(contractInstance, vrfInstance);
       }
 
       const balance = await contractInstance.balanceOf(receiver.address);

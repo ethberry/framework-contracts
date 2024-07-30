@@ -16,8 +16,8 @@ import {
   TEMPLATE_ID,
 } from "@gemunion/contracts-constants";
 
-import { VRFCoordinatorV2Mock } from "../../../typechain-types";
-import { expiresAt, subscriptionId, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
+import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
+import { expiresAt, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
 import { IStakingRule } from "./interface/staking";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../shared/link";
@@ -92,7 +92,8 @@ describe("Staking", function () {
     extra: encodeBytes32String("0x"),
   };
 
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   const factory = () => deployStaking();
   const erc20Factory = () => deployERC1363("ERC20Simple", { amount: parseEther("200000") });
@@ -117,7 +118,7 @@ describe("Staking", function () {
     await network.provider.send("hardhat_reset");
 
     // https://github.com/NomicFoundation/hardhat/issues/2980
-    ({ vrfInstance } = await loadFixture(function staking() {
+    ({ vrfInstance, subId } = await loadFixture(function staking() {
       return deployLinkVrfFixture();
     }));
   });
@@ -1798,12 +1799,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -2256,12 +2257,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3137,12 +3138,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3851,12 +3852,12 @@ describe("Staking", function () {
       await erc998RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc998RandomInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc998RandomInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc998RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc998RandomInstance);
+      const tx02 = vrfInstance.addConsumer(subId, erc998RandomInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc998RandomInstance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -4238,12 +4239,12 @@ describe("Staking", function () {
       await erc721RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721RandomInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721RandomInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721RandomInstance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721RandomInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721RandomInstance);
 
       const stakeRule: IStakingRule = {
         deposit: [
