@@ -4,10 +4,15 @@ import { Contract, encodeBytes32String, ZeroAddress } from "ethers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import { deployDiamond, deployErc721Base } from "./shared";
+import {
+  deployDiamond,
+  deployErc721Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
 import { isEqualEventArgArrObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
 
 describe("Diamond Exchange LootBox", function () {
   const factory = async (facetName = "ExchangeLootBoxFacet"): Promise<any> => {

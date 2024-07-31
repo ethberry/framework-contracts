@@ -8,8 +8,7 @@ import { expiresAt, externalId, extra } from "../constants";
 import { getContractName, isEqualEventArgObj } from "../utils";
 import { deployERC20 } from "../ERC20/shared/fixtures";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { deployDiamond } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { deployDiamond, wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared";
 
 describe("Diamond Exchange Raffle", function () {
   const factory = async (facetName = "ExchangeRaffleFacet"): Promise<any> => {

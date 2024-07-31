@@ -6,8 +6,15 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import { isEqualArray, isEqualEventArgArrObj } from "../utils";
-import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import {
+  deployDiamond,
+  deployErc1155Base,
+  deployErc20Base,
+  deployErc721Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
 
 describe("Diamond Exchange Craft", function () {
   const factory = async (facetName = "ExchangeCraftFacet"): Promise<any> => {
