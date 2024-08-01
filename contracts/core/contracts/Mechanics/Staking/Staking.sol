@@ -23,7 +23,6 @@ import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ZeroBalance, NotExist, WrongRule, UnsupportedTokenType, NotComplete, Expired, NotAnOwner, WrongStake, WrongToken, LimitExceed, NotActive } from "../../utils/errors.sol";
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
@@ -391,7 +390,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
       }
     } else if (rewardItem.tokenType == TokenType.ERC721 || rewardItem.tokenType == TokenType.ERC998) {
       // If the token is an ERC721 or ERC998 token, mint NFT to the receiver.
-        if (IERC165(rewardItem.token).supportsInterface(IERC721_MYSTERY_ID)) {
+        if (IERC165(rewardItem.token).supportsInterface(type(IERC721MysteryBox).interfaceId)) {
           // If the token supports the Mysterybox interface, call the mintBox function to mint the tokens and transfer them to the receiver.
           for (uint256 k = 0; k < multiplier;) {
             IERC721MysteryBox(rewardItem.token).mintBox(receiver, rewardItem.tokenId, rule.content[itemIndex]);
