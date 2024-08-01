@@ -20,7 +20,7 @@ const delayMs = 600; // block delay ms (low for localhost, high for binance etc.
 // VRF CONFIG
 const vrfSubId =
   network.name === "besu" || network.name === "telos_test"
-    ? 39229727142001994215344989398053840290227679159824318580221890308439324746499n
+    ? 99184370730701146701081864127604158661022970614763057388795483059418674155128n
     : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
 
 // COLLECTION size
