@@ -11,5 +11,13 @@
     "@typescript-eslint/restrict-template-expressions": "off",
     "mocha/no-exports": "off",
     "mocha/no-setup-in-describe": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["deploy-diamond.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }
