@@ -15,6 +15,7 @@ import {
 } from "./shared";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
+import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared";
 
 describe("Diamond Exchange MysteryBox", function () {
   const factory = async (facetName = "ExchangeMysteryBoxFacet"): Promise<any> => {

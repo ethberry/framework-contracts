@@ -6,8 +6,14 @@ import { amount, METADATA_ROLE } from "@gemunion/contracts-constants";
 
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
-import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
+import {
+  deployDiamond,
+  deployErc20Base,
+  deployErc721Base,
+  wrapManyToManySignature,
+  wrapOneToManySignature,
+  wrapOneToOneSignature,
+} from "./shared";
 
 describe("Diamond Exchange Discrete", function () {
   const factory = async (facetName = "ExchangeGradeFacet"): Promise<any> => {

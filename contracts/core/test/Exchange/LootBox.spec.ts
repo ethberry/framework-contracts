@@ -9,10 +9,9 @@ import {
   deployErc721Base,
   wrapManyToManySignature,
   wrapOneToManySignature,
-  wrapOneToManyToManySignature,
   wrapOneToOneSignature,
 } from "./shared";
-import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
+import { isEqualEventArgArrObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 
 describe("Diamond Exchange LootBox", function () {

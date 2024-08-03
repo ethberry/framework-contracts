@@ -7,7 +7,7 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { expiresAt, externalId, params, templateId, tokenId } from "../constants";
 import { isEqualEventArgArrObj } from "../utils";
 import { deployDiamond, deployErc721Base } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared";
 
 describe("Diamond Exchange Merge", function () {
   const factory = async (facetName = "ExchangeMergeFacet"): Promise<any> => {
