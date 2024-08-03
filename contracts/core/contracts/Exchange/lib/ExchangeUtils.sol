@@ -20,7 +20,6 @@ import { IERC20Burnable } from "../../ERC20/interfaces/IERC20Burnable.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
-import { IERC721_RANDOM_ID } from "../../utils/interfaces.sol";
 import { UnsupportedTokenType, ETHInvalidReceiver, ETHInsufficientBalance } from "../../utils/errors.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
@@ -238,7 +237,7 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
         (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
-        bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
+        bool randomInterface = IERC721(item.token).supportsInterface(type(IERC721Random).interfaceId);
         if (randomInterface) {
           for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Random(item.token).mintRandom(receiver, item.tokenId);
@@ -286,7 +285,7 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
         (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
-        bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
+        bool randomInterface = IERC721(item.token).supportsInterface(type(IERC721Random).interfaceId);
         if (randomInterface) {
           for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Random(item.token).mintRandom(receiver, item.tokenId);

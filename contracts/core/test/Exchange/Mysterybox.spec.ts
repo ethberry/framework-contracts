@@ -7,7 +7,7 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { deployDiamond, deployErc20Base, deployErc721Base } from "./shared";
 import { isEqualEventArgArrObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared";
 
 describe("Diamond Exchange MysteryBox", function () {
   const factory = async (facetName = "ExchangeMysteryBoxFacet"): Promise<any> => {
