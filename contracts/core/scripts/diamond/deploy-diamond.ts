@@ -2,12 +2,12 @@ import { ethers } from "hardhat";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with the account:", deployer.address);
+  console.info("Deploying contracts with the account:", deployer.address);
 
   const Deployer = await ethers.getContractFactory("Deployer");
   const deployerContract = await Deployer.deploy();
   await deployerContract.waitForDeployment();
-  console.log("Deployer contract deployed to:", deployerContract.target);
+  console.info("Deployer contract deployed to:", deployerContract.target);
 
   // Define the salt and deployment parameters
   const salt = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"; // Replace with your salt
@@ -16,7 +16,7 @@ async function main() {
 
   // Predict the address
   const predictedAddress = await deployerContract.getAddress(salt, owner, diamondCutFacet);
-  console.log("Predicted DiamondExchange address:", predictedAddress);
+  console.info("Predicted DiamondExchange address:", predictedAddress);
 
   // Deploy the DiamondExchange contract
   const deployTx = await deployerContract.deploy(salt, owner, diamondCutFacet);
