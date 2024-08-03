@@ -14,43 +14,34 @@ import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referral {
-  event PurchaseMysteryBox(address account, uint256 externalId, Asset[] items, Asset[] price);
+  event PurchaseMysteryBox(address account, uint256 externalId, Asset item, Asset[] price, Asset[] content);
 
   constructor() SignatureValidator() {}
 
   function purchaseMystery(
     Params memory params,
-    Asset[] memory items,
+    Asset memory item,
     Asset[] memory price,
+    Asset[] memory content,
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    bytes32 config = keccak256(new bytes(0));
+
+    if (!_hasRole(MINTER_ROLE, _recoverOneToManyToManySignature(params, item, price, content, config, signature))) {
       revert SignerMissingRole();
     }
 
-    if (items.length == 0) {
+    if (content.length == 0) {
       revert WrongAmount();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    Asset memory box = items[items.length - 1];
+    IERC721MysteryBox(item.token).mintBox(_msgSender(), item.tokenId, content);
 
-    // pop from array is not supported
-    Asset[] memory mysteryItems = new Asset[](items.length - 1);
-    uint256 length = items.length;
-    for (uint256 i = 0; i < length - 1; ) {
-      mysteryItems[i] = items[i];
-      unchecked {
-        i++;
-      }
-    }
-
-    IERC721MysteryBox(box.token).mintBox(_msgSender(), box.tokenId, mysteryItems);
-
-    emit PurchaseMysteryBox(_msgSender(), params.externalId, items, price);
+    emit PurchaseMysteryBox(_msgSender(), params.externalId, item, price, content);
   }
 }

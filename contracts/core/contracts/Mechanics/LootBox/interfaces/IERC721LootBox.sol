@@ -14,5 +14,5 @@ struct LootBoxConfig {
 }
 
 interface IERC721LootBox {
-  function mintBox(address to, uint256 templateId, Asset[] memory items, LootBoxConfig calldata boxConfig) external;
+  function mintBox(address to, uint256 templateId, Asset[] memory content, LootBoxConfig calldata boxConfig) external;
 }

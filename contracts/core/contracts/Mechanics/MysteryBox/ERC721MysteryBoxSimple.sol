@@ -34,19 +34,19 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory content) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-    if (items.length == 0) {
+    if (content.length == 0) {
       revert NoContent();
     }
 
     // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
-    // _itemData[tokenId] = items;
+    // _itemData[tokenId] = content;
 
-    uint256 length = items.length;
+    uint256 length = content.length;
     for (uint256 i = 0; i < length; ) {
-      Asset memory item = items[i];
+      Asset memory item = content[i];
       if (item.tokenType == TokenType.ERC721 || item.tokenType == TokenType.ERC998) {
         _itemData[tokenId].push(item);
       } else {
