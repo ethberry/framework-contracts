@@ -136,6 +136,7 @@ export const fwFunctionNames = [
   "ERC721Simple:setBaseURI",
   "ERC721Simple:safeTransferFrom",
   "ERC721Simple:approve",
+  "ERC721Simple:setApprovalForAll",
   "ERC721RandomGemunion:setSubscriptionId",
   "ERC721LootBoxSimple:mintBox",
   "ERC721LootBoxSimple:unpack",

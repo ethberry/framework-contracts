@@ -88,9 +88,7 @@
   },
   "scripts": {
     "build": "hardhat compile",
-    "chainlink": "npm run chainlink:init && npm run chainlink:sub",
-    "chainlink:init": "hardhat run scripts/chainlink/init-chainlink.ts --network besu",
-    "chainlink:sub": "hardhat run scripts/chainlink/sub-chainlink.ts --network besu",
+    "chainlinkV2Plus:init": "hardhat run scripts/chainlinkV2Plus/init-chainlink.ts --network besu",
     "clean": "hardhat clean --global",
     "coverage": "hardhat coverage",
     "deploy:mainnet": "hardhat --network mainnet deploy",
