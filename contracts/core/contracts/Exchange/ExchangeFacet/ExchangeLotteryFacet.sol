@@ -14,7 +14,7 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseLottery(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, bytes32 numbers);

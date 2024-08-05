@@ -14,7 +14,7 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseRaffle(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, uint256 index);

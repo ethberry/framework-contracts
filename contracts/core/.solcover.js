@@ -6,7 +6,7 @@ module.exports = {
     "ERC998/traits",
     "Mechanics/Lottery/random",
     "MOCKS",
-    "ThirdParty",
+    "external",
     "utils/calc",
   ],
 };

@@ -19,8 +19,6 @@ contract SignatureValidator is EIP712, Context {
   using ECDSA for bytes32;
   using Address for address;
 
-  //   mapping(bytes32 => bool) private _expired;
-
   bytes private constant PARAMS_SIGNATURE =
     "Params(uint256 externalId,uint256 expiresAt,bytes32 nonce,bytes32 extra,address receiver,address referrer)";
   bytes32 private constant PARAMS_TYPEHASH = keccak256(abi.encodePacked(PARAMS_SIGNATURE));
@@ -44,8 +42,15 @@ contract SignatureValidator is EIP712, Context {
         PARAMS_SIGNATURE
       )
     );
+  bytes32 private immutable ONE_TO_MANY_TO_MANY_TYPEHASH =
+    keccak256(
+      bytes.concat(
+        "EIP712(address account,Params params,Asset item,Asset[] price,Asset[] content,bytes32 config)",
+        ASSET_SIGNATURE,
+        PARAMS_SIGNATURE
+      )
+    );
 
-  // constructor(string memory name) EIP712(name, "1.0.0") {}
   constructor() EIP712() {}
 
   function _recoverOneToOneSignature(
@@ -108,6 +113,28 @@ contract SignatureValidator is EIP712, Context {
     return _recoverSigner(_hashManyToMany(_msgSender(), params, items, price), signature);
   }
 
+  function _recoverOneToManyToManySignature(
+    Params memory params,
+    Asset memory item,
+    Asset[] memory price,
+    Asset[] memory content,
+    bytes32 config,
+    bytes calldata signature
+  ) internal returns (address) {
+    if (SigValStorage.layout()._expired[params.nonce]) {
+      revert ExpiredSignature();
+    }
+    SigValStorage.layout()._expired[params.nonce] = true;
+
+    if (params.expiresAt != 0) {
+      if (block.timestamp > params.expiresAt) {
+        revert ExpiredSignature();
+      }
+    }
+
+    return _recoverSigner(_hashOneToManyToMany(_msgSender(), params, item, price, content, config), signature);
+  }
+
   function _recoverSigner(bytes32 digest, bytes memory signature) private pure returns (address) {
     return digest.recover(signature);
   }
@@ -167,6 +194,30 @@ contract SignatureValidator is EIP712, Context {
             _hashParamsStruct(params),
             _hashAssetStructArray(items),
             _hashAssetStructArray(price)
+          )
+        )
+      );
+  }
+
+  function _hashOneToManyToMany(
+    address account,
+    Params memory params,
+    Asset memory item,
+    Asset[] memory price,
+    Asset[] memory content,
+    bytes32 config
+  ) private view returns (bytes32) {
+    return
+      _hashTypedDataV4(
+        keccak256(
+          abi.encode(
+            ONE_TO_MANY_TO_MANY_TYPEHASH,
+            account,
+            _hashParamsStruct(params),
+            _hashAssetStruct(item),
+            _hashAssetStructArray(price),
+            _hashAssetStructArray(content),
+            config
           )
         )
       );

@@ -29,25 +29,24 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items) external payable onlyRole(MINTER_ROLE) {
-    if (items.length == 0) {
+  function mintBox(address account, uint256 templateId, Asset[] memory content) external payable onlyRole(MINTER_ROLE) {
+    if (content.length == 0) {
       revert NoContent();
     }
-
     // UnimplementedFeatureError: Copying of type struct Asset memory[] memory to storage not yet supported.
-    // _itemData[tokenId] = items;
+    // _itemData[tokenId] = content;
 
     uint256 tokenId = _mintCommon(account, templateId);
 
-    uint256 length = items.length;
+    uint256 length = content.length;
     for (uint256 i = 0; i < length; ) {
-      _itemData[tokenId].push(items[i]);
+      _itemData[tokenId].push(content[i]);
       unchecked {
         i++;
       }
     }
 
-    ExchangeUtils.spendFrom(items, _msgSender(), address(this), AllowedTokenTypes(true, true, true, true, true));
+    ExchangeUtils.spendFrom(content, _msgSender(), address(this), AllowedTokenTypes(true, true, true, true, true));
   }
 
   function unpack(uint256 tokenId) public {
