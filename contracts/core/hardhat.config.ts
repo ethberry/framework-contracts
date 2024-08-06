@@ -42,7 +42,6 @@ export default {
     binance_test: {
       url: process.env.JSON_RPC_ADDR_BINANCE_TEST,
       chainId: 97,
-      // gasPrice: "auto",
       gas: 2100000,
       gasPrice: 5000000000,
       accounts: [process.env.PRIVATE_KEY],
@@ -57,13 +56,11 @@ export default {
       accounts: [process.env.PRIVATE_KEY],
       timeout: 142000,
     },
-    // sepolia: {
-    //   url: process.env.JSON_RPC_ADDR_ETHEREUM_SEPOLIA,
-    //   chainId: 11155111,
-    //   accounts: [
-    //     process.env.PRIVATE_KEY, //
-    //   ],
-    // },
+    sepolia: {
+      url: process.env.JSON_RPC_ADDR_ETHEREUM_SEPOLIA,
+      chainId: 11155111,
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   solidity: {
     compilers: [
