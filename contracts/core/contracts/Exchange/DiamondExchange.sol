@@ -14,10 +14,8 @@ import {AccessControlInternal} from "../Diamond/override/AccessControlInternal.s
  * todo create contract WalletDiamond. It have to be inherited by this contract.
  */
 contract DiamondExchange is Diamond, AccessControlInternal {
-
-constructor(address _contractOwner, address _diamondCutFacet) payable Diamond(_contractOwner, _diamondCutFacet) {
-    // LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-    // Can initialise some storage values here if needed.
-}
-
+	constructor(address _contractOwner, address _diamondCutFacet) payable Diamond(_contractOwner, _diamondCutFacet) {
+		// LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+		// Can initialise some storage values here if needed.
+	}
 }
