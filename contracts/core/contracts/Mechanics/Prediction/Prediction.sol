@@ -11,8 +11,9 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
+import { NativeReceiver, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
+import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 
   enum PredictionOutcome {
     YES,
@@ -21,7 +22,7 @@ import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contract
     TECH
   }
 
-contract Prediction is AccessControl, Pausable, NativeRejector, CoinHolder {
+contract Prediction is AccessControl, Pausable, NativeReceiver, CoinHolder {
   struct Round {
     uint256 roundId;
     uint256 startTimestamp;
