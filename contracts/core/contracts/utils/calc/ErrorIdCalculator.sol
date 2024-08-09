@@ -18,13 +18,13 @@ contract ErrorsIdCalculator {
     error SignerMissingRole();
     error ExpiredSignature();
     error NotExist();
-    error AlreadyExist();
+    error RootAlreadySet();
     error NotAnOwner();
-    error CountExceed();
+    error PregnancyCountLimitExceed();
+    error PregnancyTimeLimitExceed();
     error LimitExceed();
     error BalanceExceed();
     error WrongAmount();
-    error RefProgramSet();
     error WrongArrayLength();
 
     // CM
@@ -47,5 +47,5 @@ contract ErrorsIdCalculator {
     error WrongPrice();
 
     // waitlist
-    error NotInList();
+    error AddressIsNotInTheList();
 }

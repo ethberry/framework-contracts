@@ -37,10 +37,9 @@ contract ERC721FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     Erc721Args calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashERC721(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

@@ -40,10 +40,9 @@ contract MysteryBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     MysteryArgs calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
-    address signer = _recoverSigner(_hashMysterybox(params, args), signature);
-
+    address signer = _recoverSigner(_hashMysteryBox(params, args), signature);
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }
@@ -67,7 +66,7 @@ contract MysteryBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     fixPermissions(account, roles);
   }
 
-  function _hashMysterybox(Params calldata params, MysteryArgs calldata args) internal view returns (bytes32) {
+  function _hashMysteryBox(Params calldata params, MysteryArgs calldata args) internal view returns (bytes32) {
     return
       _hashTypedDataV4(
         keccak256(abi.encodePacked(MYSTERYBOX_PERMIT_SIGNATURE, _hashParamsStruct(params), _hashMysteryStruct(args)))

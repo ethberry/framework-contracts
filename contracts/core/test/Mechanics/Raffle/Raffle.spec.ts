@@ -2230,7 +2230,7 @@ describe("Raffle", function () {
       await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "WrongToken");
     });
 
-    it("should fail: not a winner", async function () {
+    it("should fail: NotAWinner", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const { raffleInstance, erc721Instance, erc20Instance } = await factory();
@@ -2259,10 +2259,10 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(receiver).getPrize(2, 1);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotInList");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotAWinner");
     });
 
-    it("should fail: not an owner", async function () {
+    it("should fail: NotOwnerNorApproved", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
       const { raffleInstance, erc721Instance, erc20Instance } = await factory();
@@ -2290,7 +2290,7 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(stranger).getPrize(tokenId, 1);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotAnOwner");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotOwnerNorApproved");
     });
 
     it("should fail: wrong token round", async function () {

@@ -6,62 +6,9 @@
 
 pragma solidity ^0.8.20;
 
-// general
-error MethodNotSupported();
-error TemplateZero();
-error UnsupportedTokenType();
-
-// Contract Manager, Exchange
-error SignerMissingRole();
-error ExpiredSignature();
-error WrongRole();
-error ETHInvalidReceiver(address receiver);
-error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed);
-
-// Lottery, Ponzi, Staking
-error NotExist();
-error NotAnOwner();
-
-error AlreadyExist();
-
-// Breed
-error CountExceed();
-error LimitExceed();
-
-error BalanceExceed();
-error WrongAmount();
-error RefProgramSet();
-error WrongArrayLength();
-
-// Mystery/Wrapper
-error NoContent();
-
-// Blacklist, Discrete, Genes
-error ProtectedAttribute(bytes32 attribute);
-
-// staking
-error WrongToken();
-error WrongStake();
-error WrongRule();
-error Expired();
-error ZeroBalance();
-error NotComplete();
-error NotActive();
-
-// lottery, raffle
-error WrongRound();
-error WrongPrice();
-
-// WaitList
-error NotInList();
-
-// Diamond
+// DIAMOND
 error FunctionDoesNotExist();
-
-// DiamonInit
 error DiamondAlreadyInitialised();
-
-// DiamondLib
 error MustBeContractOwner();
 error IncorrectFacetCutAction();
 error NoSelectorsInFacet();
@@ -73,3 +20,72 @@ error RemoveFacetAddressMustBeAddressZero();
 error CantRemoveFunctionThatDoesntExist();
 error CantRemoveImmutableFunction();
 error FacetHasNoCode();
+
+// HIERARCHY
+error MethodNotSupported(); // used to disable mint, safeMint, mintCommon functions
+error TemplateZero(); // used to validate templateId in mint* functions
+error ProtectedAttribute(bytes32 attribute); // protects system attributes TEMPLATE_ID, RARITY
+
+// CONTRACT MANAGER, EXCHANGE
+error SignerMissingRole(); // used to indicate that server signature does match but signer is not authorised
+error ExpiredSignature(); // used to indicate that server signature has expired
+
+// CONTRACT MANAGER
+error WrongRole(); // not supported role
+
+// EXCHANGE
+error UnsupportedTokenType(); // used to indicate that certain token types are not allowed for mechanics
+error ETHInvalidReceiver(address receiver); // contract does not implement `receive` method
+error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed); // transaction has not enough ETH
+
+// WAIT LIST
+error AddressIsNotInTheList(address account);
+error RewardAlreadyClaimed();
+error RewardIsEmpty();
+error RootAlreadySet();
+error RootDoesNotExist();
+
+// MYSTERY/LOOT/WRAPPER/VESTING/WAIT LIST
+error NoContent(); // content has to be set
+
+// DISPENSER
+error WrongArrayLength(); // is used when two arrays has to be of the length size but they are not
+
+// BREED/RAFFLE/LOTTERY
+error NotOwnerNorApproved(address account);
+
+// BREED
+error PregnancyCountLimitExceed();
+error PregnancyTimeLimitExceed();
+
+// LOTTERY/RAFFLE
+error WrongRound();
+error NotAWinner();
+
+// STAKING/PONZI
+error NotAnOwner(address account);
+
+
+
+
+
+// Lottery, Ponzi, Staking
+error NotExist();
+error LimitExceed();
+error BalanceExceed();
+error WrongAmount();
+error WrongPrice();
+
+// staking
+error WrongToken();
+error WrongStake();
+error WrongRule();
+error Expired();
+error ZeroBalance();
+error NotComplete();
+error NotActive();
+
+
+
+
+

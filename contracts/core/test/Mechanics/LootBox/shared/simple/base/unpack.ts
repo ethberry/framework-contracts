@@ -5,6 +5,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { deployERC1363Mock, deployERC20Mock } from "@gemunion/contracts-mocks";
+import { deployContract } from "@gemunion/contracts-utils";
 
 import { VRFCoordinatorV2PlusMock } from "../../../../../../typechain-types";
 import { templateId, tokenId } from "../../../../../constants";
@@ -12,7 +13,6 @@ import { randomRequest } from "../../../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../../../shared/link";
 import { deployERC1155 } from "../../../../../ERC1155/shared/fixtures";
 import { deployERC721 } from "../../../../../ERC721/shared/fixtures";
-import { deployContract } from "@gemunion/contracts-utils";
 
 export function shouldUnpackBox(factory: () => Promise<any>) {
   let vrfInstance: VRFCoordinatorV2PlusMock;

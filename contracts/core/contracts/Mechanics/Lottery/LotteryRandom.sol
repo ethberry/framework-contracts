@@ -20,7 +20,7 @@ import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.s
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { LotteryConfig, LotteryRoundInfo } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
-import { ZeroBalance, NotComplete, WrongRound, BalanceExceed, WrongToken, NotAnOwner, Expired, NotActive, LimitExceed } from "../../utils/errors.sol";
+import { ZeroBalance, NotComplete, WrongRound, BalanceExceed, WrongToken, NotOwnerNorApproved, Expired, NotActive, LimitExceed } from "../../utils/errors.sol";
 
 abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeReceiver {
   using Address for address;
@@ -102,7 +102,6 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   // ROUND
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
     Round memory prevRound = _rounds[_rounds.length - 1];
-    // TODO custom error
     if (prevRound.endTimestamp == 0) {
       revert NotComplete();
     }
@@ -217,7 +216,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
 
     // TODO OR approved?
     if (IERC721(ticketRound.ticketAsset.token).ownerOf(tokenId) != _msgSender()) {
-      revert NotAnOwner();
+      revert NotOwnerNorApproved(_msgSender());
     }
 
     IERC721LotteryTicket ticketFactory = IERC721LotteryTicket(ticketRound.ticketAsset.token);

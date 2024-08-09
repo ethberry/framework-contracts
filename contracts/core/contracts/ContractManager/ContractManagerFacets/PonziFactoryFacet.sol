@@ -37,10 +37,9 @@ contract PonziFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     PonziArgs calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashPonzi(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

@@ -28,9 +28,12 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referra
     Asset[] memory content,
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
+
     bytes32 config = keccak256(new bytes(0));
 
-    if (!_hasRole(MINTER_ROLE, _recoverOneToManyToManySignature(params, item, price, content, config, signature))) {
+    address signer = _recoverOneToManyToManySignature(params, item, price, content, config, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 

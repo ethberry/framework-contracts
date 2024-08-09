@@ -63,17 +63,13 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     Asset[] memory items,
     bytes calldata signature
   ) external returns (address account) {
-    // Check that the transaction with the same nonce was not executed yet
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
-    // Recover the signer from signature
     address signer = _recoverSigner(_hashVesting(params, args, items), signature);
-    // verify that signer has required permissions
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
-    // Deploy the contract
     account = deploy2(
       params.bytecode,
       abi.encode(args.owner, args.startTimestamp, args.cliffInMonth, args.monthlyRelease),
@@ -82,7 +78,6 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
 
     ExchangeUtils.spendFrom(items, signer, account, AllowedTokenTypes(false, true, false, false, false));
 
-    // Notify our server about successful deployment
     emit VestingDeployed(account, params.externalId, args, items);
   }
 

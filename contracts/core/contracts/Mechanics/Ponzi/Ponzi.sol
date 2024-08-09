@@ -110,7 +110,7 @@ contract Ponzi is
       revert WrongStake();
     }
     if (stake.owner != _msgSender()) {
-      revert NotAnOwner();
+      revert NotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
       revert Expired();

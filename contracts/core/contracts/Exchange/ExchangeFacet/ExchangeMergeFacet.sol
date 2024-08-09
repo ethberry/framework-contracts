@@ -28,7 +28,10 @@ contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverManyToManySignature(params, items, price, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 

@@ -33,6 +33,22 @@ contract SignatureValidatorCM is EIP712, Context {
 
   constructor() EIP712() {}
 
+  function _validateParams(Params memory params) internal {
+    _validateNonce(params.nonce);
+  }
+
+  /**
+   * @dev Prevents transaction replay
+   *
+   * @param nonce Unique identification of transaction
+   */
+  function _validateNonce(bytes32 nonce) internal {
+    if (SigValStorage.layout()._expired[nonce]) {
+      revert ExpiredSignature();
+    }
+    SigValStorage.layout()._expired[nonce] = true;
+  }
+
   /**
    * @dev Recover the address of the signer of transaction
    *
@@ -52,19 +68,5 @@ contract SignatureValidatorCM is EIP712, Context {
    */
   function _hashParamsStruct(Params calldata params) internal pure returns (bytes32) {
     return keccak256(abi.encode(PARAMS_TYPEHASH, params.nonce, keccak256(bytes(params.bytecode)), params.externalId));
-  }
-
-  /**
-   * @dev Prevents transaction replay
-   *
-   * @param nonce The nonce of the transaction.
-   */
-  function _checkNonce(bytes32 nonce) internal {
-    // Check that the transaction with the same nonce was not executed yet
-    if (SigValStorage.layout()._expired[nonce]) {
-      revert ExpiredSignature();
-    }
-    // Mark the transaction as executed.
-    SigValStorage.layout()._expired[nonce] = true;
   }
 }

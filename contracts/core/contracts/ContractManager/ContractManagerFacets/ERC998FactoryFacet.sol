@@ -37,10 +37,9 @@ contract ERC998FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     Erc998Args calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashERC998(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

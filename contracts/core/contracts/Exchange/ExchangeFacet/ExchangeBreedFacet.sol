@@ -17,7 +17,7 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { ExchangeStorage } from "../storage/ExchangeStorage.sol";
 import { Asset, Params } from "../lib/interfaces/IAsset.sol";
-import { LimitExceed, CountExceed, NotAnOwner, SignerMissingRole } from "../../utils/errors.sol";
+import { PregnancyTimeLimitExceed, PregnancyCountLimitExceed, NotOwnerNorApproved, SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
   event Breed(address account, uint256 externalId, Asset matron, Asset sire);
@@ -32,7 +32,10 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     Asset memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverOneToOneSignature(params, item, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverOneToOneSignature(params, item, price, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
@@ -40,13 +43,13 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     // TODO try..catch
     if (IERC721(item.token).ownerOf(item.tokenId) != _msgSender()) {
       if (IERC721(item.token).getApproved(item.tokenId) != _msgSender()) {
-        revert NotAnOwner();
+        revert NotOwnerNorApproved(_msgSender());
       }
     }
 
     if (IERC721(price.token).ownerOf(price.tokenId) != _msgSender()) {
       if (IERC721(price.token).getApproved(price.tokenId) != _msgSender()) {
-        revert NotAnOwner();
+        revert NotOwnerNorApproved(_msgSender());
       }
     }
 
@@ -64,10 +67,10 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     // Check pregnancy count
     if (ExchangeStorage.layout()._pregnancyCountLimit > 0) {
       if (pregnancyM.count >= ExchangeStorage.layout()._pregnancyCountLimit) {
-        revert CountExceed();
+        revert PregnancyCountLimitExceed();
       }
       if (pregnancyS.count >= ExchangeStorage.layout()._pregnancyCountLimit) {
-        revert CountExceed();
+        revert PregnancyCountLimitExceed();
       }
     }
 
@@ -80,13 +83,13 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
         timeNow - pregnancyM.time <=
         (pregnancyM.count > 13 ? ExchangeStorage.layout()._pregnancyMaxTime : (ExchangeStorage.layout()._pregnancyTimeLimit * (2 ** pregnancyM.count)).toUint64())
       ) {
-        revert LimitExceed();
+        revert PregnancyTimeLimitExceed();
       }
       if (
         timeNow - pregnancyS.time <=
         (pregnancyS.count > 13 ? ExchangeStorage.layout()._pregnancyMaxTime : (ExchangeStorage.layout()._pregnancyTimeLimit * (2 ** pregnancyS.count)).toUint64())
       ) {
-        revert LimitExceed();
+        revert PregnancyTimeLimitExceed();
       }
     }
 

@@ -53,23 +53,42 @@ contract SignatureValidator is EIP712, Context {
 
   constructor() EIP712() {}
 
+  function _validateParams(Params memory params) internal {
+    _validateNonce(params.nonce);
+    _validateExpirationDate(params.expiresAt);
+  }
+
+  /**
+   * @dev Prevents transaction replay
+   *
+   * @param nonce Unique identification of transaction
+   */
+  function _validateNonce(bytes32 nonce) internal {
+    if (SigValStorage.layout()._expired[nonce]) {
+      revert ExpiredSignature();
+    }
+    SigValStorage.layout()._expired[nonce] = true;
+  }
+
+  /**
+   * @dev Prevents transaction replay
+   *
+   * @param expiresAt Expiration time
+   */
+  function _validateExpirationDate(uint256 expiresAt) internal {
+    if (expiresAt != 0) {
+      if (block.timestamp > expiresAt) {
+        revert ExpiredSignature();
+      }
+    }
+  }
+
   function _recoverOneToOneSignature(
     Params memory params,
     Asset memory item,
     Asset memory price,
     bytes calldata signature
   ) internal returns (address) {
-    if (SigValStorage.layout()._expired[params.nonce]) {
-      revert ExpiredSignature();
-    }
-    SigValStorage.layout()._expired[params.nonce] = true;
-
-    if (params.expiresAt != 0) {
-      if (block.timestamp > params.expiresAt) {
-        revert ExpiredSignature();
-      }
-    }
-
     return _recoverSigner(_hashOneToOne(_msgSender(), params, item, price), signature);
   }
 
@@ -79,17 +98,6 @@ contract SignatureValidator is EIP712, Context {
     Asset[] memory price,
     bytes calldata signature
   ) internal returns (address) {
-    if (SigValStorage.layout()._expired[params.nonce]) {
-      revert ExpiredSignature();
-    }
-    SigValStorage.layout()._expired[params.nonce] = true;
-
-    if (params.expiresAt != 0) {
-      if (block.timestamp > params.expiresAt) {
-        revert ExpiredSignature();
-      }
-    }
-
     return _recoverSigner(_hashOneToMany(_msgSender(), params, item, price), signature);
   }
 
@@ -99,17 +107,6 @@ contract SignatureValidator is EIP712, Context {
     Asset[] memory price,
     bytes calldata signature
   ) internal returns (address) {
-    if (SigValStorage.layout()._expired[params.nonce]) {
-      revert ExpiredSignature();
-    }
-    SigValStorage.layout()._expired[params.nonce] = true;
-
-    if (params.expiresAt != 0) {
-      if (block.timestamp > params.expiresAt) {
-        revert ExpiredSignature();
-      }
-    }
-
     return _recoverSigner(_hashManyToMany(_msgSender(), params, items, price), signature);
   }
 
@@ -121,17 +118,6 @@ contract SignatureValidator is EIP712, Context {
     bytes32 config,
     bytes calldata signature
   ) internal returns (address) {
-    if (SigValStorage.layout()._expired[params.nonce]) {
-      revert ExpiredSignature();
-    }
-    SigValStorage.layout()._expired[params.nonce] = true;
-
-    if (params.expiresAt != 0) {
-      if (block.timestamp > params.expiresAt) {
-        revert ExpiredSignature();
-      }
-    }
-
     return _recoverSigner(_hashOneToManyToMany(_msgSender(), params, item, price, content, config), signature);
   }
 

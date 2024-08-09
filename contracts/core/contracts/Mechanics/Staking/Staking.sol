@@ -215,7 +215,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
       revert WrongStake();
     }
     if (stake.owner != _msgSender()) {
-      revert NotAnOwner();
+      revert NotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
       revert Expired();

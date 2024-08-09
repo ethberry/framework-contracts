@@ -35,10 +35,9 @@ contract ERC1155FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     Erc1155Args calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashERC1155(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

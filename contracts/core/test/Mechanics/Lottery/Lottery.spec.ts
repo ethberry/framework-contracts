@@ -2166,7 +2166,7 @@ describe("Lottery", function () {
       await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "WrongToken");
     });
 
-    it("should fail: not an owner", async function () {
+    it("should fail: NotOwnerNorApproved", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
       const values = [8, 5, 3, 2, 1, 0];
@@ -2202,7 +2202,7 @@ describe("Lottery", function () {
       await erc721Instance.connect(receiver).approve(lotteryInstance, 1);
 
       const tx = lotteryInstance.connect(stranger).getPrize(tokenId, 1);
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "NotAnOwner");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "NotOwnerNorApproved");
     });
 
     it("should fail: wrong round", async function () {

@@ -39,6 +39,8 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
+
     if (!_hasRole(METADATA_ROLE, _recoverOneToManySignature(params, item, price, signature))) {
       revert SignerMissingRole();
     }
@@ -67,7 +69,10 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(METADATA_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverManyToManySignature(params, items, price, signature);
+    if (!_hasRole(METADATA_ROLE, signer)) {
       revert SignerMissingRole();
     }
 

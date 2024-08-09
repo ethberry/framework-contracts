@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { ZeroAddress, parseEther } from "ethers";
 
 import { MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { templateId } from "../../../../../constants";
-import { ZeroAddress, parseEther } from "ethers";
 
 export function shouldMintBox(factory: () => Promise<any>) {
   describe("mint", function () {

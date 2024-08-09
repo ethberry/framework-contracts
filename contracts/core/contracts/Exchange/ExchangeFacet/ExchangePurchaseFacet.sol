@@ -27,6 +27,8 @@ contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride, Referral 
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
+
     address signer = _recoverOneToManySignature(params, item, price, signature);
     if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();

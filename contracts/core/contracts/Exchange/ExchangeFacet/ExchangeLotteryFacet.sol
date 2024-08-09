@@ -27,8 +27,10 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {
     Asset memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    // Verify signature and check signer for MINTER_ROLE
-    if (!_hasRole(MINTER_ROLE, _recoverOneToOneSignature(params, item, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverOneToOneSignature(params, item, price, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
