@@ -4,15 +4,7 @@ import { AbiCoder, Contract, encodeBytes32String, keccak256, ZeroAddress } from 
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
-import {
-  deployDiamond,
-  deployErc20Base,
-  deployErc721Base,
-  wrapManyToManySignature,
-  wrapOneToManySignature,
-  wrapOneToManyToManySignature,
-  wrapOneToOneSignature,
-} from "./shared";
+import { deployDiamond, deployErc20Base, deployErc721Base, wrapOneToManyToManySignature } from "./shared";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 
@@ -32,18 +24,7 @@ describe("Diamond Exchange MysteryBox", function () {
   const getSignatures = async (contractInstance: Contract) => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManyToManySignature = wrapOneToManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-      generateOneToManyToManySignature,
-    };
+    return wrapOneToManyToManySignature(network, contractInstance, "EXCHANGE", owner);
   };
 
   describe("MysteryBox", function () {
@@ -51,12 +32,12 @@ describe("Diamond Exchange MysteryBox", function () {
       it("should purchase mysterybox", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-        const signature = await generateOneToManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -163,7 +144,7 @@ describe("Diamond Exchange MysteryBox", function () {
       it("should purchase mysterybox", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
@@ -174,7 +155,7 @@ describe("Diamond Exchange MysteryBox", function () {
         await erc20Instance.mint(receiver.address, amount);
         await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
-        const signature = await generateOneToManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -324,12 +305,12 @@ describe("Diamond Exchange MysteryBox", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
       const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-      const signature = await generateOneToManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -411,7 +392,7 @@ describe("Diamond Exchange MysteryBox", function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const pausableInstance = await ethers.getContractAt("PausableFacet", exchangeInstance);
       await pausableInstance.pause();
@@ -419,7 +400,7 @@ describe("Diamond Exchange MysteryBox", function () {
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
       const mysteryBoxInstance = await deployErc721Base("ERC721MysteryBoxSimple", exchangeInstance);
 
-      const signature = await generateOneToManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params,
         item: {

@@ -6,13 +6,7 @@ import { amount, METADATA_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { isEqualArray, isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { deployERC1363 } from "../ERC20/shared/fixtures";
-import {
-  deployDiamond,
-  deployErc721Base,
-  wrapManyToManySignature,
-  wrapOneToManySignature,
-  wrapOneToOneSignature,
-} from "./shared";
+import { deployDiamond, deployErc721Base, wrapManyToManySignature, wrapOneToManySignature } from "./shared";
 import { expiresAt, externalId, params, templateId, tokenId } from "../constants";
 
 describe("Diamond Exchange Rent", function () {
@@ -28,27 +22,18 @@ describe("Diamond Exchange Rent", function () {
     return ethers.getContractAt(facetName, diamondInstance);
   };
 
-  const getSignatures = async (contractInstance: Contract) => {
-    const [owner] = await ethers.getSigners();
-    const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
-  };
-
   describe("rent single", function () {
+    const getSignatures = async (contractInstance: Contract) => {
+      const [owner] = await ethers.getSigners();
+      const network = await ethers.provider.getNetwork();
+      return wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
+    };
+
     it("should lend ERC721 to user for free", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
@@ -63,7 +48,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -128,7 +113,7 @@ describe("Diamond Exchange Rent", function () {
     it("should lend ERC721 to user for ERC20", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -145,7 +130,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -230,7 +215,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: Wrong signer", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -247,7 +232,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: stranger.address,
         params: {
           externalId /* lendType */,
@@ -306,7 +291,7 @@ describe("Diamond Exchange Rent", function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
@@ -321,7 +306,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -368,7 +353,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: ERC721InsufficientApproval", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -384,7 +369,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: owner.address,
         params: {
           externalId /* lendType */,
@@ -444,7 +429,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -458,7 +443,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -505,10 +490,16 @@ describe("Diamond Exchange Rent", function () {
   });
 
   describe("lendMany", function () {
+    const getSignatures = async (contractInstance: Contract) => {
+      const [owner] = await ethers.getSigners();
+      const network = await ethers.provider.getNetwork();
+      return wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
+    };
+
     it("should lend ERC721 to user for free", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -522,7 +513,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -591,7 +582,7 @@ describe("Diamond Exchange Rent", function () {
     it("should lend ERC721 to user for ERC20", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -608,7 +599,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -697,7 +688,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: Wrong signer", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -714,7 +705,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: stranger.address,
         params: {
           externalId /* lendType */,
@@ -776,7 +767,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: Wrong items count", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -793,7 +784,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,
@@ -842,7 +833,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: ERC721InsufficientApproval", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -858,7 +849,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: owner.address,
         params: {
           externalId /* lendType */,
@@ -923,7 +914,7 @@ describe("Diamond Exchange Rent", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Rentable", exchangeInstance);
 
       const tx0 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -937,7 +928,7 @@ describe("Diamond Exchange Rent", function () {
       const endTimestamp = Math.ceil(date.getTime() / 1000); // in seconds,
       const expires = zeroPadValue(toBeHex(endTimestamp), 32);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId /* lendType */,

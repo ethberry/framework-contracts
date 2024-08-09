@@ -9,13 +9,7 @@ import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
-import {
-  deployDiamond,
-  deployErc721Base,
-  wrapManyToManySignature,
-  wrapOneToManySignature,
-  wrapOneToOneSignature,
-} from "./shared";
+import { deployDiamond, deployErc721Base, wrapOneToOneSignature } from "./shared";
 import { isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
@@ -37,16 +31,7 @@ describe("Diamond Exchange Breed", function () {
   const getSignatures = async (contractInstance: Contract) => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
+    return wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
   };
 
   let vrfInstance: VRFCoordinatorV2PlusMock;
@@ -70,7 +55,7 @@ describe("Diamond Exchange Breed", function () {
       it("should breed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
 
@@ -121,7 +106,7 @@ describe("Diamond Exchange Breed", function () {
           zeroPadValue(toBeHex(genesis.templateId), 4),
         ]);
         // const encodedExternalId = BigNumber.from("0x0004000000010000000080");
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -208,7 +193,7 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: PregnancyCountLimitExceed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
@@ -226,7 +211,7 @@ describe("Diamond Exchange Breed", function () {
         const balance1 = await erc721Instance.balanceOf(receiver.address);
         expect(balance1).to.equal(2);
 
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           item: {
@@ -285,7 +270,7 @@ describe("Diamond Exchange Breed", function () {
 
         await exchangeInstance.setPregnancyLimits(1, 10000, 60 * 2 ** 13);
 
-        const signature1 = await generateOneToOneSignature({
+        const signature1 = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce1"),
@@ -334,7 +319,7 @@ describe("Diamond Exchange Breed", function () {
         await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyCountLimitExceed");
 
         await erc721Instance.mintCommon(receiver.address, 4);
-        const signature2 = await generateOneToOneSignature({
+        const signature2 = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce2"),
@@ -386,7 +371,7 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: PregnancyTimeLimitExceed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
@@ -404,7 +389,7 @@ describe("Diamond Exchange Breed", function () {
         const balance1 = await erc721Instance.balanceOf(receiver.address);
         expect(balance1).to.equal(2);
 
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           item: {
@@ -462,7 +447,7 @@ describe("Diamond Exchange Breed", function () {
 
         await exchangeInstance.setPregnancyLimits(10, 10000, 60 * 2 ** 13);
 
-        const signature1 = await generateOneToOneSignature({
+        const signature1 = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce1"),
@@ -514,7 +499,7 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: NotOwnerNorApproved", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
         // Add Consumer to VRFV2
         const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
@@ -523,7 +508,7 @@ describe("Diamond Exchange Breed", function () {
         await erc721Instance.mintCommon(owner.address, 1);
         await erc721Instance.mintCommon(receiver.address, 2);
 
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           item: {
@@ -563,11 +548,11 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: Invalid signature", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: owner.address, // should be receiver.address
           params,
           item: {
@@ -608,11 +593,11 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: Wrong signer", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: owner.address,
           params,
           item: {
@@ -652,7 +637,7 @@ describe("Diamond Exchange Breed", function () {
       it("should fail: signer missing role", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
 
@@ -703,7 +688,7 @@ describe("Diamond Exchange Breed", function () {
           zeroPadValue(toBeHex(genesis.templateId), 4),
         ]);
         // const encodedExternalId = BigNumber.from("0x0004000000010000000080");
-        const signature = await generateOneToOneSignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),

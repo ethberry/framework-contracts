@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, network, web3 } from "hardhat";
-import { encodeBytes32String, getUint, parseEther, toQuantity, ZeroAddress } from "ethers";
+import { encodeBytes32String, getUint, parseEther, toQuantity, ZeroAddress, Contract } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
@@ -33,18 +33,25 @@ describe("Raffle", function () {
     commission: 30, // raffle???
   };
 
-  const factoryDiamond = async () =>
-    deployDiamond(
+  const factory = async (facetName = "ExchangeRaffleFacet"): Promise<any> => {
+    const diamondInstance = await deployDiamond(
       "DiamondExchange",
-      ["ExchangeRaffleFacet", "PausableFacet", "AccessControlFacet"],
+      [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
-        // log: true,
         logSelectors: false,
       },
     );
+    return ethers.getContractAt(facetName, diamondInstance);
+  };
 
-  const factory = () => deployRaffle(raffleConfig);
+  const factoryRaffle = () => deployRaffle(raffleConfig);
+
+  const getSignatures = async (contractInstance: Contract) => {
+    const [owner] = await ethers.getSigners();
+    const network = await ethers.provider.getNetwork();
+    return wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
+  };
 
   before(async function () {
     if (network.name === "hardhat") {
@@ -58,20 +65,20 @@ describe("Raffle", function () {
   });
 
   shouldBehaveLikeAccessControl(async () => {
-    const { raffleInstance } = await factory();
+    const { raffleInstance } = await factoryRaffle();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return raffleInstance;
   })(DEFAULT_ADMIN_ROLE, PAUSER_ROLE);
 
   shouldBehaveLikePausable(async () => {
-    const { raffleInstance } = await factory();
+    const { raffleInstance } = await factoryRaffle();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return raffleInstance;
   });
 
   describe("Start Round", function () {
     it("should start new round", async function () {
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
       const tx = await raffleInstance.startRound(
         {
           tokenType: 2,
@@ -111,7 +118,7 @@ describe("Raffle", function () {
     });
 
     it("should fail: not yet finished", async function () {
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
       raffleInstance.startRound(
         {
           tokenType: 2,
@@ -148,7 +155,7 @@ describe("Raffle", function () {
 
   describe("Finish Round", function () {
     it("should end current round", async function () {
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
       await raffleInstance.startRound(
         {
           tokenType: 2,
@@ -193,7 +200,7 @@ describe("Raffle", function () {
     });
 
     it("should get current round info with 0 tickets", async function () {
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
       const tx0 = await raffleInstance.startRound(
         {
@@ -287,12 +294,11 @@ describe("Raffle", function () {
     });
 
     it("should get current round info with 1 ticket", async function () {
-      const [owner, receiver] = await ethers.getSigners();
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const [_owner, receiver] = await ethers.getSigners();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
@@ -337,11 +343,7 @@ describe("Raffle", function () {
           }),
         );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -467,12 +469,11 @@ describe("Raffle", function () {
     });
 
     it("should get current round info with 2 tickets", async function () {
-      const [owner, receiver, stranger] = await ethers.getSigners();
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const [_owner, receiver, stranger] = await ethers.getSigners();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.mint(stranger, amount);
@@ -519,12 +520,8 @@ describe("Raffle", function () {
           }),
         );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
       // GENERATE 1 SIGNATURE
-      const signature1 = await generateOneToOneSignature({
+      const signature1 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -597,7 +594,7 @@ describe("Raffle", function () {
       await expect(tx1).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
       // GENERATE 2 SIGNATURE
-      const signature2 = await generateOneToOneSignature({
+      const signature2 = await generateSignature({
         account: stranger.address,
         params: {
           externalId: dbRoundId,
@@ -725,7 +722,7 @@ describe("Raffle", function () {
     });
 
     it("should fail: previous round is already finished", async function () {
-      const { raffleInstance } = await factory();
+      const { raffleInstance } = await factoryRaffle();
       const tx = raffleInstance.endRound();
       await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotActive");
     });
@@ -733,13 +730,12 @@ describe("Raffle", function () {
 
   describe("Purchase Raffle", function () {
     it("should purchase Lottery and mint ticket", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
@@ -772,11 +768,7 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -856,11 +848,10 @@ describe("Raffle", function () {
     it("should finish round with 1 ticket and release funds", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
@@ -893,12 +884,8 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
       const dbRoundId = 123;
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1001,11 +988,10 @@ describe("Raffle", function () {
     it("should finish round with 2 tickets and release funds", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount * 2n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 2n);
@@ -1038,11 +1024,7 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1111,7 +1093,7 @@ describe("Raffle", function () {
         );
       await expect(tx0).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
-      const signature1 = await generateOneToOneSignature({
+      const signature1 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1213,13 +1195,12 @@ describe("Raffle", function () {
     });
 
     it("should finish round with 3 tickets", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount * 3n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 3n);
@@ -1254,11 +1235,7 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1327,7 +1304,7 @@ describe("Raffle", function () {
         );
       await expect(tx0).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
-      const signature1 = await generateOneToOneSignature({
+      const signature1 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1395,7 +1372,7 @@ describe("Raffle", function () {
         );
       await expect(tx01).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
-      const signature2 = await generateOneToOneSignature({
+      const signature2 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1502,7 +1479,7 @@ describe("Raffle", function () {
     });
 
     it("should fail: zero balance", async function () {
-      const { raffleInstance } = await factory();
+      const { raffleInstance } = await factoryRaffle();
 
       // WAIT for RELEASE
       const latest = await time.latestBlock();
@@ -1513,13 +1490,12 @@ describe("Raffle", function () {
     });
 
     it("should fail: no more tickets available", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount * 3n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 3n);
@@ -1552,11 +1528,7 @@ describe("Raffle", function () {
         2, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1625,7 +1597,7 @@ describe("Raffle", function () {
         );
       await expect(tx0).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
-      const signature1 = await generateOneToOneSignature({
+      const signature1 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1693,7 +1665,7 @@ describe("Raffle", function () {
         );
       await expect(tx1).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
-      const signature2 = await generateOneToOneSignature({
+      const signature2 = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1743,13 +1715,12 @@ describe("Raffle", function () {
     });
 
     it("should fail: current round is finished", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
@@ -1786,11 +1757,7 @@ describe("Raffle", function () {
       const current: number = (await time.latest()).toNumber();
       await expect(tx0).to.emit(raffleInstance, "RoundEnded").withArgs(1, current);
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -1845,7 +1812,7 @@ describe("Raffle", function () {
     it("should get prize", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
@@ -1881,13 +1848,12 @@ describe("Raffle", function () {
     });
 
     it("should get prize from previous round", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
@@ -1922,12 +1888,8 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
       const dbRoundId = 101;
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -2046,13 +2008,12 @@ describe("Raffle", function () {
     });
 
     it("should fail: round not finished", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc20Instance, erc721Instance } = await factory();
+      const { raffleInstance, erc20Instance, erc721Instance } = await factoryRaffle();
 
-      const diamondInstance = await factoryDiamond();
-
-      const exchangeInstance = await ethers.getContractAt("ExchangeRaffleFacet", diamondInstance);
+      const exchangeInstance = await factory();
+      const generateSignature = await getSignatures(exchangeInstance);
 
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
@@ -2085,11 +2046,7 @@ describe("Raffle", function () {
         0, // maxTicket count
       );
 
-      // BUY TICKET @EXCHANGE
-      const networkE = await ethers.provider.getNetwork();
-      const generateOneToOneSignature = wrapOneToOneSignature(networkE, exchangeInstance, "EXCHANGE", owner);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId: dbRoundId,
@@ -2167,7 +2124,7 @@ describe("Raffle", function () {
     it("should fail: wrong round", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
@@ -2199,7 +2156,7 @@ describe("Raffle", function () {
     it("should fail: already got prize", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
@@ -2233,7 +2190,7 @@ describe("Raffle", function () {
     it("should fail: NotAWinner", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
@@ -2265,7 +2222,7 @@ describe("Raffle", function () {
     it("should fail: NotOwnerNorApproved", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
@@ -2296,7 +2253,7 @@ describe("Raffle", function () {
     it("should fail: wrong token round", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
-      const { raffleInstance, erc721Instance, erc20Instance } = await factory();
+      const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
 
       await erc721Instance.mintTicket(receiver, 1, 101, 1);
       await erc721Instance.mintTicket(receiver, 2, 101, 2);

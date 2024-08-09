@@ -39,16 +39,7 @@ describe("Diamond Exchange Purchase", function () {
   const getSignatures = async (contractInstance: Contract) => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
+    return wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
   };
 
   let vrfInstance: VRFCoordinatorV2PlusMock;
@@ -71,7 +62,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Simple for ERC20 (no ref)", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -82,7 +73,7 @@ describe("Diamond Exchange Purchase", function () {
       const erc20Allowance = await erc20Instance.allowance(receiver.address, exchangeInstance);
       expect(erc20Allowance).to.equal(amount);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -148,7 +139,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Simple for ERC20 (ref)", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -159,7 +150,7 @@ describe("Diamond Exchange Purchase", function () {
       const erc20Allowance = await erc20Instance.allowance(receiver.address, exchangeInstance);
       expect(erc20Allowance).to.equal(amount);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -236,7 +227,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Random for ERC20", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
@@ -253,7 +244,7 @@ describe("Diamond Exchange Purchase", function () {
       const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -329,7 +320,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Genes for ERC20", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
 
       const erc20Instance = await deployERC1363("ERC20Blacklist");
@@ -346,7 +337,7 @@ describe("Diamond Exchange Purchase", function () {
       const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -426,7 +417,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Random for USDT", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
       const usdtInstance = await deployUsdt();
@@ -444,7 +435,7 @@ describe("Diamond Exchange Purchase", function () {
       const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -519,7 +510,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase ERC721 Random for WETH", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
 
@@ -538,7 +529,7 @@ describe("Diamond Exchange Purchase", function () {
       const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -614,12 +605,12 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase, spend ERC20", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -697,10 +688,10 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase, spend ETH", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -776,10 +767,10 @@ describe("Diamond Exchange Purchase", function () {
     it("should purchase RANDOM, spend ETH", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Random", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -862,11 +853,11 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: duplicate mint", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -954,11 +945,11 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -1019,11 +1010,11 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: ERC20InsufficientAllowance", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -1120,14 +1111,14 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: ExpiredSignature", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
       const expiresAt = (await time.latest()).toString();
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -1185,7 +1176,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: ExpiredSignature 2", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -1193,7 +1184,7 @@ describe("Diamond Exchange Purchase", function () {
       await erc20Instance.mint(receiver.address, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -1279,7 +1270,7 @@ describe("Diamond Exchange Purchase", function () {
     it("should fail: InvalidSubscription", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
       const erc20Instance = await deployERC1363("ERC20Blacklist");
@@ -1296,7 +1287,7 @@ describe("Diamond Exchange Purchase", function () {
       //   .to.emit(vrfInstance, "SubscriptionConsumerAdded")
       //   .withArgs(subId, erc721Instance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
@@ -1355,13 +1346,13 @@ describe("Diamond Exchange Purchase", function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
       await erc721Instance.grantRole(MINTER_ROLE, exchangeInstance);
       await erc721Instance.grantRole(METADATA_ROLE, exchangeInstance);
 
-      const signature = await generateOneToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           externalId,
