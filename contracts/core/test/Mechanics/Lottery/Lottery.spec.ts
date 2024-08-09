@@ -247,7 +247,7 @@ describe("Lottery", function () {
 
       const values = [1, 2, 3, 4, 5, 6];
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 101 /* db id */, defNumbers);
 
       const tx = await lotteryInstance.endRound();
       const current: number = (await time.latest()).toNumber();
@@ -305,7 +305,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -389,7 +389,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -407,7 +407,7 @@ describe("Lottery", function () {
           ticketNumbers,
         )
         .to.emit(erc721Instance, "Transfer")
-        .withArgs(ZeroAddress, receiver.address, tokenId);
+        .withArgs(ZeroAddress, receiver, tokenId);
       await expect(tx0).changeTokenBalances(erc20Instance, [receiver, lotteryInstance], [-amount, amount]);
 
       // TEST METADATA
@@ -427,7 +427,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -513,7 +513,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           dbRoundId, // externalId: db roundId
           isEqualEventArgObj({
             tokenType: 2n,
@@ -674,7 +674,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           dbRoundId, // externalId: db roundId
           isEqualEventArgObj({
             tokenType: 2n,
@@ -738,7 +738,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount * 2n);
+      await erc20Instance.mint(receiver, amount * 2n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 2n);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -831,7 +831,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           dbRoundId, // externalId: db roundId
           isEqualEventArgObj({
             tokenType: 2n,
@@ -911,7 +911,7 @@ describe("Lottery", function () {
 
       const tx2 = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
       await expect(tx2).to.emit(lotteryInstance, "Prize");
-      // TODO .withArgs(receiver.address, 1, 1, prizeAmount);
+      // TODO .withArgs(receiver, 1, 1, prizeAmount);
 
       // TEST METADATA
       const metadata = recursivelyDecodeResult(await erc721Instance.getTokenMetadata(tokenId));
@@ -930,7 +930,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount * 2n);
+      await erc20Instance.mint(receiver, amount * 2n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 2n);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1018,7 +1018,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           dbRoundId, // externalId: db roundId
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1109,7 +1109,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount * 2n);
+      await erc20Instance.mint(receiver, amount * 2n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 2n);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1197,7 +1197,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           dbRoundId, // externalId: db roundId
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1292,7 +1292,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1377,7 +1377,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1434,7 +1434,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1524,7 +1524,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1595,7 +1595,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount * 3n);
+      await erc20Instance.mint(receiver, amount * 3n);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount * 3n);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1676,7 +1676,7 @@ describe("Lottery", function () {
       await expect(tx0)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1744,7 +1744,7 @@ describe("Lottery", function () {
       await expect(tx1)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -1821,7 +1821,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -1921,7 +1921,7 @@ describe("Lottery", function () {
       const { lotteryInstance, erc721Instance, erc20Instance } = await factory();
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 101 /* db id */, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
 
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
@@ -1951,7 +1951,7 @@ describe("Lottery", function () {
       const prizeAmount = WeiPerEther * 7000n - 180n; // rounding error
 
       const tx = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver.address, 1, 1, prizeAmount);
+      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, 1, 1, prizeAmount);
 
       // TEST METADATA
       const metadata = recursivelyDecodeResult(await erc721Instance.getTokenMetadata(tokenId));
@@ -1972,7 +1972,7 @@ describe("Lottery", function () {
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 101 /* db id */, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
 
       await erc721Instance.connect(receiver).approve(lotteryInstance, 1);
@@ -2000,7 +2000,7 @@ describe("Lottery", function () {
       const prizeAmount = WeiPerEther * 3500n - 200n; // rounding error
 
       const tx = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver.address, 1, 1, prizeAmount);
+      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, 1, 1, prizeAmount);
     });
 
     it("should fail: round not finished", async function () {
@@ -2012,7 +2012,7 @@ describe("Lottery", function () {
 
       const exchangeInstance = await ethers.getContractAt("ExchangeLotteryFacet", diamondInstance);
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
@@ -2097,7 +2097,7 @@ describe("Lottery", function () {
       await expect(tx)
         .to.emit(exchangeInstance, "PurchaseLottery")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -2115,7 +2115,7 @@ describe("Lottery", function () {
           params.extra,
         )
         .to.emit(erc721Instance, "Transfer")
-        .withArgs(ZeroAddress, receiver.address, tokenId);
+        .withArgs(ZeroAddress, receiver, tokenId);
       await expect(tx).changeTokenBalances(erc20Instance, [receiver, lotteryInstance], [-amount, amount]);
 
       const tx1 = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
@@ -2131,7 +2131,7 @@ describe("Lottery", function () {
       const { lotteryInstance, erc721Instance, erc20Instance } = await factory();
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 1, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 1, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
@@ -2160,7 +2160,7 @@ describe("Lottery", function () {
       const prizeAmount = WeiPerEther * 7000n - 180n; // rounding error
 
       const tx = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver.address, 1, 1, prizeAmount);
+      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, 1, 1, prizeAmount);
 
       const tx1 = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
       await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "WrongToken");
@@ -2175,7 +2175,7 @@ describe("Lottery", function () {
       const { lotteryInstance, erc721Instance, erc20Instance } = await factory();
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 1, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 1, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
@@ -2214,7 +2214,7 @@ describe("Lottery", function () {
       const { lotteryInstance, erc721Instance, erc20Instance } = await factory();
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 101 /* db id */, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
@@ -2253,8 +2253,8 @@ describe("Lottery", function () {
       const { lotteryInstance, erc721Instance, erc20Instance } = await factory();
 
       const defNumbers = getNumbersBytes(values);
-      await erc721Instance.mintTicket(receiver.address, 1, 101 /* db id */, defNumbers);
-      await erc721Instance.mintTicket(receiver.address, 2, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 1, 101 /* db id */, defNumbers);
+      await erc721Instance.mintTicket(receiver, 2, 101 /* db id */, defNumbers);
       await erc721Instance.grantRole(MINTER_ROLE, lotteryInstance);
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
