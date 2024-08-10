@@ -26,6 +26,7 @@ const recursivelyDecodeResult = (result: Result): Record<string, any> => {
       obj[key] = recursivelyDecodeResult(obj[key]);
     });
     return obj;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     // Result is array.
     return result.toArray().map(item => recursivelyDecodeResult(item as Result));
@@ -49,9 +50,10 @@ const contracts: Record<string, any> = {};
 
 async function main() {
   const [owner, _receiver, moneybag, _stranger2] = await ethers.getSigners();
-  // const besuOwner = network.name === "besu" ? owner : stranger2;
-  const besuOwner = owner;
+  const besuOwner = network.name === "besu" ? owner : _stranger2;
+  // const besuOwner = owner;
   console.info("besuOwner", besuOwner.address);
+  console.info("owner", owner.address);
   const block = await ethers.provider.getBlock("latest");
   // LINK & VRF
   // LINK_ADDR=0x1fa66727cdd4e3e4a6debe4adf84985873f6cd8a
@@ -108,7 +110,7 @@ async function main() {
    * @param linkPremiumPercentage link premium percentage
    */
   // await debug(  );
-  const tx = await vrfInstance.connect(besuOwner).setConfig(
+  await vrfInstance.connect(besuOwner).setConfig(
     3, // minimumRequestConfirmations
     1000000, // maxGasLimit
     1, // stalenessSeconds
@@ -140,21 +142,10 @@ async function main() {
     const linkAmount = WeiPerEther * 1000n;
     await debug(await linkInstance.connect(besuOwner).transfer(owner.address, linkAmount), "transfer1000LinkToOwner");
   }
-  // GET ETH TOKEN to OWNER
-  if (network.name !== "besu" && network.name !== "telos_test") {
-    // SEND ETH to FW OWNER on gemunion besu only
-    const ethAmount = WeiPerEther * 1000n;
-    await debug(
-      await moneybag.sendTransaction({
-        to: owner.address,
-        value: ethAmount, // Sends exactly 1000.0 ether
-      }),
-      "fund 1000 ETH",
-    );
-  }
 
   // CREATE VRF SUBSCRIPTION
-  await debug(await vrfInstance.createSubscription(), "createSubscription");
+  // console.log("CREATE_owner", owner);
+  await debug(await vrfInstance.connect(owner).createSubscription(), "createSubscription");
 
   // GET new SUB ID
   const eventFilter = vrfInstance.filters.SubscriptionCreated();

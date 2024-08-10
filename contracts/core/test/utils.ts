@@ -40,7 +40,9 @@ export const getBytesNumbersArr = (selected = "4328719624n"): Array<number> => {
 };
 
 export const getContractName = (base: string, network: string) => {
-  return base.endsWith("Random") || base.endsWith("Genes") ? snakeToCamelCase(`${base}_${network}`) : base;
+  return base.endsWith("Random") || base.endsWith("Genes")
+    ? snakeToCamelCase(`${base}${network === "besu" ? "Gemunion" : network === "gemunion" ? "GemunionBesu" : network}`)
+    : base;
 };
 
 export const isEqualArray = (...args: any[]): any => {

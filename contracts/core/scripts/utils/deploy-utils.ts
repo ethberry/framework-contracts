@@ -22,6 +22,7 @@ export const recursivelyDecodeResult = (result: Result): Record<string, any> => 
       obj[key] = recursivelyDecodeResult(obj[key]);
     });
     return obj;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     // Result is array.
     return result.toArray().map(item => recursivelyDecodeResult(item as Result));
