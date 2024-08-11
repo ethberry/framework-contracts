@@ -6,17 +6,10 @@ import { time } from "@openzeppelin/test-helpers";
 
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import {
-  deployDiamond,
-  deployErc20Base,
-  deployErc721Base,
-  wrapManyToManySignature,
-  wrapOneToManySignature,
-  wrapOneToOneSignature,
-} from "./shared";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
+import { deployDiamond, deployErc20Base, deployErc721Base, wrapOneToManySignature } from "./shared";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
-import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { isEqualEventArgArrObj, isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";

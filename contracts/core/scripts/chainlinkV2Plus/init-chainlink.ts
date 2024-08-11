@@ -1,16 +1,5 @@
 import { ethers, network } from "hardhat";
-import {
-  Contract,
-  Result,
-  solidityPacked,
-  keccak256,
-  toBeHex,
-  toBigInt,
-  TransactionReceipt,
-  TransactionResponse,
-  WeiPerEther,
-  zeroPadValue,
-} from "ethers";
+import { Contract, Result, toBeHex, TransactionReceipt, TransactionResponse, WeiPerEther, zeroPadValue } from "ethers";
 import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
 
 const delay = 2; // block delay
@@ -172,15 +161,6 @@ async function main() {
   const events = await vrfInstance.queryFilter(eventFilter, block!.number);
   const { subId } = recursivelyDecodeResult(events[events.length - 1].args as unknown as Result);
   console.info("SubscriptionCreated", subId);
-
-  // const subscriptionId = toBigInt(
-  //   keccak256(
-  //     solidityPacked(
-  //       ["address", "bytes32", "address", "uint64"],
-  //       [owner.address, tx.blockHash, await vrfInstance.getAddress(), 0],
-  //     ),
-  //   ),
-  // );
 
   const linkAmount = WeiPerEther * 1000n;
   await debug(await linkInstance.connect(besuOwner).transfer(owner.address, linkAmount), "transfer1000LinkToOwner");
