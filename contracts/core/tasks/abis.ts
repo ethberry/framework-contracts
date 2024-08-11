@@ -131,6 +131,8 @@ export const fwFunctionNames = [
   "ERC20Simple:allowance",
   "ERC20Whitelist:unWhitelist",
   "ERC20Whitelist:whitelist",
+  "ERC20Blacklist:blacklist",
+  "ERC20Blacklist:unBlacklist",
 
   "ERC721Simple:safeTransferFrom",
   "ERC721Simple:mintCommon",
@@ -139,6 +141,7 @@ export const fwFunctionNames = [
   "ERC721Simple:approve",
   "ERC721Simple:setApprovalForAll",
   "ERC721Simple:isApprovedForAll",
+  "ERC721Simple:setDefaultRoyalty",
   "ERC721RandomGemunion:setSubscriptionId",
   "ERC721LootBoxSimple:mintBox",
   "ERC721LootBoxSimple:unpack",
@@ -155,13 +158,10 @@ export const fwFunctionNames = [
   "ERC998ERC1155ERC20Enum:safeTransferFromERC1155",
   "ERC998ERC1155ERC20Enum:transferERC20",
 
-  "ERC1155Simple:setDefaultRoyalty",
   "ERC1155Simple:safeTransferFrom",
   "ERC1155Simple:setApprovalForAll",
-  "ERC1155Simple:mint",
   "ERC1155Simple:isApprovedForAll",
-  "ERC1155Blacklist:blacklist",
-  "ERC1155Blacklist:unBlacklist",
+  "ERC1155Simple:mint",
 
   "AccessControlFacet:grantRole",
   "AccessControlFacet:renounceRole",
