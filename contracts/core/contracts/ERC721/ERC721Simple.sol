@@ -62,10 +62,9 @@ contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721Genera
    *
    * - The caller must own `tokenId` or be an approved operator.
    */
-  function burn(uint256 tokenId) public override(ERC721Burnable, IERC721Simple) {
+  function burn(uint256 tokenId) public virtual override(ERC721Burnable, IERC721Simple) {
     super.burn(tokenId);
   }
-
 
   /**
    * @dev See {IERC165-supportsInterface}.
