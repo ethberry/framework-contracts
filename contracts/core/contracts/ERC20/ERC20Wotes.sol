@@ -14,7 +14,7 @@ import { ERC20ABC } from "@gemunion/contracts-erc20/contracts/preset/ERC20ABC.so
 import { ERC20Simple } from "./ERC20Simple.sol";
 
 contract ERC20Wotes is ERC20Simple, ERC20Votes {
-  constructor(string memory name, string memory symbol, uint256 cap) ERC20Simple(name, symbol, cap) EIP712(name, "1") {}
+  constructor(string memory name, string memory symbol, uint256 cap) ERC20Simple(name, symbol, cap) EIP712(name, "1.0.0") {}
 
   /**
  * @dev See {ERC20-_update}.
