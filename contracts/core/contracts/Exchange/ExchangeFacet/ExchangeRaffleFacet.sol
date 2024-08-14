@@ -13,7 +13,7 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
+import { SignerMissingRole } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
@@ -32,16 +32,6 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
     address signer = _recoverOneToOneSignature(params, item, price, signature);
     if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
-    }
-
-    // this is questionable
-    if (item.token == address(0)) {
-      revert WrongToken();
-    }
-
-    // Double-check lottery address
-    if (params.receiver == address(0)) {
-      revert NotExist();
     }
 
     Asset[] memory _price = ExchangeUtils._toArray(price);

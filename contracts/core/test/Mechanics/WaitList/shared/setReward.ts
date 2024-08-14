@@ -74,7 +74,7 @@ export function shouldSetReward(factory: () => Promise<any>) {
         .withArgs(receiver.address, DEFAULT_ADMIN_ROLE);
     });
 
-    it("should fail: RewardIsEmpty", async function () {
+    it("should fail: NoReward", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -96,7 +96,7 @@ export function shouldSetReward(factory: () => Promise<any>) {
       };
 
       const tx = contractInstance.setReward(params, []);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "RewardIsEmpty");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "NoReward");
     });
 
     it("should fail: RootAlreadySet", async function () {

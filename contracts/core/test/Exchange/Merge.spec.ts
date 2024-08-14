@@ -772,7 +772,7 @@ describe("Diamond Exchange Merge", function () {
   });
 
   describe("ERROR", function () {
-    it("should fail: wrong token template", async function () {
+    it("should fail: MergeDifferentTemplate", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -859,10 +859,10 @@ describe("Diamond Exchange Merge", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "MergeDifferentTemplate");
     });
 
-    it("should fail: wrong token contract", async function () {
+    it("should fail: MergeDifferentContracts", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -950,7 +950,7 @@ describe("Diamond Exchange Merge", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "MergeDifferentContracts");
     });
 
     it("should fail: ExpiredSignature (duplicate mint)", async function () {

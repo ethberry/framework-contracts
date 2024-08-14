@@ -149,7 +149,7 @@ describe("Raffle", function () {
         },
         0, // maxTicket count
       );
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotComplete");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RoundNotComplete");
     });
   });
 
@@ -721,10 +721,10 @@ describe("Raffle", function () {
       });
     });
 
-    it("should fail: previous round is already finished", async function () {
+    it("should fail: RoundNotActive", async function () {
       const { raffleInstance } = await factoryRaffle();
       const tx = raffleInstance.endRound();
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotActive");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RoundNotActive");
     });
   });
 
@@ -1711,7 +1711,7 @@ describe("Raffle", function () {
         },
         signature2,
       );
-      await expect(tx2).to.be.revertedWithCustomError(raffleInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(raffleInstance, "TicketLimitExceed");
     });
 
     it("should fail: current round is finished", async function () {
@@ -2118,7 +2118,7 @@ describe("Raffle", function () {
       await expect(tx).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
       const tx1 = raffleInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "NotComplete");
+      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "RoundNotComplete");
     });
 
     it("should fail: wrong round", async function () {
@@ -2187,7 +2187,7 @@ describe("Raffle", function () {
       await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "WrongToken");
     });
 
-    it("should fail: NotAWinner", async function () {
+    it("should fail: PrizeNotEligible", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
@@ -2216,7 +2216,7 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(receiver).getPrize(2, 1);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotAWinner");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "PrizeNotEligible");
     });
 
     it("should fail: NotOwnerNorApproved", async function () {

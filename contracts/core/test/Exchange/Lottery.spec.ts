@@ -144,42 +144,11 @@ describe("Diamond Exchange Lottery", function () {
       expect(balance).to.equal(amount * 1n);
     });
 
-    it("should fail: not exist", async function () {
+    it("should fail: ETHInvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
-
-      const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
-        commission: 30, // lottery wallet gets 30% commission from each round balance
-      };
-      const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
-      await lotteryInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1n,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121n,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
-      await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -193,13 +162,13 @@ describe("Diamond Exchange Lottery", function () {
         },
         item: {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         price: {
-          tokenType: 1n,
-          token: await erc20Instance.getAddress(),
+          tokenType: 0n,
+          token: ZeroAddress,
           tokenId: 121n,
           amount,
         },
@@ -216,57 +185,34 @@ describe("Diamond Exchange Lottery", function () {
         },
         {
           tokenType: 2n,
-          token: erc721TicketInstance,
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         {
-          tokenType: 1n,
-          token: erc20Instance,
+          tokenType: 0n,
+          token: ZeroAddress,
           tokenId: 121n,
           amount,
         },
         signature,
+        {
+          value: amount,
+        },
       );
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "NotExist");
+
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver");
     });
 
-    it("should fail: wrong token", async function () {
+    it("should fail: ERC20InvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
+
       const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
-
-      const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
-        commission: 30, // lottery wallet gets 30% commission from each round balance
-      };
-      const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
-      await lotteryInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1n,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121n,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
       await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -275,7 +221,7 @@ describe("Diamond Exchange Lottery", function () {
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: await lotteryInstance.getAddress(),
+          receiver: ZeroAddress,
           referrer: ZeroAddress,
         },
         item: {
@@ -291,13 +237,14 @@ describe("Diamond Exchange Lottery", function () {
           amount,
         },
       });
+
       const tx1 = exchangeInstance.connect(receiver).purchaseLottery(
         {
           externalId,
           expiresAt,
           nonce: encodeBytes32String("nonce"),
           extra,
-          receiver: lotteryInstance,
+          receiver: ZeroAddress,
           referrer: ZeroAddress,
         },
         {
@@ -315,7 +262,7 @@ describe("Diamond Exchange Lottery", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver");
     });
 
     it("should fail: wrong signer", async function () {

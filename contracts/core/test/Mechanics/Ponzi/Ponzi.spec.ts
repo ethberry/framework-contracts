@@ -44,7 +44,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.updateRule(2, false);
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
     });
 
     it("should set one Rule", async function () {
@@ -171,10 +171,10 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 2, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
     });
 
-    it("should fail for not active rule", async function () {
+    it("should fail: RuleNotActive", async function () {
       const [owner] = await ethers.getSigners();
 
       const ponziInstance = await deployContract("Ponzi");
@@ -201,7 +201,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 1, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "NotActive");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "RuleNotActive");
     });
 
     it("should fail for wrong pay amount", async function () {
@@ -374,7 +374,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = ponziInstance.connect(receiver).receiveReward(2, true, true);
-      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "WrongStake");
+      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
     });
 
     it("should fail for not an owner", async function () {
@@ -432,7 +432,7 @@ describe("Ponzi", function () {
       await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "NotAnOwner");
     });
 
-    it("should fail for withdrawn already", async function () {
+    it("should fail: StakeAlreadyWithdrawn", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const ponziInstance = await deployContract("Ponzi");
@@ -503,7 +503,7 @@ describe("Ponzi", function () {
       );
 
       const tx3 = ponziInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "Expired");
+      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "StakeAlreadyWithdrawn");
     });
 
     it("should stake NATIVE & receive NATIVE", async function () {
@@ -777,7 +777,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const lib = await ethers.getContractAt("ExchangeUtils", ponziInstance, owner);
-      await expect(tx).to.emit(lib, "PaymentEthReceived").withArgs(ponziInstance, WeiPerEther);
+      await expect(tx).to.emit(lib, "PaymentReceived").withArgs(ponziInstance, WeiPerEther);
     });
 
     it("should finalize", async function () {

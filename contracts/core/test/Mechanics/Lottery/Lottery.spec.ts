@@ -156,7 +156,7 @@ describe("Lottery", function () {
         },
         0, // maxTicket count
       );
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "NotComplete");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "RoundNotComplete");
     });
   });
 
@@ -304,10 +304,10 @@ describe("Lottery", function () {
       });
     });
 
-    it("should fail: previous round is already finished", async function () {
+    it("should fail: RoundNotActive", async function () {
       const { lotteryInstance } = await factoryLottery();
       const tx = lotteryInstance.endRound();
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "NotActive");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "RoundNotActive");
     });
   });
 
@@ -1091,7 +1091,8 @@ describe("Lottery", function () {
       await expect(tx2).to.be.revertedWithCustomError(lotteryInstance, "WrongToken");
     });
 
-    it("should fail get prize from previous round: expired", async function () {
+    // fail get prize from previous round
+    it("should fail: TicketExpired", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const { lotteryInstance, erc20Instance, erc721Instance } = await factoryLottery();
@@ -1266,7 +1267,7 @@ describe("Lottery", function () {
       await time.advanceBlockTo(latest.add(web3.utils.toBN(lotteryConfig.timeLagBeforeRelease + 1)));
 
       const tx2 = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx2).to.be.revertedWithCustomError(lotteryInstance, "Expired");
+      await expect(tx2).to.be.revertedWithCustomError(lotteryInstance, "TicketExpired");
     });
 
     it("should release without delay: if no tickets win", async function () {
@@ -1548,7 +1549,7 @@ describe("Lottery", function () {
 
       // NO WAIT for RELEASE
       const tx1 = lotteryInstance.releaseFunds(1);
-      await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "NotComplete");
+      await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "RoundNotComplete");
     });
 
     it("should fail: zero balance", async function () {
@@ -1780,7 +1781,7 @@ describe("Lottery", function () {
         },
         signature2,
       );
-      await expect(tx2).to.be.revertedWithCustomError(lotteryInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(lotteryInstance, "TicketLimitExceed");
     });
 
     it("should fail: current round is finished", async function () {
@@ -2080,7 +2081,7 @@ describe("Lottery", function () {
       await expect(tx).changeTokenBalances(erc20Instance, [receiver, lotteryInstance], [-amount, amount]);
 
       const tx1 = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "NotComplete");
+      await expect(tx1).to.be.revertedWithCustomError(lotteryInstance, "RoundNotComplete");
     });
 
     it("should fail: already got prize", async function () {

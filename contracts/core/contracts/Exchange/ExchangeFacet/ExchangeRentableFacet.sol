@@ -15,7 +15,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
+import { SignerMissingRole, NoItems } from "../../utils/errors.sol";
 
 contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
   using SafeCast for uint256;
@@ -77,7 +77,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     }
 
     if (items.length == 0) {
-      revert WrongAmount();
+      revert NoItems();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));

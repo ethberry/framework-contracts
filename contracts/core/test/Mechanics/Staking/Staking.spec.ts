@@ -261,7 +261,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
 
       const tx1 = stakingInstance.updateRule(1, false);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
     it("should fail: wrong Rule", async function () {
@@ -284,7 +284,7 @@ describe("Staking", function () {
       };
 
       const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.be.revertedWithCustomError(stakingInstance, "WrongRule");
+      await expect(tx).to.be.revertedWithCustomError(stakingInstance, "RuleNotExist");
     });
 
     it("should edit Rule", async function () {
@@ -468,7 +468,7 @@ describe("Staking", function () {
       await expect(tx12).to.not.be.reverted;
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
     });
 
     it("should get counters", async function () {
@@ -563,7 +563,7 @@ describe("Staking", function () {
       // expect(counter3).to.have.deep.nested.property("ruleCounter", 1);
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
 
       // Deposit user 2
       const tx3 = stakingInstance.connect(receiver).deposit(params, tokenIds, { value: amount });
@@ -587,10 +587,10 @@ describe("Staking", function () {
       const stakingInstance = await factory();
 
       const tx1 = stakingInstance.deposit(params, tokenIds);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
-    it("should fail for not active rule", async function () {
+    it("should fail: RuleNotActive", async function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
@@ -620,7 +620,7 @@ describe("Staking", function () {
       await expect(tx).to.emit(stakingInstance, "RuleCreated");
 
       const tx1 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotActive");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "RuleNotActive");
     });
 
     it("should fail for wrong pay amount", async function () {
@@ -698,7 +698,7 @@ describe("Staking", function () {
       await expect(tx1).to.not.be.reverted;
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
     });
 
     it("should fail when contract is paused", async function () {
@@ -710,7 +710,7 @@ describe("Staking", function () {
       await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "EnforcedPause");
     });
 
-    it("should fail deposit for wrong tokenId", async function () {
+    it("should fail: WrongTemplate", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();
@@ -756,7 +756,7 @@ describe("Staking", function () {
 
       // DEPOSIT
       const tx1 = stakingInstance.deposit(params, [2]);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongTemplate");
     });
 
     it("should deposit with templateId 0", async function () {
@@ -941,7 +941,7 @@ describe("Staking", function () {
         { value: amount * BigInt(cycles) },
       );
       const tx2 = stakingInstance.connect(receiver).receiveReward(2, true, true);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "WrongStake");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
     it("should fail for not an owner", async function () {
@@ -1009,7 +1009,7 @@ describe("Staking", function () {
       await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotAnOwner");
     });
 
-    it("should fail for withdrawn already", async function () {
+    it("should fail: StakeAlreadyWithdrawn", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const stakingInstance = await factory();
@@ -1081,7 +1081,7 @@ describe("Staking", function () {
       await expect(tx2).to.changeEtherBalance(receiver, amount * BigInt(cycles) + amount);
 
       const tx3 = stakingInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "Expired");
+      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "StakeAlreadyWithdrawn");
     });
 
     it("should fail staking not yet finished (reccurent)", async function () {
@@ -1130,7 +1130,7 @@ describe("Staking", function () {
 
       // DEPOSIT
       const tx1 = stakingInstance.deposit(params, [2], { value: amount });
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongTemplate");
     });
 
     it("should fail: staking not yet finished (non-recurrent)", async function () {
@@ -1183,7 +1183,7 @@ describe("Staking", function () {
 
       const tx2 = stakingInstance.receiveReward(1, false, false);
       // await expect(tx2).to.changeEtherBalances([owner, stakingInstance], [0, 0]);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
     });
 
     it("should fail first period not yet finished", async function () {
@@ -1235,7 +1235,7 @@ describe("Staking", function () {
       // REWARD
 
       const tx2 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
     });
 
     it("should fail when contract is paused", async function () {
@@ -2760,7 +2760,7 @@ describe("Staking", function () {
 
       // TRY TO RECEIVE REWARD WITH NO TIME PASSED
       const tx2 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
 
       // TIME 1 CYCLE
       const current = await time.latestBlock();
@@ -2782,7 +2782,7 @@ describe("Staking", function () {
 
       // TRY TO RECEIVE REWARD WITH NOT ENOUGH TIME PASSED
       const tx3 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
 
       // breakLastPeriod = RETURN DEPOSIT
       const tx33 = await stakingInstance.receiveReward(1, false, true);

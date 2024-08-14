@@ -827,7 +827,7 @@ describe("Diamond Exchange Rent", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongAmount");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "NoItems");
     });
 
     it("should fail: ERC721InsufficientApproval", async function () {

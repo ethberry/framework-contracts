@@ -122,10 +122,8 @@ enum ContractEventSignature {
   // MODULE:PAYMENT_SPLITTER
   PayeeAdded = "PayeeAdded(address,uint256)",
   PaymentReleased = "PaymentReleased(address,uint256)",
-  ERC20PaymentReleased = "ERC20PaymentReleased(address,address,uint256)",
   PaymentReceived = "PaymentReceived(address,uint256)",
-  PaymentEthReceived = "PaymentEthReceived(address,uint256)",
-  PaymentEthSent = "PaymentEthSent(address,uint256)",
+  ERC20PaymentReleased = "ERC20PaymentReleased(address,address,uint256)",
 
   // MODULE:CHAINLINKV2
   RandomWordsRequested = "RandomWordsRequested(bytes32,uint256,uint256,uint64,uint16,uint32,uint32,address)",

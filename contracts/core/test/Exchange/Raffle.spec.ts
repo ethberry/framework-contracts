@@ -138,172 +138,125 @@ describe("Diamond Exchange Raffle", function () {
       expect(balance).to.equal(amount * 1n);
     });
 
-    it("should fail: not exist", async function () {
+    it("should fail: ETHInvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
 
-      const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
-
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
-      const raffleInstance: any = await raffleFactory.deploy();
-
-      await raffleInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
-      await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
-
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance);
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance);
-
       const signature = await generateSignature({
         account: receiver.address,
         params: {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
           receiver: ZeroAddress,
           referrer: ZeroAddress,
-          extra,
         },
         item: {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         price: {
-          tokenType: 1n,
-          token: await erc20Instance.getAddress(),
-          tokenId: 121,
+          tokenType: 0n,
+          token: ZeroAddress,
+          tokenId: 121n,
           amount,
         },
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseRaffle(
         {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
           receiver: ZeroAddress,
           referrer: ZeroAddress,
-          extra,
         },
         {
           tokenType: 2n,
-          token: erc721TicketInstance,
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121,
+          tokenType: 0n,
+          token: ZeroAddress,
+          tokenId: 121n,
           amount,
         },
         signature,
+        {
+          value: amount,
+        },
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver");
     });
 
-    it("should fail: wrong token", async function () {
+    it("should fail: ERC20InvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
+
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
+
       const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
-
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
-
-      const raffleInstance: any = await raffleFactory.deploy();
-      await raffleInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 122,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
       await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
-
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance);
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
       const signature = await generateSignature({
         account: receiver.address,
         params: {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
-          receiver: await raffleInstance.getAddress(),
-          referrer: ZeroAddress,
+          nonce: encodeBytes32String("nonce"),
           extra,
+          receiver: ZeroAddress,
+          referrer: ZeroAddress,
         },
         item: {
-          tokenType: 0n,
+          tokenType: 2n,
           token: ZeroAddress,
           tokenId: 0,
-          amount,
+          amount: 1,
         },
         price: {
           tokenType: 1n,
           token: await erc20Instance.getAddress(),
-          tokenId: 121,
+          tokenId: 121n,
           amount,
         },
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseRaffle(
         {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
-          receiver: raffleInstance,
-          referrer: ZeroAddress,
+          nonce: encodeBytes32String("nonce"),
           extra,
+          receiver: ZeroAddress,
+          referrer: ZeroAddress,
         },
         {
-          tokenType: 0n,
+          tokenType: 2n,
           token: ZeroAddress,
           tokenId: 0,
-          amount,
+          amount: 1,
         },
         {
           tokenType: 1n,
           token: erc20Instance,
-          tokenId: 121,
+          tokenId: 121n,
           amount,
         },
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver");
     });
 
     it("should fail: wrong signer", async function () {

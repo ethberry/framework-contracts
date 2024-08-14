@@ -37,53 +37,52 @@ error WrongRole(); // not supported role
 error UnsupportedTokenType(); // used to indicate that certain token types are not allowed for mechanics
 error ETHInvalidReceiver(address receiver); // contract does not implement `receive` method
 error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed); // transaction has not enough ETH
+error NoPrice();
+error NoItems(); // RENT
+error NoContent(); // MYSTERY/LOOT/WRAPPER/VESTING/WAIT LIST
 
 // WAIT LIST
-error AddressIsNotInTheList(address account);
+error AddressAlreadyExists(address account);
 error RewardAlreadyClaimed();
-error RewardIsEmpty();
 error RootAlreadySet();
-error RootDoesNotExist();
-
-// MYSTERY/LOOT/WRAPPER/VESTING/WAIT LIST
-error NoContent(); // content has to be set
+error MissingRoot();
+error NoReward();
 
 // DISPENSER
 error WrongArrayLength(); // is used when two arrays has to be of the length size but they are not
 
-// BREED/RAFFLE/LOTTERY
-error NotOwnerNorApproved(address account);
-
 // BREED
 error PregnancyCountLimitExceed();
 error PregnancyTimeLimitExceed();
+// error NotOwnerNorApproved(address account);
 
 // LOTTERY/RAFFLE
+error NotOwnerNorApproved(address account);
 error WrongRound();
-error NotAWinner();
+error PrizeNotEligible();
+error TicketLimitExceed();
+error TicketExpired();
+error RoundNotComplete();
+error RoundNotActive();
+error WrongToken();
 
 // STAKING/PONZI
 error NotAnOwner(address account);
-
-
-
-
-
-// Lottery, Ponzi, Staking
-error NotExist();
-error LimitExceed();
+error RuleNotExist();
+error RuleNotActive();
+error StakeLimitExceed();
 error BalanceExceed();
-error WrongAmount();
-error WrongPrice();
-
-// staking
-error WrongToken();
-error WrongStake();
-error WrongRule();
-error Expired();
+error StakeNotExist();
+error StakeAlreadyWithdrawn();
 error ZeroBalance();
-error NotComplete();
-error NotActive();
+error DepositNotComplete();
+error WrongTemplate();
+
+// MERGE
+error MergeDifferentContracts();
+error MergeDifferentTemplate();
+
+
 
 
 

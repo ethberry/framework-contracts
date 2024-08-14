@@ -322,7 +322,7 @@ export function shouldClaim(factory: () => Promise<any>) {
       await expect(tx1).to.be.revertedWithCustomError(contractInstance, "EnforcedPause");
     });
 
-    it("should fail: RootDoesNotExist", async function () {
+    it("should fail: MissingRoot", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -337,10 +337,10 @@ export function shouldClaim(factory: () => Promise<any>) {
       const proof = merkleTree.getProof(merkleTree.leafLookup([owner.address]));
 
       const tx1 = contractInstance.claim(proof, externalId);
-      await expect(tx1).to.be.revertedWithCustomError(contractInstance, "RootDoesNotExist");
+      await expect(tx1).to.be.revertedWithCustomError(contractInstance, "MissingRoot");
     });
 
-    it("should fail: AddressIsNotInTheList", async function () {
+    it("should fail: AddressAlreadyExists", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -378,7 +378,7 @@ export function shouldClaim(factory: () => Promise<any>) {
       const proof = merkleTree.getProof(merkleTree.leafLookup([owner.address]));
 
       const tx2 = contractInstance.connect(receiver).claim(proof, externalId);
-      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "AddressIsNotInTheList");
+      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "AddressAlreadyExists");
     });
 
     it("should fail: RewardAlreadyClaimed", async function () {

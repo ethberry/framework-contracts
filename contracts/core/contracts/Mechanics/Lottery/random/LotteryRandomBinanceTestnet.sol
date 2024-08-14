@@ -53,7 +53,7 @@ contract LotteryRandomBinanceTestnet is LotteryRandom, ChainLinkBinanceTestnetV2
     currentRound.endTimestamp = block.timestamp + 1;
     currentRound.balance = 10000 ether;
     currentRound.total = 10000 ether;
-    currentRound.total -= (currentRound.total * comm) / 100;
+    currentRound.total -= (currentRound.total * fee) / 100;
     currentRound.tickets.push(ticket);
     currentRound.values = values;
     currentRound.ticketAsset = item;

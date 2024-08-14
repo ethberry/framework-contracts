@@ -27,8 +27,8 @@ library ExchangeUtils {
   using Address for address;
   using SafeERC20 for IERC20;
 
-  event PaymentEthReceived(address from, uint256 amount);
-  event PaymentEthSent(address to, uint256 amount);
+  event PaymentReceived(address from, uint256 amount);
+  event PaymentReleased(address to, uint256 amount);
 
   /**
    * @dev Transfer all types of tokens from `spender` to `receiver`.
@@ -95,12 +95,12 @@ library ExchangeUtils {
       if (totalAmount > msg.value) {
         revert ETHInsufficientBalance(spender, msg.value, totalAmount);
       } else if (address(this) == receiver) {
-        emit PaymentEthReceived(receiver, msg.value);
+        emit PaymentReceived(receiver, msg.value);
       } else if (receiver == address(0)) {
         revert ETHInvalidReceiver(address(0));
       } else {
         Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentEthSent(receiver, totalAmount);
+        emit PaymentReleased(receiver, totalAmount);
       }
     }
   }
@@ -209,7 +209,7 @@ library ExchangeUtils {
         revert ETHInvalidReceiver(address(0));
       } else {
         Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentEthSent(receiver, totalAmount);
+        emit PaymentReleased(receiver, totalAmount);
       }
     }
   }

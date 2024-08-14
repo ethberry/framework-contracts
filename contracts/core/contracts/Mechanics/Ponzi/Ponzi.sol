@@ -20,7 +20,7 @@ import { TopUp } from "../../utils/TopUp.sol";
 import { IPonzi } from "./interfaces/IPonzi.sol";
 import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { ZeroBalance, NotExist, NotActive, BalanceExceed, NotComplete, Expired, NotAnOwner, WrongStake } from "../../utils/errors.sol";
+import { ZeroBalance, StakeNotExist, RuleNotActive, BalanceExceed, DepositNotComplete, StakeAlreadyWithdrawn, NotAnOwner, StakeNotExist } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract Ponzi is
@@ -51,8 +51,8 @@ contract Ponzi is
   // ONLY NATIVE and ERC20 allowed
   AllowedTokenTypes _allowedTypes = AllowedTokenTypes(true, true, false, false, false);
 
-  //  event PaymentEthReceived(address from, uint256 amount);
-  event PaymentEthSent(address to, uint256 amount);
+  //  event PaymentReceived(address from, uint256 amount);
+  event PaymentReleased(address to, uint256 amount);
 
   constructor() {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
@@ -73,10 +73,10 @@ contract Ponzi is
 
     // Ensure that the rule exists and is active
     if (rule.terms.period == 0) {
-      revert NotExist();
+      revert StakeNotExist();
     }
     if (!rule.active) {
-      revert NotActive();
+      revert RuleNotActive();
     }
 
     uint256 stakeId = ++_stakeIdCounter;
@@ -107,13 +107,13 @@ contract Ponzi is
 
     // Verify that the stake exists and the caller is the owner of the stake.
     if (stake.owner == address(0)) {
-      revert WrongStake();
+      revert StakeNotExist();
     }
     if (stake.owner != _msgSender()) {
       revert NotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
-      revert Expired();
+      revert StakeAlreadyWithdrawn();
     }
 
     uint256 startTimestamp = stake.startTimestamp;
@@ -171,7 +171,7 @@ contract Ponzi is
     }
 
     if (multiplier == 0 && !withdrawDeposit && !breakLastPeriod) {
-      revert NotComplete();
+      revert DepositNotComplete();
     }
   }
 
@@ -205,7 +205,7 @@ contract Ponzi is
   function _updateRule(uint256 ruleId, bool active) internal {
     Rule storage rule = _rules[ruleId];
     if (rule.terms.period == 0) {
-      revert NotExist();
+      revert StakeNotExist();
     }
     _rules[ruleId].active = active;
     emit RuleUpdated(ruleId, active);
@@ -268,7 +268,7 @@ contract Ponzi is
 
     // Ensure that the rule exists
     if (rule.terms.period == 0) {
-      revert NotExist();
+      revert StakeNotExist();
     }
 
     address token = rule.deposit.token;

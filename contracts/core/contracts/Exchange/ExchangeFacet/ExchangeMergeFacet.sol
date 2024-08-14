@@ -15,7 +15,7 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, WrongToken } from "../../utils/errors.sol";
+import { SignerMissingRole, MergeDifferentTemplate, MergeDifferentContracts } from "../../utils/errors.sol";
 
 contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
   event Merge(address account, uint256 externalId, Asset[] items, Asset[] price);
@@ -39,20 +39,19 @@ contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
 
     uint256 length = price.length;
     for (uint256 i = 0; i < length; ) {
-      Asset memory item = price[i];
+      Asset memory el = price[i];
 
       // check for same contract
-      if (i > 0 && item.token != price[0].token) {
-        revert WrongToken();
+      if (i > 0 && el.token != price[0].token) {
+        revert MergeDifferentContracts();
       }
 
-      // todo should we try..catch call?
       // check for token existence with correct metadata
-      uint256 templateId = IERC721GeneralizedCollection(item.token).getRecordFieldValue(item.tokenId, TEMPLATE_ID);
+      uint256 templateId = IERC721GeneralizedCollection(el.token).getRecordFieldValue(el.tokenId, TEMPLATE_ID);
 
       // check for same template
       if (expectedId != 0 && templateId != expectedId) {
-        revert WrongToken();
+        revert MergeDifferentTemplate();
       }
 
       unchecked {

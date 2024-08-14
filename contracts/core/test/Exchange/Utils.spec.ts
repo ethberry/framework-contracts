@@ -1215,7 +1215,7 @@ describe("Diamond Exchange Utils", function () {
 
           const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
 
-          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.emit(lib, "PaymentReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testSpend(
@@ -1253,7 +1253,7 @@ describe("Diamond Exchange Utils", function () {
 
           const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
 
-          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.emit(lib, "PaymentReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testSpend(
@@ -2064,7 +2064,7 @@ describe("Diamond Exchange Utils", function () {
           );
 
           const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
-          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.emit(lib, "PaymentReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testAcquire(
@@ -2080,7 +2080,7 @@ describe("Diamond Exchange Utils", function () {
             enabled,
           );
 
-          await expect(tx2).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
+          await expect(tx2).to.emit(lib, "PaymentReleased").withArgs(receiver.address, amount);
           await expect(tx2).changeEtherBalances([exchangeInstance, receiver], [-amount, amount]);
         });
 
@@ -2102,7 +2102,7 @@ describe("Diamond Exchange Utils", function () {
           );
 
           const lib = await ethers.getContractAt("ExchangeUtils", exchangeInstance, owner);
-          await expect(tx1).to.emit(lib, "PaymentEthReceived").withArgs(exchangeInstance, amount);
+          await expect(tx1).to.emit(lib, "PaymentReceived").withArgs(exchangeInstance, amount);
           await expect(tx1).to.changeEtherBalances([owner, exchangeInstance], [-amount, amount]);
 
           const tx2 = exchangeInstance.testAcquire(

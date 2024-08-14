@@ -14,7 +14,7 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-import { AddressIsNotInTheList, RewardAlreadyClaimed, RewardIsEmpty, RootDoesNotExist, RootAlreadySet } from "../../utils/errors.sol";
+import { AddressAlreadyExists, RewardAlreadyClaimed, NoReward, MissingRoot, RootAlreadySet } from "../../utils/errors.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
@@ -40,7 +40,7 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
     _roots[params.externalId] = params.extra;
 
     if (items.length == 0) {
-      revert RewardIsEmpty();
+      revert NoReward();
     }
 
     uint256 length = items.length;
@@ -56,7 +56,7 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
 
   function claim(bytes32[] calldata proof, uint256 externalId) public whenNotPaused {
     if (_roots[externalId] == "") {
-      revert RootDoesNotExist();
+      revert MissingRoot();
     }
 
     // should be
@@ -65,7 +65,7 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
     bool verified = MerkleProof.verifyCalldata(proof, _roots[externalId], leaf);
 
     if (!verified) {
-      revert AddressIsNotInTheList(_msgSender());
+      revert AddressAlreadyExists(_msgSender());
     }
 
     if (_claimed[externalId][_msgSender()]) {
