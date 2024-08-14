@@ -14,14 +14,14 @@ import { getBaseTokenURI } from "../test/shared/uri";
 import { TypedContractEvent, TypedEventLog } from "../typechain-types/common";
 
 // DELAY CONFIG
-const delay = 2; // block delay
-const delayMs = 600; // block delay ms (low for localhost, high for binance etc.)
+const delay = 1; // block delay
+const delayMs = 900; // block delay ms (low for localhost, high for binance etc.)
 
 // VRF CONFIG
 const vrfSubId =
   network.name === "besu" || network.name === "telos_test"
-    ? 99184370730701146701081864127604158661022970614763057388795483059418674155128n
-    : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
+    ? 90511971795741479935923326278479026746054804275284472604758078181846377682962n
+    : 107047671614105181605855861266364170459723373514078878123604030694679782559997n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
 
 // COLLECTION size
 const batchSize = 3; // Generative collection size
