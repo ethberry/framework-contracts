@@ -6,7 +6,7 @@ import { shouldBehaveLikeERC721Consecutive } from "@gemunion/contracts-erc721c";
 import { deployCollection } from "./shared/fixtures";
 import { shouldMintConsecutive } from "./shared/simple/base/mintConsecutive";
 import { shouldBehaveLikeERC721Collection } from "./shared/simple";
-import { NodeEnv } from "../../types";
+import { NodeEnv } from "@gemunion/constants";
 
 describe("ERC721CBlacklist", function () {
   // test timeout fails when batchSize = 5000n

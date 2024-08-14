@@ -8,10 +8,3 @@ export enum TokenMetadata {
   NUMBERS = "NUMBERS",
   PRIZE = "PRIZE",
 }
-
-export enum NodeEnv {
-  test = "test",
-  development = "development",
-  staging = "staging",
-  production = "production",
-}
