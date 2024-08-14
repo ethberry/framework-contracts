@@ -98,7 +98,7 @@ describe("Dispenser", function () {
         .withArgs(owner, amount / 2n, amount);
     });
 
-    it("should fail: insufficient balance", async function () {
+    it("should fail: AddressInsufficientBalance", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();

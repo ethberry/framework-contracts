@@ -5,7 +5,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contract
 import { deployERC1363 } from "./shared/fixtures";
 import { shouldWhiteList } from "./shared/whitelist/whitelist";
 import { shouldBehaveLikeERC20Whitelist } from "./shared/whitelist";
-import { customMint } from "./shared/whitelist/fixtures";
+import { customMint } from "./shared/whitelist/customMintFn";
 
 describe("ERC20Whitelist", function () {
   const factory = () => deployERC1363(this.title);

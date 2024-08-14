@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { stripZerosLeft, toUtf8Bytes, toUtf8String, zeroPadValue } from "ethers";
 
-describe("upgrade", function () {
+describe("Discrete", function () {
   it("should convert string", function () {
     const bytes32 = zeroPadValue(toUtf8Bytes("A"), 32);
     expect(bytes32).to.equal("0x0000000000000000000000000000000000000000000000000000000000000041");

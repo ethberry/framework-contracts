@@ -12,6 +12,7 @@ export const templateIds = [1n];
 export const cap = WeiPerEther * 1000000000n;
 export const userId = 1;
 export const claimId = 1;
+export const batchSize = 10n;
 
 export const amountWei = 10000000000000000n;
 export const tokenZero = "0x0000000000000000000000000000000000000000";

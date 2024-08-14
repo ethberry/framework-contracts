@@ -1,4 +1,4 @@
-import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
+import type { IERC721EnumOptions, TERC721MetadataOptions } from "@gemunion/contracts-erc721e";
 import {
   shouldApprove,
   shouldBehaveLikeERC721Burnable,
@@ -8,8 +8,9 @@ import {
   shouldSafeMint,
   shouldSetApprovalForAll,
 } from "@gemunion/contracts-erc721e";
+import { TEMPLATE_ID } from "@gemunion/contracts-constants";
 
-import { tokenId } from "../../../constants";
+import { templateId, tokenId } from "../../../constants";
 import { shouldReceive } from "../../../shared/receive";
 import { customMintCommonERC721 } from "../customMintFn";
 import { shouldNotSafeMint } from "../simple/base/shouldNotSafeMint";
@@ -18,8 +19,20 @@ import { shouldBaseUrl } from "../simple/baseUrl";
 import { shouldTransferFrom } from "./transferFrom";
 import { shouldSafeTransferFrom } from "./safeTransferFrom";
 
-export function shouldBehaveLikeERC721Soulbound(factory: () => Promise<any>, options: IERC721EnumOptions = {}) {
-  options = Object.assign({}, { mint: customMintCommonERC721, safeMint: customMintCommonERC721, tokenId }, options);
+export function shouldBehaveLikeERC721Soulbound(
+  factory: () => Promise<any>,
+  options: IERC721EnumOptions = {},
+  metadata: TERC721MetadataOptions = [{ key: TEMPLATE_ID, value: templateId }],
+) {
+  options = Object.assign(
+    {},
+    {
+      mint: customMintCommonERC721,
+      safeMint: customMintCommonERC721,
+      tokenId,
+    },
+    options,
+  );
 
   shouldApprove(factory, options);
   shouldGetBalanceOf(factory, options);
@@ -34,6 +47,6 @@ export function shouldBehaveLikeERC721Soulbound(factory: () => Promise<any>, opt
   shouldReceive(factory);
 
   shouldBehaveLikeERC721Burnable(factory, options);
-  shouldBehaveLikeERC721Metadata(factory, options);
+  shouldBehaveLikeERC721Metadata(factory, options, metadata);
   shouldBaseUrl(factory);
 }
