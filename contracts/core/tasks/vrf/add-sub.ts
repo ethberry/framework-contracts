@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
-import { VRFCoordinatorV2PlusMock } from "../typechain-types";
-import { recursivelyDecodeResult } from "../test/utils";
+import { recursivelyDecodeResult } from "./get-sub";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 
 task("add-sub", "Add vRF subscription").setAction(async (_, hre) => {
   // Get network information
