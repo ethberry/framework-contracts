@@ -13,7 +13,6 @@ describe("ERC998Genes", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldNotMint(factory);
   shouldNotMintCommon(factory);
   shouldNotSafeMint(factory);

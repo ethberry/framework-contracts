@@ -14,7 +14,6 @@ describe("ERC998ERC1155Simple", function () {
   const options = { mint: customMintCommonERC721, tokenId };
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC998Simple(factory);
   shouldBehaveLikeERC998ERC1155(factory, options);
   shouldMintCommon(factory);

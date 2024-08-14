@@ -12,7 +12,6 @@ describe("ERC20Blacklist", function () {
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
   shouldBehaveLikeBlackList(factory);
   shouldBehaveLikeERC20BlackList(factory);
-
   shouldBehaveLikeERC20Simple(factory);
 
   shouldSupportsInterface(factory)([

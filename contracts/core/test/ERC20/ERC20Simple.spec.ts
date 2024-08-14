@@ -9,7 +9,6 @@ describe("ERC20Simple", function () {
   const factory = () => deployERC1363(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC20Simple(factory);
 
   shouldSupportsInterface(factory)([

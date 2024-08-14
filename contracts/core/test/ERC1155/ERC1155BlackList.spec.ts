@@ -10,7 +10,6 @@ describe("ERC1155Blacklist", function () {
   const factory = () => deployERC1155(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC1155Simple(factory);
   shouldBehaveLikeERC1155BlackList(factory);
 

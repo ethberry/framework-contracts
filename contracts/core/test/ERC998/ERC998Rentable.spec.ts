@@ -11,7 +11,6 @@ describe("ERC998Rentable", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC998Simple(factory);
   shouldBehaveLikeERC721Rentable(factory);
 

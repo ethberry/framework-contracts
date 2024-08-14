@@ -14,7 +14,6 @@ describe("ERC998Blacklist", function () {
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
   shouldBehaveLikeBlackList(factory);
   shouldBehaveLikeERC721Blacklist(factory);
-
   shouldBehaveLikeERC998Simple(factory);
   shouldMintCommon(factory);
 

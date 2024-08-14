@@ -2,14 +2,15 @@ import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
 import {
   shouldApprove,
   shouldBehaveLikeERC721Burnable,
+  shouldBehaveLikeERC721Metadata,
   shouldGetBalanceOf,
   shouldGetOwnerOf,
   shouldSafeMint,
   shouldSetApprovalForAll,
 } from "@gemunion/contracts-erc721e";
 
-import { shouldReceive } from "../../../shared/receive";
 import { tokenId } from "../../../constants";
+import { shouldReceive } from "../../../shared/receive";
 import { customMintCommonERC721 } from "../customMintFn";
 import { shouldNotSafeMint } from "../simple/base/shouldNotSafeMint";
 import { shouldNotMint } from "../simple/base/shouldNotMint";
@@ -24,14 +25,15 @@ export function shouldBehaveLikeERC721Soulbound(factory: () => Promise<any>, opt
   shouldGetBalanceOf(factory, options);
   shouldGetOwnerOf(factory, options);
   shouldSetApprovalForAll(factory, options);
+  shouldSafeMint(factory, options);
   shouldTransferFrom(factory, options);
   shouldSafeTransferFrom(factory, options);
-  shouldSafeMint(factory, options);
 
   shouldNotMint(factory);
   shouldNotSafeMint(factory);
   shouldReceive(factory);
 
   shouldBehaveLikeERC721Burnable(factory, options);
+  shouldBehaveLikeERC721Metadata(factory, options);
   shouldBaseUrl(factory);
 }

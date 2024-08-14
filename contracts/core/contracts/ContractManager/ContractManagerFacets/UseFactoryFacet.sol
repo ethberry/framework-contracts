@@ -35,9 +35,6 @@ contract UseFactoryFacet is AccessControlInternal {
       EnumerableSet.add(CMStorage.layout()._minters, factory);
     } else if (role == METADATA_ROLE) {
       EnumerableSet.add(CMStorage.layout()._manipulators, factory);
-    } else if (role == DEFAULT_ADMIN_ROLE) {
-      EnumerableSet.add(CMStorage.layout()._minters, factory);
-      EnumerableSet.add(CMStorage.layout()._manipulators, factory);
     } else {
       revert WrongRole();
     }
@@ -52,9 +49,6 @@ contract UseFactoryFacet is AccessControlInternal {
     if (role == MINTER_ROLE) {
       EnumerableSet.remove(CMStorage.layout()._minters, factory);
     } else if (role == METADATA_ROLE) {
-      EnumerableSet.remove(CMStorage.layout()._manipulators, factory);
-    } else if (role == DEFAULT_ADMIN_ROLE) {
-      EnumerableSet.remove(CMStorage.layout()._minters, factory);
       EnumerableSet.remove(CMStorage.layout()._manipulators, factory);
     } else {
       revert WrongRole();

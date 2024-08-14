@@ -16,7 +16,6 @@ describe("ERC998BlacklistRandom", function () {
   shouldBehaveLikeBlackList(factory);
   shouldBehaveLikeERC721Blacklist(factory);
   shouldBehaveLikeERC721BlacklistRandom(factory);
-
   shouldBehaveLikeERC998Simple(factory, {}, [
     { key: TEMPLATE_ID, value: templateId },
     { key: RARITY, value: 0n },

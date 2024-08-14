@@ -12,7 +12,6 @@ describe("ERC998Random", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC998Simple(factory, {}, [
     { key: TEMPLATE_ID, value: templateId },
     { key: RARITY, value: 0n },

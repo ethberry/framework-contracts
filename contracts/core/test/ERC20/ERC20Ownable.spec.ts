@@ -9,7 +9,6 @@ describe("ERC20Ownable", function () {
   const factory = () => deployERC1363(this.title);
 
   shouldBehaveLikeOwnable(factory);
-
   shouldBehaveLikeERC20Simple(factory);
 
   shouldSupportsInterface(factory)([
