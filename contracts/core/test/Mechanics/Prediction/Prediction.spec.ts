@@ -1,15 +1,14 @@
-import { deployContract, shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { InterfaceId } from "@gemunion/contracts-constants";
+// import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
+
+import { shouldBehaveLikePredictionContract } from "./shared/predictionBehavior";
+import { deployPredictionContract } from "./shared/fixtures";
+
+const isVerbose = process.env.VERBOSE === "true";
 
 describe("Prediction", function () {
-  const factory = () => deployContract("Prediction");
+  const factory = () => deployPredictionContract();
 
-  shouldBehaveLikePausable(factory);
+  shouldBehaveLikePredictionContract(factory, isVerbose);
 
-  shouldSupportsInterface(factory)([
-    InterfaceId.IERC165,
-    InterfaceId.IAccessControl,
-    InterfaceId.IERC1363Receiver,
-    InterfaceId.IERC1363Spender,
-  ]);
+  // shouldBehaveLikePausable(factory);
 });

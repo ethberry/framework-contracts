@@ -73,3 +73,24 @@ error RemoveFacetAddressMustBeAddressZero();
 error CantRemoveFunctionThatDoesntExist();
 error CantRemoveImmutableFunction();
 error FacetHasNoCode();
+
+// Prediction
+error ContractNotAllowed();
+error TreasuryFeeTooHigh();
+error PredictionAlreadyExists();
+error PredictionDoesNotExist();
+error BettingNotStarted();
+error BettingEnded();
+error BetAmountTooLow();
+error BetAmountNotMultipleOfStakeUnit();
+error BetAlreadyPlaced();
+error ResolutionNotAvailable();
+error PredictionNotResolved();
+error NotEligibleForClaim();
+error CannotResolveBeforeResolution();
+error PredictionAlreadyResolved();
+error ExpiryTimeNotPassed();
+error MustBeGreaterThanZero();
+error ZeroAddressNotAllowed();
+error TransferAmountExceedsAllowance();
+error RoundNotBettable();
