@@ -4,7 +4,7 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("startPrediction", function () {
-    it("should only allow operator to start a prediction", async function () {
+    it.only("should only allow operator to start a prediction", async function () {
       const { prediction, operator, bettor1 } = await factory();
 
       const title = "Prediction Title";

@@ -19,8 +19,8 @@ import {
   TreasuryFeeTooHigh,
   PredictionAlreadyExists,
   PredictionDoesNotExist,
-  BettingNotStarted,
-  BettingEnded,
+  PredictionNotStarted,
+  PredictionEnded,
   BetAmountTooLow,
   BetAmountNotMultipleOfStakeUnit,
   BetAlreadyPlaced,
@@ -57,34 +57,35 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
 
     uint256 public constant MAX_TREASURY_FEE = 2000; // 20%
 
+    PredictionMatch[] public predictions;
+    mapping(bytes32 => uint256) private externalIdToIndex;
     mapping(bytes32 => mapping(address => BetInfo)) public ledger;
-    mapping(bytes32 => PredictionMatch) public predictions;
     mapping(address => bytes32[]) public userPredictions;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     bytes32 public constant TREASURY_ROLE = keccak256("TREASURY_ROLE");
 
     enum Position {
-        Left,
-        Right
+        LEFT,
+        RIGHT
     }
 
     enum Outcome {
-        Left,
-        Right,
+        LEFT,
+        RIGHT,
         DRAW,
         ERROR
     }
 
     struct PredictionMatch {
-        bytes32 id;
-        string title;
+        string externalId;
         uint256 startTimestamp;
         uint256 endTimestamp;
         uint256 resolutionTimestamp;
         uint256 expiryTimestamp;
         uint256 betUnitsOnLeft;
         uint256 betUnitsOnRight;
+        Asset betUnit;
         Asset rewardUnit;
         Outcome outcome;
         bool resolved;
@@ -96,30 +97,35 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
         bool claimed;
     }
 
-    event BetPlaced(address indexed sender, bytes32 indexed predictionId, Asset asset, Position position);
-    event Claim(address indexed sender, bytes32 indexed predictionId, uint256 amount);
-    event EndPrediction(bytes32 indexed predictionId, Outcome outcome);
+    event BetPlaced(address indexed sender, string externalId, Asset asset, Position position);
+    event Claim(address indexed sender, string externalId, uint256 amount);
+    event PredictionEnd(string externalId, Outcome outcome);
     event NewTreasuryAddress(address treasury);
     event NewMinBetUnits(uint256 minBetUnits);
     event NewTreasuryFee(uint256 treasuryFee);
-    event RewardsCalculated(bytes32 indexed predictionId, uint256 rewardBaseUnits, uint256 rewardAmount, uint256 treasuryAmount);
-    event StartPrediction(bytes32 indexed predictionId, string title);
+    event RewardsCalculated(string externalId, uint256 rewardBaseUnits, uint256 rewardAmount, uint256 treasuryAmount);
+    event StartPrediction(string externalId);
     event TokenRecovery(address indexed token, uint256 amount);
     event TreasuryClaim(uint256 amount);
 
-    modifier notContract() {
-        if (_isContract(msg.sender)) revert ContractNotAllowed();
-        if (msg.sender != tx.origin) revert ContractNotAllowed();
-        _;
-    }
-
-    modifier validateBet(string memory title, uint256 units) {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp < predictions[predictionId].startTimestamp) revert BettingNotStarted();
-        if (block.timestamp > predictions[predictionId].endTimestamp) revert BettingEnded();
-        if (units < minBetUnits) revert BetAmountTooLow();
-        if (ledger[predictionId][msg.sender].units != 0) revert BetAlreadyPlaced();
+    modifier validateBet(string memory externalId, uint256 units) {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        if (index == 0) {
+            revert PredictionDoesNotExist();
+        }
+        if (block.timestamp < predictions[index].startTimestamp) {
+            revert PredictionNotStarted();
+        }
+        if (block.timestamp > predictions[index].endTimestamp) {
+            revert PredictionEnded();
+        }
+        if (units < minBetUnits) {
+            revert BetAmountTooLow();
+        }
+        if (ledger[externalIdHash][msg.sender].units != 0) {
+            revert BetAlreadyPlaced();
+        }
         _;
     }
 
@@ -131,17 +137,11 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - `_treasuryFee` must be less than or equal to `MAX_TREASURY_FEE`.
      */
     constructor(
-        Asset memory _betUnit,
-        address _treasuryAddress,
         address _operatorAddress,
-        uint256 _minBetUnits,
         uint256 _treasuryFee
     ) {
         if (_treasuryFee > MAX_TREASURY_FEE) revert TreasuryFeeTooHigh();
 
-        betUnit = _betUnit;
-        treasuryAddress = _treasuryAddress;
-        minBetUnits = _minBetUnits;
         treasuryFee = _treasuryFee;
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -159,34 +159,45 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - `resolutionTimestamp` must be less than `expiryTimestamp`.
      */
     function startPrediction(
-        string memory title,
+        string memory externalId,
         uint256 startTimestamp,
         uint256 endTimestamp,
         uint256 resolutionTimestamp,
-        uint256 expiryTimestamp
+        uint256 expiryTimestamp,
+        Asset memory betUnit
     ) external onlyRole(OPERATOR_ROLE) {
-        if (startTimestamp >= endTimestamp) revert BettingNotStarted();
-        if (endTimestamp >= resolutionTimestamp) revert BettingEnded();
-        if (resolutionTimestamp >= expiryTimestamp) revert CannotResolveBeforeResolution();
+        if (startTimestamp >= endTimestamp) {
+            revert PredictionNotStarted();
+        }
+        if (endTimestamp >= resolutionTimestamp) {
+            revert PredictionEnded();
+        }
+        if (resolutionTimestamp >= expiryTimestamp) {
+            revert CannotResolveBeforeResolution();
+        }
 
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp != 0) revert PredictionAlreadyExists();
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        if (externalIdToIndex[externalIdHash] != 0) {
+            revert PredictionAlreadyExists();
+        }
 
-        predictions[predictionId] = PredictionMatch({
-            id: predictionId,
-            title: title,
+        predictions.push(PredictionMatch({
+            externalId: externalId,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
             resolutionTimestamp: resolutionTimestamp,
             expiryTimestamp: expiryTimestamp,
             betUnitsOnLeft: 0,
             betUnitsOnRight: 0,
+            betUnit: betUnit,
             rewardUnit: betUnit,
             outcome: Outcome.ERROR,
             resolved: false
-        });
+        }));
 
-        emit StartPrediction(predictionId, title);
+        externalIdToIndex[externalIdHash] = predictions.length - 1;
+
+        emit StartPrediction(externalId);
     }
 
     /**
@@ -200,9 +211,17 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - The user must not have already placed a bet on this prediction.
      * - The betUnit type must be ERC20.
      */
-    function placeBetInTokens(string memory title, uint256 units, Position position) external whenNotPaused nonReentrant notContract {
-        if (betUnit.tokenType != TokenType.ERC20) revert WrongToken();
-        _placeBet(title, units, position, AllowedTokenTypes(false, true, false, false, false));
+    function placeBetInTokens(string memory externalId, uint256 units, Position position) external whenNotPaused nonReentrant {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        if (index == 0) {
+            revert PredictionDoesNotExist();
+        }
+        Asset memory betUnit = predictions[index].rewardUnit;
+        if (betUnit.tokenType != TokenType.ERC20) {
+            revert WrongToken();
+        }
+        _placeBet(externalId, units, position, AllowedTokenTypes(false, true, false, false, false));
     }
 
     /**
@@ -216,19 +235,31 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - The user must not have already placed a bet on this prediction.
      * - The betUnit type must be NATIVE.
      */
-    function placeBetInEther(string memory title, Position position) external payable whenNotPaused nonReentrant notContract {
-        if (betUnit.tokenType != TokenType.NATIVE) revert WrongToken();
+    function placeBetInEther(string memory externalId, Position position) external payable whenNotPaused nonReentrant {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        if (index == 0) {
+            revert PredictionDoesNotExist();
+        }
+        Asset memory betUnit = predictions[index].rewardUnit;
+        if (betUnit.tokenType != TokenType.NATIVE) {
+            revert WrongToken();
+        }
         uint256 units = msg.value / betUnit.amount;
-         _placeBet(title, units, position, AllowedTokenTypes(true, false, false, false, false));
+        _placeBet(externalId, units, position, AllowedTokenTypes(true, false, false, false, false));
     }
 
     function _placeBet(
-        string memory title,
+        string memory externalId,
         uint256 units,
         Position position,
         AllowedTokenTypes memory allowed
-    ) internal validateBet(title, units) {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
+    ) internal validateBet(externalId, units) {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        PredictionMatch storage prediction = predictions[index];
+
+        Asset memory betUnit = prediction.betUnit;
 
         Asset[] memory price = new Asset[](1);
         price[0] = betUnit;
@@ -236,19 +267,18 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
 
         ExchangeUtils.spendFrom(price, msg.sender, address(this), allowed);
 
-        PredictionMatch storage prediction = predictions[predictionId];
-        if (position == Position.Left) {
+        if (position == Position.LEFT) {
             prediction.betUnitsOnLeft += units;
         } else {
             prediction.betUnitsOnRight += units;
         }
 
-        BetInfo storage betInfo = ledger[predictionId][msg.sender];
+        BetInfo storage betInfo = ledger[externalIdHash][msg.sender];
         betInfo.position = position;
         betInfo.units = units;
-        userPredictions[msg.sender].push(predictionId);
+        userPredictions[msg.sender].push(externalIdHash);
 
-        emit BetPlaced(msg.sender, predictionId, price[0], position);
+        emit BetPlaced(msg.sender, externalId, price[0], position);
     }
 
     /**
@@ -261,17 +291,28 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - The prediction must be resolved.
      * - The user must be eligible for the claim.
      */
-    function claim(string memory title) external nonReentrant notContract {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp <= predictions[predictionId].resolutionTimestamp) revert ResolutionNotAvailable();
+    function claim(string memory externalId) external nonReentrant {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        if (externalIdToIndex[externalIdHash] == 0) {
+            revert PredictionDoesNotExist();
+        }
 
+        PredictionMatch storage prediction = predictions[externalIdToIndex[externalIdHash]];
+
+        if (block.timestamp <= prediction.resolutionTimestamp) {
+            revert ResolutionNotAvailable();
+        }
+        
         uint256 reward = 0;
-        if (!predictions[predictionId].resolved) revert PredictionNotResolved();
-        if (!claimable(predictionId, msg.sender)) revert NotEligibleForClaim();
+        if (!prediction.resolved) {
+            revert PredictionNotResolved();
+        }
+        if (!claimable(externalIdHash, msg.sender)) {
+            revert NotEligibleForClaim();
+        }
 
-        PredictionMatch memory prediction = predictions[predictionId];
-        BetInfo memory betInfo = ledger[predictionId][msg.sender];
+        BetInfo memory betInfo = ledger[externalIdHash][msg.sender];
+        Asset memory betUnit = prediction.betUnit;
 
         uint256 baseStake = betInfo.units * betUnit.amount;
 
@@ -282,7 +323,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
             reward = baseStake + userReward;
         }
 
-        ledger[predictionId][msg.sender].claimed = true;
+        ledger[externalIdHash][msg.sender].claimed = true;
 
         if (reward > 0) {
             Asset[] memory rewardAsset = ExchangeUtils._toArray(Asset({
@@ -295,7 +336,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
             ExchangeUtils.spend(rewardAsset, msg.sender, AllowedTokenTypes(true, true, true, true, true));
         }
 
-        emit Claim(msg.sender, predictionId, reward);
+        emit Claim(msg.sender, externalId, reward);
     }
 
     /**
@@ -308,18 +349,25 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - The current timestamp must be after the resolution timestamp.
      * - The prediction must not be already resolved.
      */
-    function resolvePrediction(string memory title, Outcome outcome) external whenNotPaused onlyRole(OPERATOR_ROLE) {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp < predictions[predictionId].resolutionTimestamp) revert CannotResolveBeforeResolution();
-        if (predictions[predictionId].resolved) revert PredictionAlreadyResolved();
+    function resolvePrediction(string memory externalId, Outcome outcome) external whenNotPaused onlyRole(OPERATOR_ROLE) {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        if (index == 0) {
+            revert PredictionDoesNotExist();
+        }
+        if (block.timestamp < predictions[index].resolutionTimestamp) {
+            revert CannotResolveBeforeResolution();
+        }
+        if (predictions[index].resolved) {
+            revert PredictionAlreadyResolved();
+        }
 
-        PredictionMatch storage prediction = predictions[predictionId];
+        PredictionMatch storage prediction = predictions[index];
         if (prediction.betUnitsOnLeft == 0 || prediction.betUnitsOnRight == 0) {
-            _safeEndPrediction(predictionId, Outcome.ERROR);
+            _safePredictionEnd(index, Outcome.ERROR);
         } else {
-            _safeEndPrediction(predictionId, outcome);
-            _calculateRewards(predictionId);
+            _safePredictionEnd(index, outcome);
+            _calculateRewards(index);
         }
     }
 
@@ -332,17 +380,24 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - The current timestamp must be after the expiry timestamp.
      * - The prediction must not be already resolved.
      */
-    function resolvePredictionError(string memory title) external {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp <= predictions[predictionId].expiryTimestamp) revert ExpiryTimeNotPassed();
-        if (predictions[predictionId].resolved) revert PredictionAlreadyResolved();
+    function resolvePredictionError(string memory externalId) external {
+        bytes32 externalIdHash = keccak256(abi.encodePacked(externalId));
+        uint256 index = externalIdToIndex[externalIdHash];
+        if (index == 0) {
+            revert PredictionDoesNotExist();
+        }
+        if (block.timestamp <= predictions[index].expiryTimestamp) {
+            revert ExpiryTimeNotPassed();
+        }
+        if (predictions[index].resolved) {
+            revert PredictionAlreadyResolved();
+        }
 
-        PredictionMatch storage prediction = predictions[predictionId];
+        PredictionMatch storage prediction = predictions[index];
         prediction.outcome = Outcome.ERROR;
         prediction.resolved = true;
 
-        emit EndPrediction(predictionId, Outcome.ERROR);
+        emit PredictionEnd(externalId, Outcome.ERROR);
     }
 
     /**
@@ -352,7 +407,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      *
      * - The caller must have the `OPERATOR_ROLE`.
      */
-    function claimTreasury() external nonReentrant onlyRole(OPERATOR_ROLE) {
+    function claimTreasury() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 currentTreasuryAmount = treasuryAmount;
         treasuryAmount = 0;
 
@@ -391,20 +446,6 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
     }
 
     /**
-     * @dev Sets the minimum bet units.
-     *
-     * Requirements:
-     *
-     * - The caller must have the `DEFAULT_ADMIN_ROLE`.
-     * - `_minBetUnits` must be greater than zero.
-     */
-    function setMinBetUnits(uint256 _minBetUnits) external whenPaused onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_minBetUnits == 0) revert MustBeGreaterThanZero();
-        minBetUnits = _minBetUnits;
-        emit NewMinBetUnits(minBetUnits);
-    }
-
-    /**
      * @dev Sets the treasury fee.
      *
      * Requirements:
@@ -413,7 +454,9 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - `_treasuryFee` must be less than or equal to `MAX_TREASURY_FEE`.
      */
     function setTreasuryFee(uint256 _treasuryFee) external whenPaused onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_treasuryFee > MAX_TREASURY_FEE) revert TreasuryFeeTooHigh();
+        if (_treasuryFee > MAX_TREASURY_FEE) {
+            revert TreasuryFeeTooHigh();
+        }
         treasuryFee = _treasuryFee;
         emit NewTreasuryFee(treasuryFee);
     }
@@ -427,23 +470,11 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
      * - `_token` must not be the prediction token.
      */
     function recoverToken(address _token, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_token == betUnit.token) revert TransferAmountExceedsAllowance();
+        if (_token == betUnit.token) {
+            revert TransferAmountExceedsAllowance();
+        }
         IERC20(_token).safeTransfer(msg.sender, _amount);
         emit TokenRecovery(_token, _amount);
-    }
-
-    /**
-     * @dev Sets the treasury address.
-     *
-     * Requirements:
-     *
-     * - The caller must have the `DEFAULT_ADMIN_ROLE`.
-     * - `_treasuryAddress` must not be the zero address.
-     */
-    function setTreasury(address _treasuryAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_treasuryAddress == address(0)) revert ZeroAddressNotAllowed();
-        treasuryAddress = _treasuryAddress;
-        emit NewTreasuryAddress(_treasuryAddress);
     }
 
     /**
@@ -476,9 +507,9 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
     /**
      * @dev Checks if a user is eligible to claim rewards for a prediction.
      */
-    function claimable(bytes32 predictionId, address user) public view returns (bool) {
-        BetInfo memory betInfo = ledger[predictionId][user];
-        PredictionMatch memory prediction = predictions[predictionId];
+    function claimable(bytes32 externalIdHash, address user) public view returns (bool) {
+        BetInfo memory betInfo = ledger[externalIdHash][user];
+        PredictionMatch memory prediction = predictions[externalIdToIndex[externalIdHash]];
 
         if (prediction.outcome == Outcome.DRAW) {
             return true;
@@ -488,24 +519,25 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
             prediction.resolved &&
             betInfo.units != 0 &&
             !betInfo.claimed &&
-            ((prediction.outcome == Outcome.Left && betInfo.position == Position.Left) ||
-                (prediction.outcome == Outcome.Right && betInfo.position == Position.Right));
+            ((prediction.outcome == Outcome.LEFT && betInfo.position == Position.LEFT) ||
+                (prediction.outcome == Outcome.RIGHT && betInfo.position == Position.RIGHT));
     }
 
     /**
      * @dev Calculates the rewards for a resolved prediction.
      */
-    function _calculateRewards(bytes32 predictionId) internal {
+    function _calculateRewards(uint256 predictionId) internal {
         PredictionMatch storage prediction = predictions[predictionId];
+        Asset memory betUnit = prediction.betUnit;
         uint256 rewardBaseUnits;
         uint256 treasuryAmt;
         uint256 rewardAmount;
 
-        if (prediction.outcome == Outcome.Left) {
+        if (prediction.outcome == Outcome.LEFT) {
             rewardBaseUnits = prediction.betUnitsOnLeft;
             treasuryAmt = (prediction.betUnitsOnRight * betUnit.amount * treasuryFee) / 10000;
             rewardAmount = prediction.betUnitsOnRight * betUnit.amount - treasuryAmt;
-        } else if (prediction.outcome == Outcome.Right) {
+        } else if (prediction.outcome == Outcome.RIGHT) {
             rewardBaseUnits = prediction.betUnitsOnRight;
             treasuryAmt = (prediction.betUnitsOnLeft * betUnit.amount * treasuryFee) / 10000;
             rewardAmount = prediction.betUnitsOnLeft * betUnit.amount - treasuryAmt;
@@ -521,24 +553,28 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
             tokenId: 0,
             amount: rewardAmount / rewardBaseUnits
         });
-        
+    
         treasuryAmount += treasuryAmt;
 
-        emit RewardsCalculated(predictionId, rewardBaseUnits, rewardAmount, treasuryAmt);
+        emit RewardsCalculated(prediction.externalId, rewardBaseUnits, rewardAmount, treasuryAmt);
     }
 
     /**
      * @dev Safely ends a prediction with the given outcome.
      */
-    function _safeEndPrediction(bytes32 predictionId, Outcome outcome) internal {
-        if (predictions[predictionId].endTimestamp == 0) revert RoundNotBettable();
-        if (block.timestamp < predictions[predictionId].resolutionTimestamp) revert CannotResolveBeforeResolution();
+    function _safePredictionEnd(uint256 predictionId, Outcome outcome) internal {
+        if (predictions[predictionId].endTimestamp == 0) {
+            revert RoundNotBettable();
+        }
+        if (block.timestamp < predictions[predictionId].resolutionTimestamp) {
+            revert CannotResolveBeforeResolution();
+        }
 
         PredictionMatch storage prediction = predictions[predictionId];
         prediction.outcome = outcome;
         prediction.resolved = true;
 
-        emit EndPrediction(predictionId, outcome);
+        emit PredictionEnd(prediction.externalId, outcome);
     }
 
     /**

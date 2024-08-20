@@ -4,7 +4,7 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldResolvePrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("resolve", function () {
-    it("should handle zero rewardBaseUnits correctly and reward stakes to all bettors", async function () {
+    it("should handle zero rewardBaseUnits correctly and refund stakes to all bettors", async function () {
       const { prediction, operator, bettor1, title, resolutionTimestamp } = await factory();
 
       // Move time forward to resolution time

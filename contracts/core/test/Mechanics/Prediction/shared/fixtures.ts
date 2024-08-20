@@ -16,16 +16,14 @@ export async function deployPredictionContract() {
     amount: ethers.parseUnits("5", 18),
   };
 
+  console.log("XXXXXXX")
   const PredictionContractFactory = await ethers.getContractFactory("Prediction");
   const prediction = await PredictionContractFactory.deploy(
-    betUnit,
-    admin,
     operator,
-    3,
     treasuryFee,
   );
 
-  return { prediction, token, owner, admin, operator, bettor1, bettor2, treasuryFee };
+  return { prediction, token, owner, admin, operator, bettor1, bettor2, treasuryFee, betUnit };
 }
 
 export async function deployPredictionContractWithNativeBetUnit() {
