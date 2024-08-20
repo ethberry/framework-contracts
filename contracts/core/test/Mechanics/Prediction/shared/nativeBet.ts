@@ -17,14 +17,16 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         betUnits1,
         startTimestamp,
         predictionId,
-        stakeUnit,
+        betUnit,
         initialBalance1,
       } = await factory();
 
       // Move time forward to allow betting
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
-      const betAmount = betUnits1 * stakeUnit.amount;
+			console.log('betUnit', betUnit)
+			console.log('betUnits1', betUnits1)
+      const betAmount = BigInt(betUnits1) * BigInt(betUnit.amount);
 
       // Bettor1 bets using native Ether
       const tx = await prediction.connect(bettor1).placeBetInEther(title, Position.Left, { value: betAmount });
@@ -32,9 +34,9 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         bettor1.address,
         predictionId,
         [
-          stakeUnit.tokenType,
-          stakeUnit.token,
-          stakeUnit.tokenId,
+          betUnit.tokenType,
+          betUnit.token,
+          betUnit.tokenId,
           betAmount
         ],
         Position.Left
@@ -53,7 +55,7 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         console.log("Valid bet placed using native Ether and prediction state updated correctly.");
         console.log(`Prediction ID: ${predictionId}`);
         console.log(`Bettor1 Bet Units: ${betUnits1}`);
-        console.log(`Stake Unit: ${ethers.formatUnits(stakeUnit.amount, 18)}`);
+        console.log(`Stake Unit: ${ethers.formatUnits(betUnit.amount, 18)}`);
         console.log(`Initial Balance Bettor1: ${ethers.formatUnits(initialBalance1, 18)}`);
         console.log(`Bet Amount: ${ethers.formatUnits(betAmount, 18)}`);
         console.log(`Final Balance After Bet Bettor1: ${ethers.formatUnits(finalBalance, 18)}`);
@@ -122,7 +124,7 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         betUnits2,
         startTimestamp,
         predictionId,
-        stakeUnit,
+        betUnit,
         initialBalance1,
         initialBalance2,
       } = await factory();
@@ -136,10 +138,10 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         bettor1.address,
         predictionId,
         [
-          stakeUnit.tokenType,
-          stakeUnit.token,
-          stakeUnit.tokenId,
-          betUnits1 * stakeUnit.amount
+          betUnit.tokenType,
+          betUnit.token,
+          betUnit.tokenId,
+          betUnits1 * betUnit.amount
         ],
         Position.Left
       );
@@ -150,10 +152,10 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         bettor2.address,
         predictionId,
         [
-          stakeUnit.tokenType,
-          stakeUnit.token,
-          stakeUnit.tokenId,
-          betUnits2 * stakeUnit.amount
+          betUnit.tokenType,
+          betUnit.token,
+          betUnit.tokenId,
+          betUnits2 * betUnit.amount
         ],
         Position.Right
       );
@@ -178,7 +180,7 @@ export function shouldBetPositionNative(factory: () => Promise<any>, isVerbose =
         console.log(`Prediction ID: ${predictionId}`);
         console.log(`Bettor1 Bet Units: ${betUnits1}`);
         console.log(`Bettor2 Bet Units: ${betUnits2}`);
-        console.log(`Stake Unit: ${ethers.formatUnits(stakeUnit.amount, 18)}`);
+        console.log(`Stake Unit: ${ethers.formatUnits(betUnit.amount, 18)}`);
         console.log(`Initial Balance Bettor1: ${ethers.formatUnits(initialBalance1, 18)}`);
         console.log(`Bet Amount Bettor1: ${ethers.formatUnits(betUnits1 * ethers.parseUnits("0.01", 18), 18)}`);
         console.log(`Bet Amount Bettor2: ${ethers.formatUnits(betUnits2 * ethers.parseUnits("0.01", 18), 18)}`);

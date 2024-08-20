@@ -35,7 +35,7 @@ export async function deployPredictionContractWithNativeBetUnit() {
 
   const betUnit = {
     tokenType: 0, // NATIVE
-    token: ethers.constants.AddressZero,
+    token: ethers.ZeroAddress,
     tokenId: 0,
     amount: ethers.parseUnits("0.01", 18), // 0.01 ETH
   };
@@ -49,5 +49,5 @@ export async function deployPredictionContractWithNativeBetUnit() {
     treasuryFee,
   );
 
-  return { prediction, owner, admin, operator, bettor1, bettor2, treasuryFee };
+  return { prediction, owner, admin, operator, bettor1, bettor2, treasuryFee, betUnit };
 }

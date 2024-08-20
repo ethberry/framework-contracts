@@ -4,8 +4,29 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldResolvePrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("resolve", function () {
-    it("should only allow operator to resolve a prediction", async function () {
+    it("should handle zero rewardBaseUnits correctly and reward stakes to all bettors", async function () {
       const { prediction, operator, bettor1, title, resolutionTimestamp } = await factory();
+
+      // Move time forward to resolution time
+      await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
+
+      // Operator resolves the prediction with zero base units
+      const resolveTx = await prediction.connect(operator).resolvePrediction(title, 0); // Outcome.Left
+      await expect(resolveTx)
+        .to.emit(prediction, "EndPrediction")
+        .withArgs(ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]), 3); // Outcome.ERROR
+
+      // Ensure there are no division by zero errors
+      const rewardUnit = await prediction.getRewardUnit(title);
+      expect(rewardUnit.amount).to.equal(0);
+    });
+
+    it("should only allow operator to resolve a prediction", async function () {
+      const { prediction, operator, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, resolutionTimestamp } = await factory();
+
+      // Place bets before resolving
+      await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0); // Position.Left
+      await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, 1); // Position.Right
 
       // Move time forward to resolution time
       await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
@@ -42,7 +63,11 @@ export function shouldResolvePrediction(factory: () => Promise<any>, isVerbose =
     });
 
     it("should not allow resolving multiple times", async function () {
-      const { prediction, operator, title, resolutionTimestamp } = await factory();
+      const { prediction, operator, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, resolutionTimestamp } = await factory();
+
+      // Place bets before resolving
+      await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0); // Position.Left
+      await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, 1); // Position.Right
 
       // Move time forward to resolution time
       await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));

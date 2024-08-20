@@ -8,7 +8,7 @@ enum Position {
 }
 
 export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false) {
-  describe.only("betPosition", function () {    
+  describe("betPosition", function () {    
     it("should not allow betting after end timestamp", async function () {
       const { prediction, bettor1, title, betUnits1, endTimestamp } = await factory();
 

@@ -275,7 +275,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
 
         uint256 baseStake = betInfo.units * betUnit.amount;
 
-        if (prediction.outcome == Outcome.DRAW) {
+        if (prediction.outcome == Outcome.DRAW || prediction.outcome == Outcome.ERROR) {
             reward = baseStake;
         } else {
             uint256 userReward = (betInfo.units * prediction.rewardUnit.amount) / prediction.rewardUnit.amount;
@@ -314,8 +314,13 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
         if (block.timestamp < predictions[predictionId].resolutionTimestamp) revert CannotResolveBeforeResolution();
         if (predictions[predictionId].resolved) revert PredictionAlreadyResolved();
 
-        _safeEndPrediction(predictionId, outcome);
-        _calculateRewards(predictionId);
+        PredictionMatch storage prediction = predictions[predictionId];
+        if (prediction.betUnitsOnLeft == 0 || prediction.betUnitsOnRight == 0) {
+            _safeEndPrediction(predictionId, Outcome.ERROR);
+        } else {
+            _safeEndPrediction(predictionId, outcome);
+            _calculateRewards(predictionId);
+        }
     }
 
     /**

@@ -84,11 +84,11 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
       const { prediction, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, ...params } =
         await deployContractWithActivePrediction();
 
-      const tx1 = await prediction.connect(bettor1).betLeft(title, betUnits1);
-      await expect(tx1).to.emit(prediction, "BetLeft").withArgs(bettor1.address, predictionId, betUnits1);
+      const tx1 = await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0); // Position.Left
+      await expect(tx1).to.emit(prediction, "BetPlaced").withArgs(bettor1.address, predictionId, betUnits1, 0);
 
-      const tx2 = await prediction.connect(bettor2).betRight(title, betUnits2);
-      await expect(tx2).to.emit(prediction, "BetRight").withArgs(bettor2.address, predictionId, betUnits2);
+      const tx2 = await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, 1); // Position.Right
+      await expect(tx2).to.emit(prediction, "BetPlaced").withArgs(bettor2.address, predictionId, betUnits2, 1);
 
       return { prediction, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, ...params };
     };
@@ -123,6 +123,9 @@ export function shouldBehaveLikePredictionContractWithNative(factory: () => Prom
       const initialBalance1 = await ethers.provider.getBalance(bettor1.address);
       const initialBalance2 = await ethers.provider.getBalance(bettor2.address);
 
+      const betUnits1 = 3n;
+      const betUnits2 = 5n;
+
       return {
         startTimestamp,
         endTimestamp,
@@ -136,6 +139,8 @@ export function shouldBehaveLikePredictionContractWithNative(factory: () => Prom
         operator,
         bettor1,
         bettor2,
+        betUnits1,
+        betUnits2,
         ...params,
       };
     };
