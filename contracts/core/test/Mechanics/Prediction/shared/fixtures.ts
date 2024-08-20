@@ -27,3 +27,27 @@ export async function deployPredictionContract() {
 
   return { prediction, token, owner, admin, operator, bettor1, bettor2, treasuryFee };
 }
+
+export async function deployPredictionContractWithNativeBetUnit() {
+  const [owner, admin, operator, bettor1, bettor2] = await ethers.getSigners();
+
+  const treasuryFee = BigInt(1000);
+
+  const betUnit = {
+    tokenType: 0, // NATIVE
+    token: ethers.constants.AddressZero,
+    tokenId: 0,
+    amount: ethers.parseUnits("0.01", 18), // 0.01 ETH
+  };
+
+  const PredictionContractFactory = await ethers.getContractFactory("Prediction");
+  const prediction = await PredictionContractFactory.deploy(
+    betUnit,
+    admin,
+    operator,
+    3,
+    treasuryFee,
+  );
+
+  return { prediction, owner, admin, operator, bettor1, bettor2, treasuryFee };
+}

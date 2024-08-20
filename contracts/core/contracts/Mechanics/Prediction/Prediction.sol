@@ -11,7 +11,8 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { IERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363Receiver.sol";
+
+import { ERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/extensions/ERC1363Receiver.sol";
 
 import {
   ContractNotAllowed,
@@ -44,7 +45,7 @@ import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
  * Users can place bets on the outcome of events, and the contract handles the
  * resolution and reward distribution.
  */
-contract Prediction is AccessControl, Pausable, ReentrancyGuard {
+contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver {
     using SafeERC20 for IERC20;
 
     Asset public betUnit;
@@ -218,8 +219,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     function placeBetInEther(string memory title, Position position) external payable whenNotPaused nonReentrant notContract {
         if (betUnit.tokenType != TokenType.NATIVE) revert WrongToken();
         uint256 units = msg.value / betUnit.amount;
-        if (units < minBetUnits) revert BetAmountTooLow();
-        _placeBet(title, units, position, AllowedTokenTypes(true, false, false, false, false));
+         _placeBet(title, units, position, AllowedTokenTypes(true, false, false, false, false));
     }
 
     function _placeBet(
@@ -553,6 +553,6 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     function supportsInterface(
       bytes4 interfaceId
     ) public view virtual override(AccessControl) returns (bool) {
-      return interfaceId == type(IERC1363Receiver).interfaceId || super.supportsInterface(interfaceId);
+      return super.supportsInterface(interfaceId);
     }
 }
