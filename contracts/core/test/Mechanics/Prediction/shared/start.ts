@@ -140,10 +140,9 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
       expect(predictionRound.endTimestamp).to.equal(endTimestamp);
       expect(predictionRound.resolutionTimestamp).to.equal(resolutionTimestamp);
       expect(predictionRound.expiryTimestamp).to.equal(expiryTimestamp);
-      expect(predictionRound.leftUnits).to.equal(0);
-      expect(predictionRound.rightUnits).to.equal(0);
-      expect(predictionRound.rewardBaseUnits).to.equal(0);
-      expect(predictionRound.rewardAmount).to.equal(0);
+      expect(predictionRound.betUnitsOnLeft).to.equal(0);
+      expect(predictionRound.betUnitsOnRight).to.equal(0);
+      expect(predictionRound.rewardUnit.tokenType).to.equal(1);
       expect(predictionRound.outcome).to.equal(3); // Outcome.ERROR
       expect(predictionRound.resolved).to.be.equal(false);
 
@@ -171,10 +170,9 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
         .connect(operator)
         .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp);
 
-      await expect(prediction.connect(bettor1).betLeft(title, betUnits1)).to.be.revertedWithCustomError(
-        prediction,
-        "BettingNotStarted",
-      );
+      await expect(
+        prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0)
+      ).to.be.revertedWithCustomError(prediction, "BettingNotStarted");
 
       if (isVerbose) {
         console.log("Failed to place bet because betting period has not started.");

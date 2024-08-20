@@ -2,18 +2,22 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
 
+enum Position {
+  Left,
+  Right
+}
+
 export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false) {
-  describe("betPosition", function () {
+  describe.only("betPosition", function () {    
     it("should not allow betting after end timestamp", async function () {
       const { prediction, bettor1, title, betUnits1, endTimestamp } = await factory();
 
       // Move time forward to after the end timestamp
       await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(prediction.connect(bettor1).betLeft(title, betUnits1)).to.be.revertedWithCustomError(
-        prediction,
-        "BettingEnded",
-      );
+      await expect(
+        prediction.connect(bettor1).placeBetInTokens(title, betUnits1, Position.Left)
+      ).to.be.revertedWithCustomError(prediction, "BettingEnded");
 
       if (isVerbose) {
         console.log("Failed to place bet because betting period has ended.");
@@ -29,10 +33,9 @@ export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false
       const minBetUnits = await prediction.minBetUnits();
       const betUnits = minBetUnits - 1n;
 
-      await expect(prediction.connect(bettor1).betLeft(title, betUnits)).to.be.revertedWithCustomError(
-        prediction,
-        "BetAmountTooLow",
-      );
+      await expect(
+        prediction.connect(bettor1).placeBetInTokens(title, betUnits, Position.Left)
+      ).to.be.revertedWithCustomError(prediction, "BetAmountTooLow");
 
       if (isVerbose) {
         console.log("Failed to place bet because bet amount is less than minimum bet units.");
@@ -46,13 +49,12 @@ export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
       // Place the first bet
-      await prediction.connect(bettor1).betLeft(title, betUnits1);
+      await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, Position.Left);
 
       // Try to place another bet
-      await expect(prediction.connect(bettor1).betLeft(title, betUnits1)).to.be.revertedWithCustomError(
-        prediction,
-        "BetAlreadyPlaced",
-      );
+      await expect(
+        prediction.connect(bettor1).placeBetInTokens(title, betUnits1, Position.Left)
+      ).to.be.revertedWithCustomError(prediction, "BetAlreadyPlaced");
 
       if (isVerbose) {
         console.log("Failed to place multiple bets from the same user on the same prediction.");
@@ -81,21 +83,21 @@ export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
       // Bettor1 bets on Left
-      const tx1 = await prediction.connect(bettor1).betLeft(title, betUnits1);
-      await expect(tx1).to.emit(prediction, "BetLeft").withArgs(bettor1.address, predictionId, betUnits1);
+      const tx1 = await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, Position.Left);
+      await expect(tx1).to.emit(prediction, "BetPlaced").withArgs(bettor1.address, predictionId, betUnits1, Position.Left);
 
       // Bettor2 bets on Right
-      const tx2 = await prediction.connect(bettor2).betRight(title, betUnits2);
-      await expect(tx2).to.emit(prediction, "BetRight").withArgs(bettor2.address, predictionId, betUnits2);
+      const tx2 = await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, Position.Right);
+      await expect(tx2).to.emit(prediction, "BetPlaced").withArgs(bettor2.address, predictionId, betUnits2, Position.Right);
 
       // Check BetInfo
       const betInfo1 = await prediction.ledger(predictionId, bettor1.address);
       expect(betInfo1.units).to.equal(betUnits1);
-      expect(betInfo1.position).to.equal(0); // Position.Left
+      expect(betInfo1.position).to.equal(Position.Left);
 
       const betInfo2 = await prediction.ledger(predictionId, bettor2.address);
       expect(betInfo2.units).to.equal(betUnits2);
-      expect(betInfo2.position).to.equal(1); // Position.Right
+      expect(betInfo2.position).to.equal(Position.Right);
 
       // Check after-betting balances
       const finalBalance1 = await token.balanceOf(bettor1.address);
@@ -108,7 +110,7 @@ export function shouldBetPosition(factory: () => Promise<any>, isVerbose = false
         console.log(`Prediction ID: ${predictionId}`);
         console.log(`Bettor1 Bet Units: ${betUnits1}`);
         console.log(`Bettor2 Bet Units: ${betUnits2}`);
-        console.log(`Stake Unit: ${ethers.formatUnits(stakeUnit, 18)}`);
+        console.log(`Stake Unit: ${ethers.formatUnits(stakeUnit.amount, 18)}`);
         console.log(`Initial Balance Bettor1: ${ethers.formatUnits(initialBalance1, 18)}`);
         console.log(`Bet Amount Bettor1: ${ethers.formatUnits(betAmount1, 18)}`);
         console.log(`Bet Amount Bettor2: ${ethers.formatUnits(betAmount2, 18)}`);

@@ -9,13 +9,19 @@ export async function deployPredictionContract() {
 
   const treasuryFee = BigInt(1000);
 
+  const betUnit = {
+    tokenType: 1,
+    token: token,
+    tokenId: 0,
+    amount: ethers.parseUnits("5", 18),
+  };
+
   const PredictionContractFactory = await ethers.getContractFactory("Prediction");
   const prediction = await PredictionContractFactory.deploy(
-    token,
+    betUnit,
     admin,
     operator,
-    3, // minimum bet 3 units
-    ethers.parseUnits("5", 18), // 1 stake unit equals 5 tokens
+    3,
     treasuryFee,
   );
 

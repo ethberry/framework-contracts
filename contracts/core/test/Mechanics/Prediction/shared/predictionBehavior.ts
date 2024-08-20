@@ -15,9 +15,9 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
       // Define bet units and stake units
       const betUnits1 = 3n;
       const betUnits2 = 5n;
-      const stakeUnit = await prediction.stakeUnit();
-      const betAmount1 = betUnits1 * stakeUnit;
-      const betAmount2 = betUnits2 * stakeUnit;
+      const stakeUnit = await prediction.betUnit();
+      const betAmount1 = betUnits1 * stakeUnit.amount;
+      const betAmount2 = betUnits2 * stakeUnit.amount;
 
       // Mint tokens and approve for betting
       await token.mint(bettor1, betAmount1);

@@ -11,6 +11,7 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363Receiver.sol";
 
 import {
   ContractNotAllowed,
@@ -31,8 +32,12 @@ import {
   MustBeGreaterThanZero,
   ZeroAddressNotAllowed,
   TransferAmountExceedsAllowance,
-  RoundNotBettable
+  RoundNotBettable,
+  WrongToken
 } from "../../utils/errors.sol";
+
+import {Asset, TokenType, AllowedTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
+import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
 
 /**
  * @dev Contract module that allows users to participate in prediction markets.
@@ -42,18 +47,17 @@ import {
 contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    IERC20 public token;
+    Asset public betUnit;
     address public treasuryAddress;
 
     uint256 public minBetUnits;
     uint256 public treasuryFee;
-    uint256 public stakeUnit;
     uint256 public treasuryAmount;
 
     uint256 public constant MAX_TREASURY_FEE = 2000; // 20%
 
     mapping(bytes32 => mapping(address => BetInfo)) public ledger;
-    mapping(bytes32 => PredictionRound) public predictions;
+    mapping(bytes32 => PredictionMatch) public predictions;
     mapping(address => bytes32[]) public userPredictions;
 
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
@@ -71,17 +75,16 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         ERROR
     }
 
-    struct PredictionRound {
+    struct PredictionMatch {
         bytes32 id;
         string title;
         uint256 startTimestamp;
         uint256 endTimestamp;
         uint256 resolutionTimestamp;
         uint256 expiryTimestamp;
-        uint256 leftUnits;
-        uint256 rightUnits;
-        uint256 rewardBaseUnits;
-        uint256 rewardAmount;
+        uint256 betUnitsOnLeft;
+        uint256 betUnitsOnRight;
+        Asset rewardUnit;
         Outcome outcome;
         bool resolved;
     }
@@ -92,15 +95,12 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         bool claimed;
     }
 
-    event BetLeft(address indexed sender, bytes32 indexed predictionId, uint256 units);
-    event BetRight(address indexed sender, bytes32 indexed predictionId, uint256 units);
+    event BetPlaced(address indexed sender, bytes32 indexed predictionId, Asset asset, Position position);
     event Claim(address indexed sender, bytes32 indexed predictionId, uint256 amount);
     event EndPrediction(bytes32 indexed predictionId, Outcome outcome);
     event NewTreasuryAddress(address treasury);
     event NewMinBetUnits(uint256 minBetUnits);
     event NewTreasuryFee(uint256 treasuryFee);
-    event NewStakeUnit(uint256 stakeUnit);
-    event NewOperatorAddress(address operator);
     event RewardsCalculated(bytes32 indexed predictionId, uint256 rewardBaseUnits, uint256 rewardAmount, uint256 treasuryAmount);
     event StartPrediction(bytes32 indexed predictionId, string title);
     event TokenRecovery(address indexed token, uint256 amount);
@@ -112,6 +112,16 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         _;
     }
 
+    modifier validateBet(string memory title, uint256 units) {
+        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
+        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
+        if (block.timestamp < predictions[predictionId].startTimestamp) revert BettingNotStarted();
+        if (block.timestamp > predictions[predictionId].endTimestamp) revert BettingEnded();
+        if (units < minBetUnits) revert BetAmountTooLow();
+        if (ledger[predictionId][msg.sender].units != 0) revert BetAlreadyPlaced();
+        _;
+    }
+
     /**
      * @dev Initializes the contract with the given parameters.
      *
@@ -120,19 +130,17 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      * - `_treasuryFee` must be less than or equal to `MAX_TREASURY_FEE`.
      */
     constructor(
-        IERC20 _token,
+        Asset memory _betUnit,
         address _treasuryAddress,
         address _operatorAddress,
         uint256 _minBetUnits,
-        uint256 _stakeUnit,
         uint256 _treasuryFee
     ) {
         if (_treasuryFee > MAX_TREASURY_FEE) revert TreasuryFeeTooHigh();
 
-        token = _token;
+        betUnit = _betUnit;
         treasuryAddress = _treasuryAddress;
         minBetUnits = _minBetUnits;
-        stakeUnit = _stakeUnit;
         treasuryFee = _treasuryFee;
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -163,17 +171,16 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
         if (predictions[predictionId].startTimestamp != 0) revert PredictionAlreadyExists();
 
-        predictions[predictionId] = PredictionRound({
+        predictions[predictionId] = PredictionMatch({
             id: predictionId,
             title: title,
             startTimestamp: startTimestamp,
             endTimestamp: endTimestamp,
             resolutionTimestamp: resolutionTimestamp,
             expiryTimestamp: expiryTimestamp,
-            leftUnits: 0,
-            rightUnits: 0,
-            rewardBaseUnits: 0,
-            rewardAmount: 0,
+            betUnitsOnLeft: 0,
+            betUnitsOnRight: 0,
+            rewardUnit: betUnit,
             outcome: Outcome.ERROR,
             resolved: false
         });
@@ -182,7 +189,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     }
 
     /**
-     * @dev Places a bet on the left side of the prediction.
+     * @dev Places a bet on the left or right side of the prediction using ERC20 tokens.
      *
      * Requirements:
      *
@@ -190,30 +197,15 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      * - The current timestamp must be within the betting period.
      * - The bet amount must be greater than or equal to `minBetUnits`.
      * - The user must not have already placed a bet on this prediction.
+     * - The betUnit type must be ERC20.
      */
-    function betLeft(string memory title, uint256 units) external whenNotPaused nonReentrant notContract {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp < predictions[predictionId].startTimestamp) revert BettingNotStarted();
-        if (block.timestamp > predictions[predictionId].endTimestamp) revert BettingEnded();
-        if (units < minBetUnits) revert BetAmountTooLow();
-        if (ledger[predictionId][msg.sender].units != 0) revert BetAlreadyPlaced();
-
-        uint256 amount = units * stakeUnit;
-        token.safeTransferFrom(msg.sender, address(this), amount);
-        PredictionRound storage prediction = predictions[predictionId];
-        prediction.leftUnits += units;
-
-        BetInfo storage betInfo = ledger[predictionId][msg.sender];
-        betInfo.position = Position.Left;
-        betInfo.units = units;
-        userPredictions[msg.sender].push(predictionId);
-
-        emit BetLeft(msg.sender, predictionId, units);
+    function placeBetInTokens(string memory title, uint256 units, Position position) external whenNotPaused nonReentrant notContract {
+        if (betUnit.tokenType != TokenType.ERC20) revert WrongToken();
+        _placeBet(title, units, position, AllowedTokenTypes(false, true, false, false, false));
     }
 
     /**
-     * @dev Places a bet on the right side of the prediction.
+     * @dev Places a bet on the left or right side of the prediction using native tokens.
      *
      * Requirements:
      *
@@ -221,26 +213,42 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      * - The current timestamp must be within the betting period.
      * - The bet amount must be greater than or equal to `minBetUnits`.
      * - The user must not have already placed a bet on this prediction.
+     * - The betUnit type must be NATIVE.
      */
-    function betRight(string memory title, uint256 units) external whenNotPaused nonReentrant notContract {
-        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
-        if (predictions[predictionId].startTimestamp == 0) revert PredictionDoesNotExist();
-        if (block.timestamp < predictions[predictionId].startTimestamp) revert BettingNotStarted();
-        if (block.timestamp > predictions[predictionId].endTimestamp) revert BettingEnded();
+    function placeBetInEther(string memory title, Position position) external payable whenNotPaused nonReentrant notContract {
+        if (betUnit.tokenType != TokenType.NATIVE) revert WrongToken();
+        uint256 units = msg.value / betUnit.amount;
         if (units < minBetUnits) revert BetAmountTooLow();
-        if (ledger[predictionId][msg.sender].units != 0) revert BetAlreadyPlaced();
+        _placeBet(title, units, position, AllowedTokenTypes(true, false, false, false, false));
+    }
 
-        uint256 amount = units * stakeUnit;
-        token.safeTransferFrom(msg.sender, address(this), amount);
-        PredictionRound storage prediction = predictions[predictionId];
-        prediction.rightUnits += units;
+    function _placeBet(
+        string memory title,
+        uint256 units,
+        Position position,
+        AllowedTokenTypes memory allowed
+    ) internal validateBet(title, units) {
+        bytes32 predictionId = keccak256(abi.encodePacked(title, address(this)));
+
+        Asset[] memory price = new Asset[](1);
+        price[0] = betUnit;
+        price[0].amount = units * betUnit.amount;
+
+        ExchangeUtils.spendFrom(price, msg.sender, address(this), allowed);
+
+        PredictionMatch storage prediction = predictions[predictionId];
+        if (position == Position.Left) {
+            prediction.betUnitsOnLeft += units;
+        } else {
+            prediction.betUnitsOnRight += units;
+        }
 
         BetInfo storage betInfo = ledger[predictionId][msg.sender];
-        betInfo.position = Position.Right;
+        betInfo.position = position;
         betInfo.units = units;
         userPredictions[msg.sender].push(predictionId);
 
-        emit BetRight(msg.sender, predictionId, units);
+        emit BetPlaced(msg.sender, predictionId, price[0], position);
     }
 
     /**
@@ -262,21 +270,29 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         if (!predictions[predictionId].resolved) revert PredictionNotResolved();
         if (!claimable(predictionId, msg.sender)) revert NotEligibleForClaim();
 
-        PredictionRound memory prediction = predictions[predictionId];
+        PredictionMatch memory prediction = predictions[predictionId];
         BetInfo memory betInfo = ledger[predictionId][msg.sender];
 
-        uint256 baseStake = betInfo.units * stakeUnit;
+        uint256 baseStake = betInfo.units * betUnit.amount;
 
         if (prediction.outcome == Outcome.DRAW) {
             reward = baseStake;
         } else {
-            uint256 userReward = (betInfo.units * prediction.rewardAmount) / prediction.rewardBaseUnits;
+            uint256 userReward = (betInfo.units * prediction.rewardUnit.amount) / prediction.rewardUnit.amount;
             reward = baseStake + userReward;
         }
-        
+
         ledger[predictionId][msg.sender].claimed = true;
+
         if (reward > 0) {
-            token.safeTransfer(msg.sender, reward);
+            Asset[] memory rewardAsset = ExchangeUtils._toArray(Asset({
+                tokenType: betUnit.tokenType,
+                token: betUnit.token,
+                tokenId: 0,
+                amount: reward
+            }));
+
+            ExchangeUtils.spend(rewardAsset, msg.sender, AllowedTokenTypes(true, true, true, true, true));
         }
 
         emit Claim(msg.sender, predictionId, reward);
@@ -317,7 +333,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         if (block.timestamp <= predictions[predictionId].expiryTimestamp) revert ExpiryTimeNotPassed();
         if (predictions[predictionId].resolved) revert PredictionAlreadyResolved();
 
-        PredictionRound storage prediction = predictions[predictionId];
+        PredictionMatch storage prediction = predictions[predictionId];
         prediction.outcome = Outcome.ERROR;
         prediction.resolved = true;
 
@@ -334,7 +350,16 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     function claimTreasury() external nonReentrant onlyRole(OPERATOR_ROLE) {
         uint256 currentTreasuryAmount = treasuryAmount;
         treasuryAmount = 0;
-        token.safeTransfer(treasuryAddress, currentTreasuryAmount);
+
+        Asset[] memory treasuryAsset = ExchangeUtils._toArray(Asset({
+            tokenType: betUnit.tokenType,
+            token: betUnit.token,
+            tokenId: 0,
+            amount: currentTreasuryAmount
+        }));
+
+        ExchangeUtils.spend(treasuryAsset, treasuryAddress, AllowedTokenTypes(true, true, true, true, true));
+
         emit TreasuryClaim(currentTreasuryAmount);
     }
 
@@ -397,7 +422,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      * - `_token` must not be the prediction token.
      */
     function recoverToken(address _token, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_token == address(token)) revert TransferAmountExceedsAllowance();
+        if (_token == betUnit.token) revert TransferAmountExceedsAllowance();
         IERC20(_token).safeTransfer(msg.sender, _amount);
         emit TokenRecovery(_token, _amount);
     }
@@ -448,7 +473,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      */
     function claimable(bytes32 predictionId, address user) public view returns (bool) {
         BetInfo memory betInfo = ledger[predictionId][user];
-        PredictionRound memory prediction = predictions[predictionId];
+        PredictionMatch memory prediction = predictions[predictionId];
 
         if (prediction.outcome == Outcome.DRAW) {
             return true;
@@ -466,32 +491,32 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
      * @dev Calculates the rewards for a resolved prediction.
      */
     function _calculateRewards(bytes32 predictionId) internal {
-        if (predictions[predictionId].rewardBaseUnits != 0 || predictions[predictionId].rewardAmount != 0) revert RoundNotBettable();
-        PredictionRound storage prediction = predictions[predictionId];
+        PredictionMatch storage prediction = predictions[predictionId];
         uint256 rewardBaseUnits;
         uint256 treasuryAmt;
         uint256 rewardAmount;
 
         if (prediction.outcome == Outcome.Left) {
-            rewardBaseUnits = prediction.leftUnits;
-            treasuryAmt = (prediction.rightUnits * stakeUnit * treasuryFee) / 10000;
-            rewardAmount = prediction.rightUnits * stakeUnit - treasuryAmt;
+            rewardBaseUnits = prediction.betUnitsOnLeft;
+            treasuryAmt = (prediction.betUnitsOnRight * betUnit.amount * treasuryFee) / 10000;
+            rewardAmount = prediction.betUnitsOnRight * betUnit.amount - treasuryAmt;
         } else if (prediction.outcome == Outcome.Right) {
-            rewardBaseUnits = prediction.rightUnits;
-            treasuryAmt = (prediction.leftUnits * stakeUnit * treasuryFee) / 10000;
-            rewardAmount = prediction.leftUnits * stakeUnit - treasuryAmt;
-        } else if (prediction.outcome == Outcome.DRAW) {
-            rewardBaseUnits = 0;
-            rewardAmount = 0;
-            treasuryAmt = 0;
-        } else if (prediction.outcome == Outcome.ERROR) {
+            rewardBaseUnits = prediction.betUnitsOnRight;
+            treasuryAmt = (prediction.betUnitsOnLeft * betUnit.amount * treasuryFee) / 10000;
+            rewardAmount = prediction.betUnitsOnLeft * betUnit.amount - treasuryAmt;
+        } else {
             rewardBaseUnits = 0;
             rewardAmount = 0;
             treasuryAmt = 0;
         }
 
-        prediction.rewardBaseUnits = rewardBaseUnits;
-        prediction.rewardAmount = rewardAmount;
+        prediction.rewardUnit = Asset({
+            tokenType: TokenType.ERC20,
+            token: betUnit.token,
+            tokenId: 0,
+            amount: rewardAmount / rewardBaseUnits
+        });
+        
         treasuryAmount += treasuryAmt;
 
         emit RewardsCalculated(predictionId, rewardBaseUnits, rewardAmount, treasuryAmt);
@@ -504,7 +529,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
         if (predictions[predictionId].endTimestamp == 0) revert RoundNotBettable();
         if (block.timestamp < predictions[predictionId].resolutionTimestamp) revert CannotResolveBeforeResolution();
 
-        PredictionRound storage prediction = predictions[predictionId];
+        PredictionMatch storage prediction = predictions[predictionId];
         prediction.outcome = outcome;
         prediction.resolved = true;
 
@@ -528,6 +553,6 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard {
     function supportsInterface(
       bytes4 interfaceId
     ) public view virtual override(AccessControl) returns (bool) {
-      return super.supportsInterface(interfaceId);
+      return interfaceId == type(IERC1363Receiver).interfaceId || super.supportsInterface(interfaceId);
     }
 }
