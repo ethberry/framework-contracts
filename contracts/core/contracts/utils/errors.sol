@@ -83,10 +83,9 @@ error MergeDifferentContracts();
 error MergeDifferentTemplate();
 
 // PREDICTION
-error ContractNotAllowed();
-error TreasuryFeeTooHigh();
+error TreasuryFeeTooHigh(uint256 treasuryFee);
 error PredictionAlreadyExists();
-error PredictionDoesNotExist();
+error PredictionNotFound();
 error PredictionNotStarted();
 error PredictionEnded();
 error BetAmountTooLow();
@@ -95,13 +94,14 @@ error BetAlreadyPlaced();
 error ResolutionNotAvailable();
 error PredictionNotResolved();
 error NotEligibleForClaim();
-error CannotResolveBeforeResolution();
+error CannotResolveAfterExpirationDate();
 error PredictionAlreadyResolved();
 error ExpiryTimeNotPassed();
 error MustBeGreaterThanZero();
 error ZeroAddressNotAllowed();
 error TransferAmountExceedsAllowance();
-error RoundNotBettable();
+error CannotClaimBeforeResolution();
+error BetNotFound();
 
 
 
