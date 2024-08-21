@@ -8,28 +8,28 @@ pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkBinanceTestnetV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBinanceTestnetV2.sol";
-import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkBinanceTestnetV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBinanceTestnetV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { LotteryConfig } from "../interfaces/ILottery.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
-contract LotteryRandomBinanceTestnet is LotteryRandom, ChainLinkBinanceTestnetV2 {
+contract LotteryRandomBinanceTestnet is LotteryRandom, ChainLinkBinanceTestnetV2Plus {
   constructor(
     LotteryConfig memory config
-  ) LotteryRandom(config) ChainLinkBinanceTestnetV2(uint64(0), uint16(6), uint32(600000), uint32(1)) {}
+  ) LotteryRandom(config) ChainLinkBinanceTestnetV2Plus(uint16(6), uint32(600000), uint32(1)) {}
 
-  function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2) returns (uint256 requestId) {
+  function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2Plus) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override(LotteryRandom, VRFConsumerBaseV2) {
+    uint256[] calldata randomWords
+  ) internal override(LotteryRandom, VRFConsumerBaseV2Plus) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 
@@ -53,7 +53,7 @@ contract LotteryRandomBinanceTestnet is LotteryRandom, ChainLinkBinanceTestnetV2
     currentRound.endTimestamp = block.timestamp + 1;
     currentRound.balance = 10000 ether;
     currentRound.total = 10000 ether;
-    currentRound.total -= (currentRound.total * comm) / 100;
+    currentRound.total -= (currentRound.total * fee) / 100;
     currentRound.tickets.push(ticket);
     currentRound.values = values;
     currentRound.ticketAsset = item;

@@ -17,7 +17,6 @@ describe("ERC721BlacklistRentable", function () {
   shouldBehaveLikeERC721Blacklist(factory);
   shouldBehaveLikeERC721Simple(factory);
   shouldMintCommon(factory);
-
   shouldBehaveLikeERC721Rentable(factory);
 
   shouldSupportsInterface(factory)([

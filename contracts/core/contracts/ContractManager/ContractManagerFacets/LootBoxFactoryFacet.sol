@@ -40,10 +40,9 @@ contract LootBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     LootArgs calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
-    address signer = _recoverSigner(_hashLootbox(params, args), signature);
-
+    address signer = _recoverSigner(_hashLootBox(params, args), signature);
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }
@@ -67,7 +66,7 @@ contract LootBoxFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     fixPermissions(account, roles);
   }
 
-  function _hashLootbox(Params calldata params, LootArgs calldata args) internal view returns (bytes32) {
+  function _hashLootBox(Params calldata params, LootArgs calldata args) internal view returns (bytes32) {
     return
       _hashTypedDataV4(
         keccak256(abi.encodePacked(LOOTBOX_PERMIT_SIGNATURE, _hashParamsStruct(params), _hashLootStruct(args)))

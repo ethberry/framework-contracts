@@ -10,7 +10,6 @@ import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/
 import { RARITY, TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
 import { ProtectedAttribute, TemplateZero } from "../utils/errors.sol";
-import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { IERC721Random } from "../ERC721/interfaces/IERC721Random.sol";
 import { ERC998BlacklistDiscrete } from "./ERC998BlacklistDiscrete.sol";
@@ -64,7 +63,7 @@ abstract contract ERC998BlacklistDiscreteRandom is IERC721Random, ERC998Blacklis
     return _upgrade(tokenId, attribute);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

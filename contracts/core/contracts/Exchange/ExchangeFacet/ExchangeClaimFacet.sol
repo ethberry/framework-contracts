@@ -21,7 +21,10 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
 
   // mint NFTs to msgSender
   function claim(Params memory params, Asset[] memory items, bytes calldata signature) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, new Asset[](0), signature))) {
+    _validateParams(params);
+
+    address signer = _recoverManyToManySignature(params, items, new Asset[](0), signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
@@ -38,7 +41,10 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
 
   // send Coins and NFTs from merchant to msgSender
   function spend(Params memory params, Asset[] memory items, bytes calldata signature) external payable whenNotPaused {
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, new Asset[](0), signature))) {
+    _validateParams(params);
+
+    address signer = _recoverManyToManySignature(params, items, new Asset[](0), signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 

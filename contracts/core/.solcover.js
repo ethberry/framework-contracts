@@ -1,12 +1,14 @@
 module.exports = {
   skipFiles: [
     "ERC721/random",
-    "ERC721/traits",
+    "ERC721/genes",
     "ERC998/random",
-    "ERC998/traits",
+    "ERC998/genes",
     "Mechanics/Lottery/random",
+    "Mechanics/Raffle/random",
+    "Mechanics/LootBox/random",
     "MOCKS",
-    "ThirdParty",
+    "external",
     "utils/calc",
   ],
 };

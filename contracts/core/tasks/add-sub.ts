@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
-import { VRFCoordinatorV2Mock } from "../typechain-types";
+import { VRFCoordinatorV2PlusMock } from "../typechain-types";
 import { recursivelyDecodeResult } from "../test/utils";
 
 task("add-sub", "Add vRF subscription").setAction(async (_, hre) => {
@@ -37,8 +37,8 @@ task("add-sub", "Add vRF subscription").setAction(async (_, hre) => {
 
   // Create connection to LINK token contract and initiate the transfer
   // const vrfTokenContract = new hre.ethers.Contract(vrfContractAddr, LINK_TOKEN_ABI, owner);
-  const vrfTokenContract: VRFCoordinatorV2Mock = await hre.ethers.getContractAt(
-    "VRFCoordinatorV2Mock",
+  const vrfTokenContract: VRFCoordinatorV2PlusMock = await hre.ethers.getContractAt(
+    "VRFCoordinatorV2PlusMock",
     vrfContractAddr,
   );
   // TODO doesnt work this way with events

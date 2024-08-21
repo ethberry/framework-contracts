@@ -26,9 +26,12 @@ contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
     Asset memory price, // item to dismantle
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
+
     Asset[] memory _price = ExchangeUtils._toArray(price);
 
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, _price, signature))) {
+    address signer = _recoverManyToManySignature(params, items, _price, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 

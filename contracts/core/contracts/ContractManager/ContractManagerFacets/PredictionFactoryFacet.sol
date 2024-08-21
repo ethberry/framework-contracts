@@ -34,10 +34,9 @@ contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     PredictionArgs calldata args,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashPrediction(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

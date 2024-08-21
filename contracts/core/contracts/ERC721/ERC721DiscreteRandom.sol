@@ -58,7 +58,7 @@ abstract contract ERC721DiscreteRandom is IERC721Random, ERC721Discrete, Rarity 
     return _upgrade(tokenId, attribute);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

@@ -20,7 +20,7 @@ contract ERC721Wotes is ERC721Simple, ERC721Votes {
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC721Simple(name, symbol, royalty, baseTokenURI) EIP712(name, "1") {}
+  ) ERC721Simple(name, symbol, royalty, baseTokenURI) EIP712(name, "1.o.o") {}
 
   /**
    * @dev See {ERC721-_baseURI}.

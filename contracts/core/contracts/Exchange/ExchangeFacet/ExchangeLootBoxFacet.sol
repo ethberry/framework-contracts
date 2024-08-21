@@ -13,49 +13,40 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IERC721LootBox, LootBoxConfig} from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { SignerMissingRole, NoContent } from "../../utils/errors.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
-  event PurchaseLootBox(address account, uint256 externalId, Asset[] items, Asset[] price);
+  event PurchaseLootBox(address account, uint256 externalId, Asset item, Asset[] price, Asset[] content);
 
   constructor() SignatureValidator() {}
 
   function purchaseLoot(
     Params memory params,
-    Asset[] memory items,
+    Asset memory item,
     Asset[] memory price,
+    Asset[] memory content,
     LootBoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
 
-    // TODO need to validate LootBoxConfig
+    bytes32 config = keccak256(abi.encode(boxConfig.min, boxConfig.max));
 
-    if (!_hasRole(MINTER_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    address signer = _recoverOneToManyToManySignature(params, item, price, content, config, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
-    if (items.length == 0) {
-      revert WrongAmount();
+    if (content.length == 0) {
+      revert NoContent();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    Asset memory box = items[items.length - 1];
+    IERC721LootBox(item.token).mintBox(_msgSender(), item.tokenId, content, boxConfig);
 
-    // pop from array is not supported
-    Asset[] memory lootItems = new Asset[](items.length - 1);
-    uint256 length = items.length;
-    for (uint256 i = 0; i < length - 1; ) {
-      lootItems[i] = items[i];
-      unchecked {
-        i++;
-      }
-    }
-
-    IERC721LootBox(box.token).mintBox(_msgSender(), box.tokenId, lootItems, boxConfig);
-
-    emit PurchaseLootBox(_msgSender(), params.externalId, items, price);
+    emit PurchaseLootBox(_msgSender(), params.externalId, item, price, content);
 
     _afterPurchase(params.referrer, price);
   }

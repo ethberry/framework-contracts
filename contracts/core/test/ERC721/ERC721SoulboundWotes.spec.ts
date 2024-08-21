@@ -12,7 +12,6 @@ describe("ERC721SoulboundWotes", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC721Soulbound(factory);
   shouldMintCommon(factory);
   shouldBehaveLikeERC721Burnable(factory);

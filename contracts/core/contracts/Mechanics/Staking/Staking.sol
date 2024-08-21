@@ -23,13 +23,12 @@ import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { IERC721_MYSTERY_ID } from "../../utils/interfaces.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { ZeroBalance, NotExist, WrongRule, UnsupportedTokenType, NotComplete, Expired, NotAnOwner, WrongStake, WrongToken, LimitExceed, NotActive } from "../../utils/errors.sol";
+import { ZeroBalance, StakeNotExist, RuleNotExist, UnsupportedTokenType, DepositNotComplete, StakeAlreadyWithdrawn, NotAnOwner, StakeNotExist, WrongTemplate, StakeLimitExceed, RuleNotActive } from "../../utils/errors.sol";
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IStaking } from "./interfaces/IStaking.sol";
 import { Asset,Params,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 /**
  * @dev This contract implements a staking system where users can stake their tokens for a specific period of time
@@ -89,10 +88,10 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
 
     // Ensure that the rule exists and is active
     if (rule.terms.period == 0) {
-      revert NotExist();
+      revert StakeNotExist();
     }
     if (!rule.active) {
-      revert NotActive();
+      revert RuleNotActive();
     }
 
     uint256 _maxStake = rule.terms.maxStake;
@@ -102,7 +101,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // check if user reached the maximum number of stakes, if it is revert transaction.
     if (_maxStake > 0) {
       if (_stakeRuleCounter >= _maxStake) {
-        revert LimitExceed();
+        revert StakeLimitExceed();
       }
     }
 
@@ -148,7 +147,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
               TEMPLATE_ID
             );
             if (templateId != ruleDepositTokenTemplateId) {
-              revert WrongToken();
+              revert WrongTemplate();
             }
           }
         }
@@ -213,13 +212,13 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
 
     // Verify that the stake exists and the caller is the owner of the stake.
     if (stake.owner == address(0)) {
-      revert WrongStake();
+      revert StakeNotExist();
     }
     if (stake.owner != _msgSender()) {
-      revert NotAnOwner();
+      revert NotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
-      revert Expired();
+      revert StakeAlreadyWithdrawn();
     }
 
     uint256 stakePeriod = rule.terms.period;
@@ -289,7 +288,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // withdrawDeposit and breakLastPeriod flags are false
     // AND staking rule is recurrent
     if (multiplier == 0 && rule.terms.recurrent && !withdrawDeposit && !breakLastPeriod) {
-      revert NotComplete();
+      revert DepositNotComplete();
     }
   }
 
@@ -391,7 +390,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
       }
     } else if (rewardItem.tokenType == TokenType.ERC721 || rewardItem.tokenType == TokenType.ERC998) {
       // If the token is an ERC721 or ERC998 token, mint NFT to the receiver.
-        if (IERC165(rewardItem.token).supportsInterface(IERC721_MYSTERY_ID)) {
+        if (IERC165(rewardItem.token).supportsInterface(type(IERC721MysteryBox).interfaceId)) {
           // If the token supports the Mysterybox interface, call the mintBox function to mint the tokens and transfer them to the receiver.
           for (uint256 k = 0; k < multiplier;) {
             IERC721MysteryBox(rewardItem.token).mintBox(receiver, rewardItem.tokenId, rule.content[itemIndex]);
@@ -542,7 +541,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // Store each individual asset in the rule's deposit array
     uint256 lengthDeposit = rule.deposit.length;
     if (lengthDeposit == 0) {
-      revert WrongRule();
+      revert RuleNotExist();
     }
     for (uint256 i = 0; i < lengthDeposit; ) {
       p.deposit.push(rule.deposit[i]);
@@ -591,7 +590,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
   function _updateRule(uint256 ruleId, bool active) internal {
     Rule storage rule = _rules[ruleId];
     if (rule.terms.period == 0) {
-      revert NotExist();
+      revert StakeNotExist();
     }
     _rules[ruleId].active = active;
     emit RuleUpdated(ruleId, active);

@@ -30,10 +30,9 @@ contract RaffleFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     Params calldata params,
     bytes calldata signature
   ) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashRaffle(params), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

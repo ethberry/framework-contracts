@@ -38,7 +38,7 @@ describe("Dispenser", function () {
       );
 
       const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
-      await expect(tx).to.emit(lib, "PaymentEthSent").withArgs(receiver.address, amount);
+      await expect(tx).to.emit(lib, "PaymentReleased").withArgs(receiver.address, amount);
 
       await expect(tx).to.changeEtherBalances([owner, receiver], [-amount, amount]);
     });
@@ -69,9 +69,9 @@ describe("Dispenser", function () {
 
       const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
       await expect(tx)
-        .to.emit(lib, "PaymentEthSent")
+        .to.emit(lib, "PaymentReleased")
         .withArgs(receiver.address, amount)
-        .to.emit(lib, "PaymentEthSent")
+        .to.emit(lib, "PaymentReleased")
         .withArgs(stranger.address, amount);
     });
 
@@ -98,7 +98,7 @@ describe("Dispenser", function () {
         .withArgs(owner, amount / 2n, amount);
     });
 
-    it("should fail: insufficient balance", async function () {
+    it("should fail: AddressInsufficientBalance", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -173,7 +173,7 @@ describe("Dispenser", function () {
       );
 
       const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
-      await expect(tx).to.emit(lib, "PaymentEthSent").withArgs(attackerInstance, amount);
+      await expect(tx).to.emit(lib, "PaymentReleased").withArgs(attackerInstance, amount);
 
       await expect(tx).to.changeEtherBalances(
         [owner, contractInstance, attackerInstance],

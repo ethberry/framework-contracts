@@ -616,14 +616,7 @@ async function main() {
   await debug(contracts);
 
   const ponziFactory = await ethers.getContractFactory("Ponzi");
-  contracts.ponzi = await ponziFactory.deploy(
-    [
-      "0xfe3b557e8fb62b89f4916b721be55ceb828dbd73",
-      "0x627306090abaB3A6e1400e9345bC60c78a8BEf57",
-      "0x61284003e50b2d7ca2b95f93857abb78a1b0f3ca",
-    ],
-    [1, 5, 95],
-  );
+  contracts.ponzi = await ponziFactory.deploy();
   await debug(contracts);
 
   const dispenserFactory = await ethers.getContractFactory("Dispenser");

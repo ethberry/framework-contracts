@@ -8,8 +8,7 @@ import { expiresAt, externalId, extra } from "../constants";
 import { getContractName, isEqualEventArgObj } from "../utils";
 import { deployERC20 } from "../ERC20/shared/fixtures";
 import { deployERC721 } from "../ERC721/shared/fixtures";
-import { deployDiamond } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { deployDiamond, wrapOneToOneSignature } from "./shared";
 
 describe("Diamond Exchange Raffle", function () {
   const factory = async (facetName = "ExchangeRaffleFacet"): Promise<any> => {
@@ -27,16 +26,7 @@ describe("Diamond Exchange Raffle", function () {
   const getSignatures = async (contractInstance: Contract, contractName = "EXCHANGE") => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, contractName, owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, contractName, owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, contractName, owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
+    return wrapOneToOneSignature(network, contractInstance, contractName, owner);
   };
 
   describe("Purchase", function () {
@@ -44,7 +34,7 @@ describe("Diamond Exchange Raffle", function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
@@ -68,13 +58,13 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.mint(receiver, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance);
       await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance);
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -126,7 +116,7 @@ describe("Diamond Exchange Raffle", function () {
       await expect(tx1)
         .to.emit(exchangeInstance, "PurchaseRaffle")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -148,178 +138,131 @@ describe("Diamond Exchange Raffle", function () {
       expect(balance).to.equal(amount * 1n);
     });
 
-    it("should fail: not exist", async function () {
+    it("should fail: ETHInvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
-      const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
-
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
-      const raffleInstance: any = await raffleFactory.deploy();
-
-      await raffleInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
-
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance);
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
           receiver: ZeroAddress,
           referrer: ZeroAddress,
-          extra,
         },
         item: {
           tokenType: 2n,
-          token: await erc721TicketInstance.getAddress(),
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         price: {
-          tokenType: 1n,
-          token: await erc20Instance.getAddress(),
-          tokenId: 121,
+          tokenType: 0n,
+          token: ZeroAddress,
+          tokenId: 121n,
           amount,
         },
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseRaffle(
         {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
+          nonce: encodeBytes32String("nonce"),
+          extra,
           receiver: ZeroAddress,
           referrer: ZeroAddress,
-          extra,
         },
         {
           tokenType: 2n,
-          token: erc721TicketInstance,
+          token: ZeroAddress,
           tokenId: 0,
           amount: 1,
         },
         {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121,
+          tokenType: 0n,
+          token: ZeroAddress,
+          tokenId: 121n,
           amount,
         },
         signature,
+        {
+          value: amount,
+        },
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver");
     });
 
-    it("should fail: wrong token", async function () {
+    it("should fail: ERC20InvalidReceiver", async function () {
       const [_owner, receiver] = await ethers.getSigners();
+
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
+
       const erc20Instance = await deployERC20();
-      const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
+      await erc20Instance.mint(receiver, amount);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
-
-      const raffleInstance: any = await raffleFactory.deploy();
-      await raffleInstance.startRound(
-        {
-          tokenType: 2n,
-          token: erc721TicketInstance,
-          tokenId: 1,
-          amount,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 122,
-          amount,
-        },
-        0, // maxTicket count
-      );
-
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
-
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance);
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance);
-
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
-          receiver: await raffleInstance.getAddress(),
-          referrer: ZeroAddress,
+          nonce: encodeBytes32String("nonce"),
           extra,
+          receiver: ZeroAddress,
+          referrer: ZeroAddress,
         },
         item: {
-          tokenType: 0n,
+          tokenType: 2n,
           token: ZeroAddress,
           tokenId: 0,
-          amount,
+          amount: 1,
         },
         price: {
           tokenType: 1n,
           token: await erc20Instance.getAddress(),
-          tokenId: 121,
+          tokenId: 121n,
           amount,
         },
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseRaffle(
         {
-          nonce: encodeBytes32String("nonce"),
           externalId,
           expiresAt,
-          receiver: raffleInstance,
-          referrer: ZeroAddress,
+          nonce: encodeBytes32String("nonce"),
           extra,
+          receiver: ZeroAddress,
+          referrer: ZeroAddress,
         },
         {
-          tokenType: 0n,
+          tokenType: 2n,
           token: ZeroAddress,
           tokenId: 0,
-          amount,
+          amount: 1,
         },
         {
           tokenType: 1n,
           token: erc20Instance,
-          tokenId: 121,
+          tokenId: 121n,
           amount,
         },
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver");
     });
 
     it("should fail: wrong signer", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
@@ -342,13 +285,13 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+      await erc20Instance.mint(receiver, amount);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+      await raffleInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -455,7 +398,7 @@ describe("Diamond Exchange Raffle", function () {
     it("should fail: expired signature", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
@@ -478,13 +421,13 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+      await erc20Instance.mint(receiver, amount);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+      await raffleInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -534,7 +477,7 @@ describe("Diamond Exchange Raffle", function () {
       await expect(tx1)
         .to.emit(exchangeInstance, "PurchaseRaffle")
         .withArgs(
-          receiver.address,
+          receiver,
           externalId,
           isEqualEventArgObj({
             tokenType: 2n,
@@ -582,7 +525,7 @@ describe("Diamond Exchange Raffle", function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
@@ -606,13 +549,13 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+      await erc20Instance.mint(receiver, amount);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+      await raffleInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -637,7 +580,7 @@ describe("Diamond Exchange Raffle", function () {
       });
 
       const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
-      await accessInstance.renounceRole(MINTER_ROLE, owner.address);
+      await accessInstance.renounceRole(MINTER_ROLE, owner);
 
       const tx1 = exchangeInstance.connect(receiver).purchaseRaffle(
         {
@@ -669,7 +612,7 @@ describe("Diamond Exchange Raffle", function () {
     it("should fail: ERC20InsufficientAllowance", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
@@ -692,13 +635,13 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.mint(receiver.address, amount);
-      // await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+      await erc20Instance.mint(receiver, amount);
+      // await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+      await raffleInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -752,7 +695,7 @@ describe("Diamond Exchange Raffle", function () {
     it("should fail: ERC20InsufficientBalance", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateOneToOneSignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
@@ -775,12 +718,12 @@ describe("Diamond Exchange Raffle", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.connect(receiver).approve(exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
 
-      await raffleInstance.grantRole(MINTER_ROLE, exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, raffleInstance.getAddress());
+      await raffleInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, await raffleInstance.getAddress());
 
-      const signature = await generateOneToOneSignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -829,7 +772,7 @@ describe("Diamond Exchange Raffle", function () {
 
       await expect(tx1)
         .to.be.revertedWithCustomError(erc20Instance, "ERC20InsufficientBalance")
-        .withArgs(receiver.address, 0, amount);
+        .withArgs(receiver, 0, amount);
     });
   });
 

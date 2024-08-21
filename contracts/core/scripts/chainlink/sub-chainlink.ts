@@ -76,7 +76,7 @@ async function main() {
 
   const linkInstance = await ethers.getContractAt("LinkToken", linkAddr);
   console.info(`LINK_ADDR=${linkAddr}`);
-  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfAddr);
+  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2PlusMock", vrfAddr);
   console.info(`VRF_ADDR=${vrfAddr}`);
 
   // GET LINK TOKEN to OWNER
@@ -98,7 +98,7 @@ async function main() {
   }
 
   // CREATE VRF SUBSCRIPTION
-  await debug(await vrfInstance.createSubscription(), "createSubscription");
+  await debug(await vrfInstance.connect(owner).createSubscription(), "createSubscription");
 
   // GET new SUB ID
   const eventFilter = vrfInstance.filters.SubscriptionCreated();

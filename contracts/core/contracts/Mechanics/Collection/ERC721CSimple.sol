@@ -14,7 +14,7 @@ import { ERC721ABRK } from "@gemunion/contracts-erc721c/contracts/preset/ERC721A
 import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { SignerMissingRole, MethodNotSupported } from "../../utils/errors.sol";
+import { MethodNotSupported } from "../../utils/errors.sol";
 
 contract ERC721CSimple is ERC721ABRK, ERC721ABaseUrl, NativeRejector {
   uint96 _batchSize;

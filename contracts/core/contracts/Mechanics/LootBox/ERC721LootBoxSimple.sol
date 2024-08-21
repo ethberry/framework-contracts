@@ -9,7 +9,7 @@ pragma solidity ^0.8.20;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { ChainLinkGemunionV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkGemunionV2.sol";
+import { ChainLinkGemunionV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkGemunionV2Plus.sol";
 import { AllTypesHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
 import { IERC721LootBox, LootBoxConfig} from "./interfaces/IERC721LootBox.sol";
@@ -46,10 +46,10 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory items, LootBoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
+  function mintBox(address account, uint256 templateId, Asset[] memory content, LootBoxConfig calldata boxConfig) external onlyRole(MINTER_ROLE) {
     uint256 tokenId = _mintCommon(account, templateId);
 
-    uint256 length = items.length;
+    uint256 length = content.length;
     if (length == 0) {
       revert NoContent();
     }
@@ -66,7 +66,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     // _itemData[tokenId] = items;
 
     for (uint256 i = 0; i < length; ) {
-      _itemData[tokenId].push(items[i]);
+      _itemData[tokenId].push(content[i]);
       unchecked {
         i++;
       }
@@ -96,7 +96,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
 
   function getRandomNumber() internal virtual returns (uint256 requestId);
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
     uint256 tokenId = request.tokenId;
 

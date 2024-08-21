@@ -9,7 +9,6 @@ pragma solidity ^0.8.20;
 import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { RARITY, TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { TemplateZero, ProtectedAttribute } from "../utils/errors.sol";
 import { IERC721Random } from "../ERC721/interfaces/IERC721Random.sol";
@@ -59,7 +58,7 @@ abstract contract ERC998DiscreteRandom is IERC721Random, ERC998Discrete, Rarity 
     _queue[getRandomNumber()] = Request(account, templateId);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

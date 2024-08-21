@@ -19,7 +19,7 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { IERC721RaffleTicket, TicketRaffle } from "./interfaces/IERC721RaffleTicket.sol";
 import { RaffleRoundInfo } from "./interfaces/IRaffle.sol";
-import { NotInList, WrongToken, WrongRound, NotAnOwner, NotComplete, ZeroBalance, NotActive, NotExist, LimitExceed } from "../../utils/errors.sol";
+import { PrizeNotEligible, WrongToken, WrongRound, NotOwnerNorApproved, RoundNotComplete, ZeroBalance, RoundNotActive, TicketLimitExceed } from "../../utils/errors.sol";
 
 abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinHolder {
   using Address for address;
@@ -29,7 +29,6 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
   event RoundFinalized(uint256 round, uint256 prizeIndex, uint256 prizeNumber);
   event Released(uint256 round, uint256 amount);
   event Prize(address account, uint256 roundId, uint256 ticketId, uint256 amount);
-  event PaymentEthReceived(address from, uint256 amount);
 
   // RAFFLE
   struct Round {
@@ -78,7 +77,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
 
     // allow all
     if (currentRound.maxTicket > 0 && currentRound.tickets.length >= currentRound.maxTicket) {
-      revert LimitExceed();
+      revert TicketLimitExceed();
     }
 
     currentRound.balance += currentRound.acceptedAsset.amount;
@@ -95,7 +94,9 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
 
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
     Round memory prevRound = _rounds[_rounds.length - 1];
-    if (prevRound.endTimestamp == 0) revert NotComplete();
+    if (prevRound.endTimestamp == 0) {
+      revert RoundNotComplete();
+    }
 
     Round memory nextRound;
     _rounds.push(nextRound);
@@ -118,7 +119,9 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
   }
 
   function getRound(uint256 roundId) public view returns (Round memory) {
-    if (_rounds.length < roundId) revert NotExist();
+    if (_rounds.length < roundId) {
+      revert WrongRound();
+    }
     return _rounds[roundId];
   }
 
@@ -153,7 +156,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
     }
 
     if (currentRound.endTimestamp != 0) {
-      revert NotActive();
+      revert RoundNotActive();
     }
 
     currentRound.endTimestamp = block.timestamp;
@@ -177,7 +180,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
     Round storage currentRound = _rounds[roundNumber];
 
     if (currentRound.balance == 0) {
-        revert ZeroBalance();
+      revert ZeroBalance();
     }
 
     uint256 roundBalance = currentRound.balance;
@@ -194,7 +197,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
   }
 
   // ROUND
-  function fulfillRandomWords(uint256 requiestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requiestId, uint256[] calldata randomWords) internal virtual {
     uint256 roundNumber = requestToRoundNumber[requiestId];
     Round storage currentRound = _rounds[roundNumber];
     // calculate wining numbers - uint256(uint8(randomWords[0] % tickets.length))
@@ -216,12 +219,12 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
     Round storage ticketRound = _rounds[roundId];
 
     if (ticketRound.endTimestamp == 0) {
-      revert NotComplete();
+      revert RoundNotComplete();
     }
 
     // TODO OR approved?
     if (IERC721(ticketRound.ticketAsset.token).ownerOf(tokenId) != _msgSender()) {
-      revert NotAnOwner();
+      revert NotOwnerNorApproved(_msgSender());
     }
 
     IERC721RaffleTicket ticketFactory = IERC721RaffleTicket(ticketRound.ticketAsset.token);
@@ -245,7 +248,7 @@ abstract contract RaffleRandom is AccessControl, Pausable, NativeRejector, CoinH
       ticketFactory.setPrize(tokenId, ticketRound.tickets.length);
       emit Prize(_msgSender(), roundId, tokenId, ticketRound.tickets.length);
     } else {
-      revert NotInList();
+      revert PrizeNotEligible();
     }
   }
 

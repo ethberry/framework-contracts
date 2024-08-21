@@ -14,14 +14,6 @@ Object.defineProperty(BigInt.prototype, "toJSON", {
   writable: true,
 });
 
-export const getNumbers = (selected = [0, 1, 2, 3, 5, 8]) => {
-  const numbers: Array<boolean> = new Array(Number(36)).fill(false);
-  selected.forEach(s => {
-    numbers[s] = true;
-  });
-  return numbers;
-};
-
 export const getNumbersBytes = (selected = [8, 5, 3, 2, 1, 0]) => {
   const numbers: Array<any> = [];
   selected.forEach(s => {

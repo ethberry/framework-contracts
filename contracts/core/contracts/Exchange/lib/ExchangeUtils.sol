@@ -20,7 +20,6 @@ import { IERC20Burnable } from "../../ERC20/interfaces/IERC20Burnable.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
-import { IERC721_RANDOM_ID } from "../../utils/interfaces.sol";
 import { UnsupportedTokenType, ETHInvalidReceiver, ETHInsufficientBalance } from "../../utils/errors.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
@@ -28,8 +27,8 @@ library ExchangeUtils {
   using Address for address;
   using SafeERC20 for IERC20;
 
-  event PaymentEthReceived(address from, uint256 amount);
-  event PaymentEthSent(address to, uint256 amount);
+  event PaymentReceived(address from, uint256 amount);
+  event PaymentReleased(address to, uint256 amount);
 
   /**
    * @dev Transfer all types of tokens from `spender` to `receiver`.
@@ -96,12 +95,12 @@ library ExchangeUtils {
       if (totalAmount > msg.value) {
         revert ETHInsufficientBalance(spender, msg.value, totalAmount);
       } else if (address(this) == receiver) {
-        emit PaymentEthReceived(receiver, msg.value);
+        emit PaymentReceived(receiver, msg.value);
       } else if (receiver == address(0)) {
         revert ETHInvalidReceiver(address(0));
       } else {
         Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentEthSent(receiver, totalAmount);
+        emit PaymentReleased(receiver, totalAmount);
       }
     }
   }
@@ -210,7 +209,7 @@ library ExchangeUtils {
         revert ETHInvalidReceiver(address(0));
       } else {
         Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentEthSent(receiver, totalAmount);
+        emit PaymentReleased(receiver, totalAmount);
       }
     }
   }
@@ -238,7 +237,7 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
         (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
-        bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
+        bool randomInterface = IERC721(item.token).supportsInterface(type(IERC721Random).interfaceId);
         if (randomInterface) {
           for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Random(item.token).mintRandom(receiver, item.tokenId);
@@ -286,7 +285,7 @@ library ExchangeUtils {
         (item.tokenType == TokenType.ERC721 && allowed.erc721) ||
         (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
-        bool randomInterface = IERC721(item.token).supportsInterface(IERC721_RANDOM_ID);
+        bool randomInterface = IERC721(item.token).supportsInterface(type(IERC721Random).interfaceId);
         if (randomInterface) {
           for (uint256 loopIndex = 0; loopIndex < item.amount;) {
             IERC721Random(item.token).mintRandom(receiver, item.tokenId);

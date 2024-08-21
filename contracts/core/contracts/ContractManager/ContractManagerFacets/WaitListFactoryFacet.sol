@@ -21,10 +21,9 @@ contract WaitListFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   event WaitListDeployed(address account, uint256 externalId);
 
   function deployWaitList(Params calldata params, bytes calldata signature) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashWaitList(params), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

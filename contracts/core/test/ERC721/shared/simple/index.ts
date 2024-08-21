@@ -15,7 +15,7 @@ export function shouldBehaveLikeERC721Simple(
   options = Object.assign({}, { mint: customMintCommonERC721, safeMint: customMintCommonERC721, tokenId }, options);
 
   shouldBehaveLikeERC721(factory, options);
-  shouldBehaveLikeERC721Burnable(factory, options);
   shouldBaseUrl(factory, options);
+  shouldBehaveLikeERC721Burnable(factory, options);
   shouldBehaveLikeERC721Metadata(factory, options, metadata);
 }

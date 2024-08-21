@@ -12,7 +12,6 @@ describe("ERC998Discrete", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE, METADATA_ROLE);
-
   shouldBehaveLikeERC998Simple(factory);
   shouldBehaveLikeDiscrete(factory);
   shouldMintCommon(factory);

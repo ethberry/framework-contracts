@@ -6,8 +6,7 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import { isEqualArray, isEqualEventArgArrObj } from "../utils";
-import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { deployDiamond, deployErc1155Base, deployErc20Base, deployErc721Base, wrapManyToManySignature } from "./shared";
 
 describe("Diamond Exchange Craft", function () {
   const factory = async (facetName = "ExchangeCraftFacet"): Promise<any> => {
@@ -25,16 +24,7 @@ describe("Diamond Exchange Craft", function () {
   const getSignatures = async (contractInstance: Contract) => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
+    return wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
   };
 
   describe("craft", function () {
@@ -42,9 +32,9 @@ describe("Diamond Exchange Craft", function () {
       it("NULL > NULL", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [],
@@ -64,10 +54,10 @@ describe("Diamond Exchange Craft", function () {
       it("should purchase", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -115,10 +105,10 @@ describe("Diamond Exchange Craft", function () {
       it("should purchase", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -166,11 +156,11 @@ describe("Diamond Exchange Craft", function () {
       it("should craft", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -256,11 +246,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientAllowance", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -313,11 +303,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientBalance", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -386,11 +376,11 @@ describe("Diamond Exchange Craft", function () {
       it("should craft", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -475,11 +465,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC1155MissingApprovalForAll", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -532,11 +522,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC1155InsufficientBalance", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -591,11 +581,11 @@ describe("Diamond Exchange Craft", function () {
       it("should craft", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -681,11 +671,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientAllowance", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -738,11 +728,11 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientBalance", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -811,10 +801,10 @@ describe("Diamond Exchange Craft", function () {
       it("should craft", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -898,10 +888,10 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC1155MissingApprovalForAll", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -954,10 +944,10 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC1155InsufficientBalance", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params,
           items: [
@@ -1012,7 +1002,7 @@ describe("Diamond Exchange Craft", function () {
       it("should craft and burn", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -1026,7 +1016,7 @@ describe("Diamond Exchange Craft", function () {
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -1153,7 +1143,7 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientAllowance", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -1167,7 +1157,7 @@ describe("Diamond Exchange Craft", function () {
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -1255,7 +1245,7 @@ describe("Diamond Exchange Craft", function () {
       it("should fail: ERC20InsufficientBalance", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -1269,7 +1259,7 @@ describe("Diamond Exchange Craft", function () {
         await expect(tx0).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -1360,9 +1350,9 @@ describe("Diamond Exchange Craft", function () {
     it("should fail: ExpiredSignature (duplicate mint)", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params,
         items: [],
@@ -1395,11 +1385,11 @@ describe("Diamond Exchange Craft", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
 
       const erc1155Instance = await deployErc1155Base("ERC1155Simple", exchangeInstance);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params,
         items: [

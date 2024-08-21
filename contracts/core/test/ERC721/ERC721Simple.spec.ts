@@ -11,7 +11,6 @@ describe("ERC721Simple", function () {
   const factory = () => deployERC721(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC721Simple(factory);
   shouldMintCommon(factory);
 

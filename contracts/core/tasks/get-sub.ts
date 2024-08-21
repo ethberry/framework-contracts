@@ -1,6 +1,6 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
-import { VRFCoordinatorV2Mock } from "../typechain-types";
+import { VRFCoordinatorV2PlusMock } from "../typechain-types";
 
 export const recursivelyDecodeResult = (result: Result): Record<string, any> => {
   if (typeof result !== "object") {
@@ -57,11 +57,13 @@ task("get-sub", "Prints a VRF subscription data")
         vrfContractAddr = "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
     }
 
-    const vrfTokenContract: VRFCoordinatorV2Mock = await hre.ethers.getContractAt(
-      "VRFCoordinatorV2Mock",
+    const vrfTokenContract: VRFCoordinatorV2PlusMock = await hre.ethers.getContractAt(
+      "VRFCoordinatorV2PlusMock",
       vrfContractAddr,
     );
 
     const data = await vrfTokenContract.getSubscription(sub);
     console.info("Subscription", recursivelyDecodeResult(data as unknown as Result));
   });
+
+// hardhat get-sub --sub 107047671614105181605855861266364170459723373514078878123604030694679782559997 --network gemunion

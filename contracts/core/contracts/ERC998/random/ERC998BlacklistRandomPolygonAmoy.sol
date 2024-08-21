@@ -8,14 +8,14 @@ pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
-import { VRFConsumerBaseV2 } from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkPolygonAmoyV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkPolygonAmoyV2.sol";
-import { ChainLinkBaseV2 } from "@gemunion/contracts-chain-link-v2/contracts/extensions/ChainLinkBaseV2.sol";
+import { ChainLinkPolygonAmoyV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkPolygonAmoyV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC998BlacklistRandom } from "../ERC998BlacklistRandom.sol";
 
-contract ERC998BlacklistRandomGemunion is ERC998BlacklistRandom, ChainLinkPolygonAmoyV2 {
+contract ERC998BlacklistRandomGemunion is ERC998BlacklistRandom, ChainLinkPolygonAmoyV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,16 +23,16 @@ contract ERC998BlacklistRandomGemunion is ERC998BlacklistRandom, ChainLinkPolygo
     string memory baseTokenURI
   )
     ERC998BlacklistRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkPolygonAmoyV2(uint64(0), uint16(6), uint32(600000), uint32(1))
+    ChainLinkPolygonAmoyV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
-  function getRandomNumber() internal override(ChainLinkBaseV2, ERC998BlacklistRandom) returns (uint256 requestId) {
+  function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC998BlacklistRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
   }
 
   function fulfillRandomWords(
     uint256 requestId,
-    uint256[] memory randomWords
-  ) internal override(ERC998BlacklistRandom, VRFConsumerBaseV2) {
+    uint256[] calldata randomWords
+  ) internal override(ERC998BlacklistRandom, VRFConsumerBaseV2Plus) {
     return super.fulfillRandomWords(requestId, randomWords);
   }
 

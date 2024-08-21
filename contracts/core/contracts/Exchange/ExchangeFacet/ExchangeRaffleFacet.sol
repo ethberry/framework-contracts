@@ -13,8 +13,8 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NotExist, WrongToken } from "../../utils/errors.sol";
-import { Referral } from "../../Referral/Referral.sol";
+import { SignerMissingRole } from "../../utils/errors.sol";
+import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseRaffle(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, uint256 index);
@@ -27,19 +27,11 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
     Asset memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    // Verify signature and check signer for MINTER_ROLE
-    if (!_hasRole(MINTER_ROLE, _recoverOneToOneSignature(params, item, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverOneToOneSignature(params, item, price, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
-    }
-
-    // this is questionable
-    if (item.token == address(0)) {
-      revert WrongToken();
-    }
-
-    // Double-check lottery address
-    if (params.receiver == address(0)) {
-      revert NotExist();
     }
 
     Asset[] memory _price = ExchangeUtils._toArray(price);

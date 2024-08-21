@@ -12,6 +12,39 @@ async function main() {
   currentBlock.number = block!.number;
   fs.appendFileSync(`${process.cwd()}/log.txt`, `STARTING_BLOCK=${currentBlock.number}\n`);
 
+  // CM DIAMOND
+  const instance = await ethers.getContractAt("DiamondExchange", "0xda03570d4185155ac2e5b4e17aa016e2fd485a58");
+  const cmAddress = await instance.getAddress();
+
+  // // UPDATE DIAMOND EXCHANGE (ADD FACET) !!!
+  await addFacetDiamond(
+    "DiamondExchange",
+    cmAddress,
+    [
+      "ExchangeClaimFacet",
+      "ExchangeCraftFacet",
+      "ExchangeDismantleFacet",
+      "ExchangeGradeFacet",
+      "ExchangeLootBoxFacet",
+      "ExchangeLotteryFacet",
+      "ExchangeMergeFacet",
+      "ExchangeMockFacet",
+      "ExchangeMysteryBoxFacet",
+      "ExchangePurchaseFacet",
+      "ExchangeRaffleFacet",
+      "ExchangeRentableFacet",
+    ],
+    {
+      log: true,
+      logSelectors: true,
+    },
+  );
+
+  // TODO check diamondLoupe existence
+  const diamondLoupeFacet = await ethers.getContractAt("DiamondLoupeFacet", cmAddress);
+  const result = await diamondLoupeFacet.facetAddresses();
+  console.info("DiamondFacetAddresses:", result);
+
   // DIAMOND EXCHANGE DEPLOY (INIT)
   const exchangeInstance = await deployDiamond("DiamondExchange", ["ExchangeClaimFacet"], "DiamondExchangeInit", {
     log: true,

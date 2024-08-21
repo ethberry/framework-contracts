@@ -20,21 +20,20 @@ import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.s
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { LotteryConfig, LotteryRoundInfo } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
-import { ZeroBalance, NotComplete, WrongRound, BalanceExceed, WrongToken, NotAnOwner, Expired, NotActive, LimitExceed } from "../../utils/errors.sol";
+import { ZeroBalance, RoundNotComplete, WrongRound, BalanceExceed, WrongToken, NotOwnerNorApproved, TicketExpired, RoundNotActive, TicketLimitExceed } from "../../utils/errors.sol";
 
 abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeReceiver {
   using Address for address;
   using SafeERC20 for IERC20;
 
   uint256 internal immutable _timeLag; // TODO change in production: release after 2592000 seconds = 30 days (dev: 2592)
-  uint256 internal immutable comm; // commission 30%
+  uint256 internal immutable fee; // commission 30%
 
   event RoundStarted(uint256 roundId, uint256 startTimestamp, uint256 maxTicket, Asset ticket, Asset price);
   event RoundEnded(uint256 round, uint256 endTimestamp);
   event RoundFinalized(uint256 round, uint8[6] winValues);
   event Released(uint256 round, uint256 amount);
   event Prize(address account, uint256 roundId, uint256 ticketId, uint256 amount);
-  event PaymentEthReceived(address from, uint256 amount);
 
   // LOTTERY
 
@@ -64,7 +63,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
 
     // SET Lottery Config
     _timeLag = config.timeLagBeforeRelease;
-    comm = config.commission;
+    fee = config.commission;
 
     Round memory rootRound;
     rootRound.startTimestamp = block.timestamp;
@@ -88,7 +87,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     }
 
     if (currentRound.maxTicket > 0 && currentRound.tickets.length >= currentRound.maxTicket) {
-      revert LimitExceed();
+      revert TicketLimitExceed();
     }
 
     currentRound.tickets.push(numbers);
@@ -102,9 +101,8 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   // ROUND
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
     Round memory prevRound = _rounds[_rounds.length - 1];
-    // TODO custom error
     if (prevRound.endTimestamp == 0) {
-      revert NotComplete();
+      revert RoundNotComplete();
     }
 
     Round memory nextRound;
@@ -132,13 +130,13 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     }
 
     if (currentRound.endTimestamp != 0) {
-      revert NotActive();
+      revert RoundNotActive();
     }
 
     currentRound.endTimestamp = block.timestamp;
     currentRound.requestId = getRandomNumber();
 
-    uint256 commission = (currentRound.total * comm) / 100;
+    uint256 commission = (currentRound.total * fee) / 100;
     currentRound.total -= commission;
 
     // TODO send round commission to owner
@@ -165,19 +163,20 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   }
 
   function getLotteryInfo() public view returns (LotteryConfig memory) {
-    return LotteryConfig(_timeLag, comm);
+    return LotteryConfig(_timeLag, fee);
   }
 
   // RANDOM
-  function fulfillRandomWords(uint256, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256, uint256[] calldata randomWords) internal virtual {
     Round storage currentRound = _rounds[_rounds.length - 1];
 
     // calculate wining numbers
     bool[36] memory tmp1;
+    uint256 tmp2 = randomWords[0];
     uint8 i = 0;
     while (i < 6) {
-      uint256 number = randomWords[0] % 36;
-      randomWords[0] = randomWords[0] / 37;
+      uint256 number = tmp2 % 36;
+      tmp2 = tmp2 / 37;
       if (!tmp1[number]) {
         currentRound.values[i] = uint8(number);
         tmp1[number] = true;
@@ -207,16 +206,16 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     Round storage ticketRound = _rounds[roundId];
 
     if (ticketRound.endTimestamp == 0) {
-      revert NotComplete();
+      revert RoundNotComplete();
     }
 
     if (block.timestamp > ticketRound.endTimestamp + _timeLag) {
-      revert Expired();
+      revert TicketExpired();
     }
 
     // TODO OR approved?
     if (IERC721(ticketRound.ticketAsset.token).ownerOf(tokenId) != _msgSender()) {
-      revert NotAnOwner();
+      revert NotOwnerNorApproved(_msgSender());
     }
 
     IERC721LotteryTicket ticketFactory = IERC721LotteryTicket(ticketRound.ticketAsset.token);
@@ -309,7 +308,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     }
 
     if (hasWinners && block.timestamp < ticketRound.endTimestamp + _timeLag) {
-      revert NotComplete();
+      revert RoundNotComplete();
     }
 
     // RELEASE ALL ROUND BALANCE

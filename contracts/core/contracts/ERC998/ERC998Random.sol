@@ -14,7 +14,6 @@ import { ERC998Simple } from "./ERC998Simple.sol";
 import { IERC721Random } from "../ERC721/interfaces/IERC721Random.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { ERC721Simple } from "../ERC721/ERC721Simple.sol";
-import { IERC721_RANDOM_ID } from "../utils/interfaces.sol";
 
 
 abstract contract ERC998Random is IERC721Random, ERC998Simple, Rarity {
@@ -46,7 +45,7 @@ abstract contract ERC998Random is IERC721Random, ERC998Simple, Rarity {
     _queue[getRandomNumber()] = Request(account, templateId);
   }
 
-  function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal virtual {
+  function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
     emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);

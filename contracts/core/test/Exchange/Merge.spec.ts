@@ -6,8 +6,7 @@ import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 
 import { expiresAt, externalId, params, templateId, tokenId } from "../constants";
 import { isEqualEventArgArrObj } from "../utils";
-import { deployDiamond, deployErc721Base } from "./shared";
-import { wrapManyToManySignature, wrapOneToManySignature, wrapOneToOneSignature } from "./shared/utils";
+import { deployDiamond, deployErc721Base, wrapManyToManySignature } from "./shared";
 
 describe("Diamond Exchange Merge", function () {
   const factory = async (facetName = "ExchangeMergeFacet"): Promise<any> => {
@@ -25,16 +24,7 @@ describe("Diamond Exchange Merge", function () {
   const getSignatures = async (contractInstance: Contract) => {
     const [owner] = await ethers.getSigners();
     const network = await ethers.provider.getNetwork();
-
-    const generateOneToOneSignature = wrapOneToOneSignature(network, contractInstance, "EXCHANGE", owner);
-    const generateOneToManySignature = wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
-    const generateManyToManySignature = wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
-
-    return {
-      generateOneToOneSignature,
-      generateOneToManySignature,
-      generateManyToManySignature,
-    };
+    return wrapManyToManySignature(network, contractInstance, "EXCHANGE", owner);
   };
 
   describe("merge", function () {
@@ -42,7 +32,7 @@ describe("Diamond Exchange Merge", function () {
       it("should merge", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         const tx01 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -63,7 +53,7 @@ describe("Diamond Exchange Merge", function () {
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -190,7 +180,7 @@ describe("Diamond Exchange Merge", function () {
       it("should merge", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
         const tx01 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -211,7 +201,7 @@ describe("Diamond Exchange Merge", function () {
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -338,7 +328,7 @@ describe("Diamond Exchange Merge", function () {
       it("should merge", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const erc998Instance = await deployErc721Base("ERC998Simple", exchangeInstance);
 
@@ -360,7 +350,7 @@ describe("Diamond Exchange Merge", function () {
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
         await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -487,7 +477,7 @@ describe("Diamond Exchange Merge", function () {
       it("should merge", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc998Instance = await deployErc721Base("ERC998Simple", exchangeInstance);
 
         const tx01 = erc998Instance.mintCommon(receiver.address, templateId);
@@ -508,7 +498,7 @@ describe("Diamond Exchange Merge", function () {
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
         await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -635,7 +625,7 @@ describe("Diamond Exchange Merge", function () {
       it("should merge", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
-        const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+        const generateSignature = await getSignatures(exchangeInstance);
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
         const erc998Instance = await deployErc721Base("ERC998Simple", exchangeInstance);
 
@@ -657,7 +647,7 @@ describe("Diamond Exchange Merge", function () {
           .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
         await erc998Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-        const signature = await generateManyToManySignature({
+        const signature = await generateSignature({
           account: receiver.address,
           params: {
             nonce: encodeBytes32String("nonce"),
@@ -782,10 +772,10 @@ describe("Diamond Exchange Merge", function () {
   });
 
   describe("ERROR", function () {
-    it("should fail: wrong token template", async function () {
+    it("should fail: MergeDifferentTemplate", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
       const tx01 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -801,7 +791,7 @@ describe("Diamond Exchange Merge", function () {
         .withArgs(ZeroAddress, receiver.address, tokenId + 1n);
       await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 1n);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -869,13 +859,13 @@ describe("Diamond Exchange Merge", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "MergeDifferentTemplate");
     });
 
-    it("should fail: wrong token contract", async function () {
+    it("should fail: MergeDifferentContracts", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
       const erc721Instance2 = await deployErc721Base("ERC721Simple", exchangeInstance);
 
@@ -892,7 +882,7 @@ describe("Diamond Exchange Merge", function () {
         .withArgs(ZeroAddress, receiver.address, tokenId + 0n);
       await erc721Instance2.connect(receiver).approve(exchangeInstance, tokenId + 0n);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -960,13 +950,13 @@ describe("Diamond Exchange Merge", function () {
         signature,
       );
 
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "MergeDifferentContracts");
     });
 
     it("should fail: ExpiredSignature (duplicate mint)", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
       const tx01 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -987,7 +977,7 @@ describe("Diamond Exchange Merge", function () {
         .withArgs(ZeroAddress, receiver.address, tokenId + 2n);
       await erc721Instance.connect(receiver).approve(exchangeInstance, tokenId + 2n);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),
@@ -1131,7 +1121,7 @@ describe("Diamond Exchange Merge", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
-      const { generateManyToManySignature } = await getSignatures(exchangeInstance);
+      const generateSignature = await getSignatures(exchangeInstance);
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
 
       const tx01 = erc721Instance.mintCommon(receiver.address, templateId);
@@ -1155,7 +1145,7 @@ describe("Diamond Exchange Merge", function () {
       const accessInstance = await ethers.getContractAt("AccessControlFacet", exchangeInstance);
       await accessInstance.renounceRole(MINTER_ROLE, owner.address);
 
-      const signature = await generateManyToManySignature({
+      const signature = await generateSignature({
         account: receiver.address,
         params: {
           nonce: encodeBytes32String("nonce"),

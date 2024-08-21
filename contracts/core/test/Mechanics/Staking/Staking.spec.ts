@@ -16,8 +16,8 @@ import {
   TEMPLATE_ID,
 } from "@gemunion/contracts-constants";
 
-import { VRFCoordinatorV2Mock } from "../../../typechain-types";
-import { expiresAt, subscriptionId, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
+import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
+import { expiresAt, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
 import { IStakingRule } from "./interface/staking";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../shared/link";
@@ -92,7 +92,8 @@ describe("Staking", function () {
     extra: encodeBytes32String("0x"),
   };
 
-  let vrfInstance: VRFCoordinatorV2Mock;
+  let vrfInstance: VRFCoordinatorV2PlusMock;
+  let subId: bigint;
 
   const factory = () => deployStaking();
   const erc20Factory = () => deployERC1363("ERC20Simple", { amount: parseEther("200000") });
@@ -117,7 +118,7 @@ describe("Staking", function () {
     await network.provider.send("hardhat_reset");
 
     // https://github.com/NomicFoundation/hardhat/issues/2980
-    ({ vrfInstance } = await loadFixture(function staking() {
+    ({ vrfInstance, subId } = await loadFixture(function staking() {
       return deployLinkVrfFixture();
     }));
   });
@@ -260,7 +261,7 @@ describe("Staking", function () {
       const stakingInstance = await factory();
 
       const tx1 = stakingInstance.updateRule(1, false);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
     it("should fail: wrong Rule", async function () {
@@ -283,7 +284,7 @@ describe("Staking", function () {
       };
 
       const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.be.revertedWithCustomError(stakingInstance, "WrongRule");
+      await expect(tx).to.be.revertedWithCustomError(stakingInstance, "RuleNotExist");
     });
 
     it("should edit Rule", async function () {
@@ -467,7 +468,7 @@ describe("Staking", function () {
       await expect(tx12).to.not.be.reverted;
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
     });
 
     it("should get counters", async function () {
@@ -562,7 +563,7 @@ describe("Staking", function () {
       // expect(counter3).to.have.deep.nested.property("ruleCounter", 1);
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
 
       // Deposit user 2
       const tx3 = stakingInstance.connect(receiver).deposit(params, tokenIds, { value: amount });
@@ -586,10 +587,10 @@ describe("Staking", function () {
       const stakingInstance = await factory();
 
       const tx1 = stakingInstance.deposit(params, tokenIds);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotExist");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
-    it("should fail for not active rule", async function () {
+    it("should fail: RuleNotActive", async function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
@@ -619,7 +620,7 @@ describe("Staking", function () {
       await expect(tx).to.emit(stakingInstance, "RuleCreated");
 
       const tx1 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "NotActive");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "RuleNotActive");
     });
 
     it("should fail for wrong pay amount", async function () {
@@ -697,7 +698,7 @@ describe("Staking", function () {
       await expect(tx1).to.not.be.reverted;
 
       const tx2 = stakingInstance.deposit(params, tokenIds, { value: amount });
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "LimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeLimitExceed");
     });
 
     it("should fail when contract is paused", async function () {
@@ -709,7 +710,7 @@ describe("Staking", function () {
       await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "EnforcedPause");
     });
 
-    it("should fail deposit for wrong tokenId", async function () {
+    it("should fail: WrongTemplate", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();
@@ -755,7 +756,7 @@ describe("Staking", function () {
 
       // DEPOSIT
       const tx1 = stakingInstance.deposit(params, [2]);
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongTemplate");
     });
 
     it("should deposit with templateId 0", async function () {
@@ -940,7 +941,7 @@ describe("Staking", function () {
         { value: amount * BigInt(cycles) },
       );
       const tx2 = stakingInstance.connect(receiver).receiveReward(2, true, true);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "WrongStake");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakeNotExist");
     });
 
     it("should fail for not an owner", async function () {
@@ -1008,7 +1009,7 @@ describe("Staking", function () {
       await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotAnOwner");
     });
 
-    it("should fail for withdrawn already", async function () {
+    it("should fail: StakeAlreadyWithdrawn", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const stakingInstance = await factory();
@@ -1080,7 +1081,7 @@ describe("Staking", function () {
       await expect(tx2).to.changeEtherBalance(receiver, amount * BigInt(cycles) + amount);
 
       const tx3 = stakingInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "Expired");
+      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "StakeAlreadyWithdrawn");
     });
 
     it("should fail staking not yet finished (reccurent)", async function () {
@@ -1129,7 +1130,7 @@ describe("Staking", function () {
 
       // DEPOSIT
       const tx1 = stakingInstance.deposit(params, [2], { value: amount });
-      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(stakingInstance, "WrongTemplate");
     });
 
     it("should fail: staking not yet finished (non-recurrent)", async function () {
@@ -1182,7 +1183,7 @@ describe("Staking", function () {
 
       const tx2 = stakingInstance.receiveReward(1, false, false);
       // await expect(tx2).to.changeEtherBalances([owner, stakingInstance], [0, 0]);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
     });
 
     it("should fail first period not yet finished", async function () {
@@ -1234,7 +1235,7 @@ describe("Staking", function () {
       // REWARD
 
       const tx2 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
     });
 
     it("should fail when contract is paused", async function () {
@@ -1798,12 +1799,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -2256,12 +2257,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -2759,7 +2760,7 @@ describe("Staking", function () {
 
       // TRY TO RECEIVE REWARD WITH NO TIME PASSED
       const tx2 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
 
       // TIME 1 CYCLE
       const current = await time.latestBlock();
@@ -2781,7 +2782,7 @@ describe("Staking", function () {
 
       // TRY TO RECEIVE REWARD WITH NOT ENOUGH TIME PASSED
       const tx3 = stakingInstance.receiveReward(1, false, false);
-      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "NotComplete");
+      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "DepositNotComplete");
 
       // breakLastPeriod = RETURN DEPOSIT
       const tx33 = await stakingInstance.receiveReward(1, false, true);
@@ -3137,12 +3138,12 @@ describe("Staking", function () {
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721Instance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721Instance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -3851,12 +3852,12 @@ describe("Staking", function () {
       await erc998RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc998RandomInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc998RandomInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc998RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc998RandomInstance);
+      const tx02 = vrfInstance.addConsumer(subId, erc998RandomInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc998RandomInstance);
 
       const stakeRule: IStakingRule = {
         deposit: [
@@ -4238,12 +4239,12 @@ describe("Staking", function () {
       await erc721RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
 
       // Set VRFV2 Subscription
-      const tx01 = erc721RandomInstance.setSubscriptionId(subscriptionId);
-      await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(1);
+      const tx01 = erc721RandomInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(subId);
 
       // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(1, erc721RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(1, erc721RandomInstance);
+      const tx02 = vrfInstance.addConsumer(subId, erc721RandomInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721RandomInstance);
 
       const stakeRule: IStakingRule = {
         deposit: [

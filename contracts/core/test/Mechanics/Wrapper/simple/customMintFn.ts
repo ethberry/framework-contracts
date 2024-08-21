@@ -10,7 +10,7 @@ export async function customMintBoxERC721(
   signer: Signer,
   receiver: SignerWithAddress | BaseContract | string,
 ) {
-  const items = [
+  const content = [
     {
       tokenType: 0,
       token: ZeroAddress,
@@ -18,5 +18,5 @@ export async function customMintBoxERC721(
       amount,
     },
   ];
-  return contractInstance.connect(signer).mintBox(receiver, templateId, items, { value: amount }) as Promise<any>;
+  return contractInstance.connect(signer).mintBox(receiver, templateId, content, { value: amount }) as Promise<any>;
 }

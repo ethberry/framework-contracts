@@ -14,11 +14,14 @@ import { getBaseTokenURI } from "../test/shared/uri";
 import { TypedContractEvent, TypedEventLog } from "../typechain-types/common";
 
 // DELAY CONFIG
-const delay = 2; // block delay
-const delayMs = 600; // block delay ms (low for localhost, high for binance etc.)
+const delay = 1; // block delay
+const delayMs = 900; // block delay ms (low for localhost, high for binance etc.)
 
 // VRF CONFIG
-const vrfSubId = network.name === "besu" || network.name === "telos_test" ? 1n : 2n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
+const vrfSubId =
+  network.name === "besu" || network.name === "telos_test"
+    ? 90511971795741479935923326278479026746054804275284472604758078181846377682962n
+    : 107047671614105181605855861266364170459723373514078878123604030694679782559997n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
 
 // COLLECTION size
 const batchSize = 3; // Generative collection size
@@ -50,7 +53,7 @@ async function main() {
   // contracts.link = linkInstance;
   // await debug(contracts);
   // console.info(`LINK_ADDR=${contracts.link.address}`);
-  // const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2Mock");
+  // const vrfFactory = await ethers.getContractFactory("VRFCoordinatorV2PlusMock");
   // contracts.vrf = await vrfFactory.deploy(contracts.link.address);
   // await debug(contracts);
   // console.info(`VRF_ADDR=${contracts.vrf.address}`);
@@ -66,7 +69,7 @@ async function main() {
         : network.name === "telos_test"
           ? "0x33040c29f57F126B90d9528A5Ee659D7a604B835" // telostest (our own contract deployed from p.key staging)
           : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
-  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2Mock", vrfAddr);
+  const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2PlusMock", vrfAddr);
 
   // DIAMOND CM
   const cmInstance = await deployDiamond(

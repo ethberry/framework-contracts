@@ -9,7 +9,6 @@ describe("ERC1155Simple", function () {
   const factory = () => deployERC1155(this.title);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC1155Simple(factory);
 
   shouldSupportsInterface(factory)([

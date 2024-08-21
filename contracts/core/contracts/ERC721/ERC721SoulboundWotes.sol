@@ -21,7 +21,7 @@ contract ERC721SoulboundWotes is ERC721Soulbound, ERC721Votes {
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC721Soulbound(name, symbol, royalty, baseTokenURI) EIP712(name, "1") {}
+  ) ERC721Soulbound(name, symbol, royalty, baseTokenURI) EIP712(name, "1.0.0") {}
 
   /**
    * @dev See {ERC721-_baseURI}.

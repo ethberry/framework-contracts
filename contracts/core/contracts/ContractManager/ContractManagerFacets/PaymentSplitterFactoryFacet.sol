@@ -27,10 +27,9 @@ contract PaymentSplitterFactoryFacet is AbstractFactoryFacet, SignatureValidator
   event PaymentSplitterDeployed(address account, uint256 externalId, PaymentSplitterArgs args);
 
   function deployPaymentSplitter(Params calldata params, PaymentSplitterArgs calldata args, bytes calldata signature) external returns (address account) {
-    _checkNonce(params.nonce);
+    _validateParams(params);
 
     address signer = _recoverSigner(_hashPaymentSplitter(params, args), signature);
-
     if (!_hasRole(DEFAULT_ADMIN_ROLE, signer)) {
       revert SignerMissingRole();
     }

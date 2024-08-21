@@ -13,7 +13,6 @@ describe("ERC998StateHash", function () {
   const options = { mint: customMintCommonERC721, tokenId };
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
-
   shouldBehaveLikeERC998Simple(factory);
   shouldBehaveLikeStateHash(factory, options);
 

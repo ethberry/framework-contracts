@@ -224,7 +224,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
         uint256 index = externalIdToIndex[externalIdHash];
         PredictionMatch storage prediction = predictions[index];
         Asset memory betUnit = prediction.betUnit;
-    
+
         Asset[] memory price = new Asset[](1);
         price[0] = betUnit;
         price[0].amount = units * betUnit.amount;
@@ -278,7 +278,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, ERC1363Receiver
         if (block.timestamp <= prediction.resolutionTimestamp) {
             revert ResolutionNotAvailable();
         }
-        
+
         uint256 reward = 0;
         if (!prediction.resolved) {
             revert PredictionNotResolved();

@@ -15,7 +15,7 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, WrongAmount } from "../../utils/errors.sol";
+import { SignerMissingRole, NoItems } from "../../utils/errors.sol";
 
 contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
   using SafeCast for uint256;
@@ -39,6 +39,8 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
+    _validateParams(params);
+
     if (!_hasRole(METADATA_ROLE, _recoverOneToManySignature(params, item, price, signature))) {
       revert SignerMissingRole();
     }
@@ -67,12 +69,15 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     Asset[] memory price,
     bytes calldata signature
   ) external payable whenNotPaused {
-    if (!_hasRole(METADATA_ROLE, _recoverManyToManySignature(params, items, price, signature))) {
+    _validateParams(params);
+
+    address signer = _recoverManyToManySignature(params, items, price, signature);
+    if (!_hasRole(METADATA_ROLE, signer)) {
       revert SignerMissingRole();
     }
 
     if (items.length == 0) {
-      revert WrongAmount();
+      revert NoItems();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
