@@ -8,23 +8,21 @@ pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import { GENES } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { TemplateZero, MethodNotSupported } from "../utils/errors.sol";
+import { TRAITS } from "../Mechanics/Traits/attributes.sol";
 import { TraitsDungeonsAndDragons } from "../Mechanics/Traits/TraitsDnD.sol";
 import { IERC721Random } from "../ERC721/interfaces/IERC721Random.sol";
+import { IERC998Traits } from "./interfaces/IERC998Traits.sol";
 import { ERC998Simple } from "./ERC998Simple.sol";
-import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 
-abstract contract ERC998Genes is IERC721Random, ERC998Simple, TraitsDungeonsAndDragons, Rarity {
+abstract contract ERC998Traits is IERC998Traits, ERC998Simple, TraitsDungeonsAndDragons {
   using SafeCast for uint;
 
   struct Request {
     address account;
-    uint32 templateId;
-    uint32 matronId;
-    uint32 sireId;
+    uint256 templateId;
   }
 
   mapping(uint256 => Request) internal _queue;
@@ -40,38 +38,24 @@ abstract contract ERC998Genes is IERC721Random, ERC998Simple, TraitsDungeonsAndD
     revert MethodNotSupported();
   }
 
-  function mintRandom(address account, uint256 templateId) external override onlyRole(MINTER_ROLE) {
+  function mintTraits(address account, uint256 templateId) external override onlyRole(MINTER_ROLE) {
     if (templateId == 0) {
       revert TemplateZero();
     }
 
-    (uint256 childId, uint256 matronId, uint256 sireId) = decodeData(templateId);
-
-    _queue[getRandomNumber()] = Request(account, childId.toUint32(), matronId.toUint32(), sireId.toUint32());
+    _queue[getRandomNumber()] = Request(account, templateId);
   }
 
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
-    emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);
+    emit MintTraits(requestId, request.account, randomWords, request.templateId, _nextTokenId);
 
-    _upsertRecordField(_nextTokenId, GENES, encodeData(request, randomWords[0]));
+    _upsertRecordField(_nextTokenId, TRAITS, randomWords[0]);
 
     delete _queue[requestId];
 
     _mintCommon(request.account, request.templateId);
-  }
-
-  function decodeData(uint256 externalId) internal pure returns (uint256 childId, uint256 matronId, uint256 sireId) {
-    childId = uint256(uint32(externalId));
-    matronId = uint256(uint32(externalId >> 32));
-    sireId = uint256(uint32(externalId >> 64));
-  }
-
-  function encodeData(Request memory req, uint256 randomness) internal pure returns (uint256 traits) {
-    traits |= uint256(req.matronId);
-    traits |= uint256(req.sireId) << 32;
-    traits |= uint256(uint192(randomness)) << 64;
   }
 
   function getRandomNumber() internal virtual returns (uint256 requestId);
@@ -80,6 +64,6 @@ abstract contract ERC998Genes is IERC721Random, ERC998Simple, TraitsDungeonsAndD
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-    return interfaceId == type(IERC721Random).interfaceId || super.supportsInterface(interfaceId);
+    return interfaceId == type(IERC998Traits).interfaceId || super.supportsInterface(interfaceId);
   }
 }
