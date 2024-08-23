@@ -91,6 +91,7 @@
     "build": "hardhat compile",
     "chainlinkV2Plus:init": "hardhat run scripts/chainlinkV2Plus/init-chainlink.ts --network besu",
     "clean": "hardhat clean --global",
+    "compile": "hardhat compile",
     "coverage": "hardhat coverage",
     "deploy:mainnet": "hardhat --network mainnet deploy",
     "flatten": "scripts/flatten.sh",

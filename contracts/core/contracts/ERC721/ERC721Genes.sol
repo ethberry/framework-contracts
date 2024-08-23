@@ -11,7 +11,7 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { TemplateZero, MethodNotSupported } from "../utils/errors.sol";
+import { TemplateZero, MethodNotSupported, NotOwnerNorApproved } from "../utils/errors.sol";
 import { GENES, MOTHER_ID, FATHER_ID, PREGNANCY_COUNTER, PREGNANCY_TIMESTAMP } from "../Mechanics/Genes/attributes.sol";
 import { GenesCryptoKitties } from "../Mechanics/Genes/GenesCK.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
@@ -63,6 +63,14 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
     uint256 motherId,
     uint256 fatherId
   ) external onlyRole(MINTER_ROLE) {
+    if (ownerOf(motherId) != _msgSender() && getApproved(motherId) != _msgSender()) {
+      revert NotOwnerNorApproved(_msgSender());
+    }
+
+    if (ownerOf(fatherId) != _msgSender() && getApproved(fatherId) != _msgSender()) {
+      revert NotOwnerNorApproved(_msgSender());
+    }
+
     _queue[getRandomNumber()] = Request(
       _msgSender(),
       motherId,

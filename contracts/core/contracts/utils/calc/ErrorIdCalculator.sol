@@ -57,8 +57,8 @@ contract ErrorsIdCalculator {
   error WrongArrayLength();
 
   // BREED
-  error PregnancyCountLimitExceed();
-  error PregnancyTimeLimitExceed();
+  error PregnancyThresholdExceeded();
+  error PregnancyFrequencyExceeded();
   // error NotOwnerNorApproved(address account);
 
   // LOTTERY/RAFFLE
