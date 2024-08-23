@@ -102,9 +102,4 @@ error ZeroAddressNotAllowed();
 error TransferAmountExceedsAllowance();
 error CannotClaimBeforeResolution();
 error BetNotFound();
-
-
-
-
-
-
+error InvalidOutcome();

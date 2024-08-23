@@ -4,175 +4,140 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("startPrediction", function () {
-    it.only("should only allow operator to start a prediction", async function () {
-      const { prediction, operator, bettor1 } = await factory();
+    it("should revert if non-admin tried to start a prediction", async function () {
+      const { prediction, admin, bettor1, betAsset } = await factory();
 
-      const title = "Prediction Title";
       const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
       const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const expiryTimestamp = endTimestamp + BigInt(time.duration.hours(1));
 
       await expect(
         prediction
           .connect(bettor1)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
+          .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset),
       ).to.be.revertedWithCustomError(prediction, "AccessControlUnauthorizedAccount");
-
-      await expect(
-        prediction
-          .connect(operator)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
-      ).to.emit(prediction, "StartPrediction");
-
-      if (isVerbose) {
-        console.log("Operator started the prediction.");
-        console.log(`Title: ${title}`);
-        console.log(`Start Timestamp: ${startTimestamp}`);
-        console.log(`End Timestamp: ${endTimestamp}`);
-        console.log(`Resolution Timestamp: ${resolutionTimestamp}`);
-        console.log(`Expiry Timestamp: ${expiryTimestamp}`);
-      }
     });
 
     it("should revert if startTimestamp is not less than endTimestamp", async function () {
-      const { prediction, operator } = await factory();
+      const { prediction, admin } = await factory();
 
-      const title = "Prediction Title";
       const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
       const endTimestamp = startTimestamp;
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const expiryTimestamp = endTimestamp + BigInt(time.duration.hours(1));
+
+      const betAsset = { 
+        tokenType: 1,
+        token: ethers.ZeroAddress,
+        tokenId: 0,
+        amount: ethers.parseUnits("5", 18),
+      };
 
       await expect(
         prediction
-          .connect(operator)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
-      ).to.be.revertedWithCustomError(prediction, "BettingNotStarted");
+          .connect(admin)
+          .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset),
+      ).to.be.revertedWithCustomError(prediction, "PredictionNotStarted");
 
       if (isVerbose) {
         console.log("Failed to start prediction because startTimestamp is not less than endTimestamp.");
       }
     });
 
-    it("should revert if endTimestamp is not less than resolutionTimestamp", async function () {
-      const { prediction, operator } = await factory();
+    it("should revert if endTimestamp is not less than expiryTimestamp", async function () {
+      const { prediction, admin } = await factory();
 
-      const title = "Prediction Title";
       const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
       const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp;
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const expiryTimestamp = endTimestamp;
+
+      const betAsset = { 
+        tokenType: 1,
+        token: ethers.ZeroAddress,
+        tokenId: 0,
+        amount: ethers.parseUnits("5", 18),
+      };
 
       await expect(
         prediction
-          .connect(operator)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
-      ).to.be.revertedWithCustomError(prediction, "BettingEnded");
+          .connect(admin)
+          .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset),
+      ).to.be.revertedWithCustomError(prediction, "PredictionEnded");
 
       if (isVerbose) {
-        console.log("Failed to start prediction because endTimestamp is not less than resolutionTimestamp.");
+        console.log("Failed to start prediction because endTimestamp is not less than expiryTimestamp.");
       }
     });
 
-    it("should revert if resolutionTimestamp is not less than expiryTimestamp", async function () {
-      const { prediction, operator } = await factory();
+    it("should allow to create multiple independent predictions", async function () {
+      const { prediction, admin, betAsset } = await factory();
 
-      const title = "Prediction Title";
-      const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
-      const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp;
-
-      await expect(
-        prediction
-          .connect(operator)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
-      ).to.be.revertedWithCustomError(prediction, "CannotResolveBeforeResolution");
-
-      if (isVerbose) {
-        console.log("Failed to start prediction because resolutionTimestamp is not less than expiryTimestamp.");
-      }
-    });
-
-    it("should revert if prediction already exists", async function () {
-      const { prediction, operator } = await factory();
-
-      const title = "Prediction Title";
-      const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
-      const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const startTimestamp1 = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
+      const endTimestamp1 = startTimestamp1 + BigInt(time.duration.hours(1));
+      const expiryTimestamp1 = endTimestamp1 + BigInt(time.duration.hours(1));
 
       await prediction
-        .connect(operator)
-        .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp);
+        .connect(admin)
+        .startPrediction(startTimestamp1, endTimestamp1, expiryTimestamp1, betAsset);
 
-      await expect(
-        prediction
-          .connect(operator)
-          .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp),
-      ).to.be.revertedWithCustomError(prediction, "PredictionAlreadyExists");
-    });
+      const startTimestamp2 = BigInt(await time.latest()) + BigInt(time.duration.minutes(2));
+      const endTimestamp2 = startTimestamp2 + BigInt(time.duration.hours(1));
+      const expiryTimestamp2 = endTimestamp2 + BigInt(time.duration.hours(1));
 
-    it("should start a prediction with correct parameters", async function () {
-      const { prediction, operator } = await factory();
+      await prediction
+        .connect(admin)
+        .startPrediction(startTimestamp2, endTimestamp2, expiryTimestamp2, betAsset);
 
-      const title = "Prediction Title";
-      const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
-      const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const predictionMatch1 = await prediction.getPrediction(1);
+      const predictionMatch2 = await prediction.getPrediction(2);
 
-      const tx = await prediction
-        .connect(operator)
-        .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp);
-      await expect(tx)
-        .to.emit(prediction, "StartPrediction")
-        .withArgs(ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]), title);
+      expect(predictionMatch1.startTimestamp).to.equal(startTimestamp1);
+      expect(predictionMatch1.endTimestamp).to.equal(endTimestamp1);
+      expect(predictionMatch1.expiryTimestamp).to.equal(expiryTimestamp1);
+      expect(predictionMatch1.betAsset.tokenType).to.equal(1);
+      expect(predictionMatch1.betAsset.amount).to.equal(ethers.parseUnits("5", 18));
+      expect(predictionMatch1.outcome).to.equal(3);
+      expect(predictionMatch1.resolved).to.be.false;
 
-      const predictionId = ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]);
-      const predictionRound = await prediction.predictions(predictionId);
-
-      expect(predictionRound.id).to.equal(predictionId);
-      expect(predictionRound.title).to.equal(title);
-      expect(predictionRound.startTimestamp).to.equal(startTimestamp);
-      expect(predictionRound.endTimestamp).to.equal(endTimestamp);
-      expect(predictionRound.resolutionTimestamp).to.equal(resolutionTimestamp);
-      expect(predictionRound.expiryTimestamp).to.equal(expiryTimestamp);
-      expect(predictionRound.betUnitsOnLeft).to.equal(0);
-      expect(predictionRound.betUnitsOnRight).to.equal(0);
-      expect(predictionRound.rewardUnit.tokenType).to.equal(1);
-      expect(predictionRound.outcome).to.equal(3); // Outcome.ERROR
-      expect(predictionRound.resolved).to.be.equal(false);
+      expect(predictionMatch2.startTimestamp).to.equal(startTimestamp2);
+      expect(predictionMatch2.endTimestamp).to.equal(endTimestamp2);
+      expect(predictionMatch2.expiryTimestamp).to.equal(expiryTimestamp2);
+      expect(predictionMatch2.betAsset.tokenType).to.equal(1);
+      expect(predictionMatch2.betAsset.amount).to.equal(ethers.parseUnits("5", 18));
+      expect(predictionMatch2.outcome).to.equal(3);
+      expect(predictionMatch2.resolved).to.be.false;
 
       if (isVerbose) {
-        console.log("Prediction started with correct parameters.");
-        console.log(`Prediction ID: ${predictionId}`);
-        console.log(`Title: ${title}`);
-        console.log(`Start Timestamp: ${startTimestamp}`);
-        console.log(`End Timestamp: ${endTimestamp}`);
-        console.log(`Resolution Timestamp: ${resolutionTimestamp}`);
-        console.log(`Expiry Timestamp: ${expiryTimestamp}`);
+        console.log("Created another prediction with auto-incremented id.");
+        console.log(`Prediction 1 - Start Timestamp: ${startTimestamp1}`);
+        console.log(`Prediction 1 - End Timestamp: ${endTimestamp1}`);
+        console.log(`Prediction 1 - Expiry Timestamp: ${expiryTimestamp1}`);
+        console.log(`Prediction 2 - Start Timestamp: ${startTimestamp2}`);
+        console.log(`Prediction 2 - End Timestamp: ${endTimestamp2}`);
+        console.log(`Prediction 2 - Expiry Timestamp: ${expiryTimestamp2}`);
       }
     });
 
     it("should not allow betting before start timestamp", async function () {
-      const { prediction, bettor1, betUnits1, operator } = await factory();
+      const { prediction, bettor1, admin } = await factory();
 
-      const title = "Prediction Title";
-      const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
-      const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
-      const resolutionTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-      const expiryTimestamp = resolutionTimestamp + BigInt(time.duration.hours(1));
+      const startTimestamp = (await time.latest()) + time.duration.minutes(1);
+      const endTimestamp = startTimestamp + time.duration.hours(1);
+      const expiryTimestamp = endTimestamp + time.duration.hours(1);
+
+      const betAsset = { 
+        tokenType: 1,
+        token: ethers.ZeroAddress,
+        tokenId: 0,
+        amount: ethers.parseUnits("5", 18),
+      };
 
       await prediction
-        .connect(operator)
-        .startPrediction(title, startTimestamp, endTimestamp, resolutionTimestamp, expiryTimestamp);
+        .connect(admin)
+        .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await expect(
-        prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0)
-      ).to.be.revertedWithCustomError(prediction, "BettingNotStarted");
+        prediction.connect(bettor1).placeBet(1, 1, 0),
+      ).to.be.revertedWithCustomError(prediction, "PredictionNotStarted");
 
       if (isVerbose) {
         console.log("Failed to place bet because betting period has not started.");

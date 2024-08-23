@@ -4,119 +4,99 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldResolvePrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("resolve", function () {
-    it("should handle zero rewardBaseUnits correctly and refund stakes to all bettors", async function () {
-      const { prediction, operator, bettor1, title, resolutionTimestamp } = await factory();
+    it("should resolve prediction into error state when there are no bettors on either side", async function () {
+      const { prediction, admin, bettor1, betAsset, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
 
-      // Move time forward to resolution time
-      await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
+      await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
-      // Operator resolves the prediction with zero base units
-      const resolveTx = await prediction.connect(operator).resolvePrediction(title, 0); // Outcome.Left
+      const resolveTx = await prediction.connect(admin).resolvePrediction(1, 0);
       await expect(resolveTx)
-        .to.emit(prediction, "EndPrediction")
-        .withArgs(ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]), 3); // Outcome.ERROR
+        .to.emit(prediction, "PredictionEnd")
+        .withArgs(1, 3); // Outcome.ERROR
 
-      // Ensure there are no division by zero errors
-      const rewardUnit = await prediction.getRewardUnit(title);
-      expect(rewardUnit.amount).to.equal(0);
+      expect((await prediction.getPrediction(1)).rewardAsset.amount).to.equal(0);
     });
 
-    it("should only allow operator to resolve a prediction", async function () {
-      const { prediction, operator, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, resolutionTimestamp } = await factory();
+    it("should resolve prediction into expired state after expiry time by admin", async function () {
+      const { prediction, admin, bettor1, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
 
-      // Place bets before resolving
-      await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0); // Position.Left
-      await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, 1); // Position.Right
+      await time.increaseTo(BigInt(expiryTimestamp) + BigInt(time.duration.seconds(10)));
 
-      // Move time forward to resolution time
-      await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
-
-      // Non-operator tries to resolve the prediction
-      await expect(prediction.connect(bettor1).resolvePrediction(title, 0)).to.be.revertedWithCustomError(
+      await expect(prediction.connect(bettor1).resolvePrediction(1, 3)).to.be.revertedWithCustomError(
         prediction,
-        "AccessControlUnauthorizedAccount",
+        "AccessControlUnauthorizedAccount"
       );
 
-      // Operator resolves the prediction
-      const resolveTx = await prediction.connect(operator).resolvePrediction(title, 0); // Outcome.Left
-      await expect(resolveTx)
-        .to.emit(prediction, "EndPrediction")
-        .withArgs(ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]), 0); // Outcome.Left
-
-      if (isVerbose) {
-        console.log("Operator resolved the prediction.");
-      }
-    });
-
-    it("should not allow resolving before resolution timestamp", async function () {
-      const { prediction, operator, title } = await factory();
-
-      // Try to resolve the prediction before resolution time
-      await expect(prediction.connect(operator).resolvePrediction(title, 0)).to.be.revertedWithCustomError(
-        prediction,
-        "CannotResolveBeforeResolution",
-      );
-
-      if (isVerbose) {
-        console.log("Operator tried to resolve before resolution timestamp but failed.");
-      }
-    });
-
-    it("should not allow resolving multiple times", async function () {
-      const { prediction, operator, bettor1, bettor2, title, predictionId, betUnits1, betUnits2, resolutionTimestamp } = await factory();
-
-      // Place bets before resolving
-      await prediction.connect(bettor1).placeBetInTokens(title, betUnits1, 0); // Position.Left
-      await prediction.connect(bettor2).placeBetInTokens(title, betUnits2, 1); // Position.Right
-
-      // Move time forward to resolution time
-      await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
-
-      // Resolve the prediction
-      await prediction.connect(operator).resolvePrediction(title, 0); // Outcome.Left
-
-      // Try to resolve the prediction again
-      await expect(prediction.connect(operator).resolvePrediction(title, 0)).to.be.revertedWithCustomError(
-        prediction,
-        "PredictionAlreadyResolved",
-      );
-
-      if (isVerbose) {
-        console.log("Operator tried to resolve multiple times but failed.");
-      }
-    });
-
-    it("should not allow resolving prediction as error before expiry time", async function () {
-      const { prediction, operator, title, resolutionTimestamp } = await factory();
-
-      // Move time forward to resolution time but before expiry time
-      await time.increaseTo(resolutionTimestamp + BigInt(time.duration.seconds(10)));
-
-      // Try to resolve the prediction as error before expiry time
-      await expect(prediction.connect(operator).resolvePredictionError(title)).to.be.revertedWithCustomError(
-        prediction,
-        "ExpiryTimeNotPassed",
-      );
-
-      if (isVerbose) {
-        console.log("Operator tried to resolve as error before expiry time but failed.");
-      }
-    });
-
-    it("should allow anyone resolving prediction as error after expiry time", async function () {
-      const { prediction, bettor1, title, expiryTimestamp } = await factory();
-
-      // Move time forward to expiry time
-      await time.increaseTo(expiryTimestamp + BigInt(time.duration.seconds(10)));
-
-      // Resolve the prediction as error
-      const resolveErrorTx = await prediction.connect(bettor1).resolvePredictionError(title);
+      const resolveErrorTx = await prediction.connect(admin).resolvePrediction(1, 3); // Outcome.ERROR
       await expect(resolveErrorTx)
-        .to.emit(prediction, "EndPrediction")
-        .withArgs(ethers.solidityPackedKeccak256(["string", "address"], [title, prediction.target]), 3); // Outcome.ERROR
+        .to.emit(prediction, "PredictionEnd")
+        .withArgs(1, 3); // Outcome.ERROR
 
       if (isVerbose) {
         console.log("Bettor resolved the prediction as error after expiry time.");
+      }
+    });
+
+    it("should not allow resolving by non-admin", async function () {
+      const { prediction, bettor1, bettor2, title, predictionId, betUnits1, betUnits2 } = await factory();
+
+      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.Left
+      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.Right
+
+      await expect(prediction.connect(bettor1).resolvePrediction(1, 0)).to.be.revertedWithCustomError(
+        prediction,
+        "AccessControlUnauthorizedAccount"
+      );
+    });
+
+    it("should not allow resolving multiple times", async function () {
+      const { prediction, admin, bettor1, bettor2, betAsset, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+
+      await prediction.connect(bettor1).placeBet(1, 3, 0); // Position.LEFT
+      await prediction.connect(bettor2).placeBet(1, 5, 1); // Position.RIGHT
+
+      await prediction.connect(admin).resolvePrediction(1, 0); // Outcome.LEFT
+
+      await expect(prediction.connect(admin).resolvePrediction(1, 0)).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
+
+      if (isVerbose) {
+        console.log("Admin tried to resolve multiple times but failed.");
+      }
+    });
+
+    it("should allow admin to resolve prediction before endTimestamp and prevent further bets", async function () {
+      const { prediction, admin, bettor1, bettor2, betUnits1, betUnits2, startTimestamp, endTimestamp } = await factory();
+
+      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.LEFT
+      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.RIGHT
+
+      // Resolve prediction before endTimestamp
+      const resolveTx = await prediction.connect(admin).resolvePrediction(1, 0); // Outcome.LEFT
+      await expect(resolveTx)
+        .to.emit(prediction, "PredictionEnd")
+        .withArgs(1, 0); // Outcome.LEFT
+
+      // Ensure no more bets can be placed
+      await expect(prediction.connect(bettor1).placeBet(1, betUnits1, 0)).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
+
+      if (isVerbose) {
+        console.log("Admin resolved the prediction before endTimestamp and no more bets can be placed.");
+      }
+    });
+
+    it("should revert if an invalid outcome is passed", async function () {
+      const { bettor1, bettor2, betUnits1, betUnits2, prediction, admin, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+
+      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.LEFT
+      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.RIGHT
+
+      await time.increaseTo(BigInt(endTimestamp) + BigInt(time.duration.seconds(10)));
+
+      await expect(prediction.connect(admin).resolvePrediction(1, 3)).to.be.revertedWithCustomError(prediction, "InvalidOutcome"); // Outcome.ERROR
+      await expect(prediction.connect(admin).resolvePrediction(1, 4)).to.be.revertedWithCustomError(prediction, "InvalidOutcome"); // Outcome.EXPIRED
+
+      if (isVerbose) {
+        console.log("Admin tried to resolve with an invalid outcome and failed.");
       }
     });
   });
