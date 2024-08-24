@@ -1,99 +1,177 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
+import { makeTimestamps, Position, Outcome, fundAndBet } from "./fixtures";
 
 export function shouldResolvePrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("resolve", function () {
-    it("should resolve prediction into error state when there are no bettors on either side", async function () {
-      const { prediction, admin, bettor1, betAsset, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+    //.AccessControlUnauthorizedAccount
+    it("should not allow resolving by non-admin", async function () {
+      const { prediction, bettor1, bettor2, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
 
-      await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      const resolveTx = await prediction.connect(admin).resolvePrediction(1, 0);
-      await expect(resolveTx)
-        .to.emit(prediction, "PredictionEnd")
-        .withArgs(1, 3); // Outcome.ERROR
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
-      expect((await prediction.getPrediction(1)).rewardAsset.amount).to.equal(0);
-    });
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
 
-    it("should resolve prediction into expired state after expiry time by admin", async function () {
-      const { prediction, admin, bettor1, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
 
-      await time.increaseTo(BigInt(expiryTimestamp) + BigInt(time.duration.seconds(10)));
-
-      await expect(prediction.connect(bettor1).resolvePrediction(1, 3)).to.be.revertedWithCustomError(
+      await expect(prediction.connect(bettor1).resolvePrediction(1, Outcome.LEFT)).to.be.revertedWithCustomError(
         prediction,
         "AccessControlUnauthorizedAccount"
       );
+    });
 
-      const resolveErrorTx = await prediction.connect(admin).resolvePrediction(1, 3); // Outcome.ERROR
+    //.PredictionEnd
+    it("should force prediction into expired state after expiry time", async function () {
+      const { prediction, admin, bettor1, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await time.increaseTo(expiryTimestamp + BigInt(time.duration.seconds(10)));
+
+      const resolveErrorTx = await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
       await expect(resolveErrorTx)
         .to.emit(prediction, "PredictionEnd")
-        .withArgs(1, 3); // Outcome.ERROR
+        .withArgs(1, Outcome.EXPIRED);
 
       if (isVerbose) {
         console.log("Bettor resolved the prediction as error after expiry time.");
       }
     });
 
-    it("should not allow resolving by non-admin", async function () {
-      const { prediction, bettor1, bettor2, title, predictionId, betUnits1, betUnits2 } = await factory();
+    //.PredictionEnd
+    it("should force prediction into error state when there are no bettors on either side", async function () {
+      const { prediction, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
 
-      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.Left
-      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.Right
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      await expect(prediction.connect(bettor1).resolvePrediction(1, 0)).to.be.revertedWithCustomError(
-        prediction,
-        "AccessControlUnauthorizedAccount"
-      );
+      await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
+
+      const resolveTx = await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
+      await expect(resolveTx)
+        .to.emit(prediction, "PredictionEnd")
+        .withArgs(1, Outcome.ERROR);
+
+      const predictionMatch = await prediction.getPrediction(1);
+
+      expect(predictionMatch.rewardAsset.amount).to.equal(0);
+      expect(predictionMatch.outcome).to.equal(Outcome.ERROR);
+      expect(predictionMatch.resolved).to.equal(true);
     });
 
+    //.PredictionAlreadyResolved
     it("should not allow resolving multiple times", async function () {
-      const { prediction, admin, bettor1, bettor2, betAsset, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+      const { prediction, admin, bettor1, bettor2, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
 
-      await prediction.connect(bettor1).placeBet(1, 3, 0); // Position.LEFT
-      await prediction.connect(bettor2).placeBet(1, 5, 1); // Position.RIGHT
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      await prediction.connect(admin).resolvePrediction(1, 0); // Outcome.LEFT
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(prediction.connect(admin).resolvePrediction(1, 0)).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
+
+      await expect(prediction.connect(admin).resolvePrediction(1, Outcome.LEFT)).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
 
       if (isVerbose) {
         console.log("Admin tried to resolve multiple times but failed.");
       }
     });
 
+    //.PredictionAlreadyResolved
     it("should allow admin to resolve prediction before endTimestamp and prevent further bets", async function () {
-      const { prediction, admin, bettor1, bettor2, betUnits1, betUnits2, startTimestamp, endTimestamp } = await factory();
+      const { prediction, admin, bettor1, bettor2, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
 
-      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.LEFT
-      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.RIGHT
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      // Resolve prediction before endTimestamp
-      const resolveTx = await prediction.connect(admin).resolvePrediction(1, 0); // Outcome.LEFT
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      const resolveTx = await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
       await expect(resolveTx)
         .to.emit(prediction, "PredictionEnd")
-        .withArgs(1, 0); // Outcome.LEFT
+        .withArgs(1, Outcome.LEFT);
 
-      // Ensure no more bets can be placed
-      await expect(prediction.connect(bettor1).placeBet(1, betUnits1, 0)).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
+      await expect(fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      })).to.be.revertedWithCustomError(prediction, "PredictionAlreadyResolved");
 
       if (isVerbose) {
         console.log("Admin resolved the prediction before endTimestamp and no more bets can be placed.");
       }
     });
 
-    it("should revert if an invalid outcome is passed", async function () {
-      const { bettor1, bettor2, betUnits1, betUnits2, prediction, admin, startTimestamp, endTimestamp, expiryTimestamp } = await factory();
+    //.InvalidOutcome
+    it("should revert if expired or error outcome is manually passed", async function () {
+      const { prediction, bettor1, bettor2, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
 
-      await prediction.connect(bettor1).placeBet(1, betUnits1, 0); // Position.LEFT
-      await prediction.connect(bettor2).placeBet(1, betUnits2, 1); // Position.RIGHT
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      await time.increaseTo(BigInt(endTimestamp) + BigInt(time.duration.seconds(10)));
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(prediction.connect(admin).resolvePrediction(1, 3)).to.be.revertedWithCustomError(prediction, "InvalidOutcome"); // Outcome.ERROR
-      await expect(prediction.connect(admin).resolvePrediction(1, 4)).to.be.revertedWithCustomError(prediction, "InvalidOutcome"); // Outcome.EXPIRED
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
+
+      await expect(prediction.connect(admin).resolvePrediction(1, Outcome.EXPIRED)).to.be.revertedWithCustomError(prediction, "InvalidOutcome");
+      await expect(prediction.connect(admin).resolvePrediction(1, Outcome.ERROR)).to.be.revertedWithCustomError(prediction, "InvalidOutcome");
 
       if (isVerbose) {
         console.log("Admin tried to resolve with an invalid outcome and failed.");

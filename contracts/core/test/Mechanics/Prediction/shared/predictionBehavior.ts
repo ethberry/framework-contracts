@@ -10,6 +10,7 @@ import { shouldClaim } from "./claim";
 
 export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, isVerbose = false) {
   describe("prediction behavior", function () {
+    //.deployContractWithFundedBettors
     const deployContractWithFundedBettors = async (): any => {
       const state = await factory();
       const { betAsset, bettor1, bettor2, token, prediction } = state;
@@ -34,6 +35,7 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
       };
     };
 
+    //.deployContractWithActivePrediction
     const deployContractWithActivePrediction = async (): any => {
       const state = await deployContractWithFundedBettors();
       const { prediction, token, bettor1, bettor2, betAsset } = state;
@@ -54,6 +56,7 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
       };
     };
 
+    //.deployContractWithFundedPrediction
     const deployContractWithFundedPrediction = async (): any => {
       const state = await deployContractWithActivePrediction();
       const { prediction, bettor1, bettor2, betUnits1, betUnits2, ...params } = state;
@@ -64,8 +67,9 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
       return { ...state };
     };
 
-    shouldStartPrediction(deployContractWithFundedBettors, isVerbose);
-    shouldBetPosition(deployContractWithActivePrediction, isVerbose);
+    //.predictionBehavior
+    shouldStartPrediction(factory, isVerbose);
+    shouldBetPosition(factory, isVerbose);
     shouldResolvePrediction(deployContractWithActivePrediction, isVerbose);
     shouldClaim(deployContractWithFundedPrediction, isVerbose);
   });
@@ -73,6 +77,7 @@ export function shouldBehaveLikePredictionContract(factory: () => Promise<any>, 
 
 export function shouldBehaveLikePredictionContractWithNative(factory: () => Promise<any>, isVerbose = false) {
   describe("prediction behavior with native bets", function () {
+    //.deployContractWithActivePrediction
     const deployContractWithActivePrediction = async (): any => {
       const state = await factory();
       const { prediction, bettor1, bettor2, betAsset } = state;

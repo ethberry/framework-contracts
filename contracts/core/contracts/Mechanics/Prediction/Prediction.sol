@@ -169,7 +169,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
     ) external payable whenNotPaused nonReentrant {
         PredictionMatch storage prediction = _predictions[predictionId];
 
-        if (predictionId == 0) {
+        if (_predictionIdCounter < predictionId) {
             revert PredictionNotFound();
         }
         if (block.timestamp < prediction.startTimestamp) {

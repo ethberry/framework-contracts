@@ -3,6 +3,7 @@ import { deployPredictionContract, deployPredictionContractWithNativeBetUnit } f
 
 const isVerbose = process.env.VERBOSE === "true";
 
+//.Prediction
 describe("Prediction", function () {
   const factory = () => deployPredictionContract();
   const nativeFactory = () => deployPredictionContractWithNativeBetUnit();

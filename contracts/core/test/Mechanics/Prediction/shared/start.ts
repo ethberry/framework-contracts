@@ -4,6 +4,7 @@ import { time } from "@openzeppelin/test-helpers";
 
 export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = false) {
   describe("startPrediction", function () {
+    //.AccessControlUnauthorizedAccount
     it("should revert if non-admin tried to start a prediction", async function () {
       const { prediction, admin, bettor1, betAsset } = await factory();
 
@@ -18,19 +19,13 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
       ).to.be.revertedWithCustomError(prediction, "AccessControlUnauthorizedAccount");
     });
 
+    //.PredictionNotStarted
     it("should revert if startTimestamp is not less than endTimestamp", async function () {
-      const { prediction, admin } = await factory();
+      const { prediction, admin, betAsset } = await factory();
 
       const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
       const endTimestamp = startTimestamp;
       const expiryTimestamp = endTimestamp + BigInt(time.duration.hours(1));
-
-      const betAsset = { 
-        tokenType: 1,
-        token: ethers.ZeroAddress,
-        tokenId: 0,
-        amount: ethers.parseUnits("5", 18),
-      };
 
       await expect(
         prediction
@@ -43,19 +38,13 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
       }
     });
 
+    //.PredictionEnded
     it("should revert if endTimestamp is not less than expiryTimestamp", async function () {
-      const { prediction, admin } = await factory();
+      const { prediction, admin, betAsset } = await factory();
 
       const startTimestamp = BigInt(await time.latest()) + BigInt(time.duration.minutes(1));
       const endTimestamp = startTimestamp + BigInt(time.duration.hours(1));
       const expiryTimestamp = endTimestamp;
-
-      const betAsset = { 
-        tokenType: 1,
-        token: ethers.ZeroAddress,
-        tokenId: 0,
-        amount: ethers.parseUnits("5", 18),
-      };
 
       await expect(
         prediction
@@ -68,6 +57,7 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
       }
     });
 
+    //.startPrediction
     it("should allow to create multiple independent predictions", async function () {
       const { prediction, admin, betAsset } = await factory();
 
@@ -114,33 +104,6 @@ export function shouldStartPrediction(factory: () => Promise<any>, isVerbose = f
         console.log(`Prediction 2 - Start Timestamp: ${startTimestamp2}`);
         console.log(`Prediction 2 - End Timestamp: ${endTimestamp2}`);
         console.log(`Prediction 2 - Expiry Timestamp: ${expiryTimestamp2}`);
-      }
-    });
-
-    it("should not allow betting before start timestamp", async function () {
-      const { prediction, bettor1, admin } = await factory();
-
-      const startTimestamp = (await time.latest()) + time.duration.minutes(1);
-      const endTimestamp = startTimestamp + time.duration.hours(1);
-      const expiryTimestamp = endTimestamp + time.duration.hours(1);
-
-      const betAsset = { 
-        tokenType: 1,
-        token: ethers.ZeroAddress,
-        tokenId: 0,
-        amount: ethers.parseUnits("5", 18),
-      };
-
-      await prediction
-        .connect(admin)
-        .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
-
-      await expect(
-        prediction.connect(bettor1).placeBet(1, 1, 0),
-      ).to.be.revertedWithCustomError(prediction, "PredictionNotStarted");
-
-      if (isVerbose) {
-        console.log("Failed to place bet because betting period has not started.");
       }
     });
   });
