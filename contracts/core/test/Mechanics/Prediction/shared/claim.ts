@@ -3,37 +3,29 @@ import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
 import { makeTimestamps, Position, Outcome, fundAndBet } from "./fixtures";
 
-const deployAndSetupPrediction = async (factory: () => Promise<any>, outcome: Outcome) => {
-  const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
-  const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-
-  await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
-
-  await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
-
-  await fundAndBet(prediction, bettor1, {
-    predictionId: 1,
-    multiplier: 1,
-    position: Position.LEFT,
-  });
-
-  await fundAndBet(prediction, bettor2, {
-    predictionId: 1,
-    multiplier: 1,
-    position: Position.RIGHT,
-  });
-
-  if (outcome !== undefined) {
-    await prediction.connect(admin).resolvePrediction(1, outcome);
-  }
-
-  return { prediction, bettor1, bettor2, admin, betAsset, expiryTimestamp, token };
-};
-
 export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
   describe("claim", function () {
     it("should distribute rewards in LEFT outcome", async function () {
-      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.LEFT);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
 
       // Bettor1 claims reward
       const initialBalance1 = await token.balanceOf(bettor1);
@@ -48,7 +40,6 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
       const expectedReward = betAsset.amount + betAsset.amount - (betAsset.amount * 1000n / 10000n);
       expect(finalBalance1).to.equal(initialBalance1 + expectedReward);
 
-
       expect(rewardAmount).to.equal(expectedReward);
 
       if (isVerbose) {
@@ -57,7 +48,26 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should distribute rewards in RIGHT outcome", async function () {
-      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.RIGHT);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.RIGHT);
 
       // Bettor2 claims reward
       const initialBalance2 = await token.balanceOf(bettor2);
@@ -79,7 +89,26 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should refund stakes in DRAW outcome", async function () {
-      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.DRAW);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.DRAW);
 
       // Bettor1 claims refund
       const initialBalance1 = await token.balanceOf(bettor1);
@@ -101,7 +130,26 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim by non-winner side", async function () {
-      const { prediction, bettor1, bettor2, admin } = await deployAndSetupPrediction(factory, Outcome.LEFT);
+      const { prediction, bettor1, bettor2, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
 
       // Bettor2 tries to claim
       await expect(prediction.connect(bettor2).claim(1)).to.be.revertedWithCustomError(prediction, "NotEligibleForClaim");
@@ -112,7 +160,24 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim before prediction is resolved", async function () {
-      const { prediction, bettor1 } = await deployAndSetupPrediction(factory, undefined);
+      const { prediction, bettor1, bettor2, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
 
       // Bettor1 tries to claim before resolution
       await expect(prediction.connect(bettor1).claim(1)).to.be.revertedWithCustomError(prediction, "CannotClaimBeforeResolution");
@@ -123,7 +188,26 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim multiple times", async function () {
-      const { prediction, bettor1, admin } = await deployAndSetupPrediction(factory, Outcome.LEFT);
+      const { prediction, bettor1, bettor2, admin, betAsset } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
 
       // Bettor1 claims reward
       await prediction.connect(bettor1).claim(1);
@@ -137,7 +221,24 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should distribute rewards correctly when multiple bettors on both sides", async function () {
-      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, undefined);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
 
       const bettor3 = (await ethers.getSigners())[4];
       const bettor4 = (await ethers.getSigners())[5];
@@ -180,7 +281,24 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should refund bets when tried to claim unresolved prediction after expiry time", async function () {
-      const { prediction, bettor1, bettor2, betAsset, expiryTimestamp, token } = await deployAndSetupPrediction(factory, undefined);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+      const { endTimestamp, startTimestamp, expiryTimestamp } = await makeTimestamps();
+
+      await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(prediction, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(prediction, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
 
       // Move time forward to after the expiry timestamp
       await time.increaseTo(expiryTimestamp + BigInt(time.duration.seconds(10)));
