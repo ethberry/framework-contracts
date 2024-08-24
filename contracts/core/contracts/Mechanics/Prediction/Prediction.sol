@@ -293,10 +293,10 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
             revert PredictionAlreadyResolved();
         }
 
-        if (prediction.betOnLeft.amount == 0 || prediction.betOnRight.amount == 0) {
-            _safePredictionEnd(predictionId, Outcome.ERROR);
-        } else if (prediction.expiryTimestamp < block.timestamp) {
+        if (prediction.expiryTimestamp < block.timestamp) {
             _safePredictionEnd(predictionId, Outcome.EXPIRED);
+        } else if (prediction.betOnLeft.amount == 0 || prediction.betOnRight.amount == 0) {
+            _safePredictionEnd(predictionId, Outcome.ERROR);
         } else if (outcome == Outcome.LEFT || outcome == Outcome.RIGHT) {
             _safePredictionEnd(predictionId, outcome);
             _calculateRewards(predictionId);

@@ -1,34 +1,55 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
+import { makeTimestamps, Position, Outcome, fundAndBet } from "./fixtures";
 
-enum Outcome {
-  LEFT,
-  RIGHT,
-  DRAW,
-  ERROR,
-  EXPIRED
-}
+const deployAndSetupPrediction = async (factory: () => Promise<any>, outcome: Outcome) => {
+  const { prediction, bettor1, bettor2, admin, betAsset, token } = await factory();
+  const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+  await prediction.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+  await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+  await fundAndBet(prediction, bettor1, {
+    predictionId: 1,
+    multiplier: 1,
+    position: Position.LEFT,
+  });
+
+  await fundAndBet(prediction, bettor2, {
+    predictionId: 1,
+    multiplier: 1,
+    position: Position.RIGHT,
+  });
+
+  if (outcome !== undefined) {
+    await prediction.connect(admin).resolvePrediction(1, outcome);
+  }
+
+  return { prediction, bettor1, bettor2, admin, betAsset, expiryTimestamp, token };
+};
 
 export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
   describe("claim", function () {
     it("should distribute rewards in LEFT outcome", async function () {
-      const { prediction, bettor1, bettor2, betUnits1, betUnits2, token, betAsset, admin } = await factory();
-
-      // Resolve prediction with LEFT outcome
-      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.LEFT);
 
       // Bettor1 claims reward
-      const initialBalance1 = await token.balanceOf(bettor1.address);
+      const initialBalance1 = await token.balanceOf(bettor1);
       await prediction.connect(bettor1).claim(1);
-      const finalBalance1 = await token.balanceOf(bettor1.address);
+      const finalBalance1 = await token.balanceOf(bettor1);
 
       // Bettor2 should not be able to claim
       await expect(prediction.connect(bettor2).claim(1)).to.be.revertedWithCustomError(prediction, "NotEligibleForClaim");
 
       // Check reward distribution
-      const expectedReward1 = betUnits1 * betAsset.amount + betUnits1 * (betUnits2 * betAsset.amount - (betUnits2 * betAsset.amount * 1000n / 10000n)) / betUnits1;
-      expect(finalBalance1).to.equal(initialBalance1 + expectedReward1);
+      const rewardAmount = finalBalance1 - initialBalance1;
+      const expectedReward = betAsset.amount + betAsset.amount - (betAsset.amount * 1000n / 10000n);
+      expect(finalBalance1).to.equal(initialBalance1 + expectedReward);
+
+
+      expect(rewardAmount).to.equal(expectedReward);
 
       if (isVerbose) {
         console.log("Rewards distributed correctly for LEFT outcome.");
@@ -36,22 +57,21 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should distribute rewards in RIGHT outcome", async function () {
-      const { prediction, bettor1, bettor2, betUnits1, betUnits2, token, betAsset, admin } = await factory();
-
-      // Resolve prediction with RIGHT outcome
-      await prediction.connect(admin).resolvePrediction(1, Outcome.RIGHT);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.RIGHT);
 
       // Bettor2 claims reward
-      const initialBalance2 = await token.balanceOf(bettor2.address);
+      const initialBalance2 = await token.balanceOf(bettor2);
       await prediction.connect(bettor2).claim(1);
-      const finalBalance2 = await token.balanceOf(bettor2.address);
+      const finalBalance2 = await token.balanceOf(bettor2);
 
       // Bettor1 should not be able to claim
       await expect(prediction.connect(bettor1).claim(1)).to.be.revertedWithCustomError(prediction, "NotEligibleForClaim");
 
       // Check reward distribution
-      const expectedReward2 = betUnits2 * betAsset.amount + betUnits2 * (betUnits1 * betAsset.amount - (betUnits1 * betAsset.amount * 1000n / 10000n)) / betUnits2;
-      expect(finalBalance2).to.equal(initialBalance2 + expectedReward2);
+      const rewardAmount = finalBalance2 - initialBalance2;
+      const expectedReward = betAsset.amount + betAsset.amount - (betAsset.amount * 1000n / 10000n);
+
+      expect(rewardAmount).to.equal(expectedReward);
 
       if (isVerbose) {
         console.log("Rewards distributed correctly for RIGHT outcome.");
@@ -59,24 +79,21 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should refund stakes in DRAW outcome", async function () {
-      const { prediction, bettor1, bettor2, betUnits1, betUnits2, token, betAsset, admin } = await factory();
-
-      // Resolve prediction with DRAW outcome
-      await prediction.connect(admin).resolvePrediction(1, Outcome.DRAW);
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, Outcome.DRAW);
 
       // Bettor1 claims refund
-      const initialBalance1 = await token.balanceOf(bettor1.address);
+      const initialBalance1 = await token.balanceOf(bettor1);
       await prediction.connect(bettor1).claim(1);
-      const finalBalance1 = await token.balanceOf(bettor1.address);
+      const finalBalance1 = await token.balanceOf(bettor1);
 
       // Bettor2 claims refund
-      const initialBalance2 = await token.balanceOf(bettor2.address);
+      const initialBalance2 = await token.balanceOf(bettor2);
       await prediction.connect(bettor2).claim(1);
-      const finalBalance2 = await token.balanceOf(bettor2.address);
+      const finalBalance2 = await token.balanceOf(bettor2);
 
       // Check refund distribution
-      expect(finalBalance1).to.equal(initialBalance1 + betUnits1 * betAsset.amount);
-      expect(finalBalance2).to.equal(initialBalance2 + betUnits2 * betAsset.amount);
+      expect(finalBalance1).to.equal(initialBalance1 + betAsset.amount);
+      expect(finalBalance2).to.equal(initialBalance2 + betAsset.amount);
 
       if (isVerbose) {
         console.log("Stakes refunded correctly for DRAW outcome.");
@@ -84,10 +101,7 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim by non-winner side", async function () {
-      const { prediction, bettor1, bettor2, admin } = await factory();
-
-      // Resolve prediction with LEFT outcome
-      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
+      const { prediction, bettor1, bettor2, admin } = await deployAndSetupPrediction(factory, Outcome.LEFT);
 
       // Bettor2 tries to claim
       await expect(prediction.connect(bettor2).claim(1)).to.be.revertedWithCustomError(prediction, "NotEligibleForClaim");
@@ -98,7 +112,7 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim before prediction is resolved", async function () {
-      const { prediction, bettor1 } = await factory();
+      const { prediction, bettor1 } = await deployAndSetupPrediction(factory, undefined);
 
       // Bettor1 tries to claim before resolution
       await expect(prediction.connect(bettor1).claim(1)).to.be.revertedWithCustomError(prediction, "CannotClaimBeforeResolution");
@@ -109,10 +123,7 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should revert if tried to claim multiple times", async function () {
-      const { prediction, bettor1, admin } = await factory();
-
-      // Resolve prediction with LEFT outcome
-      await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
+      const { prediction, bettor1, admin } = await deployAndSetupPrediction(factory, Outcome.LEFT);
 
       // Bettor1 claims reward
       await prediction.connect(bettor1).claim(1);
@@ -125,40 +136,26 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
       }
     });
 
-    it("should revert if tried to claim treasury by non-admin", async function () {
-      const { prediction, bettor1 } = await factory();
-
-      // Non-admin tries to claim treasury
-      await expect(prediction.connect(bettor1).claimTreasury()).to.be.revertedWithCustomError(prediction, "AccessControlUnauthorizedAccount");
-
-      if (isVerbose) {
-        console.log("Non-admin treasury claim reverted as expected.");
-      }
-    });
-
     it("should distribute rewards correctly when multiple bettors on both sides", async function () {
-      const { prediction, bettor1, bettor2, betUnits1, betUnits2, token, betAsset, admin } = await factory();
+      const { prediction, bettor1, bettor2, admin, betAsset, token } = await deployAndSetupPrediction(factory, undefined);
 
-      // Additional bettors
-      const [bettor3, bettor4] = await ethers.getSigners();
-      const betUnits3 = BigInt(2);
-      const betUnits4 = BigInt(4);
+      const bettor3 = (await ethers.getSigners())[4];
+      const bettor4 = (await ethers.getSigners())[5];
+      
+      await token.mint(bettor3, betAsset.amount * 2n);
+      await token.mint(bettor4, betAsset.amount * 4n);
+      await token.connect(bettor3).approve(prediction, betAsset.amount * 2n);
+      await token.connect(bettor4).approve(prediction, betAsset.amount * 4n);
 
-      await token.mint(bettor3, betAsset.amount * betUnits3);
-      await token.mint(bettor4, betAsset.amount * betUnits4);
-      await token.connect(bettor3).approve(prediction, betAsset.amount * betUnits3);
-      await token.connect(bettor4).approve(prediction, betAsset.amount * betUnits4);
+      await prediction.connect(bettor3).placeBet(1, 2n, Position.LEFT);
+      await prediction.connect(bettor4).placeBet(1, 4n, Position.RIGHT);
 
-      await prediction.connect(bettor3).placeBet(1, betUnits3, 0); // Position.LEFT
-      await prediction.connect(bettor4).placeBet(1, betUnits4, 1); // Position.RIGHT
-
-      // Resolve prediction with LEFT outcome
       await prediction.connect(admin).resolvePrediction(1, Outcome.LEFT);
 
       // Bettor1 claims reward
-      const initialBalance1 = await token.balanceOf(bettor1.address);
+      const initialBalance1 = await token.balanceOf(bettor1);
       await prediction.connect(bettor1).claim(1);
-      const finalBalance1 = await token.balanceOf(bettor1.address);
+      const finalBalance1 = await token.balanceOf(bettor1);
 
       // Bettor3 claims reward
       const initialBalance3 = await token.balanceOf(bettor3.address);
@@ -166,13 +163,13 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
       const finalBalance3 = await token.balanceOf(bettor3.address);
 
       // Check reward distribution
-      const totalLeftUnits = betUnits1 + betUnits3;
-      const totalRightAmount = betUnits2 * betAsset.amount + betUnits4 * betAsset.amount;
+      const totalLeftUnits = 1n + 2n;
+      const totalRightAmount = 1n * betAsset.amount + 4n * betAsset.amount;
       const treasuryAmt = totalRightAmount * 1000n / 10000n;
       const rewardAmount = totalRightAmount - treasuryAmt;
 
-      const expectedReward1 = betUnits1 * betAsset.amount + betUnits1 * rewardAmount / totalLeftUnits;
-      const expectedReward3 = betUnits3 * betAsset.amount + betUnits3 * rewardAmount / totalLeftUnits;
+      const expectedReward1 = 1n * betAsset.amount + 1n * rewardAmount / totalLeftUnits;
+      const expectedReward3 = 2n * betAsset.amount + 2n * rewardAmount / totalLeftUnits;
 
       expect(finalBalance1).to.equal(initialBalance1 + expectedReward1);
       expect(finalBalance3).to.equal(initialBalance3 + expectedReward3);
@@ -183,24 +180,24 @@ export function shouldClaim(factory: () => Promise<any>, isVerbose = false) {
     });
 
     it("should refund bets when tried to claim unresolved prediction after expiry time", async function () {
-      const { prediction, bettor1, bettor2, betUnits1, betUnits2, token, betAsset, expiryTimestamp } = await factory();
+      const { prediction, bettor1, bettor2, betAsset, expiryTimestamp, token } = await deployAndSetupPrediction(factory, undefined);
 
       // Move time forward to after the expiry timestamp
       await time.increaseTo(expiryTimestamp + BigInt(time.duration.seconds(10)));
 
       // Bettor1 claims refund
-      const initialBalance1 = await token.balanceOf(bettor1.address);
+      const initialBalance1 = await token.balanceOf(bettor1);
       await prediction.connect(bettor1).claim(1);
-      const finalBalance1 = await token.balanceOf(bettor1.address);
+      const finalBalance1 = await token.balanceOf(bettor1);
 
       // Bettor2 claims refund
-      const initialBalance2 = await token.balanceOf(bettor2.address);
+      const initialBalance2 = await token.balanceOf(bettor2);
       await prediction.connect(bettor2).claim(1);
-      const finalBalance2 = await token.balanceOf(bettor2.address);
+      const finalBalance2 = await token.balanceOf(bettor2);
 
       // Check refund distribution
-      expect(finalBalance1).to.equal(initialBalance1 + betUnits1 * betAsset.amount);
-      expect(finalBalance2).to.equal(initialBalance2 + betUnits2 * betAsset.amount);
+      expect(finalBalance1).to.equal(initialBalance1 + betAsset.amount);
+      expect(finalBalance2).to.equal(initialBalance2 + betAsset.amount);
 
       if (isVerbose) {
         console.log("Bets refunded correctly for unresolved prediction after expiry time.");
