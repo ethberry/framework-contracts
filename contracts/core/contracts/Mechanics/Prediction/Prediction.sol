@@ -168,7 +168,11 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
         Position position
     ) external payable whenNotPaused nonReentrant {
         PredictionMatch storage prediction = _predictions[predictionId];
+        Asset memory betAsset = prediction.betAsset;
 
+        if (betAsset.tokenType != TokenType.NATIVE && msg.value > 0) {
+            revert WrongToken();
+        }
         if (_predictionIdCounter < predictionId) {
             revert PredictionNotFound();
         }
@@ -193,8 +197,6 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
 
         betInfo.multiplier += multiplier;
         betInfo.position = position;
-
-        Asset memory betAsset = prediction.betAsset;
 
         Asset[] memory price = new Asset[](1);
         price[0] = betAsset;
