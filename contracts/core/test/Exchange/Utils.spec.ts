@@ -40,7 +40,7 @@ describe("Diamond Exchange Utils", function () {
     return ethers.getContractAt(facetName, diamondInstance);
   };
 
-  describe.only("ExchangeUtils", function () {
+  describe("ExchangeUtils", function () {
     describe("spendFrom", function () {
       describe("ETH", function () {
         it("should spendFrom: ETH => SELF", async function () {

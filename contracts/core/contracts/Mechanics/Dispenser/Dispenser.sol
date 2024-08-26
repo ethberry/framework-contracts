@@ -29,6 +29,7 @@ contract Dispenser is IDispenser, ERC165, Context, NativeRejector {
 
     uint256 length = receivers.length;
     for (uint256 i = 0; i < length; ) {
+      // (bool success, bytes memory data) = address(ExchangeUtils).call{value: items[i].amount}(abi.encodeWithSelector(ExchangeUtils._spendFrom.selector, items[i], _msgSender(), receivers[i], AllowedTokenTypes(true, true, true, true, true)));
       ExchangeUtils.spendFrom(
         ExchangeUtils._toArray(items[i]),
         _msgSender(),
