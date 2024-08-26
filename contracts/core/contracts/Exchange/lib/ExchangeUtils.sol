@@ -23,6 +23,8 @@ import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { UnsupportedTokenType, ETHInvalidReceiver, ETHInsufficientBalance } from "../../utils/errors.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
+import "hardhat/console.sol";
+
 library ExchangeUtils {
   using Address for address;
   using SafeERC20 for IERC20;
@@ -90,18 +92,25 @@ library ExchangeUtils {
 
     // If there is any native token in the transaction.
     if (totalAmount > 0) {
+      // no tips
+      if (totalAmount < msg.value) {
+        Address.sendValue(payable(spender), msg.value - totalAmount);
+      }
+
       // Verify the total amount of native tokens matches the amount sent with the transaction.
       // This basically protects against reentrancy attack.
       if (totalAmount > msg.value) {
         revert ETHInsufficientBalance(spender, msg.value, totalAmount);
-      } else if (address(this) == receiver) {
-        emit PaymentReceived(receiver, msg.value);
-      } else if (receiver == address(0)) {
-        revert ETHInvalidReceiver(address(0));
-      } else {
-        Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentReleased(receiver, totalAmount);
       }
+      if (receiver == address(this)) {
+        emit PaymentReceived(receiver, totalAmount);
+      }
+      if (receiver == address(0)) {
+        revert ETHInvalidReceiver(address(0));
+      }
+
+      Address.sendValue(payable(receiver), totalAmount);
+      emit PaymentReleased(receiver, totalAmount);
     }
   }
 
@@ -207,10 +216,10 @@ library ExchangeUtils {
     if (totalAmount > 0) {
       if (receiver == address(0)) {
         revert ETHInvalidReceiver(address(0));
-      } else {
-        Address.sendValue(payable(receiver), totalAmount);
-        emit PaymentReleased(receiver, totalAmount);
       }
+
+      Address.sendValue(payable(receiver), totalAmount);
+      emit PaymentReleased(receiver, totalAmount);
     }
   }
 
