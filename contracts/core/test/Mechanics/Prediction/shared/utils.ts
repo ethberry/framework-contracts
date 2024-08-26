@@ -38,7 +38,7 @@ export async function fundAndBet(
   const betAmount = amount * BigInt(params.multiplier);
 
   if (tokenType === BigInt(Object.values(TokenType).indexOf(TokenType.NATIVE))) {
-    return predictionInstance.connect(bettor).placeBet(params.predictionId, params.multiplier, params.position, {
+    return prediction.connect(bettor).placeBet(params.predictionId, params.multiplier, params.position, {
       value: betAmount,
     }) as ContractTransactionResponse;
   } else {
