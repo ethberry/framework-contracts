@@ -12,6 +12,11 @@ describe("Prediction", function () {
   shouldBehaveLikePrediction(deployPredictionContract, TokenType.NATIVE);
   shouldBehaveLikePrediction(deployPredictionContract, TokenType.ERC20);
 
+  // TODO
+  // test claimTreasury
+  // test getPrediction
+  // test placeBet and resolvePrediction when paused
+
   shouldSupportsInterface(deployPredictionContract)([
     InterfaceId.IERC165,
     InterfaceId.IERC1363Receiver,
