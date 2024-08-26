@@ -1,10 +1,21 @@
-import { shouldBehaveLikePredictionContract } from "./shared/predictionBehavior";
-import { TokenType } from "./shared/utils";
+import { shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { InterfaceId } from "@gemunion/contracts-constants";
+
+import { TokenType } from "@gemunion/types-blockchain";
+
+import { shouldBehaveLikePrediction } from "./shared/predictionBehavior";
 import { deployPredictionContract } from "./shared/fixtures";
 
-const isVerbose = process.env.VERBOSE === "true";
-
 describe("Prediction", function () {
-  shouldBehaveLikePredictionContract(deployPredictionContract, TokenType.ERC20, isVerbose);
-  shouldBehaveLikePredictionContract(deployPredictionContract, TokenType.NATIVE, isVerbose);
+  shouldBehaveLikePausable(deployPredictionContract);
+
+  shouldBehaveLikePrediction(deployPredictionContract, TokenType.NATIVE);
+  shouldBehaveLikePrediction(deployPredictionContract, TokenType.ERC20);
+
+  shouldSupportsInterface(deployPredictionContract)([
+    InterfaceId.IERC165,
+    InterfaceId.IERC1363Receiver,
+    InterfaceId.IERC1363Spender,
+    InterfaceId.IAccessControl,
+  ]);
 });

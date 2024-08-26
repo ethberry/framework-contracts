@@ -1,17 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
-import { makeTimestamps, Position, fundAndBet, getAssetBalance } from "./utils";
 
-export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose = false) {
+import { fundAndBet, getAssetBalance, makeTimestamps, Position } from "./utils";
+
+export function shouldBetPosition(predictionFactory: () => Promise<any>, betAssetFactory: () => Promise<any>) {
   describe("betPosition", function () {
     it("should not allow betting before start timestamp", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1] = await ethers.getSigners();
+      const [_owner, bettor1] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await expect(
         fundAndBet(predictionInstance, bettor1, {
@@ -21,8 +22,8 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
         }),
       ).to.be.revertedWithCustomError(predictionInstance, "PredictionNotStarted");
 
-      if (isVerbose) {
-        console.log("Failed to place bet because betting period has not started.");
+      if (process.env.VERBOSE) {
+        console.info("Failed to place bet because betting period has not started.");
       }
     });
 
@@ -30,22 +31,21 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1] = await ethers.getSigners();
+      const [_owner, bettor1] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(
-        fundAndBet(predictionInstance, bettor1, {
-          predictionId: 1,
-          multiplier: 1,
-          position: Position.LEFT,
-        }),
-      ).to.be.revertedWithCustomError(predictionInstance, "PredictionEnded");
+      const tx = fundAndBet(predictionInstance, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionEnded");
 
-      if (isVerbose) {
-        console.log("Failed to place bet because betting period has ended.");
+      if (process.env.VERBOSE) {
+        console.info("Failed to place bet because betting period has ended.");
       }
     });
 
@@ -53,22 +53,21 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1] = await ethers.getSigners();
+      const [_owner, bettor1] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(
-        fundAndBet(predictionInstance, bettor1, {
-          predictionId: 1,
-          multiplier: 0,
-          position: Position.LEFT,
-        }),
-      ).to.be.revertedWithCustomError(predictionInstance, "BetAmountTooLow");
+      const tx = fundAndBet(predictionInstance, bettor1, {
+        predictionId: 1,
+        multiplier: 0,
+        position: Position.LEFT,
+      });
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "BetAmountTooLow");
 
-      if (isVerbose) {
-        console.log("Failed to place bet because bet amount is less than minimum bet units.");
+      if (process.env.VERBOSE) {
+        console.info("Failed to place bet because bet amount is less than minimum bet units.");
       }
     });
 
@@ -76,9 +75,9 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1] = await ethers.getSigners();
+      const [_owner, bettor1] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
@@ -88,16 +87,15 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
         position: Position.LEFT,
       });
 
-      await expect(
-        fundAndBet(predictionInstance, bettor1, {
-          predictionId: 1,
-          multiplier: 1,
-          position: Position.RIGHT,
-        }),
-      ).to.be.revertedWithCustomError(predictionInstance, "BetAlreadyPlaced");
+      const tx = fundAndBet(predictionInstance, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "BetAlreadyPlaced");
 
-      if (isVerbose) {
-        console.log("Failed to switch bet position as expected.");
+      if (process.env.VERBOSE) {
+        console.info("Failed to switch bet position as expected.");
       }
     });
 
@@ -105,9 +103,9 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1, bettor2] = await ethers.getSigners();
+      const [_owner, bettor1, bettor2] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
@@ -153,17 +151,16 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       expect(betInfo2.multiplier).to.equal(betMultiplier2);
       expect(betInfo2.position).to.equal(Position.RIGHT);
 
-      expect(await getAssetBalance(betAsset, predictionInstance)).to.be.equal(
-        (betMultiplier1 + betMultiplier2) * betAsset.amount,
-      );
+      const tx3 = await getAssetBalance(betAsset, predictionInstance);
+      expect(tx3).to.be.equal((betMultiplier1 + betMultiplier2) * betAsset.amount);
 
-      if (isVerbose) {
-        console.log("Valid bets placed and prediction state updated correctly.");
-        console.log(`Prediction ID: 1`);
-        console.log(`Bettor1 Bet Units: ${betMultiplier1}`);
-        console.log(`Bettor2 Bet Units: ${betMultiplier2}`);
-        console.log(`Stake Unit: ${ethers.formatUnits(betAsset.amount, 18)}`);
-        console.log(`Total Bet: ${(betMultiplier1 + betMultiplier2) * betAsset.amount}`);
+      if (process.env.VERBOSE) {
+        console.info("Valid bets placed and prediction state updated correctly.");
+        console.info(`Prediction ID: 1`);
+        console.info(`Bettor1 Bet Units: ${betMultiplier1}`);
+        console.info(`Bettor2 Bet Units: ${betMultiplier2}`);
+        console.info(`Stake Unit: ${ethers.formatUnits(betAsset.amount, 18)}`);
+        console.info(`Total Bet: ${(betMultiplier1 + betMultiplier2) * betAsset.amount}`);
       }
     });
 
@@ -171,9 +168,9 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
-      const [admin, bettor1] = await ethers.getSigners();
+      const [_owner, bettor1] = await ethers.getSigners();
 
-      await predictionInstance.connect(admin).startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
       await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
 
@@ -193,8 +190,8 @@ export function shouldBetPosition(predictionFactory, betAssetFactory, isVerbose 
       expect(betInfo.multiplier).to.equal(2n);
       expect(betInfo.position).to.equal(Position.LEFT);
 
-      if (isVerbose) {
-        console.log("Successfully placed multiple bets from the same user on the same prediction.");
+      if (process.env.VERBOSE) {
+        console.info("Successfully placed multiple bets from the same user on the same prediction.");
       }
     });
   });

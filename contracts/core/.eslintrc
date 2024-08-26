@@ -10,7 +10,6 @@
   "rules": {
     "@typescript-eslint/restrict-template-expressions": "off",
     "mocha/no-exports": "off",
-    "mocha/no-setup-in-describe": "off",
-    "no-console": "off"
+    "mocha/no-setup-in-describe": "off"
   }
 }

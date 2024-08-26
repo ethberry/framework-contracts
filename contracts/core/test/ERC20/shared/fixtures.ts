@@ -26,13 +26,13 @@ export async function deployBusd(name = "BEP20Token"): Promise<any> {
 }
 
 export async function deployWeth(name = "WETH9"): Promise<any> {
-  const [_owner] = await ethers.getSigners();
+  const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory(name);
-  const weth = await factory.deploy();
-  const address = weth.getAddress();
-  await _owner.sendTransaction({
+  const wethInstance = await factory.deploy();
+  const address = await wethInstance.getAddress();
+  await owner.sendTransaction({
     to: address,
     value: amount,
   });
-  return weth;
+  return wethInstance;
 }

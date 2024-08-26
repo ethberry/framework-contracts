@@ -14,6 +14,12 @@
     },
     "prepare": {
       "dependsOn": ["^prepare"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "coverage": {
+      "dependsOn": ["^coverage"]
     }
   },
   "affected": {
