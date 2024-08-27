@@ -127,7 +127,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
     uint256 endTimestamp,
     uint256 expiryTimestamp,
     Asset memory betAsset
-  ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+  ) external whenNotPaused onlyRole(DEFAULT_ADMIN_ROLE) {
     if (startTimestamp >= endTimestamp) {
       revert PredictionNotStarted();
     }
@@ -223,7 +223,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
    * - The prediction must be resolved.
    * - The user must be eligible for the claim.
    */
-  function claim(uint256 predictionId) external nonReentrant {
+  function claim(uint256 predictionId) external {
     PredictionMatch storage prediction = _predictions[predictionId];
     BetInfo memory betInfo = _ledger[predictionId][_msgSender()];
 

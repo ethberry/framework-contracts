@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ContractTransactionResponse } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
@@ -15,6 +16,10 @@ export enum Outcome {
   DRAW,
   ERROR,
   EXPIRED,
+}
+
+function isNative(tokenType) {
+  return BigInt(tokenType) === BigInt(Object.values(TokenType).indexOf(TokenType.NATIVE));
 }
 
 export async function makeTimestamps() {
@@ -37,8 +42,8 @@ export async function fundAndBet(
 
   const betAmount = amount * BigInt(params.multiplier);
 
-  if (tokenType === BigInt(Object.values(TokenType).indexOf(TokenType.NATIVE))) {
-    return prediction.connect(bettor).placeBet(params.predictionId, params.multiplier, params.position, {
+  if (isNative(tokenType)) {
+    return predictionInstance.connect(bettor).placeBet(params.predictionId, params.multiplier, params.position, {
       value: betAmount,
     }) as ContractTransactionResponse;
   } else {
@@ -52,10 +57,28 @@ export async function fundAndBet(
 }
 
 export async function getAssetBalance(betAsset: any, account: any) {
-  if (BigInt(betAsset.tokenType) === BigInt(Object.values(TokenType).indexOf(TokenType.NATIVE))) {
+  if (isNative(betAsset.tokenType)) {
     return ethers.provider.getBalance(account);
   } else {
     const token = await ethers.getContractAt("ERC20Simple", betAsset.token);
     return token.balanceOf(account);
+  }
+}
+
+export async function expectBalanceIncrease(tx, account, changeAsset) {
+  if (isNative(changeAsset.tokenType)) {
+    await expect(tx).changeEtherBalances([account], [changeAsset.amount]);
+  } else {
+    const token = await ethers.getContractAt("ERC20Simple", changeAsset.token);
+    await expect(tx).changeTokenBalances(token, [account], [changeAsset.amount]);
+  }
+}
+
+export async function expectBalanceDecrease(tx, account, changeAsset) {
+  if (isNative(changeAsset.tokenType)) {
+    await expect(tx).changeEtherBalances([account], [-changeAsset.amount]);
+  } else {
+    const token = await ethers.getContractAt("ERC20Simple", changeAsset.token);
+    await expect(tx).changeTokenBalances(token, [account], [-changeAsset.amount]);
   }
 }

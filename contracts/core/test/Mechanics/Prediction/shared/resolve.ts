@@ -6,7 +6,7 @@ import { fundAndBet, makeTimestamps, Outcome, Position } from "./utils";
 
 export function shouldResolvePrediction(predictionFactory: () => Promise<any>, betAssetFactory: () => Promise<any>) {
   describe("resolve", function () {
-    it("should not allow resolving by non-admin", async function () {
+    it("should fail: AccessControlUnauthorizedAccount - non-admin trying to resolve", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -31,6 +31,10 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       await expect(
         predictionInstance.connect(bettor1).resolvePrediction(1, Outcome.LEFT),
       ).to.be.revertedWithCustomError(predictionInstance, "AccessControlUnauthorizedAccount");
+
+      if (process.env.VERBOSE) {
+        console.info("Non-admin tried to resolve the prediction and failed.");
+      }
     });
 
     it("should force prediction into expired state after expiry time", async function () {
@@ -55,7 +59,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       await expect(resolveErrorTx).to.emit(predictionInstance, "PredictionEnd").withArgs(1, Outcome.EXPIRED);
 
       if (process.env.VERBOSE) {
-        console.info("Bettor resolved the prediction as error after expiry time.");
+        console.info("Bettor resolved the prediction as expired after expiry time.");
       }
     });
 
@@ -77,9 +81,13 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       expect(predictionMatch.rewardAsset.amount).to.equal(0);
       expect(predictionMatch.outcome).to.equal(Outcome.ERROR);
       expect(predictionMatch.resolved).to.equal(true);
+
+      if (process.env.VERBOSE) {
+        console.info("Prediction forced into error state due to no bettors on either side.");
+      }
     });
 
-    it("should not allow resolving multiple times", async function () {
+    it("should fail: PredictionAlreadyResolved - resolving multiple times", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -107,7 +115,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionAlreadyResolved");
 
       if (process.env.VERBOSE) {
-        console.info("Admin tried to resolve multiple times but failed.");
+        console.info("Admin tried to resolve the prediction multiple times and failed.");
       }
     });
 
@@ -148,7 +156,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       }
     });
 
-    it("should revert if expired or error outcome is manually passed", async function () {
+    it("should fail: InvalidOutcome - expired or error outcome manually passed", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -183,6 +191,22 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
 
       if (process.env.VERBOSE) {
         console.info("Admin tried to resolve with an invalid outcome and failed.");
+      }
+    });
+
+    it("should fail: EnforcedPause - admin cannot start new prediction when contract is paused", async function () {
+      const predictionInstance = await predictionFactory();
+      const betAsset = await betAssetFactory();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      // Pause the contract
+      await predictionInstance.pause();
+
+      const tx = predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "EnforcedPause");
+
+      if (process.env.VERBOSE) {
+        console.info("Admin tried to start a new prediction while the contract is paused and failed.");
       }
     });
   });

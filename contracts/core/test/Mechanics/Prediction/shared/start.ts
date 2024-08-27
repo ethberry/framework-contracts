@@ -5,7 +5,7 @@ import { makeTimestamps } from "./utils";
 
 export function shouldStartPrediction(predictionFactory: () => Promise<any>, betAssetFactory: () => Promise<any>) {
   describe("startPrediction", function () {
-    it("should revert if non-admin tried to start a prediction", async function () {
+    it("should fail: AccessControlUnauthorizedAccount", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1] = await ethers.getSigners();
@@ -16,9 +16,13 @@ export function shouldStartPrediction(predictionFactory: () => Promise<any>, bet
         .connect(bettor1)
         .startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
       await expect(tx).to.be.revertedWithCustomError(predictionInstance, "AccessControlUnauthorizedAccount");
+
+      if (process.env.VERBOSE) {
+        console.info("startPrediction reverted when non-admin tried to call it");
+      }
     });
 
-    it("should revert if startTimestamp is not less than endTimestamp", async function () {
+    it("should fail: PredictionNotStarted - startTimestamp is not less than endTimestamp", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
 
@@ -34,7 +38,7 @@ export function shouldStartPrediction(predictionFactory: () => Promise<any>, bet
       }
     });
 
-    it("should revert if endTimestamp is not less than expiryTimestamp", async function () {
+    it("should fail: PredictionEnded - endTimestamp is not less than expiryTimestamp", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
 
@@ -47,6 +51,23 @@ export function shouldStartPrediction(predictionFactory: () => Promise<any>, bet
 
       if (process.env.VERBOSE) {
         console.info("Failed to start prediction because endTimestamp is not less than expiryTimestamp.");
+      }
+    });
+
+    it("should fail: EnforcedPause - starting prediction when contract is paused", async function () {
+      const predictionInstance = await predictionFactory();
+      const betAsset = await betAssetFactory();
+
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      // Pause the contract
+      await predictionInstance.pause();
+
+      const tx = predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "EnforcedPause");
+
+      if (process.env.VERBOSE) {
+        console.info("Failed to start prediction because the contract is paused.");
       }
     });
 
