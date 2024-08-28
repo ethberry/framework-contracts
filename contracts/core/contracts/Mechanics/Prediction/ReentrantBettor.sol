@@ -10,7 +10,7 @@ contract ReentrantBettor {
 	bool private inAttack;
 	uint256 private attackedPredictionId;
 
-	error ClaimReentrancyNotAllowed();
+	event ReentrancyClaimAttempt(bool success);
 
 	constructor(address payable predictionAddress) {
 		prediction = Prediction(predictionAddress);
@@ -37,9 +37,7 @@ contract ReentrantBettor {
 		  uint256 predictionId = attackedPredictionId;
 		  attackedPredictionId = 0;
 		  (bool success, ) = address(this).call(abi.encodeCall(prediction.claim, predictionId));
-		  if (!success) {
-			revert ClaimReentrancyNotAllowed();
-		  }
+		  emit ReentrancyClaimAttempt(success);
 		}
 	}
 
@@ -57,9 +55,7 @@ contract ReentrantBettor {
 		  uint256 predictionId = attackedPredictionId;
 		  attackedPredictionId = 0;
 		  (bool success, ) = address(this).call(abi.encodeCall(prediction.claim, predictionId));
-		  if (!success) {
-			revert ClaimReentrancyNotAllowed();
-		  }
+		  emit ReentrancyClaimAttempt(success);
 		}
 	    return IERC1363Receiver.onTransferReceived.selector;
 	}

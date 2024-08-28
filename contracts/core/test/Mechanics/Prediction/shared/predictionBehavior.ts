@@ -6,6 +6,7 @@ import { shouldBetPosition } from "./bet";
 import { shouldResolvePrediction } from "./resolve";
 import { shouldClaim } from "./claim";
 import { shouldClaimTreasury } from "./claimTreasury";
+import { shouldPreventReentrancy } from "./reentrancy";
 
 export function shouldBehaveLikePrediction(predictionFactory: () => Promise<any>, tokenType: TokenType) {
   describe(`prediction behavior with ${tokenType} tokens`, function () {
@@ -14,5 +15,6 @@ export function shouldBehaveLikePrediction(predictionFactory: () => Promise<any>
     shouldResolvePrediction(predictionFactory, getBetAsset(tokenType));
     shouldClaim(predictionFactory, getBetAsset(tokenType));
     shouldClaimTreasury(predictionFactory, getBetAsset(tokenType));
+    shouldPreventReentrancy(predictionFactory, getBetAsset(tokenType));
   });
 }

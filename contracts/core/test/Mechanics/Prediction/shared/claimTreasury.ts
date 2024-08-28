@@ -118,5 +118,42 @@ export function shouldClaimTreasury(predictionFactory: () => Promise<any>, betAs
         console.info("Non-admin claim treasury reverted as expected.");
       }
     });
+
+    it("should fail: NoTreasuryAssets", async function () {
+      const predictionInstance = await predictionFactory();
+      const betAsset = await betAssetFactory();
+      const [_owner, bettor1, bettor2] = await ethers.getSigners();
+      const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
+
+      await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
+
+      await time.increaseTo(startTimestamp + BigInt(time.duration.seconds(10)));
+
+      await fundAndBet(predictionInstance, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+
+      await fundAndBet(predictionInstance, bettor2, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.RIGHT,
+      });
+
+      await predictionInstance.resolvePrediction(1, Outcome.LEFT);
+
+      // Claim treasury for the first time
+      await predictionInstance.claimTreasury();
+
+      await expect(predictionInstance.claimTreasury()).to.be.revertedWithCustomError(
+        predictionInstance,
+        "NoTreasuryAssets",
+      );
+
+      if (process.env.VERBOSE) {
+        console.info("Double treasury claim was prevented.");
+      }
+    });
   });
 }

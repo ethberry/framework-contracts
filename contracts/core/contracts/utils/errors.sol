@@ -103,3 +103,4 @@ error TransferAmountExceedsAllowance();
 error CannotClaimBeforeResolution();
 error BetNotFound();
 error InvalidOutcome();
+error NoTreasuryAssets();

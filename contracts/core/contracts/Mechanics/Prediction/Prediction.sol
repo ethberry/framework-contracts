@@ -8,7 +8,6 @@ pragma abicoder v2;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -37,7 +36,8 @@ import {
   WrongToken,
   RewardAlreadyClaimed,
   BetNotFound,
-  InvalidOutcome
+  InvalidOutcome,
+  NoTreasuryAssets
 } from "../../utils/errors.sol";
 
 import {Asset, TokenType, AllowedTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
@@ -48,10 +48,10 @@ import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
  * Users can place bets on the outcome of events, and the contract handles the
  * resolution and reward distribution.
  */
-contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, NativeReceiver {
+contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
   using SafeERC20 for IERC20;
 
-  uint256 public constant MAX_TREASURY_FEE = 2000; // 20%
+  uint256 public constant MAX_TREASURY_FEE = 1000; // 10%
 
   uint256 private _treasuryFee;
   uint256 private _predictionIdCounter;
@@ -169,7 +169,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
     uint256 predictionId,
     uint256 multiplier,
     Position position
-  ) external payable whenNotPaused nonReentrant {
+  ) external payable whenNotPaused {
     PredictionMatch storage prediction = _predictions[predictionId];
     Asset memory betAsset = prediction.betAsset;
 
@@ -316,8 +316,15 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
    *
    * - The caller must have the `DEFAULT_ADMIN_ROLE`.
    */
-  function claimTreasury() external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
-    ExchangeUtils.spend(_treasuryAssets, _msgSender(), AllowedTokenTypes(true, true, false, false, false));
+  function claimTreasury() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    if (_treasuryAssets.length == 0) {
+      revert NoTreasuryAssets();
+    }
+  
+    Asset[] memory treasuryAssets = _treasuryAssets;
+    delete _treasuryAssets;
+
+    ExchangeUtils.spend(treasuryAssets, _msgSender(), AllowedTokenTypes(true, true, false, false, false));
 
     emit TreasuryClaim();
   }
@@ -327,7 +334,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
   }
 
   /**
-		 * @dev Triggers stopped state.
+   * @dev Triggers stopped state.
    *
    * Requirements:
    *
@@ -338,7 +345,7 @@ contract Prediction is AccessControl, Pausable, ReentrancyGuard, CoinHolder, Nat
   }
 
   /**
-		 * @dev Returns to normal state.
+   * @dev Returns to normal state.
    *
    * Requirements:
    *
