@@ -190,7 +190,7 @@ describe("Diamond Exchange Breed", function () {
         expect(random.join("").length).to.be.greaterThan(50); // todo better check ????
       });
 
-      it("should fail: PregnancyCountLimitExceed", async function () {
+      it("should fail: PregnancyThresholdExceeded", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const generateSignature = await getSignatures(exchangeInstance);
@@ -316,7 +316,7 @@ describe("Diamond Exchange Breed", function () {
           },
           signature1,
         );
-        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyCountLimitExceed");
+        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyThresholdExceeded");
 
         await erc721Instance.mintCommon(receiver.address, 4);
         const signature2 = await generateSignature({
@@ -365,10 +365,10 @@ describe("Diamond Exchange Breed", function () {
           },
           signature2,
         );
-        await expect(tx3).to.be.revertedWithCustomError(exchangeInstance, "PregnancyCountLimitExceed");
+        await expect(tx3).to.be.revertedWithCustomError(exchangeInstance, "PregnancyThresholdExceeded");
       });
 
-      it("should fail: PregnancyTimeLimitExceed", async function () {
+      it("should fail: PregnancyFrequencyExceeded", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const generateSignature = await getSignatures(exchangeInstance);
@@ -493,7 +493,7 @@ describe("Diamond Exchange Breed", function () {
           },
           signature1,
         );
-        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyTimeLimitExceed");
+        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyFrequencyExceeded");
       });
 
       it("should fail: NotOwnerNorApproved", async function () {

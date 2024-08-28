@@ -8,23 +8,23 @@ pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import { GENES } from "@gemunion/contracts-utils/contracts/attributes.sol";
+import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { TemplateZero, MethodNotSupported } from "../utils/errors.sol";
-import { TraitsDnD } from "../Mechanics/Traits/TraitsDnD.sol";
+import { TemplateZero, MethodNotSupported, NotOwnerNorApproved } from "../utils/errors.sol";
+import { GENES, MOTHER_ID, FATHER_ID, PREGNANCY_COUNTER, PREGNANCY_TIMESTAMP } from "../Mechanics/Genes/attributes.sol";
+import { GenesCryptoKitties } from "../Mechanics/Genes/GenesCK.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
-import { IERC721Random } from "./interfaces/IERC721Random.sol";
+import { IERC721Genes } from "./interfaces/IERC721Genes.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 
-abstract contract ERC721Genes is IERC721Random, ERC721Simple, TraitsDnD, Rarity {
+abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties, Rarity {
   using SafeCast for uint;
 
   struct Request {
     address account;
-    uint32 templateId;
-    uint32 matronId;
-    uint32 sireId;
+    uint256 motherId;
+    uint256 fatherId;
   }
 
   mapping(uint256 => Request) internal _queue;
@@ -40,38 +40,87 @@ abstract contract ERC721Genes is IERC721Random, ERC721Simple, TraitsDnD, Rarity 
     revert MethodNotSupported();
   }
 
-  function mintRandom(address account, uint256 templateId) external override onlyRole(MINTER_ROLE) {
+  function mintGenes(
+    address account,
+    uint256 templateId,
+    uint256 genes
+  ) external override onlyRole(MINTER_ROLE) {
     if (templateId == 0) {
       revert TemplateZero();
     }
 
-    (uint256 childId, uint256 matronId, uint256 sireId) = decodeData(templateId);
+    // first generation
+    _upsertRecordField(_nextTokenId, MOTHER_ID, 0);
+    _upsertRecordField(_nextTokenId, FATHER_ID, 0);
+    _upsertRecordField(_nextTokenId, PREGNANCY_COUNTER, 0);
+    _upsertRecordField(_nextTokenId, PREGNANCY_TIMESTAMP, 0);
+    _upsertRecordField(_nextTokenId, GENES, genes);
 
-    _queue[getRandomNumber()] = Request(account, childId.toUint32(), matronId.toUint32(), sireId.toUint32());
+    _mintCommon(account, templateId);
+  }
+
+  function breed(
+    uint256 motherId,
+    uint256 fatherId
+  ) external onlyRole(MINTER_ROLE) {
+    if (ownerOf(motherId) != _msgSender() && getApproved(motherId) != _msgSender()) {
+      revert NotOwnerNorApproved(_msgSender());
+    }
+
+    if (ownerOf(fatherId) != _msgSender() && getApproved(fatherId) != _msgSender()) {
+      revert NotOwnerNorApproved(_msgSender());
+    }
+
+    _queue[getRandomNumber()] = Request(
+      _msgSender(),
+      motherId,
+      fatherId
+    );
   }
 
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
-    emit MintRandom(requestId, request.account, randomWords, request.templateId, _nextTokenId);
+    // child will have moms template id
+    uint256 templateId = _getRecordFieldValue(request.motherId, TEMPLATE_ID);
 
-    _upsertRecordField(_nextTokenId, GENES, encodeData(request, randomWords[0]));
+    emit MintGenes(requestId, request.account, randomWords, templateId, _nextTokenId);
+
+    uint256 motherGenes = _getRecordFieldValue(request.motherId, GENES);
+    uint256 motherCounter = _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER);
+    _upsertRecordField(request.motherId, PREGNANCY_COUNTER, motherCounter + 1);
+    _upsertRecordField(request.motherId, PREGNANCY_TIMESTAMP, block.timestamp);
+
+    uint256 fatherGenes = _getRecordFieldValue(request.fatherId, GENES);
+    uint256 fatherCounter = _getRecordFieldValue(request.fatherId, PREGNANCY_COUNTER);
+    _upsertRecordField(request.fatherId, PREGNANCY_COUNTER, fatherCounter + 1);
+    _upsertRecordField(request.fatherId, PREGNANCY_TIMESTAMP, block.timestamp);
+
+    // second+ generation
+    _upsertRecordField(_nextTokenId, MOTHER_ID, request.motherId);
+    _upsertRecordField(_nextTokenId, FATHER_ID, request.fatherId);
+    _upsertRecordField(_nextTokenId, PREGNANCY_COUNTER, 0);
+    _upsertRecordField(_nextTokenId, PREGNANCY_TIMESTAMP, 0);
+    _upsertRecordField(_nextTokenId, GENES, _mixGenes(motherGenes, fatherGenes, randomWords[0]));
 
     delete _queue[requestId];
 
-    _mintCommon(request.account, request.templateId);
+    _mintCommon(request.account, templateId);
   }
 
-  function decodeData(uint256 externalId) internal pure returns (uint256 childId, uint256 matronId, uint256 sireId) {
-    childId = uint256(uint32(externalId));
-    matronId = uint256(uint32(externalId >> 32));
-    sireId = uint256(uint32(externalId >> 64));
-  }
+  function _mixGenes(uint256 motherGenes, uint256 fatherGenes, uint256 randomWord) internal pure returns (uint256 childGenes) {
+    uint256 mask = 1;
 
-  function encodeData(Request memory req, uint256 randomness) internal pure returns (uint256 traits) {
-    traits |= uint256(req.matronId);
-    traits |= uint256(req.sireId) << 32;
-    traits |= uint256(uint192(randomness)) << 64;
+    for (uint256 i = 0; i < 256; i++) {
+      if ((randomWord & mask) == 0) {
+        childGenes |= (motherGenes & mask);
+      } else {
+        childGenes |= (fatherGenes & mask);
+      }
+      mask <<= 1;
+    }
+
+    return childGenes;
   }
 
   function getRandomNumber() internal virtual returns (uint256 requestId);
@@ -80,6 +129,6 @@ abstract contract ERC721Genes is IERC721Random, ERC721Simple, TraitsDnD, Rarity 
    * @dev See {IERC165-supportsInterface}.
    */
   function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-    return interfaceId == type(IERC721Random).interfaceId || super.supportsInterface(interfaceId);
+    return interfaceId == type(IERC721Genes).interfaceId || super.supportsInterface(interfaceId);
   }
 }

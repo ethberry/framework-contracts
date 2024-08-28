@@ -18,7 +18,8 @@ export default {
       blockGasLimit: 40966424, // default: 3e7
       gas: "auto",
     },
-    besu: {
+    // this is because of contract's names
+    gemunion_besu: {
       url: process.env.JSON_RPC_ADDR_GEMUNION_BESU,
       timeout: 142000,
       accounts: [

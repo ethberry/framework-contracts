@@ -52,9 +52,10 @@ error NoReward();
 error WrongArrayLength(); // is used when two arrays has to be of the length size but they are not
 
 // BREED
-error PregnancyCountLimitExceed();
-error PregnancyTimeLimitExceed();
+error PregnancyThresholdExceeded();
+error PregnancyFrequencyExceeded();
 // error NotOwnerNorApproved(address account);
+error GenesDifferentContracts();
 
 // LOTTERY/RAFFLE
 error NotOwnerNorApproved(address account);
