@@ -109,10 +109,8 @@ export function shouldClaimTreasury(predictionFactory: () => Promise<any>, betAs
       await predictionInstance.resolvePrediction(1, Outcome.LEFT);
 
       // Non-admin tries to claim treasury
-      await expect(predictionInstance.connect(bettor1).claimTreasury()).to.be.revertedWithCustomError(
-        predictionInstance,
-        "AccessControlUnauthorizedAccount",
-      );
+      const tx = predictionInstance.connect(bettor1).claimTreasury();
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "AccessControlUnauthorizedAccount");
 
       if (process.env.VERBOSE) {
         console.info("Non-admin claim treasury reverted as expected.");
@@ -146,10 +144,8 @@ export function shouldClaimTreasury(predictionFactory: () => Promise<any>, betAs
       // Claim treasury for the first time
       await predictionInstance.claimTreasury();
 
-      await expect(predictionInstance.claimTreasury()).to.be.revertedWithCustomError(
-        predictionInstance,
-        "NoTreasuryAssets",
-      );
+      const txFailed = predictionInstance.claimTreasury();
+      await expect(txFailed).to.be.revertedWithCustomError(predictionInstance, "NoTreasuryAssets");
 
       if (process.env.VERBOSE) {
         console.info("Double treasury claim was prevented.");

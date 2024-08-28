@@ -31,12 +31,12 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       await predictionInstance.resolvePrediction(1, Outcome.LEFT);
 
-      // Bettor1 claims reward
-      const tx1 = await predictionInstance.connect(bettor1).claim(1);
-
       // Bettor2 should not be able to claim
       const tx2 = predictionInstance.connect(bettor2).claim(1);
       await expect(tx2).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+
+      // Bettor1 claims reward
+      const tx1 = await predictionInstance.connect(bettor1).claim(1);
 
       const reward = {
         ...betAsset,
@@ -75,14 +75,12 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       await predictionInstance.resolvePrediction(1, Outcome.RIGHT);
 
+      // Bettor1 should not be able to claim
+      const tx1 = predictionInstance.connect(bettor1).claim(1);
+      await expect(tx1).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+
       // Bettor2 claims reward
       const tx2 = await predictionInstance.connect(bettor2).claim(1);
-
-      // Bettor1 should not be able to claim
-      await expect(predictionInstance.connect(bettor1).claim(1)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "NotEligibleForClaim",
-      );
 
       const reward = {
         ...betAsset,
@@ -168,10 +166,8 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
       await predictionInstance.resolvePrediction(1, Outcome.LEFT);
 
       // Bettor2 tries to claim
-      await expect(predictionInstance.connect(bettor2).claim(1)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "NotEligibleForClaim",
-      );
+      const tx = predictionInstance.connect(bettor2).claim(1);
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
 
       if (process.env.VERBOSE) {
         console.info("Claim by non-winner side reverted as expected.");
@@ -201,10 +197,8 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
       });
 
       // Bettor1 tries to claim before resolution
-      await expect(predictionInstance.connect(bettor1).claim(1)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "CannotClaimBeforeResolution",
-      );
+      const tx = predictionInstance.connect(bettor1).claim(1);
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "CannotClaimBeforeResolution");
 
       if (process.env.VERBOSE) {
         console.info("Claim before resolution reverted as expected.");
@@ -239,10 +233,8 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
       const tx1 = await predictionInstance.connect(bettor1).claim(1);
 
       // Bettor1 tries to claim again
-      await expect(predictionInstance.connect(bettor1).claim(1)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "RewardAlreadyClaimed",
-      );
+      const txClaimed = predictionInstance.connect(bettor1).claim(1);
+      await expect(txClaimed).to.be.revertedWithCustomError(predictionInstance, "RewardAlreadyClaimed");
 
       const reward = {
         ...betAsset,

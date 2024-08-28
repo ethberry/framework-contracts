@@ -6,7 +6,7 @@ import { makeTimestamps, Position, Outcome, fundAndBet } from "./utils";
 
 export function shouldPreventReentrancy(predictionFactory: () => Promise<any>, betAssetFactory: () => Promise<any>) {
   describe("reentrancy", function () {
-    it("should fail: ReentrancyGuard - prevent reentrancy attack on claim treasury", async function () {
+    it("prevent reentrancy attack on claim treasury", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -37,9 +37,8 @@ export function shouldPreventReentrancy(predictionFactory: () => Promise<any>, b
       await predictionInstance.resolvePrediction(1, Outcome.RIGHT);
 
       // Attempt reentrant attack emitting event with success status false indicates it was prevented in claim method
-      await expect(reentrantInstance.connect(bettor2).claim(1))
-        .to.emit(reentrantInstance, "ReentrancyClaimAttempt")
-        .withArgs(false);
+      const tx = reentrantInstance.connect(bettor2).claim(1);
+      await expect(tx).to.emit(reentrantInstance, "ReentrancyClaimAttempt").withArgs(false);
 
       if (process.env.VERBOSE) {
         console.info("Reentrancy attack on claim function prevented as expected.");

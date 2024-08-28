@@ -14,13 +14,12 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
 
       await predictionInstance.startPrediction(startTimestamp, endTimestamp, expiryTimestamp, betAsset);
 
-      await expect(
-        fundAndBet(predictionInstance, bettor1, {
-          predictionId: 1,
-          multiplier: 1,
-          position: Position.LEFT,
-        }),
-      ).to.be.revertedWithCustomError(predictionInstance, "PredictionNotStarted");
+      const tx = fundAndBet(predictionInstance, bettor1, {
+        predictionId: 1,
+        multiplier: 1,
+        position: Position.LEFT,
+      });
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionNotStarted");
 
       if (process.env.VERBOSE) {
         console.info("Failed to place bet because betting period has not started.");
@@ -111,7 +110,7 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
 
       const betMultiplier1 = BigInt(3);
 
-      const tx1 = await fundAndBet(predictionInstance, bettor1, {
+      const tx1 = fundAndBet(predictionInstance, bettor1, {
         predictionId: 1,
         multiplier: betMultiplier1,
         position: Position.LEFT,
@@ -137,7 +136,7 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
 
       const betMultiplier2 = BigInt(5);
 
-      const tx2 = await fundAndBet(predictionInstance, bettor2, {
+      const tx2 = fundAndBet(predictionInstance, bettor2, {
         predictionId: 1,
         multiplier: betMultiplier2,
         position: Position.RIGHT,

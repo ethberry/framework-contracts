@@ -28,9 +28,9 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
         position: Position.RIGHT,
       });
 
-      await expect(
-        predictionInstance.connect(bettor1).resolvePrediction(1, Outcome.LEFT),
-      ).to.be.revertedWithCustomError(predictionInstance, "AccessControlUnauthorizedAccount");
+      const tx = predictionInstance.connect(bettor1).resolvePrediction(1, Outcome.LEFT);
+
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "AccessControlUnauthorizedAccount");
 
       if (process.env.VERBOSE) {
         console.info("Non-admin tried to resolve the prediction and failed.");
@@ -55,7 +55,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
 
       await time.increaseTo(expiryTimestamp + BigInt(time.duration.seconds(10)));
 
-      const resolveErrorTx = await predictionInstance.resolvePrediction(1, Outcome.LEFT);
+      const resolveErrorTx = predictionInstance.resolvePrediction(1, Outcome.LEFT);
       await expect(resolveErrorTx).to.emit(predictionInstance, "PredictionEnd").withArgs(1, Outcome.EXPIRED);
 
       if (process.env.VERBOSE) {
@@ -73,7 +73,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
 
       await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
-      const resolveTx = await predictionInstance.resolvePrediction(1, Outcome.LEFT);
+      const resolveTx = predictionInstance.resolvePrediction(1, Outcome.LEFT);
       await expect(resolveTx).to.emit(predictionInstance, "PredictionEnd").withArgs(1, Outcome.ERROR);
 
       const predictionMatch = await predictionInstance.getPrediction(1);
@@ -141,7 +141,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
         position: Position.RIGHT,
       });
 
-      const resolveTx = await predictionInstance.resolvePrediction(1, Outcome.LEFT);
+      const resolveTx = predictionInstance.resolvePrediction(1, Outcome.LEFT);
       await expect(resolveTx).to.emit(predictionInstance, "PredictionEnd").withArgs(1, Outcome.LEFT);
 
       const tx = fundAndBet(predictionInstance, bettor1, {
@@ -180,14 +180,11 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
 
       await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
-      await expect(predictionInstance.resolvePrediction(1, Outcome.EXPIRED)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "InvalidOutcome",
-      );
-      await expect(predictionInstance.resolvePrediction(1, Outcome.ERROR)).to.be.revertedWithCustomError(
-        predictionInstance,
-        "InvalidOutcome",
-      );
+      const txExpired = predictionInstance.resolvePrediction(1, Outcome.EXPIRED);
+      await expect(txExpired).to.be.revertedWithCustomError(predictionInstance, "InvalidOutcome");
+
+      const txError = predictionInstance.resolvePrediction(1, Outcome.ERROR);
+      await expect(txError).to.be.revertedWithCustomError(predictionInstance, "InvalidOutcome");
 
       if (process.env.VERBOSE) {
         console.info("Admin tried to resolve with an invalid outcome and failed.");
