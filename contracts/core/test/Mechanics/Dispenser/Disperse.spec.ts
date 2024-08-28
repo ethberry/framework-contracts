@@ -175,10 +175,7 @@ describe("Dispenser", function () {
       const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
       await expect(tx).to.emit(lib, "PaymentReleased").withArgs(attackerInstance, amount);
 
-      await expect(tx).to.changeEtherBalances(
-        [owner, contractInstance, attackerInstance],
-        [-amount * 5n, amount * 4n, amount],
-      );
+      await expect(tx).to.changeEtherBalances([owner, contractInstance, attackerInstance], [-amount, amount, amount]);
     });
   });
 

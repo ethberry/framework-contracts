@@ -301,7 +301,7 @@ export async function getFacetAddrByFunction(
   // attach DIAMOND LOUPE
   const diamondLoupeFacet = await ethers.getContractAt("DiamondLoupeFacet", diamondAddress);
   const funcSelector = getSelector(FunctionSignature);
-  return await diamondLoupeFacet.facetAddress(funcSelector);
+  return diamondLoupeFacet.facetAddress(funcSelector);
 }
 
 // get facet address
@@ -311,5 +311,5 @@ export async function getFacetSelectorsByAddr(
 ): Promise<Array<string>> {
   // attach DIAMOND LOUPE
   const diamondLoupeFacet = await ethers.getContractAt("DiamondLoupeFacet", diamondAddress);
-  return await diamondLoupeFacet.facetFunctionSelectors(facetAddr);
+  return diamondLoupeFacet.facetFunctionSelectors(facetAddr);
 }

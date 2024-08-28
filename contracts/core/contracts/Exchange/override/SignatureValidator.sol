@@ -75,7 +75,7 @@ contract SignatureValidator is EIP712, Context {
    *
    * @param expiresAt Expiration time
    */
-  function _validateExpirationDate(uint256 expiresAt) internal {
+  function _validateExpirationDate(uint256 expiresAt) internal view {
     if (expiresAt != 0) {
       if (block.timestamp > expiresAt) {
         revert ExpiredSignature();
@@ -88,7 +88,7 @@ contract SignatureValidator is EIP712, Context {
     Asset memory item,
     Asset memory price,
     bytes calldata signature
-  ) internal returns (address) {
+  ) internal view returns (address) {
     return _recoverSigner(_hashOneToOne(_msgSender(), params, item, price), signature);
   }
 
@@ -97,7 +97,7 @@ contract SignatureValidator is EIP712, Context {
     Asset memory item,
     Asset[] memory price,
     bytes calldata signature
-  ) internal returns (address) {
+  ) internal view returns (address) {
     return _recoverSigner(_hashOneToMany(_msgSender(), params, item, price), signature);
   }
 
@@ -106,7 +106,7 @@ contract SignatureValidator is EIP712, Context {
     Asset[] memory items,
     Asset[] memory price,
     bytes calldata signature
-  ) internal returns (address) {
+  ) internal view returns (address) {
     return _recoverSigner(_hashManyToMany(_msgSender(), params, items, price), signature);
   }
 
@@ -117,7 +117,7 @@ contract SignatureValidator is EIP712, Context {
     Asset[] memory content,
     bytes32 config,
     bytes calldata signature
-  ) internal returns (address) {
+  ) internal view returns (address) {
     return _recoverSigner(_hashOneToManyToMany(_msgSender(), params, item, price, content, config), signature);
   }
 

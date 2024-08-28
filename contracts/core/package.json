@@ -23,6 +23,7 @@
     "@gemunion/contracts-mocks": "5.0.43",
     "@gemunion/contracts-utils": "5.0.43",
     "@gemunion/traits-v6": "1.0.22",
+    "@gemunion/types-blockchain": "1.3.0",
     "@gemunion/utils": "1.3.10",
     "@gemunion/utils-eth": "1.1.22",
     "@nomicfoundation/hardhat-chai-matchers": "2.0.7",
