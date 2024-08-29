@@ -2,7 +2,8 @@ import { ethers } from "hardhat";
 
 import { deployContract } from "@gemunion/contracts-utils";
 import { amount } from "@gemunion/contracts-constants";
-import { deployERC20 } from "@gemunion/contracts-mocks";
+
+import { deployERC20 } from "../../test/ERC20/shared/fixtures";
 
 async function main() {
   const totalTransfers = 10n;
@@ -12,13 +13,13 @@ async function main() {
   const erc20Instance = await deployERC20();
 
   await erc20Instance.mint(owner.address, amount * totalTransfers);
-  await erc20Instance.approve(await contractInstance.getAddress(), amount);
+  await erc20Instance.approve(contractInstance, amount * totalTransfers);
 
   const receivers = new Array(Number(totalTransfers)).fill(null).map(_ => receiver.address);
   const items = await Promise.all(
-    new Array(Number(totalTransfers)).fill(null).map(async _ => ({
-      tokenType: 0,
-      token: await erc20Instance.getAddress(),
+    receivers.map(_ => ({
+      tokenType: 1, // ERC20
+      token: erc20Instance,
       tokenId: 0,
       amount,
     })),

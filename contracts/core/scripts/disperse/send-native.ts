@@ -14,8 +14,8 @@ async function main() {
   await blockAwait();
 
   const receivers = new Array(Number(totalTransfers)).fill(null).map(_ => receiver.address);
-  const items = new Array(Number(totalTransfers)).fill(null).map(_ => ({
-    tokenType: 0,
+  const items = receivers.map(_ => ({
+    tokenType: 0, // NATIVE
     token: ZeroAddress,
     tokenId: 0,
     amount,

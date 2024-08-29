@@ -55,7 +55,7 @@ async function main() {
   // VRF
   // await blockAwait(1, 1000);
   // const vrfInstance = await ethers.getContractAt("VRFCoordinatorMock", "0xa50a51c09a5c451c52bb714527e1974b686d8e77");
-  // await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await coinInstance.getAddress());
+  // await vrfInstance.addConsumer(network.name === "gemunion_besu" ? 1n : 2n, await coinInstance.getAddress());
   // const round0 = (await coinInstance.getCurrentRoundInfo()) as unknown as Result;
   // const decoded0 = recursivelyDecodeResult(round0);
   // console.info(decoded0);

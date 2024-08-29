@@ -53,16 +53,16 @@ async function main() {
 
   // LINK & VRF
   const linkAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0x42699a7612a82f1d9c36148af9c77354759b210b"
-      : network.name === "gemunion" || network.name === "gemunionprod"
+      : network.name === "gemunion"
         ? "0x1fa66727cdd4e3e4a6debe4adf84985873f6cd8a"
         : "0x42699A7612A82f1d9C36148af9C77354759b210b";
 
   const vrfAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0xa50a51c09a5c451c52bb714527e1974b686d8e77" // vrf besu localhost
-      : network.name === "gemunion" || network.name === "gemunionprod"
+      : network.name === "gemunion"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
         : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
 
@@ -103,7 +103,20 @@ async function main() {
    * @param fallbackWeiPerUnitLink fallback eth/link price in the case of a stale feed
    */
 
-  await debug(await vrfInstance.setConfig(3, 1000000, 1, 1, 1), "setConfig");
+  await debug(
+    await vrfInstance.setConfig(
+      3, // minimumRequestConfirmations
+      1000000, // maxGasLimit
+      1, // stalenessSeconds
+      1, // gasAfterPaymentCalculation
+      1, // fallbackWeiPerUnitLink
+      1, // fulfillmentFlatFeeNativePPM
+      1, // fulfillmentFlatFeeLinkDiscountPPM
+      1, // nativePremiumPercentage
+      1, // linkPremiumPercentage
+    ),
+    "setConfig",
+  );
   await debug(await vrfInstance.createSubscription(), "createSubscription");
   // emit SubscriptionCreated(currentSubId, msg.sender);
   const eventFilter = vrfInstance.filters.SubscriptionCreated();

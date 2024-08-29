@@ -9,10 +9,8 @@ export async function deployMysteryBox(contracts: Record<string, any>) {
   contracts.erc721MysteryboxSimple = mysteryboxSimpleInstance;
   await blockAwait();
 
-  await contracts.erc721Simple.grantRole(MINTER_ROLE, await mysteryboxSimpleInstance.getAddress());
   await contracts.erc721Random.grantRole(MINTER_ROLE, await mysteryboxSimpleInstance.getAddress());
   await contracts.erc998Random.grantRole(MINTER_ROLE, await mysteryboxSimpleInstance.getAddress());
-  await contracts.erc1155Simple.grantRole(MINTER_ROLE, await mysteryboxSimpleInstance.getAddress());
   await blockAwait();
 
   await mysteryboxSimpleInstance.grantRole(MINTER_ROLE, contracts.staking.address);
@@ -27,10 +25,8 @@ export async function deployMysteryBox(contracts: Record<string, any>) {
   contracts.erc721MysteryboxPausable = mysteryboxPausableInstance;
   await blockAwait();
 
-  await contracts.erc721Simple.grantRole(MINTER_ROLE, await mysteryboxPausableInstance.getAddress());
   await contracts.erc721Random.grantRole(MINTER_ROLE, await mysteryboxPausableInstance.getAddress());
   await contracts.erc998Random.grantRole(MINTER_ROLE, await mysteryboxPausableInstance.getAddress());
-  await contracts.erc1155Simple.grantRole(MINTER_ROLE, await mysteryboxPausableInstance.getAddress());
   await blockAwait();
 
   await mysteryboxPausableInstance.grantRole(MINTER_ROLE, contracts.staking.address);
@@ -50,10 +46,8 @@ export async function deployMysteryBox(contracts: Record<string, any>) {
   contracts.erc721MysteryboxBlacklist = mysteryboxBlacklistInstance;
   await blockAwait();
 
-  await contracts.erc721Simple.grantRole(MINTER_ROLE, await mysteryboxBlacklistInstance.getAddress());
   await contracts.erc721Random.grantRole(MINTER_ROLE, await mysteryboxBlacklistInstance.getAddress());
   await contracts.erc998Random.grantRole(MINTER_ROLE, await mysteryboxBlacklistInstance.getAddress());
-  await contracts.erc1155Simple.grantRole(MINTER_ROLE, await mysteryboxBlacklistInstance.getAddress());
   await blockAwait();
 
   await mysteryboxBlacklistInstance.grantRole(MINTER_ROLE, contracts.staking.address);

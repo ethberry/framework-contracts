@@ -14,20 +14,20 @@ async function main() {
   const erc1155Instance = await deployERC1155();
 
   await erc1155Instance.mint(owner.address, tokenId, amount * totalTransfers, "0x");
-  await erc1155Instance.setApprovalForAll(await contractInstance.getAddress(), true);
+  await erc1155Instance.setApprovalForAll(contractInstance, true);
 
   const receivers = new Array(Number(totalTransfers)).fill(receiver.address);
   const items = await Promise.all(
-    new Array(Number(totalTransfers)).fill(null).map(async _ => ({
-      tokenType: 0,
-      token: await erc1155Instance.getAddress(),
+    receivers.map(_ => ({
+      tokenType: 4, // ERC1155
+      token: erc1155Instance,
       tokenId,
       amount,
     })),
   );
 
   const tx = await contractInstance.disperse(items, receivers, {
-    gasLimit: 100000000,
+    gasLimit: 10000000,
   });
 
   console.info("TX HASH :::", tx?.hash);

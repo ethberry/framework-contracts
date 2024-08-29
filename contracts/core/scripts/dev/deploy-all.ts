@@ -116,7 +116,7 @@ async function main() {
   // process.exit(0);
   // HAVE TO PASS VRF AND LINK ADDRESSES TO CHAINLINK-BESU CONCTRACT
   const vrfAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0xa50a51c09a5c451C52BB714527E1974b686D8e77" // vrf besu localhost
       : network.name === "gemunion"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
@@ -215,7 +215,7 @@ async function main() {
   await debug(contracts);
 
   // const randomContractName =
-  //   network.name === "besu"
+  //   network.name === "gemunion_besu"
   //     ? "ERC721RandomBesuV2"
   //     : network.name === "gemunion"
   //     ? "ERC721RandomGemunionV2"
@@ -228,7 +228,10 @@ async function main() {
 
   // await debug(await linkInstance.transfer(contracts.erc721Random.address, linkAmountInEth), "linkInstance.transfer");
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.erc721Random.getAddress()),
+    await vrfInstance.addConsumer(
+      network.name === "gemunion_besu" ? 1n : 2n,
+      await contracts.erc721Random.getAddress(),
+    ),
     "vrfInstance.addConsumer",
   );
   // await blockAwait(delay, delayMs);
@@ -247,7 +250,7 @@ async function main() {
   await debug(contracts);
 
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.erc721Genes.getAddress()),
+    await vrfInstance.addConsumer(network.name === "gemunion_besu" ? 1n : 2n, await contracts.erc721Genes.getAddress()),
     "vrfInstance.addConsumer",
   );
 
@@ -286,7 +289,10 @@ async function main() {
 
   // await debug(await linkInstance.transfer(contracts.erc998Random.getAddress(), linkAmountInEth), "linkInstance.transfer");
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.erc998Random.getAddress()),
+    await vrfInstance.addConsumer(
+      network.name === "gemunion_besu" ? 1n : 2n,
+      await contracts.erc998Random.getAddress(),
+    ),
     "vrfInstance.addConsumer",
   );
 
@@ -301,7 +307,7 @@ async function main() {
   await debug(contracts);
 
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.erc998Genes.getAddress()),
+    await vrfInstance.addConsumer(network.name === "gemunion_besu" ? 1n : 2n, await contracts.erc998Genes.getAddress()),
     "vrfInstance.addConsumer",
   );
 
@@ -522,7 +528,7 @@ async function main() {
   await debug(contracts);
 
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.lottery.getAddress()),
+    await vrfInstance.addConsumer(network.name === "gemunion_besu" ? 1n : 2n, await contracts.lottery.getAddress()),
     "vrfInstance.addConsumer",
   );
   await debug(
@@ -548,7 +554,7 @@ async function main() {
   });
   await debug(contracts);
   await debug(
-    await vrfInstance.addConsumer(network.name === "besu" ? 1n : 2n, await contracts.raffle.getAddress()),
+    await vrfInstance.addConsumer(network.name === "gemunion_besu" ? 1n : 2n, await contracts.raffle.getAddress()),
     "vrfInstance.addConsumer",
   );
   await debug(

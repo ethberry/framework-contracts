@@ -50,7 +50,7 @@ const contracts: Record<string, any> = {};
 
 async function main() {
   const [owner, _receiver, moneybag, _stranger2] = await ethers.getSigners();
-  const besuOwner = network.name === "besu" ? owner : _stranger2;
+  const besuOwner = network.name === "gemunion_besu" ? owner : _stranger2;
   // const besuOwner = owner;
   console.info("besuOwner", besuOwner.address);
   console.info("owner", owner.address);
@@ -60,14 +60,14 @@ async function main() {
   // VRF_ADDR=0x86c86939c631d53c6d812625bd6ccd5bf5beb774
 
   const linkAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0x42699a7612a82f1d9c36148af9c77354759b210b"
       : network.name === "gemunion" || network.name === "gemunionprod"
         ? "0x1fa66727cdd4e3e4a6debe4adf84985873f6cd8a" // vrf besu gemunion
         : "0xb9a219631aed55ebc3d998f17c3840b7ec39c0cc"; // binance test
 
   const vrfAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0xa50a51c09a5c451c52bb714527e1974b686d8e77" // vrf besu localhost
       : network.name === "gemunion" || network.name === "gemunionprod"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
@@ -122,7 +122,7 @@ async function main() {
     1, // linkPremiumPercentage
   );
 
-  if (network.name !== "besu" && network.name !== "telos_test" && network.name !== "manta_test") {
+  if (network.name !== "gemunion_besu") {
     // SEND ETH to FW OWNER on gemunion besu only
     const ethAmount = WeiPerEther * 1000n;
     await debug(

@@ -1,9 +1,9 @@
 import { ethers } from "hardhat";
 
-import { blockAwait } from "@gemunion/contracts-helpers";
-
 export async function deployBusd(contracts: Record<string, any>) {
-  const usdtFactory = await ethers.getContractFactory("BEP20Token");
-  contracts.busd = await usdtFactory.deploy();
-  await blockAwait();
+  const busdFactory = await ethers.getContractFactory("BEP20Token");
+  const busdInstance = await busdFactory.deploy();
+  await busdInstance.deploymentTransaction()?.wait(1);
+
+  contracts.busd = busdInstance;
 }

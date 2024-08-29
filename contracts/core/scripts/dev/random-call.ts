@@ -13,7 +13,7 @@ async function main() {
   const subscriptionId = zeroPadValue(toBeHex(SUB_ID), 32);
   console.info("subscriptionId is", SUB_ID, subscriptionId);
   const [_owner, _receiver, _stranger1, stranger2] = await ethers.getSigners();
-  const linkOwner = network.name === "besu" ? _owner : stranger2;
+  const linkOwner = network.name === "gemunion_besu" ? _owner : stranger2;
 
   const vrfInstance: VRFCoordinatorV2PlusMock = await ethers.getContractAt(
     "VRFCoordinatorV2PlusMock",
@@ -26,7 +26,7 @@ async function main() {
   const linkInstance = await ethers.getContractAt("LinkToken", "0x42699A7612A82f1d9C36148af9C77354759b210b");
   // GET LINK TOKEN to OWNER
   const linkAmount = WeiPerEther * 1000n;
-  await linkInstance.connect(linkOwner).transfer(_owner.address, network.name === "besu" ? 0 : linkAmount);
+  await linkInstance.connect(linkOwner).transfer(_owner.address, network.name === "gemunion_besu" ? 0 : linkAmount);
 
   // FUND SUBSCRIPTION
   console.info("sub.lowBalance", subs.balance < WeiPerEther);

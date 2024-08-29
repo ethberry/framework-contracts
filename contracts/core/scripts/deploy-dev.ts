@@ -19,9 +19,9 @@ const delayMs = 900; // block delay ms (low for localhost, high for binance etc.
 
 // VRF CONFIG
 const vrfSubId =
-  network.name === "besu" || network.name === "telos_test"
+  network.name === "gemunion_besu"
     ? 90511971795741479935923326278479026746054804275284472604758078181846377682962n
-    : 107047671614105181605855861266364170459723373514078878123604030694679782559997n; // !!!SET INITIAL SUB ID!!! (2n for gemunion-besu)
+    : 107047671614105181605855861266364170459723373514078878123604030694679782559997n;
 
 // COLLECTION size
 const batchSize = 3; // Generative collection size
@@ -62,13 +62,11 @@ async function main() {
   // process.exit(0);
   // HAVE TO PASS VRF AND LINK ADDRESSES TO CHAINLINK-BESU CONCTRACT
   const vrfAddr =
-    network.name === "besu"
+    network.name === "gemunion_besu"
       ? "0xa50a51c09a5c451c52bb714527e1974b686d8e77" // vrf besu localhost
       : network.name === "gemunion"
         ? "0x86c86939c631d53c6d812625bd6ccd5bf5beb774" // vrf besu gemunion
-        : network.name === "telos_test"
-          ? "0x33040c29f57F126B90d9528A5Ee659D7a604B835" // telostest (our own contract deployed from p.key staging)
-          : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
+        : "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
   const vrfInstance = await ethers.getContractAt("VRFCoordinatorV2PlusMock", vrfAddr);
 
   // DIAMOND CM
@@ -221,7 +219,7 @@ async function main() {
   await debug(contracts);
 
   // const randomContractName =
-  //   network.name === "besu"
+  //   network.name === "gemunion_besu"
   //     ? "ERC721RandomBesuV2"
   //     : network.name === "gemunion"
   //     ? "ERC721RandomGemunionV2"

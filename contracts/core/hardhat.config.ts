@@ -18,7 +18,8 @@ export default {
       blockGasLimit: 40966424, // default: 3e7
       gas: "auto",
     },
-    besu: {
+    // do not change!!!
+    gemunion_besu: {
       url: process.env.JSON_RPC_ADDR_GEMUNION_BESU,
       timeout: 142000,
       accounts: [
@@ -65,13 +66,19 @@ export default {
   solidity: {
     compilers: [
       {
-        version: "0.4.18",
+        version: "0.4.11", // LINK
       },
       {
-        version: "0.5.16",
+        version: "0.4.17", // USDT
       },
       {
-        version: "0.7.6",
+        version: "0.4.18", // WETH
+      },
+      {
+        version: "0.4.24", // USDC
+      },
+      {
+        version: "0.5.16", // BUSD
       },
       {
         version: "0.8.20",

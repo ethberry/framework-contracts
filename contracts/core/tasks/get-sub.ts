@@ -31,30 +31,20 @@ task("get-sub", "Prints a VRF subscription data")
     // set the VRF token contract address according to the environment
     let vrfContractAddr: string;
     switch (networkName) {
-      case "rinkeby":
-        vrfContractAddr = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
-        break;
-      case "binancetest":
+      case "binance_test":
         vrfContractAddr = "0x84b9b910527ad5c03a9ca831909e21e236ea7b06";
         break;
-      case "mumbai":
+      case "polygon_amoy":
         vrfContractAddr = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
         break;
-      case "besu":
+      case "gemunion_besu":
         vrfContractAddr = "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
         break;
       case "gemunion":
         vrfContractAddr = "0x86c86939c631d53c6d812625bd6ccd5bf5beb774";
         break;
-      case "gemunionprod":
-        vrfContractAddr = "0x86c86939c631d53c6d812625bd6ccd5bf5beb774";
-        break;
-      case "telos_test":
-        vrfContractAddr = "0x33040c29f57F126B90d9528A5Ee659D7a604B835";
-        break;
       default:
-        // default to besu
-        vrfContractAddr = "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
+        throw new Error(`Unsupported network ${networkName}`);
     }
 
     const vrfTokenContract: VRFCoordinatorV2PlusMock = await hre.ethers.getContractAt(

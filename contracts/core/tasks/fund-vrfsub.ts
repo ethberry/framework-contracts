@@ -24,18 +24,14 @@ task("fund-vrf-sub", "Funds vRF subscription with LINK")
     // set the LINK token contract address according to the environment
     let linkContractAddr: string;
     switch (networkName) {
-      case "rinkeby":
-        linkContractAddr = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
-        break;
-      case "binancetest":
+      case "binance_test":
         linkContractAddr = "0x84b9b910527ad5c03a9ca831909e21e236ea7b06";
         break;
-      case "mumbai":
+      case "polygon_amoy":
         linkContractAddr = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
         break;
       default:
-        // default to rinkeby
-        linkContractAddr = "0x01BE23585060835E02B77ef475b0Cc51aA1e0709";
+        throw new Error(`Unsupported network ${networkName}`);
     }
     // Fund with 1 LINK token
     const amount = toBeHex(1e18);
