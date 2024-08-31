@@ -63,7 +63,7 @@ describe("StakingFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployStaking(
+      const tx = contractInstance.deployStaking(
         {
           nonce,
           bytecode,

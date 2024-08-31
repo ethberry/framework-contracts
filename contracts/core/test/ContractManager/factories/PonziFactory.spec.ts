@@ -70,7 +70,7 @@ describe("PonziFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployPonzi(
+      const tx = contractInstance.deployPonzi(
         {
           nonce,
           bytecode,

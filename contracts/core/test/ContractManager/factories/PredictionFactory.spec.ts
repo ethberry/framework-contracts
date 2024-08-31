@@ -65,7 +65,7 @@ describe("PredictionFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployPrediction(
+      const tx = contractInstance.deployPrediction(
         {
           nonce,
           bytecode,

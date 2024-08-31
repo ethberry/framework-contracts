@@ -101,7 +101,7 @@ describe("VestingFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployVesting(
+      const tx = contractInstance.deployVesting(
         {
           nonce,
           bytecode,

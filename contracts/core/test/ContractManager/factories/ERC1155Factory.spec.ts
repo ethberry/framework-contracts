@@ -70,7 +70,7 @@ describe("ERC1155FactoryDiamoond", function () {
         },
       );
 
-      const tx = await contractInstance.deployERC1155Token(
+      const tx = contractInstance.deployERC1155Token(
         {
           nonce,
           bytecode,

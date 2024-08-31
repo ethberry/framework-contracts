@@ -68,7 +68,7 @@ describe("PaymentSplitterDiamoond", function () {
         },
       );
 
-      const tx = await contractInstance.deployPaymentSplitter(
+      const tx = contractInstance.deployPaymentSplitter(
         {
           nonce,
           bytecode,

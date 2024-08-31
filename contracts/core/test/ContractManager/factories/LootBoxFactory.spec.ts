@@ -80,7 +80,7 @@ describe("LootBoxFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployLootBox(
+      const tx = contractInstance.deployLootBox(
         {
           nonce,
           bytecode,

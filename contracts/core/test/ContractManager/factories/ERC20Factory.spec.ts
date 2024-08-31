@@ -71,7 +71,7 @@ describe("ERC20FactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployERC20Token(
+      const tx = contractInstance.deployERC20Token(
         {
           nonce,
           bytecode,

@@ -55,7 +55,7 @@ describe("WaitListFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployWaitList(
+      const tx = contractInstance.deployWaitList(
         {
           nonce,
           bytecode,

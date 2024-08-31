@@ -12,7 +12,7 @@ import {
   tokenSymbol,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId } from "../../constants";
+import { contractTemplate, externalId, cap } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
 import { deployDiamond } from "../shared/fixture";
 
@@ -86,7 +86,7 @@ describe("AbstractFactoryFacet", function () {
       await factoryInstance.addFactory(receiver, METADATA_ROLE);
       await factoryInstance.addFactory(receiver, MINTER_ROLE);
 
-      const tx = await contractInstance.deployERC721Token(
+      const tx = contractInstance.deployERC721Token(
         {
           nonce,
           bytecode,

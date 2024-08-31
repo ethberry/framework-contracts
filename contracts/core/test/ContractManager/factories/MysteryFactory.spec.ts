@@ -81,7 +81,7 @@ describe("MysteryBoxFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployMysteryBox(
+      const tx = contractInstance.deployMysteryBox(
         {
           nonce,
           bytecode,

@@ -81,7 +81,7 @@ describe("CollectionFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployCollection(
+      const tx = contractInstance.deployCollection(
         {
           nonce,
           bytecode,

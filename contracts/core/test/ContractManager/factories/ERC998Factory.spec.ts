@@ -82,7 +82,7 @@ describe("ERC998FactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployERC998Token(
+      const tx = contractInstance.deployERC998Token(
         {
           nonce,
           bytecode,

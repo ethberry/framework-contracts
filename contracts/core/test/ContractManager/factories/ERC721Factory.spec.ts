@@ -82,7 +82,7 @@ describe("ERC721FactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployERC721Token(
+      const tx = contractInstance.deployERC721Token(
         {
           nonce,
           bytecode,

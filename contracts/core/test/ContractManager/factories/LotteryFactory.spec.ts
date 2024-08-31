@@ -77,7 +77,7 @@ describe("LotteryFactoryDiamoond", function () {
         },
       );
 
-      const tx = await contractInstance.deployLottery(
+      const tx = contractInstance.deployLottery(
         {
           nonce,
           bytecode,

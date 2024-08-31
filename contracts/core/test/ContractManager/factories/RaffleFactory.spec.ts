@@ -57,7 +57,7 @@ describe("RaffleFactoryDiamond", function () {
         },
       );
 
-      const tx = await contractInstance.deployRaffle(
+      const tx = contractInstance.deployRaffle(
         {
           nonce,
           bytecode,
