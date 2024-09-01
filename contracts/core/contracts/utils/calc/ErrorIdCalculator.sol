@@ -20,6 +20,8 @@ import { IERC721BoxErrors } from  "../../ERC721/interfaces/IERC721BoxErrors.sol"
 import { IPredictionErrors } from "../../Mechanics/Prediction/interfaces/IPredictionErrors.sol";
 import { ILotteryErrors } from "../../Mechanics/Lottery/interfaces/ILotteryErrors.sol";
 import { IRaffleErrors } from "../../Mechanics/Raffle/interfaces/IRaffleErrors.sol";
+import { IStakingErrors } from "../../Mechanics/Staking/interfaces/IStakingErrors.sol";
+import { IPonziErrors } from "../../Mechanics/Ponzi/interfaces/IPonziErrors.sol";
 import { IWaitListErrors } from "../../Mechanics/WaitList/interfaces/IWaitListErrors.sol";
 
 
@@ -36,6 +38,8 @@ IERC721BoxErrors,
 IPredictionErrors,
 ILotteryErrors,
 IRaffleErrors,
+IStakingErrors,
+IPonziErrors,
 IWaitListErrors {
 
 }
