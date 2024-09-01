@@ -127,7 +127,7 @@ describe("Dispenser", function () {
         .withArgs(contractInstance);
     });
 
-    it("should fail: WrongArrayLength", async function () {
+    it("should fail: DispenserWrongArrayLength", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
       const contractInstance = await factory();
 
@@ -144,7 +144,7 @@ describe("Dispenser", function () {
         { value: amount },
       );
 
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "WrongArrayLength");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "DispenserWrongArrayLength");
     });
 
     it("should have reentrancy guard", async function () {
@@ -175,7 +175,10 @@ describe("Dispenser", function () {
       const lib = await ethers.getContractAt("ExchangeUtils", contractInstance, owner);
       await expect(tx).to.emit(lib, "PaymentReleased").withArgs(attackerInstance, amount);
 
-      await expect(tx).to.changeEtherBalances([owner, contractInstance, attackerInstance], [-amount, amount, amount]);
+      await expect(tx).to.changeEtherBalances(
+        [owner, contractInstance, attackerInstance],
+        [-amount * 5n, amount * 4n, amount],
+      );
     });
   });
 

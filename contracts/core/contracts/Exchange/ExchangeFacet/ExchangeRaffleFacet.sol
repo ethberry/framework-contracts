@@ -13,7 +13,6 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { IRaffle } from "../../Mechanics/Raffle/interfaces/IRaffle.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {

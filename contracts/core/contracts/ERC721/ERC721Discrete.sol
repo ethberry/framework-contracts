@@ -12,7 +12,6 @@ import { METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { IERC4906_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 
-import { ProtectedAttribute } from "../utils/errors.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 import { IERC721Discrete } from "./interfaces/IERC721Discrete.sol";
 

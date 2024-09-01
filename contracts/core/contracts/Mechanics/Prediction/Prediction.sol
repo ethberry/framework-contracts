@@ -6,49 +6,24 @@
 pragma solidity ^0.8.0;
 pragma abicoder v2;
 
-import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {CoinHolder, NativeReceiver} from "@gemunion/contracts-finance/contracts/Holder.sol";
-import {PAUSER_ROLE} from "@gemunion/contracts-utils/contracts/roles.sol";
+import { CoinHolder, NativeReceiver } from "@gemunion/contracts-finance/contracts/Holder.sol";
+import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import {
-  TreasuryFeeTooHigh,
-  PredictionAlreadyExists,
-  PredictionNotFound,
-  PredictionNotStarted,
-  PredictionEnded,
-  BetAmountTooLow,
-  BetAmountNotMultipleOfStakeUnit,
-  BetAlreadyPlaced,
-  ResolutionNotAvailable,
-  PredictionNotResolved,
-  NotEligibleForClaim,
-  CannotResolveAfterExpirationDate,
-  PredictionAlreadyResolved,
-  ExpiryTimeNotPassed,
-  MustBeGreaterThanZero,
-  ZeroAddressNotAllowed,
-  TransferAmountExceedsAllowance,
-  CannotClaimBeforeResolution,
-  WrongToken,
-  RewardAlreadyClaimed,
-  BetNotFound,
-  InvalidOutcome,
-  NoTreasuryAssets
-} from "../../utils/errors.sol";
-
-import {Asset, TokenType, AllowedTokenTypes} from "../../Exchange/lib/interfaces/IAsset.sol";
-import {ExchangeUtils} from "../../Exchange/lib/ExchangeUtils.sol";
+import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
+import { IPrediction } from "./interfaces/IPrediction.sol";
 
 /**
  * @dev Contract module that allows users to participate in prediction markets.
  * Users can place bets on the outcome of events, and the contract handles the
  * resolution and reward distribution.
  */
-contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
+contract Prediction is IPrediction, AccessControl, Pausable, CoinHolder, NativeReceiver {
   using SafeERC20 for IERC20;
 
   uint256 public constant MAX_TREASURY_FEE = 1000; // 10%
@@ -59,37 +34,6 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
   Asset[] private _treasuryAssets;
   mapping(uint256 => PredictionMatch) private _predictions; // predictionId => PredictionMatch
   mapping(uint256 => mapping(address => BetInfo)) private _ledger; // predictionId => account => BetInfo
-
-  enum Position {
-    LEFT,
-    RIGHT
-  }
-
-  enum Outcome {
-    LEFT,
-    RIGHT,
-    DRAW,
-    ERROR,
-    EXPIRED
-  }
-
-  struct PredictionMatch {
-    uint256 startTimestamp;
-    uint256 endTimestamp;
-    uint256 expiryTimestamp;
-    Asset betOnLeft;
-    Asset betOnRight;
-    Asset betAsset;
-    Asset rewardAsset;
-    Outcome outcome;
-    bool resolved;
-  }
-
-  struct BetInfo {
-    Position position;
-    uint256 multiplier;
-    bool claimed;
-  }
 
   event BetPlaced(uint256 predictionId, address indexed sender, Asset asset, Position position);
   event RewardsCalculated(uint256 predictionId, Asset rewardBase);
@@ -106,8 +50,8 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
    *
    * - `_treasuryFee` must be less than or equal to `MAX_TREASURY_FEE`.
    */
-  constructor(uint256 treasuryFee) {
-    _setTreasuryFee(treasuryFee);
+  constructor(PredictionConfig memory config) {
+    _setTreasuryFee(config.treasuryFee);
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     _grantRole(PAUSER_ROLE, _msgSender());
   }
@@ -136,7 +80,7 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
     }
 
     if (betAsset.tokenType != TokenType.ERC20 && betAsset.tokenType != TokenType.NATIVE) {
-      revert WrongToken();
+      revert PredictionWrongToken();
     }
 
     uint256 predictionId = ++_predictionIdCounter;
@@ -183,7 +127,7 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
       revert PredictionEnded();
     }
     if (multiplier == 0) {
-      revert BetAmountTooLow();
+      revert PredictionBetAmountTooLow();
     }
     if (prediction.resolved == true) {
       revert PredictionAlreadyResolved();
@@ -192,7 +136,7 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
     BetInfo storage betInfo = _ledger[predictionId][_msgSender()];
 
     if (betInfo.multiplier != 0 && betInfo.position != position) {
-      revert BetAlreadyPlaced();
+      revert PredictionBetAlreadyPlaced();
     }
 
     betInfo.multiplier += multiplier;
@@ -237,11 +181,11 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
     }
 
     if (!prediction.resolved) {
-      revert CannotClaimBeforeResolution();
+      revert PredictionCannotClaimBeforeResolution();
     }
 
     if (betInfo.multiplier == 0) {
-      revert BetNotFound();
+      revert PredictionBetNotFound();
     }
 
     if (
@@ -250,11 +194,11 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
     !(prediction.outcome == Outcome.LEFT && betInfo.position == Position.LEFT) &&
     !(prediction.outcome == Outcome.RIGHT && betInfo.position == Position.RIGHT)
     ) {
-      revert NotEligibleForClaim();
+      revert PredictionNotEligibleForClaim();
     }
 
     if (betInfo.claimed) {
-      revert RewardAlreadyClaimed();
+      revert PredictionRewardAlreadyClaimed();
     }
 
     _ledger[predictionId][_msgSender()].claimed = true;
@@ -305,7 +249,7 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
     } else if (outcome == Outcome.DRAW) {
       _safePredictionEnd(predictionId, outcome);
     } else {
-      revert InvalidOutcome();
+      revert PredictionInvalidOutcome();
     }
   }
 
@@ -318,9 +262,9 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
    */
   function claimTreasury() external onlyRole(DEFAULT_ADMIN_ROLE) {
     if (_treasuryAssets.length == 0) {
-      revert NoTreasuryAssets();
+      revert PredictionNoTreasuryAssets();
     }
-  
+
     Asset[] memory treasuryAssets = _treasuryAssets;
     delete _treasuryAssets;
 
@@ -369,7 +313,7 @@ contract Prediction is AccessControl, Pausable, CoinHolder, NativeReceiver {
 
   function _setTreasuryFee(uint256 treasuryFee) internal {
     if (treasuryFee > MAX_TREASURY_FEE) {
-      revert TreasuryFeeTooHigh(treasuryFee);
+      revert PredictionTreasuryFeeTooHigh(treasuryFee);
     }
     _treasuryFee = treasuryFee;
     emit NewTreasuryFee(treasuryFee);

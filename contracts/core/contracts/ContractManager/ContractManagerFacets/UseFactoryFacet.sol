@@ -13,13 +13,13 @@ import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE } from "@gemunion/contra
 
 import { AccessControlInternal } from "../../Diamond/override/AccessControlInternal.sol";
 import { CMStorage } from "../storage/CMStorage.sol";
-import { WrongRole } from "../../utils/errors.sol";
+import { IUseFactoryFacetErrors } from "../interfaces/IUseFactoryFacetErrors.sol";
 
 /**
  * @title UseFactory
  * @dev Utility to add and remove contracts from factory
  */
-contract UseFactoryFacet is AccessControlInternal {
+contract UseFactoryFacet is IUseFactoryFacetErrors, AccessControlInternal {
 
   using EnumerableSet for EnumerableSet.AddressSet;
 

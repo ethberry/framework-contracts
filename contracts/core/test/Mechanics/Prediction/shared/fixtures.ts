@@ -8,7 +8,7 @@ import { cap, tokenId, tokenZero, treasuryFee } from "../../../constants";
 
 export async function deployPredictionContract() {
   const PredictionContractFactory = await ethers.getContractFactory("Prediction");
-  return PredictionContractFactory.deploy(treasuryFee);
+  return PredictionContractFactory.deploy({ treasuryFee });
 }
 
 export function getBetAsset(tokenType: TokenType): () => Promise<any> {

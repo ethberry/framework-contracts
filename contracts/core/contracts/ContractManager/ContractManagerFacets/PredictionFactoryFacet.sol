@@ -8,23 +8,34 @@ pragma solidity ^0.8.20;
 
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { SignerMissingRole } from "../../utils/errors.sol";
+import { IPrediction } from "../../Mechanics/Prediction/interfaces/IPrediction.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
-import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
-
 import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 
 contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
 
-  bytes private constant PREDICTION_ARGUMENTS_SIGNATURE = "PredictionArgs(string contractTemplate)";
+  bytes private constant PREDICTION_CONFIG_SIGNATURE = "PredictionConfig(uint256 treasuryFee)";
+  bytes32 private constant PREDICTION_CONFIG_TYPEHASH = keccak256(PREDICTION_CONFIG_SIGNATURE);
+
+  bytes private constant PREDICTION_ARGUMENTS_SIGNATURE = "PredictionArgs(PredictionConfig config)";
   bytes32 private constant PREDICTION_ARGUMENTS_TYPEHASH = keccak256(PREDICTION_ARGUMENTS_SIGNATURE);
 
+  bytes32 private immutable PREDICTION_FULL_TYPEHASH =
+    keccak256(bytes.concat(PREDICTION_ARGUMENTS_SIGNATURE, PREDICTION_CONFIG_SIGNATURE));
+
   bytes32 private immutable PREDICTION_PERMIT_SIGNATURE =
-    keccak256(bytes.concat("EIP712(Params params,PredictionArgs args)", PARAMS_SIGNATURE, PREDICTION_ARGUMENTS_SIGNATURE));
+    keccak256(
+      bytes.concat(
+        "EIP712(Params params,PredictionArgs args)",
+        PARAMS_SIGNATURE,
+        PREDICTION_ARGUMENTS_SIGNATURE,
+        PREDICTION_CONFIG_SIGNATURE
+      )
+    );
 
   struct PredictionArgs {
-    string contractTemplate;
+    IPrediction.PredictionConfig config;
   }
 
   event PredictionDeployed(address account, uint256 externalId, PredictionArgs args);
@@ -41,7 +52,11 @@ contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, "", params.nonce);
+    account = deploy2(
+      params.bytecode,
+      abi.encode(args.config.treasuryFee),
+      params.nonce
+    );
 
     emit PredictionDeployed(account, params.externalId, args);
 
@@ -59,13 +74,11 @@ contract PredictionFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       );
   }
 
-  function _hashPredictionStruct(PredictionArgs calldata args) private pure returns (bytes32) {
-    return
-      keccak256(
-        abi.encode(
-          PREDICTION_ARGUMENTS_TYPEHASH,
-          keccak256(bytes(args.contractTemplate))
-        )
-      );
+  function _hashPredictionStruct(PredictionArgs calldata args) private view returns (bytes32) {
+    return keccak256(abi.encode(PREDICTION_FULL_TYPEHASH, _hashPredictionConfigStruct(args.config)));
+  }
+
+  function _hashPredictionConfigStruct(IPrediction.PredictionConfig calldata config) private pure returns (bytes32) {
+    return keccak256(abi.encode(PREDICTION_CONFIG_TYPEHASH, config.treasuryFee));
   }
 }

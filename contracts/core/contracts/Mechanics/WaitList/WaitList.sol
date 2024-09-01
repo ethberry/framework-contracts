@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-//
 // Email: trejgun@gemunion.io
 // Website: https://gemunion.io/
 
@@ -14,12 +13,12 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-import { AddressAlreadyExists, RewardAlreadyClaimed, NoReward, MissingRoot, RootAlreadySet } from "../../utils/errors.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { IWaitList } from "./interfaces/IWaitList.sol";
 
-contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp {
+contract WaitList is IWaitList, AccessControl, Pausable, NativeRejector, CoinHolder, TopUp {
   mapping(uint256 => bytes32) internal _roots;
   mapping(uint256 => mapping(address => bool)) internal _claimed;
   mapping(uint256 => Asset[]) internal _items;
@@ -34,13 +33,13 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
 
   function setReward(Params memory params, Asset[] memory items) public onlyRole(DEFAULT_ADMIN_ROLE) {
     if (_roots[params.externalId] != "") {
-      revert RootAlreadySet();
+      revert WaitListRootAlreadySet();
     }
 
     _roots[params.externalId] = params.extra;
 
     if (items.length == 0) {
-      revert NoReward();
+      revert WaitListNoReward();
     }
 
     uint256 length = items.length;
@@ -56,7 +55,7 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
 
   function claim(bytes32[] calldata proof, uint256 externalId) public whenNotPaused {
     if (_roots[externalId] == "") {
-      revert MissingRoot();
+      revert WaitListMissingRoot();
     }
 
     // should be
@@ -65,11 +64,11 @@ contract WaitList is AccessControl, Pausable, NativeRejector, CoinHolder, TopUp 
     bool verified = MerkleProof.verifyCalldata(proof, _roots[externalId], leaf);
 
     if (!verified) {
-      revert AddressAlreadyExists(_msgSender());
+      revert WaitListAddressAlreadyExists(_msgSender());
     }
 
     if (_claimed[externalId][_msgSender()]) {
-      revert RewardAlreadyClaimed();
+      revert WaitListRewardAlreadyClaimed();
     }
 
     _claimed[externalId][_msgSender()] = true;

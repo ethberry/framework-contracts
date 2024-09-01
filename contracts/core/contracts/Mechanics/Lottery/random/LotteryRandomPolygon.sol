@@ -14,7 +14,6 @@ import { ChainLinkPolygonV2Plus } from "@gemunion/contracts-chain-link-v2-plus/c
 import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
-import { LotteryConfig } from "../interfaces/ILottery.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
 contract LotteryRandomPolygon is LotteryRandom, ChainLinkPolygonV2Plus {

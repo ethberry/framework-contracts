@@ -13,9 +13,9 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { EIP712 } from "../../Diamond/override/EIP712Upgradable.sol";
 import { Asset, Params } from "../lib/interfaces/IAsset.sol";
 import { SigValStorage } from "../storage/SigValStorage.sol";
-import { ExpiredSignature } from "../../utils/errors.sol";
+import { ISignatureValidatorErrors } from "../interfaces/ISignatureValidatorErrors.sol";
 
-contract SignatureValidator is EIP712, Context {
+contract SignatureValidator is EIP712, Context, ISignatureValidatorErrors {
   using ECDSA for bytes32;
   using Address for address;
 

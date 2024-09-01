@@ -190,7 +190,7 @@ describe("Diamond Exchange Breed", function () {
         expect(random.join("").length).to.be.greaterThan(50); // todo better check ????
       });
 
-      it("should fail: PregnancyCountLimitExceed", async function () {
+      it("should fail: GenesPregnancyCountLimitExceed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const generateSignature = await getSignatures(exchangeInstance);
@@ -316,7 +316,7 @@ describe("Diamond Exchange Breed", function () {
           },
           signature1,
         );
-        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyCountLimitExceed");
+        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "GenesPregnancyCountLimitExceed");
 
         await erc721Instance.mintCommon(receiver.address, 4);
         const signature2 = await generateSignature({
@@ -365,10 +365,10 @@ describe("Diamond Exchange Breed", function () {
           },
           signature2,
         );
-        await expect(tx3).to.be.revertedWithCustomError(exchangeInstance, "PregnancyCountLimitExceed");
+        await expect(tx3).to.be.revertedWithCustomError(exchangeInstance, "GenesPregnancyCountLimitExceed");
       });
 
-      it("should fail: PregnancyTimeLimitExceed", async function () {
+      it("should fail: GenesPregnancyTimeLimitExceed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const generateSignature = await getSignatures(exchangeInstance);
@@ -493,10 +493,10 @@ describe("Diamond Exchange Breed", function () {
           },
           signature1,
         );
-        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "PregnancyTimeLimitExceed");
+        await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "GenesPregnancyTimeLimitExceed");
       });
 
-      it("should fail: NotOwnerNorApproved", async function () {
+      it("should fail: GenesNotOwnerNorApproved", async function () {
         const [owner, receiver] = await ethers.getSigners();
         const exchangeInstance = await factory();
         const generateSignature = await getSignatures(exchangeInstance);
@@ -542,7 +542,7 @@ describe("Diamond Exchange Breed", function () {
           signature,
         );
 
-        await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "NotOwnerNorApproved");
+        await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "GenesNotOwnerNorApproved");
       });
 
       it("should fail: Invalid signature", async function () {

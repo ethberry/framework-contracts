@@ -322,7 +322,7 @@ export function shouldClaim(factory: () => Promise<any>) {
       await expect(tx1).to.be.revertedWithCustomError(contractInstance, "EnforcedPause");
     });
 
-    it("should fail: MissingRoot", async function () {
+    it("should fail: WaitListMissingRoot", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -337,10 +337,10 @@ export function shouldClaim(factory: () => Promise<any>) {
       const proof = merkleTree.getProof(merkleTree.leafLookup([owner.address]));
 
       const tx1 = contractInstance.claim(proof, externalId);
-      await expect(tx1).to.be.revertedWithCustomError(contractInstance, "MissingRoot");
+      await expect(tx1).to.be.revertedWithCustomError(contractInstance, "WaitListMissingRoot");
     });
 
-    it("should fail: AddressAlreadyExists", async function () {
+    it("should fail: WaitListAddressAlreadyExists", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -378,10 +378,10 @@ export function shouldClaim(factory: () => Promise<any>) {
       const proof = merkleTree.getProof(merkleTree.leafLookup([owner.address]));
 
       const tx2 = contractInstance.connect(receiver).claim(proof, externalId);
-      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "AddressAlreadyExists");
+      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "WaitListAddressAlreadyExists");
     });
 
-    it("should fail: RewardAlreadyClaimed", async function () {
+    it("should fail: WaitListRewardAlreadyClaimed", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -422,7 +422,7 @@ export function shouldClaim(factory: () => Promise<any>) {
       await expect(tx2).to.emit(contractInstance, "WaitListRewardClaimed");
 
       const tx3 = contractInstance.claim(proof, externalId);
-      await expect(tx3).to.be.revertedWithCustomError(contractInstance, "RewardAlreadyClaimed");
+      await expect(tx3).to.be.revertedWithCustomError(contractInstance, "WaitListRewardAlreadyClaimed");
     });
   });
 }

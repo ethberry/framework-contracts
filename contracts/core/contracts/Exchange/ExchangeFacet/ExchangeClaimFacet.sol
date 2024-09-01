@@ -12,7 +12,6 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { ExpiredSignature, SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
   event Claim(address account, uint256 externalId, Asset[] items);

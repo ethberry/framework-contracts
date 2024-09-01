@@ -6,26 +6,24 @@ pragma solidity ^0.8.0;
 * EIP-2535 Diamonds: https://eips.ethereum.org/EIPS/eip-2535
 /******************************************************************************/
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
-import {
-  MustBeContractOwner,
-  NoSelectorsInFacet,
-  AddFacetCantBeAddressZero,
-  ReplaceFacetCantBeAddressZero,
-  RemoveFacetAddressMustBeAddressZero,
-  FunctionAlreadyExists,
-  IncorrectFacetCutAction,
-  ReplaceFunctionWithSameFunction,
-  CantRemoveFunctionThatDoesntExist,
-  CantRemoveImmutableFunction,
-  FacetHasNoCode
-} from "../../utils/errors.sol";
 
 // Remember to add the loupe functions from DiamondLoupeFacet to the diamond.
 // The loupe functions are required by the EIP2535 Diamonds standard
 
-error InitializationFunctionReverted(address _initializationContractAddress, bytes _calldata);
-
 library LibDiamond {
+    error InitializationFunctionReverted();
+    error MustBeContractOwner();
+    error IncorrectFacetCutAction();
+    error NoSelectorsInFacet();
+    error AddFacetCantBeAddressZero();
+    error FunctionAlreadyExists();
+    error ReplaceFacetCantBeAddressZero();
+    error ReplaceFunctionWithSameFunction();
+    error RemoveFacetAddressMustBeAddressZero();
+    error CantRemoveFunctionThatDoesntExist();
+    error CantRemoveImmutableFunction();
+    error FacetHasNoCode();
+
     bytes32 constant DIAMOND_STORAGE_POSITION = keccak256("diamond.standard.diamond.storage");
 
     struct FacetAddressAndPosition {
@@ -239,7 +237,7 @@ library LibDiamond {
                 revert(add(32, error), returndata_size)
                 }
             } else {
-                revert InitializationFunctionReverted(_init, _calldata);
+                revert InitializationFunctionReverted();
             }
         }
     }

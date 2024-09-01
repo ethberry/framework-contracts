@@ -17,9 +17,9 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { ExchangeStorage } from "../storage/ExchangeStorage.sol";
 import { Asset, Params } from "../lib/interfaces/IAsset.sol";
-import { PregnancyTimeLimitExceed, PregnancyCountLimitExceed, NotOwnerNorApproved, SignerMissingRole } from "../../utils/errors.sol";
+import { IGenesErrors } from "../interfaces/IGenesErrors.sol";
 
-contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
+contract ExchangeBreedFacet is IGenesErrors, SignatureValidator, DiamondOverride {
   event Breed(address account, uint256 externalId, Asset matron, Asset sire);
 
   using SafeCast for uint256;
@@ -43,13 +43,13 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     // TODO try..catch
     if (IERC721(item.token).ownerOf(item.tokenId) != _msgSender()) {
       if (IERC721(item.token).getApproved(item.tokenId) != _msgSender()) {
-        revert NotOwnerNorApproved(_msgSender());
+        revert GenesNotOwnerNorApproved(_msgSender());
       }
     }
 
     if (IERC721(price.token).ownerOf(price.tokenId) != _msgSender()) {
       if (IERC721(price.token).getApproved(price.tokenId) != _msgSender()) {
-        revert NotOwnerNorApproved(_msgSender());
+        revert GenesNotOwnerNorApproved(_msgSender());
       }
     }
 
@@ -67,10 +67,10 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
     // Check pregnancy count
     if (ExchangeStorage.layout()._pregnancyCountLimit > 0) {
       if (pregnancyM.count >= ExchangeStorage.layout()._pregnancyCountLimit) {
-        revert PregnancyCountLimitExceed();
+        revert GenesPregnancyCountLimitExceed();
       }
       if (pregnancyS.count >= ExchangeStorage.layout()._pregnancyCountLimit) {
-        revert PregnancyCountLimitExceed();
+        revert GenesPregnancyCountLimitExceed();
       }
     }
 
@@ -83,13 +83,13 @@ contract ExchangeBreedFacet is SignatureValidator, DiamondOverride {
         timeNow - pregnancyM.time <=
         (pregnancyM.count > 13 ? ExchangeStorage.layout()._pregnancyMaxTime : (ExchangeStorage.layout()._pregnancyTimeLimit * (2 ** pregnancyM.count)).toUint64())
       ) {
-        revert PregnancyTimeLimitExceed();
+        revert GenesPregnancyTimeLimitExceed();
       }
       if (
         timeNow - pregnancyS.time <=
         (pregnancyS.count > 13 ? ExchangeStorage.layout()._pregnancyMaxTime : (ExchangeStorage.layout()._pregnancyTimeLimit * (2 ** pregnancyS.count)).toUint64())
       ) {
-        revert PregnancyTimeLimitExceed();
+        revert GenesPregnancyTimeLimitExceed();
       }
     }
 

@@ -10,10 +10,9 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { IERC721LootBox, LootBoxConfig} from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
+import { IERC721LootBox } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NoContent } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
@@ -26,7 +25,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
     Asset memory item,
     Asset[] memory price,
     Asset[] memory content,
-    LootBoxConfig calldata boxConfig,
+    IERC721LootBox.LootBoxConfig calldata boxConfig,
     bytes calldata signature
   ) external payable whenNotPaused {
     _validateParams(params);
@@ -36,10 +35,6 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
     address signer = _recoverOneToManyToManySignature(params, item, price, content, config, signature);
     if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
-    }
-
-    if (content.length == 0) {
-      revert NoContent();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));

@@ -11,11 +11,11 @@ import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
 import { EIP712 } from "./EIP712Upgradable.sol";
-import { ExpiredSignature } from "../../utils/errors.sol";
+import { ISignatureValidatorErrors } from "../interfaces/ISignatureValidatorErrors.sol";
 
 import { SigValStorage } from "../storage/SigValStorage.sol";
 
-contract SignatureValidatorCM is EIP712, Context {
+contract SignatureValidatorCM is EIP712, Context, ISignatureValidatorErrors {
   using ECDSA for bytes32;
   using Address for address;
 

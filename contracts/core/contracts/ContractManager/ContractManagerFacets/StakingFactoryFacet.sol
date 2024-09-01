@@ -10,7 +10,6 @@ import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableS
 
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { SignerMissingRole } from "../../utils/errors.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
 import { CMStorage } from "../storage/CMStorage.sol";
 

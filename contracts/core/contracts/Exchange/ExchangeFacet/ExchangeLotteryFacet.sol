@@ -13,7 +13,6 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {

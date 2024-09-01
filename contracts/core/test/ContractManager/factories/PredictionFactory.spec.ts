@@ -1,11 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getCreate2Address, keccak256 } from "ethers";
+import { getAddress } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId } from "../../constants";
+import { externalId } from "../../constants";
 import { deployDiamond } from "../shared/fixture";
+import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
 
 describe("PredictionFactoryDiamond", function () {
   const factory = async (facetName = "PredictionFactoryFacet"): Promise<any> => {
@@ -48,7 +49,8 @@ describe("PredictionFactoryDiamond", function () {
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
+          PredictionArgs: [{ name: "config", type: "PredictionConfig" }],
+          PredictionConfig: [{ name: "treasuryFee", type: "uint256" }],
         },
         // Values
         {
@@ -58,9 +60,9 @@ describe("PredictionFactoryDiamond", function () {
             externalId,
           },
           args: {
-            payees: [owner.address],
-            shares: [1],
-            contractTemplate,
+            config: {
+              treasuryFee: 100,
+            },
           },
         },
       );
@@ -72,17 +74,19 @@ describe("PredictionFactoryDiamond", function () {
           externalId,
         },
         {
-          contractTemplate,
+          config: {
+            treasuryFee: 100,
+          },
         },
         signature,
       );
 
-      const initCodeHash = keccak256(bytecode);
-      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
+      const buildByteCode = buildBytecode(["uint256"], [100], bytecode);
+      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
 
       await expect(tx)
         .to.emit(contractInstance, "PredictionDeployed")
-        .withArgs(address, externalId, [contractTemplate]);
+        .withArgs(address, externalId, isEqualArray(["100"]));
     });
 
     it("should fail: SignerMissingRole", async function () {
@@ -112,7 +116,8 @@ describe("PredictionFactoryDiamond", function () {
             { name: "bytecode", type: "bytes" },
             { name: "externalId", type: "uint256" },
           ],
-          PredictionArgs: [{ name: "contractTemplate", type: "string" }],
+          PredictionArgs: [{ name: "config", type: "PredictionConfig" }],
+          PredictionConfig: [{ name: "treasuryFee", type: "uint256" }],
         },
         // Values
         {
@@ -122,7 +127,9 @@ describe("PredictionFactoryDiamond", function () {
             externalId,
           },
           args: {
-            contractTemplate,
+            config: {
+              treasuryFee: 100,
+            },
           },
         },
       );
@@ -137,9 +144,9 @@ describe("PredictionFactoryDiamond", function () {
           externalId,
         },
         {
-          payees: [owner.address],
-          shares: [1],
-          contractTemplate,
+          config: {
+            treasuryFee: 100,
+          },
         },
         signature,
       );

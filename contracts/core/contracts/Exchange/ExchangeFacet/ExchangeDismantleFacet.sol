@@ -13,7 +13,6 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeDismantleFacet is SignatureValidator, DiamondOverride {
   event Dismantle(address account, uint256 externalId, Asset[] items, Asset[] price);

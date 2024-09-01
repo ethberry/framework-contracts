@@ -15,9 +15,9 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, MergeDifferentTemplate, MergeDifferentContracts } from "../../utils/errors.sol";
+import { IMergeErrors } from "../interfaces/IMergeErrors.sol";
 
-contract ExchangeMergeFacet is SignatureValidator, DiamondOverride {
+contract ExchangeMergeFacet is IMergeErrors, SignatureValidator, DiamondOverride {
   event Merge(address account, uint256 externalId, Asset[] items, Asset[] price);
 
   constructor() SignatureValidator() {}

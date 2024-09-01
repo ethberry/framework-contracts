@@ -149,7 +149,7 @@ describe("Raffle", function () {
         },
         0, // maxTicket count
       );
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RoundNotComplete");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleRoundNotComplete");
     });
   });
 
@@ -721,10 +721,10 @@ describe("Raffle", function () {
       });
     });
 
-    it("should fail: RoundNotActive", async function () {
+    it("should fail: RaffleRoundNotActive", async function () {
       const { raffleInstance } = await factoryRaffle();
       const tx = raffleInstance.endRound();
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RoundNotActive");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleRoundNotActive");
     });
   });
 
@@ -1486,7 +1486,7 @@ describe("Raffle", function () {
       await time.advanceBlockTo(latest.add(web3.utils.toBN(raffleConfig.timeLagBeforeRelease + 1)));
 
       const tx1 = raffleInstance.releaseFunds(0);
-      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "ZeroBalance");
+      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "RaffleZeroBalance");
     });
 
     it("should fail: no more tickets available", async function () {
@@ -1711,7 +1711,7 @@ describe("Raffle", function () {
         },
         signature2,
       );
-      await expect(tx2).to.be.revertedWithCustomError(raffleInstance, "TicketLimitExceed");
+      await expect(tx2).to.be.revertedWithCustomError(raffleInstance, "RaffleTicketLimitExceed");
     });
 
     it("should fail: current round is finished", async function () {
@@ -1804,7 +1804,7 @@ describe("Raffle", function () {
         },
         signature,
       );
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "WrongRound");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleWrongRound");
     });
   });
 
@@ -2118,7 +2118,7 @@ describe("Raffle", function () {
       await expect(tx).changeTokenBalances(erc20Instance, [receiver, raffleInstance], [-amount, amount]);
 
       const tx1 = raffleInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "RoundNotComplete");
+      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "RaffleRoundNotComplete");
     });
 
     it("should fail: wrong round", async function () {
@@ -2150,7 +2150,7 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(receiver).getPrize(tokenId, 2);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "WrongRound");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleWrongRound");
     });
 
     it("should fail: already got prize", async function () {
@@ -2184,10 +2184,10 @@ describe("Raffle", function () {
       await expect(tx).to.emit(raffleInstance, "Prize").withArgs(receiver, 1, 1, 1);
 
       const tx1 = raffleInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "WrongToken");
+      await expect(tx1).to.be.revertedWithCustomError(raffleInstance, "RaffleWrongToken");
     });
 
-    it("should fail: PrizeNotEligible", async function () {
+    it("should fail: RafflePrizeNotEligible", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
@@ -2216,10 +2216,10 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(receiver).getPrize(2, 1);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "PrizeNotEligible");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RafflePrizeNotEligible");
     });
 
-    it("should fail: NotOwnerNorApproved", async function () {
+    it("should fail: RaffleNotOwnerNorApproved", async function () {
       const [_owner, receiver, stranger] = await ethers.getSigners();
 
       const { raffleInstance, erc721Instance, erc20Instance } = await factoryRaffle();
@@ -2247,7 +2247,7 @@ describe("Raffle", function () {
       );
 
       const tx = raffleInstance.connect(stranger).getPrize(tokenId, 1);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "NotOwnerNorApproved");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleNotOwnerNorApproved");
     });
 
     it("should fail: wrong token round", async function () {
@@ -2299,7 +2299,7 @@ describe("Raffle", function () {
       await erc721Instance.connect(receiver).approve(raffleInstance, 1);
 
       const tx = raffleInstance.connect(receiver).getPrize(tokenId, 2);
-      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "WrongRound");
+      await expect(tx).to.be.revertedWithCustomError(raffleInstance, "RaffleWrongRound");
     });
   });
 });

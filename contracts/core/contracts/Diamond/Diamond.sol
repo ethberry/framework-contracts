@@ -10,9 +10,9 @@ pragma solidity ^0.8.0;
 
 import { LibDiamond } from "./lib/LibDiamond.sol";
 import { IDiamondCut } from "./interfaces/IDiamondCut.sol";
-import { FunctionDoesNotExist } from "../utils/errors.sol";
+import { IDiamondErrors } from "./interfaces/IDiamondErrors.sol";
 
-contract Diamond {
+contract Diamond is IDiamondErrors {
 
     constructor(address _contractOwner, address _diamondCutFacet) payable {
         LibDiamond.setContractOwner(_contractOwner);

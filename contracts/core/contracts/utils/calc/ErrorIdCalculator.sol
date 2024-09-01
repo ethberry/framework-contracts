@@ -7,83 +7,35 @@
 pragma solidity ^0.8.20;
 
 import "hardhat/console.sol";
-// import { errors } from "../../utils/errors.sol";
-// must include all errors here
 
-contract ErrorsIdCalculator {
-  // DIAMOND
-  error FunctionDoesNotExist();
-  error DiamondAlreadyInitialised();
-  error MustBeContractOwner();
-  error IncorrectFacetCutAction();
-  error NoSelectorsInFacet();
-  error AddFacetCantBeAddressZero();
-  error FunctionAlreadyExists();
-  error ReplaceFacetCantBeAddressZero();
-  error ReplaceFunctionWithSameFunction();
-  error RemoveFacetAddressMustBeAddressZero();
-  error CantRemoveFunctionThatDoesntExist();
-  error CantRemoveImmutableFunction();
-  error FacetHasNoCode();
+import { IDiamondErrors } from "../../Diamond/interfaces/IDiamondErrors.sol";
+import { IDiamondInitErrors } from "../../Diamond/interfaces/IDiamondInitErrors.sol";
+import { ISignatureValidatorErrors } from "../../Exchange/interfaces/ISignatureValidatorErrors.sol";
+import { ITokenValidationErrors } from "../../Exchange/interfaces/ITokenValidationErrors.sol";
+import { IGenesErrors } from "../../Exchange/interfaces/IGenesErrors.sol";
+import { IRentableErrors } from "../../Exchange/interfaces/IRentableErrors.sol";
+import { IMergeErrors } from "../../Exchange/interfaces/IMergeErrors.sol";
+import { IERC721SimpleErrors } from "../../ERC721/interfaces/IERC721SimpleErrors.sol";
+import { IERC721BoxErrors } from  "../../ERC721/interfaces/IERC721BoxErrors.sol";
+import { IPredictionErrors } from "../../Mechanics/Prediction/interfaces/IPredictionErrors.sol";
+import { ILotteryErrors } from "../../Mechanics/Lottery/interfaces/ILotteryErrors.sol";
+import { IRaffleErrors } from "../../Mechanics/Raffle/interfaces/IRaffleErrors.sol";
+import { IWaitListErrors } from "../../Mechanics/WaitList/interfaces/IWaitListErrors.sol";
 
-  // HIERARCHY
-  error MethodNotSupported();
-  error TemplateZero();
-  error ProtectedAttribute(bytes32 attribute);
 
-  // CONTRACT MANAGER, EXCHANGE
-  error SignerMissingRole();
-  error ExpiredSignature();
+contract ErrorsIdCalculator is
+IDiamondErrors,
+IDiamondInitErrors,
+ISignatureValidatorErrors,
+ITokenValidationErrors,
+IGenesErrors,
+IMergeErrors,
+IRentableErrors,
+IERC721SimpleErrors,
+IERC721BoxErrors,
+IPredictionErrors,
+ILotteryErrors,
+IRaffleErrors,
+IWaitListErrors {
 
-  // CONTRACT MANAGER
-  error WrongRole();
-
-  // EXCHANGE
-  error UnsupportedTokenType();
-  error ETHInvalidReceiver(address receiver);
-  error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed);
-  error NoPrice();
-  error NoItems();
-  error NoContent();
-
-  // WAIT LIST
-  error AddressAlreadyExists(address account);
-  error RewardAlreadyClaimed();
-  error RootAlreadySet();
-  error MissingRoot();
-  error NoReward();
-
-  // DISPENSER
-  error WrongArrayLength();
-
-  // BREED
-  error PregnancyCountLimitExceed();
-  error PregnancyTimeLimitExceed();
-  // error NotOwnerNorApproved(address account);
-
-  // LOTTERY/RAFFLE
-  error NotOwnerNorApproved(address account);
-  error WrongRound();
-  error PrizeNotEligible();
-  error TicketLimitExceed();
-  error TicketExpired();
-  error RoundNotComplete();
-  error RoundNotActive();
-  error WrongToken();
-
-  // STAKING/PONZI
-  error NotAnOwner(address account);
-  error RuleNotExist();
-  error RuleNotActive();
-  error StakeLimitExceed();
-  error BalanceExceed();
-  error StakeNotExist();
-  error StakeAlreadyWithdrawn();
-  error ZeroBalance();
-  error DepositNotComplete();
-  error WrongTemplate();
-
-  // MERGE
-  error MergeDifferentContracts();
-  error MergeDifferentTemplate();
 }

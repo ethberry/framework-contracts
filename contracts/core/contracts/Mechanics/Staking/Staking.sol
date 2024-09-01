@@ -24,10 +24,9 @@ import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { TopUp } from "../../utils/TopUp.sol";
-import { ZeroBalance, StakeNotExist, RuleNotExist, UnsupportedTokenType, DepositNotComplete, StakeAlreadyWithdrawn, NotAnOwner, StakeNotExist, WrongTemplate, StakeLimitExceed, RuleNotActive } from "../../utils/errors.sol";
 import { IERC721MysteryBox } from "../MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IStaking } from "./interfaces/IStaking.sol";
-import { Asset,Params,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, Params, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 /**
@@ -88,10 +87,10 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
 
     // Ensure that the rule exists and is active
     if (rule.terms.period == 0) {
-      revert StakeNotExist();
+      revert StakingStakeNotExist();
     }
     if (!rule.active) {
-      revert RuleNotActive();
+      revert StakingRuleNotActive();
     }
 
     uint256 _maxStake = rule.terms.maxStake;
@@ -101,7 +100,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // check if user reached the maximum number of stakes, if it is revert transaction.
     if (_maxStake > 0) {
       if (_stakeRuleCounter >= _maxStake) {
-        revert StakeLimitExceed();
+        revert StakingStakeLimitExceed();
       }
     }
 
@@ -147,7 +146,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
               TEMPLATE_ID
             );
             if (templateId != ruleDepositTokenTemplateId) {
-              revert WrongTemplate();
+              revert StakingWrongTemplate();
             }
           }
         }
@@ -212,13 +211,13 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
 
     // Verify that the stake exists and the caller is the owner of the stake.
     if (stake.owner == address(0)) {
-      revert StakeNotExist();
+      revert StakingStakeNotExist();
     }
     if (stake.owner != _msgSender()) {
-      revert NotAnOwner(_msgSender());
+      revert StakingNotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
-      revert StakeAlreadyWithdrawn();
+      revert StakingStakeAlreadyWithdrawn();
     }
 
     uint256 stakePeriod = rule.terms.period;
@@ -250,9 +249,9 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
       for (uint256 i = 0; i < lengthDeposit; ) {
         withdrawDepositItem(stakeId, i, multiplier, receiver);
 
-      unchecked {
-        i++;
-      }
+        unchecked {
+          i++;
+        }
       }
 
     } else {
@@ -288,7 +287,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // withdrawDeposit and breakLastPeriod flags are false
     // AND staking rule is recurrent
     if (multiplier == 0 && rule.terms.recurrent && !withdrawDeposit && !breakLastPeriod) {
-      revert DepositNotComplete();
+      revert StakingDepositNotComplete();
     }
   }
 
@@ -541,7 +540,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // Store each individual asset in the rule's deposit array
     uint256 lengthDeposit = rule.deposit.length;
     if (lengthDeposit == 0) {
-      revert RuleNotExist();
+      revert StakingRuleNotExist();
     }
     for (uint256 i = 0; i < lengthDeposit; ) {
       p.deposit.push(rule.deposit[i]);
@@ -590,7 +589,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
   function _updateRule(uint256 ruleId, bool active) internal {
     Rule storage rule = _rules[ruleId];
     if (rule.terms.period == 0) {
-      revert StakeNotExist();
+      revert StakingStakeNotExist();
     }
     _rules[ruleId].active = active;
     emit RuleUpdated(ruleId, active);
@@ -652,7 +651,7 @@ contract Staking is IStaking, AccessControl, Pausable, AllTypesHolder, NativeRej
     // Retrieve balance from storage.
     item.amount = _penalties[item.token][item.tokenId];
     if (item.amount == 0) {
-      revert ZeroBalance();
+      revert StakingZeroBalance();
     }
 
     // Emit an event indicating that penalty balance has withdrawn.

@@ -33,7 +33,7 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor2 should not be able to claim
       const tx2 = predictionInstance.connect(bettor2).claim(1);
-      await expect(tx2).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+      await expect(tx2).to.be.revertedWithCustomError(predictionInstance, "PredictionNotEligibleForClaim");
 
       // Bettor1 claims reward
       const tx1 = await predictionInstance.connect(bettor1).claim(1);
@@ -77,7 +77,7 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor1 should not be able to claim
       const tx1 = predictionInstance.connect(bettor1).claim(1);
-      await expect(tx1).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+      await expect(tx1).to.be.revertedWithCustomError(predictionInstance, "PredictionNotEligibleForClaim");
 
       // Bettor2 claims reward
       const tx2 = await predictionInstance.connect(bettor2).claim(1);
@@ -141,7 +141,7 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
       }
     });
 
-    it("should fail: NotEligibleForClaim - tried to claim by non-winner side", async function () {
+    it("should fail: PredictionNotEligibleForClaim - tried to claim by non-winner side", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -167,14 +167,14 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor2 tries to claim
       const tx = predictionInstance.connect(bettor2).claim(1);
-      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionNotEligibleForClaim");
 
       if (process.env.VERBOSE) {
         console.info("Claim by non-winner side reverted as expected.");
       }
     });
 
-    it("should fail: CannotClaimBeforeResolution - tried to claim before prediction is resolved", async function () {
+    it("should fail: PredictionCannotClaimBeforeResolution - tried to claim before prediction is resolved", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -198,14 +198,14 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor1 tries to claim before resolution
       const tx = predictionInstance.connect(bettor1).claim(1);
-      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "CannotClaimBeforeResolution");
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionCannotClaimBeforeResolution");
 
       if (process.env.VERBOSE) {
         console.info("Claim before resolution reverted as expected.");
       }
     });
 
-    it("should fail: RewardAlreadyClaimed - tried to claim multiple times", async function () {
+    it("should fail: PredictionRewardAlreadyClaimed - tried to claim multiple times", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -234,7 +234,7 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor1 tries to claim again
       const txClaimed = predictionInstance.connect(bettor1).claim(1);
-      await expect(txClaimed).to.be.revertedWithCustomError(predictionInstance, "RewardAlreadyClaimed");
+      await expect(txClaimed).to.be.revertedWithCustomError(predictionInstance, "PredictionRewardAlreadyClaimed");
 
       const reward = {
         ...betAsset,
@@ -397,7 +397,7 @@ export function shouldClaim(predictionFactory: () => Promise<any>, betAssetFacto
 
       // Bettor2 should not be able to claim
       const tx2 = predictionInstance.connect(bettor2).claim(1);
-      await expect(tx2).to.be.revertedWithCustomError(predictionInstance, "NotEligibleForClaim");
+      await expect(tx2).to.be.revertedWithCustomError(predictionInstance, "PredictionNotEligibleForClaim");
 
       const reward = {
         ...betAsset,

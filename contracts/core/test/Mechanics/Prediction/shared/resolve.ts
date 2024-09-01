@@ -156,7 +156,7 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       }
     });
 
-    it("should fail: InvalidOutcome - expired or error outcome manually passed", async function () {
+    it("should fail: PredictionInvalidOutcome - expired or error outcome manually passed", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -181,10 +181,10 @@ export function shouldResolvePrediction(predictionFactory: () => Promise<any>, b
       await time.increaseTo(endTimestamp + BigInt(time.duration.seconds(10)));
 
       const txExpired = predictionInstance.resolvePrediction(1, Outcome.EXPIRED);
-      await expect(txExpired).to.be.revertedWithCustomError(predictionInstance, "InvalidOutcome");
+      await expect(txExpired).to.be.revertedWithCustomError(predictionInstance, "PredictionInvalidOutcome");
 
       const txError = predictionInstance.resolvePrediction(1, Outcome.ERROR);
-      await expect(txError).to.be.revertedWithCustomError(predictionInstance, "InvalidOutcome");
+      await expect(txError).to.be.revertedWithCustomError(predictionInstance, "PredictionInvalidOutcome");
 
       if (process.env.VERBOSE) {
         console.info("Admin tried to resolve with an invalid outcome and failed.");

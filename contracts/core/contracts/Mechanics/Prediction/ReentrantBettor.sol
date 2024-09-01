@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import { IERC1363_RECEIVER_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
 import { IERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363Receiver.sol";
-import "./Prediction.sol";
+
+import { Prediction } from "./Prediction.sol";
 
 contract ReentrantBettor {
 	Prediction private prediction;
@@ -46,10 +49,10 @@ contract ReentrantBettor {
 	}
 
 	function onTransferReceived(
-	    address operator,
-	    address from,
-	    uint256 value,
-	    bytes calldata data
+	    address,
+	    address,
+	    uint256,
+	    bytes calldata
 	) external returns (bytes4) {
 		if (attackedPredictionId > 0) {
 		  uint256 predictionId = attackedPredictionId;

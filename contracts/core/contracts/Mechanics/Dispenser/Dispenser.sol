@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
-/**
- *Submitted for verification at BscScan.com on 2020-09-14
- */
+// Author: TrejGun
+// Email: trejgun@gemunion.io
+// Website: https://gemunion.io/
 
 pragma solidity ^0.8.20;
 
@@ -15,7 +15,6 @@ import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IDispenser } from "./interfaces/IDispenser.sol";
 import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { WrongArrayLength } from "../../utils/errors.sol";
 
 /**
  * @title Dispenser Contract
@@ -24,7 +23,7 @@ import { WrongArrayLength } from "../../utils/errors.sol";
 contract Dispenser is IDispenser, ERC165, Context, NativeRejector {
   function disperse(Asset[] memory items, address[] calldata receivers) external payable override {
     if (items.length != receivers.length) {
-      revert WrongArrayLength();
+      revert DispenserWrongArrayLength();
     }
 
     uint256 length = receivers.length;

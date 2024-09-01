@@ -8,17 +8,12 @@ pragma solidity ^0.8.20;
 
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { SignerMissingRole } from "../../utils/errors.sol";
+import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
 import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 
 contract LotteryFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
-
-  struct LotteryConfig {
-    uint256 timeLagBeforeRelease;
-    uint256 commission;
-  }
 
   bytes private constant LOTTERY_CONFIG_SIGNATURE = "LotteryConfig(uint256 timeLagBeforeRelease,uint256 commission)";
   bytes32 private constant LOTTERY_CONFIG_TYPEHASH = keccak256(LOTTERY_CONFIG_SIGNATURE);
@@ -40,7 +35,7 @@ contract LotteryFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     );
 
   struct LotteryArgs {
-    LotteryConfig config;
+    ILottery.LotteryConfig config;
   }
 
   event LotteryDeployed(address account, uint256 externalId, LotteryArgs args);
@@ -84,7 +79,7 @@ contract LotteryFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
     return keccak256(abi.encode(LOTTERY_FULL_TYPEHASH, _hashLotteryConfigStruct(args.config)));
   }
 
-  function _hashLotteryConfigStruct(LotteryConfig calldata config) private pure returns (bytes32) {
+  function _hashLotteryConfigStruct(ILottery.LotteryConfig calldata config) private pure returns (bytes32) {
     return keccak256(abi.encode(LOTTERY_CONFIG_TYPEHASH, config.timeLagBeforeRelease, config.commission));
   }
 }

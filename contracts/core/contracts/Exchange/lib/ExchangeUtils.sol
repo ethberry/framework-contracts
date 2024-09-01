@@ -20,7 +20,6 @@ import { IERC20Burnable } from "../../ERC20/interfaces/IERC20Burnable.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
-import { UnsupportedTokenType, ETHInvalidReceiver, ETHInsufficientBalance } from "../../utils/errors.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "./interfaces/IAsset.sol";
 
 library ExchangeUtils {
@@ -29,6 +28,10 @@ library ExchangeUtils {
 
   event PaymentReceived(address from, uint256 amount);
   event PaymentReleased(address to, uint256 amount);
+
+  error UnsupportedTokenType(); // used to indicate that certain token types are not allowed for mechanics
+  error ETHInvalidReceiver(address receiver); // contract does not implement `receive` method
+  error ETHInsufficientBalance(address sender, uint256 balance, uint256 needed); // transaction has not enough ETH
 
   /**
    * @dev Transfer all types of tokens from `spender` to `receiver`.

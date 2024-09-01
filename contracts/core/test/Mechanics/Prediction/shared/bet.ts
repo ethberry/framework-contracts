@@ -48,7 +48,7 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
       }
     });
 
-    it("should fail: BetAmountTooLow - betting with zero amount", async function () {
+    it("should fail: PredictionBetAmountTooLow - betting with zero amount", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
@@ -63,14 +63,14 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
         multiplier: 0,
         position: Position.LEFT,
       });
-      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "BetAmountTooLow");
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionBetAmountTooLow");
 
       if (process.env.VERBOSE) {
         console.info("Failed to place bet because bet amount is less than minimum bet units.");
       }
     });
 
-    it("should fail: BetAlreadyPlaced - switching bet position", async function () {
+    it("should fail: PredictionBetAlreadyPlaced - switching bet position", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const { expiryTimestamp, endTimestamp, startTimestamp } = await makeTimestamps();
@@ -91,7 +91,7 @@ export function shouldBetPosition(predictionFactory: () => Promise<any>, betAsse
         multiplier: 1,
         position: Position.RIGHT,
       });
-      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "BetAlreadyPlaced");
+      await expect(tx).to.be.revertedWithCustomError(predictionInstance, "PredictionBetAlreadyPlaced");
 
       if (process.env.VERBOSE) {
         console.info("Failed to switch bet position as expected.");

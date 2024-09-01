@@ -14,7 +14,6 @@ import { IERC721MysteryBox } from "./interfaces/IERC721MysteryBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { MethodNotSupported, NoContent, UnsupportedTokenType } from "../../utils/errors.sol";
 
 contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
   using Address for address;

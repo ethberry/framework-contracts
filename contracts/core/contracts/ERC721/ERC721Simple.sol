@@ -17,7 +17,6 @@ import { NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { MethodNotSupported, TemplateZero } from "../utils/errors.sol";
 import { IERC721Simple } from "./interfaces/IERC721Simple.sol";
 
 contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721GeneralizedCollection, NativeRejector {

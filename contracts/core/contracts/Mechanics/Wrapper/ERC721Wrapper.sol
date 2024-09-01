@@ -13,7 +13,6 @@ import { IERC721Wrapper } from "./interfaces/IERC721Wrapper.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset,TokenType,AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
 contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
   mapping(uint256 => Asset[]) internal _itemData;

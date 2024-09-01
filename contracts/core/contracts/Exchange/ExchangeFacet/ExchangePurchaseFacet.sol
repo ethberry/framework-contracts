@@ -13,7 +13,6 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride, Referral {

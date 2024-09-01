@@ -14,7 +14,6 @@ import { ChainLinkBinanceV2Plus } from "@gemunion/contracts-chain-link-v2-plus/c
 import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
-import { LotteryConfig } from "../interfaces/ILottery.sol";
 
 contract LotteryRandomBinance is LotteryRandom, ChainLinkBinanceV2Plus {
   constructor(

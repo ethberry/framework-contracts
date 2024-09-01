@@ -12,7 +12,7 @@ import { METADATA_ROLE, PAUSER_ROLE, MINTER_ROLE } from "@gemunion/contracts-uti
 
 import { LibDiamond } from "../Diamond/lib/LibDiamond.sol";
 import { AccessControlInternal } from "../Diamond/override/AccessControlInternal.sol";
-import {  AccessControlInit, DiamondInit, PausableInit, WalletInit  } from "../Diamond/facets/init/index.sol";
+import { AccessControlInit, DiamondInit, PausableInit, WalletInit } from "../Diamond/facets/init/index.sol";
 
 contract DiamondExchangeInit is Context, DiamondInit, AccessControlInit, PausableInit, WalletInit, AccessControlInternal {
 

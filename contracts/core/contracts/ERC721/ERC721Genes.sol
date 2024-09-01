@@ -11,7 +11,6 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { GENES } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { TemplateZero, MethodNotSupported } from "../utils/errors.sol";
 import { TraitsDnD } from "../Mechanics/Traits/TraitsDnD.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { IERC721Random } from "./interfaces/IERC721Random.sol";

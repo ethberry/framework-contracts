@@ -6,8 +6,9 @@
 
 pragma solidity ^0.8.20;
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
+import { IPonziErrors } from "./IPonziErrors.sol";
 
-interface IPonzi {
+interface IPonzi is IPonziErrors {
   struct RuleTerms {
     uint256 period;
     uint256 penalty;

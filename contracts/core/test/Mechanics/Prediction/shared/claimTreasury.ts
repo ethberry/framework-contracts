@@ -117,7 +117,7 @@ export function shouldClaimTreasury(predictionFactory: () => Promise<any>, betAs
       }
     });
 
-    it("should fail: NoTreasuryAssets", async function () {
+    it("should fail: PredictionNoTreasuryAssets", async function () {
       const predictionInstance = await predictionFactory();
       const betAsset = await betAssetFactory();
       const [_owner, bettor1, bettor2] = await ethers.getSigners();
@@ -145,7 +145,7 @@ export function shouldClaimTreasury(predictionFactory: () => Promise<any>, betAs
       await predictionInstance.claimTreasury();
 
       const txFailed = predictionInstance.claimTreasury();
-      await expect(txFailed).to.be.revertedWithCustomError(predictionInstance, "NoTreasuryAssets");
+      await expect(txFailed).to.be.revertedWithCustomError(predictionInstance, "PredictionNoTreasuryAssets");
 
       if (process.env.VERBOSE) {
         console.info("Double treasury claim was prevented.");

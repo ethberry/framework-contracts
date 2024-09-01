@@ -12,7 +12,6 @@ import { RARITY } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { ERC721Blacklist } from "./ERC721Blacklist.sol";
 import { IERC721Random } from "./interfaces/IERC721Random.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
-import { TemplateZero } from "../utils/errors.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 
 abstract contract ERC721BlacklistRandom is IERC721Random, ERC721Blacklist, Rarity {

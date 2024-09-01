@@ -7,7 +7,7 @@ import { blockAwait } from "@gemunion/contracts-helpers";
 import { deployContract } from "@gemunion/contracts-utils";
 
 import { tokenZero } from "../../constants";
-import type { IRule } from "./interface/staking";
+import type { IRule } from "./interface/ponzi";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { isEqualEventArgArrObj } from "../../utils";
 
@@ -44,7 +44,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.updateRule(2, false);
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "PonziStakeNotExist");
     });
 
     it("should set one Rule", async function () {
@@ -171,10 +171,10 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 2, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "PonziStakeNotExist");
     });
 
-    it("should fail: RuleNotActive", async function () {
+    it("should fail: PonziRuleNotActive", async function () {
       const [owner] = await ethers.getSigners();
 
       const ponziInstance = await deployContract("Ponzi");
@@ -201,7 +201,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 1, { value: 100 });
-      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "RuleNotActive");
+      await expect(tx1).to.be.revertedWithCustomError(ponziInstance, "PonziRuleNotActive");
     });
 
     it("should fail for wrong pay amount", async function () {
@@ -263,7 +263,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       const tx1 = ponziInstance.deposit(owner.address, 1, { value: 1000 });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
     });
 
     it("should stake ERC20", async function () {
@@ -299,7 +299,7 @@ describe("Ponzi", function () {
 
       const tx1 = ponziInstance.deposit(owner.address, 1);
       await expect(tx1)
-        .to.emit(ponziInstance, "StakingStart")
+        .to.emit(ponziInstance, "PonziStart")
         .to.emit(erc20Instance, "Transfer")
         .withArgs(owner.address, ponziInstance, 100);
       const balance2 = await erc20Instance.balanceOf(owner.address);
@@ -308,7 +308,7 @@ describe("Ponzi", function () {
   });
 
   describe("Reward", function () {
-    it("should fail for wrong staking id", async function () {
+    it("should fail for wrong ponzi id", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const ponziInstance = await deployContract("Ponzi");
@@ -343,7 +343,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.connect(receiver).deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
 
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
@@ -374,7 +374,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = ponziInstance.connect(receiver).receiveReward(2, true, true);
-      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "StakeNotExist");
+      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "PonziStakeNotExist");
     });
 
     it("should fail for not an owner", async function () {
@@ -410,7 +410,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.connect(receiver).deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
       // TIME
@@ -429,10 +429,10 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = ponziInstance.receiveReward(1, true, true);
-      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "NotAnOwner");
+      await expect(tx2).to.be.revertedWithCustomError(ponziInstance, "PonziNotAnOwner");
     });
 
-    it("should fail: StakeAlreadyWithdrawn", async function () {
+    it("should fail: PonziStakeAlreadyWithdrawn", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const ponziInstance = await deployContract("Ponzi");
@@ -465,7 +465,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.connect(receiver).deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
       // TIME
@@ -484,7 +484,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = await ponziInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx2).to.emit(ponziInstance, "StakingWithdraw").to.emit(ponziInstance, "StakingFinish");
+      await expect(tx2).to.emit(ponziInstance, "PonziWithdraw").to.emit(ponziInstance, "PonziFinish");
       await expect(tx2).to.changeEtherBalance(
         receiver,
         {
@@ -503,7 +503,7 @@ describe("Ponzi", function () {
       );
 
       const tx3 = ponziInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "StakeAlreadyWithdrawn");
+      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "PonziStakeAlreadyWithdrawn");
     });
 
     it("should stake NATIVE & receive NATIVE", async function () {
@@ -539,7 +539,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
       // TIME
@@ -558,7 +558,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = await ponziInstance.receiveReward(1, true, true);
-      await expect(tx2).to.emit(ponziInstance, "StakingWithdraw").to.emit(ponziInstance, "StakingFinish");
+      await expect(tx2).to.emit(ponziInstance, "PonziWithdraw").to.emit(ponziInstance, "PonziFinish");
       await expect(tx2).to.changeEtherBalance(
         owner,
         {
@@ -611,7 +611,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
       // TIME
@@ -623,8 +623,8 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100 * cycles);
       const tx2 = await ponziInstance.receiveReward(1, true, true);
       await expect(tx2)
-        .to.emit(ponziInstance, "StakingWithdraw")
-        .to.emit(ponziInstance, "StakingFinish")
+        .to.emit(ponziInstance, "PonziWithdraw")
+        .to.emit(ponziInstance, "PonziFinish")
         .to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(100 * cycles);
@@ -664,7 +664,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx1 = ponziInstance.deposit(owner.address, 1);
-      await expect(tx1).to.emit(ponziInstance, "StakingStart").to.emit(erc20Instance, "Transfer");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart").to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
       // TIME
@@ -683,7 +683,7 @@ describe("Ponzi", function () {
         { value: parseEther("1.0") },
       );
       const tx2 = await ponziInstance.receiveReward(1, true, true);
-      await expect(tx2).to.emit(ponziInstance, "StakingWithdraw").to.emit(ponziInstance, "StakingFinish");
+      await expect(tx2).to.emit(ponziInstance, "PonziWithdraw").to.emit(ponziInstance, "PonziFinish");
       await expect(tx2).to.changeEtherBalance(
         owner,
         {
@@ -729,7 +729,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx1 = ponziInstance.deposit(owner.address, 1);
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       await expect(tx1).to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
@@ -739,8 +739,8 @@ describe("Ponzi", function () {
       // REWARD
       await erc20Instance.mint(ponziInstance, 100 * cycles);
       const tx2 = await ponziInstance.receiveReward(1, true, true);
-      await expect(tx2).to.emit(ponziInstance, "StakingWithdraw");
-      await expect(tx2).to.emit(ponziInstance, "StakingFinish");
+      await expect(tx2).to.emit(ponziInstance, "PonziWithdraw");
+      await expect(tx2).to.emit(ponziInstance, "PonziFinish");
       const balance3 = await erc20Instance.balanceOf(owner.address);
       expect(balance3).to.equal(100 * cycles + 100);
     });
@@ -855,7 +855,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
 
@@ -865,7 +865,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx2 = ponziInstance.deposit(owner.address, 2);
-      await expect(tx2).to.emit(ponziInstance, "StakingStart");
+      await expect(tx2).to.emit(ponziInstance, "PonziStart");
       await expect(tx2).to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
@@ -931,7 +931,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
 
@@ -941,7 +941,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx2 = ponziInstance.deposit(owner.address, 2);
-      await expect(tx2).to.emit(ponziInstance, "StakingStart");
+      await expect(tx2).to.emit(ponziInstance, "PonziStart");
       await expect(tx2).to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
@@ -1003,11 +1003,11 @@ describe("Ponzi", function () {
 
       // FINALIZE 1
       const tx3 = ponziInstance.finalizeByRuleId(1);
-      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "ZeroBalance");
+      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "PonziZeroBalance");
 
       // FINALIZE 2
       const tx4 = ponziInstance.finalizeByRuleId(2);
-      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "ZeroBalance");
+      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "PonziZeroBalance");
     });
 
     it("should fail finalize by Token: 0 balance", async function () {
@@ -1058,11 +1058,11 @@ describe("Ponzi", function () {
 
       // FINALIZE 1
       const tx3 = ponziInstance.finalizeByToken(tokenZero);
-      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "ZeroBalance");
+      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "PonziZeroBalance");
 
       // FINALIZE 2
       const tx4 = ponziInstance.finalizeByToken(erc20Instance);
-      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "ZeroBalance");
+      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "PonziZeroBalance");
     });
   });
 
@@ -1145,7 +1145,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
 
@@ -1155,7 +1155,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx2 = ponziInstance.deposit(owner.address, 2);
-      await expect(tx2).to.emit(ponziInstance, "StakingStart");
+      await expect(tx2).to.emit(ponziInstance, "PonziStart");
       await expect(tx2).to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
@@ -1237,7 +1237,7 @@ describe("Ponzi", function () {
       const tx1 = ponziInstance.deposit(owner.address, 1, {
         value: 1000,
       });
-      await expect(tx1).to.emit(ponziInstance, "StakingStart");
+      await expect(tx1).to.emit(ponziInstance, "PonziStart");
       const stakeBalance = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance).to.equal(1000);
 
@@ -1247,7 +1247,7 @@ describe("Ponzi", function () {
       expect(balance1).to.equal(100);
       await erc20Instance.approve(ponziInstance, 100);
       const tx2 = ponziInstance.deposit(owner.address, 2);
-      await expect(tx2).to.emit(ponziInstance, "StakingStart");
+      await expect(tx2).to.emit(ponziInstance, "PonziStart");
       await expect(tx2).to.emit(erc20Instance, "Transfer");
       const balance2 = await erc20Instance.balanceOf(owner.address);
       expect(balance2).to.equal(0);
@@ -1262,11 +1262,11 @@ describe("Ponzi", function () {
           amount: 1000,
         }.amount * 2,
       );
-      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "BalanceExceed");
+      await expect(tx3).to.be.revertedWithCustomError(ponziInstance, "PonziBalanceExceed");
 
       // WITHDRAW 2
       const tx4 = ponziInstance.withdrawToken(erc20Instance, 100 * 2);
-      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "BalanceExceed");
+      await expect(tx4).to.be.revertedWithCustomError(ponziInstance, "PonziBalanceExceed");
     });
   });
 
@@ -1323,7 +1323,7 @@ describe("Ponzi", function () {
       const tx11 = ponziInstance.connect(owner).deposit(receiver.address, 1, {
         value: stakeRule1.deposit.amount,
       });
-      await expect(tx11).to.emit(ponziInstance, "StakingStart");
+      await expect(tx11).to.emit(ponziInstance, "PonziStart");
       const stakeBalance1 = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance1).to.equal(stakeRule1.deposit.amount);
       await expect(tx11)
@@ -1343,7 +1343,7 @@ describe("Ponzi", function () {
       const tx12 = ponziInstance.connect(stranger).deposit(owner.address, 1, {
         value: stakeRule1.deposit.amount,
       });
-      await expect(tx12).to.emit(ponziInstance, "StakingStart");
+      await expect(tx12).to.emit(ponziInstance, "PonziStart");
       const stakeBalance2 = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance2).to.equal(stakeRule1.deposit.amount * 2n);
       await expect(tx12)
@@ -1363,7 +1363,7 @@ describe("Ponzi", function () {
       const tx13 = ponziInstance.connect(receiver).deposit(stranger.address, 1, {
         value: stakeRule1.deposit.amount,
       });
-      await expect(tx13).to.emit(ponziInstance, "StakingStart");
+      await expect(tx13).to.emit(ponziInstance, "PonziStart");
       const stakeBalance3 = await ethers.provider.getBalance(ponziInstance);
       expect(stakeBalance3).to.equal(stakeRule1.deposit.amount * 3n);
       await expect(tx13)

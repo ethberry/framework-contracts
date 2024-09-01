@@ -18,11 +18,10 @@ import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/ro
 
 import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { LotteryConfig, LotteryRoundInfo } from "./interfaces/ILottery.sol";
+import { ILottery } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
-import { ZeroBalance, RoundNotComplete, WrongRound, BalanceExceed, WrongToken, NotOwnerNorApproved, TicketExpired, RoundNotActive, TicketLimitExceed } from "../../utils/errors.sol";
 
-abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeReceiver {
+abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder, NativeReceiver {
   using Address for address;
   using SafeERC20 for IERC20;
 
@@ -83,11 +82,11 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     Round storage currentRound = _rounds[roundId];
 
     if (currentRound.endTimestamp != 0) {
-      revert WrongRound();
+      revert LotteryWrongRound();
     }
 
     if (currentRound.maxTicket > 0 && currentRound.tickets.length >= currentRound.maxTicket) {
-      revert TicketLimitExceed();
+      revert LotteryTicketLimitExceed();
     }
 
     currentRound.tickets.push(numbers);
@@ -102,7 +101,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
     Round memory prevRound = _rounds[_rounds.length - 1];
     if (prevRound.endTimestamp == 0) {
-      revert RoundNotComplete();
+      revert LotteryRoundNotComplete();
     }
 
     Round memory nextRound;
@@ -126,11 +125,11 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
 
     // TODO should never happen?
     if (currentRound.roundId != roundNumber) {
-      revert WrongRound();
+      revert LotteryWrongRound();
     }
 
     if (currentRound.endTimestamp != 0) {
-      revert RoundNotActive();
+      revert LotteryRoundNotActive();
     }
 
     currentRound.endTimestamp = block.timestamp;
@@ -200,22 +199,22 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
   // PRIZE
   function getPrize(uint256 tokenId, uint256 roundId) external {
     if (roundId > _rounds.length - 1) {
-      revert WrongRound();
+      revert LotteryWrongRound();
     }
 
     Round storage ticketRound = _rounds[roundId];
 
     if (ticketRound.endTimestamp == 0) {
-      revert RoundNotComplete();
+      revert LotteryRoundNotComplete();
     }
 
     if (block.timestamp > ticketRound.endTimestamp + _timeLag) {
-      revert TicketExpired();
+      revert LotteryTicketExpired();
     }
 
     // TODO OR approved?
     if (IERC721(ticketRound.ticketAsset.token).ownerOf(tokenId) != _msgSender()) {
-      revert NotOwnerNorApproved(_msgSender());
+      revert LotteryNotOwnerNorApproved(_msgSender());
     }
 
     IERC721LotteryTicket ticketFactory = IERC721LotteryTicket(ticketRound.ticketAsset.token);
@@ -224,12 +223,12 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
 
     // revert if prize already set
     if (data.prize) {
-      revert WrongToken();
+      revert LotteryWrongToken();
     }
 
     // revert if token's roundId differs
     if (data.round != roundId) {
-      revert WrongRound();
+      revert LotteryWrongRound();
     }
 
     // count win numbers
@@ -266,7 +265,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
       if (amount > 0) {
 
         if (amount > ticketRound.total) {
-          revert BalanceExceed();
+          revert LotteryBalanceExceed();
         }
 
         ticketRound.balance -= amount;
@@ -283,20 +282,20 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     } else {
       // TODO burn token if no prize?
       // ticketFactory.burn(tokenId);
-      revert WrongToken();
+      revert LotteryWrongToken();
     }
   }
 
   // RELEASE BALANCE
   function releaseFunds(uint256 roundNumber) external onlyRole(DEFAULT_ADMIN_ROLE) {
     if (roundNumber > _rounds.length - 1) {
-      revert WrongRound();
+      revert LotteryWrongRound();
     }
 
     Round storage ticketRound = _rounds[roundNumber];
 
     if (ticketRound.balance == 0) {
-      revert ZeroBalance();
+      revert LotteryZeroBalance();
     }
 
     uint8[7] memory aggregation = ticketRound.aggregation;
@@ -308,7 +307,7 @@ abstract contract LotteryRandom is AccessControl, Pausable, CoinHolder, NativeRe
     }
 
     if (hasWinners && block.timestamp < ticketRound.endTimestamp + _timeLag) {
-      revert RoundNotComplete();
+      revert LotteryRoundNotComplete();
     }
 
     // RELEASE ALL ROUND BALANCE

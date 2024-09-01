@@ -12,12 +12,11 @@ import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 import { ChainLinkGemunionV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkGemunionV2Plus.sol";
 import { AllTypesHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 
-import { IERC721LootBox, LootBoxConfig} from "./interfaces/IERC721LootBox.sol";
+import { IERC721LootBox} from "./interfaces/IERC721LootBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { TopUp } from "../../utils/TopUp.sol";
 import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
-import { MethodNotSupported, NoContent } from "../../utils/errors.sol";
 
 abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesHolder, TopUp {
   using Address for address;

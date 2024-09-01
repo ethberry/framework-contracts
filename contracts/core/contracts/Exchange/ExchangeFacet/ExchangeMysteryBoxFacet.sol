@@ -13,7 +13,6 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NoContent } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referral {
@@ -35,10 +34,6 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referra
     address signer = _recoverOneToManyToManySignature(params, item, price, content, config, signature);
     if (!_hasRole(MINTER_ROLE, signer)) {
       revert SignerMissingRole();
-    }
-
-    if (content.length == 0) {
-      revert NoContent();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));

@@ -7,10 +7,10 @@
 pragma solidity ^0.8.20;
 
 import { Asset, Params } from "../../../Exchange/lib/interfaces/IAsset.sol";
+import { ITokenValidationErrors } from "../../../Exchange/interfaces/ITokenValidationErrors.sol";
+import { IStakingErrors } from "./IStakingErrors.sol";
 
-
-
-interface IStaking {
+interface IStaking is IStakingErrors, ITokenValidationErrors {
   // TODO move period, penalty, maxStake? to StakingTerms
   struct StakingTerms {
     uint256 penalty;

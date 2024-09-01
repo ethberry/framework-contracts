@@ -15,9 +15,9 @@ import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole, NoItems } from "../../utils/errors.sol";
+import { IRentableErrors } from "../interfaces/IRentableErrors.sol";
 
-contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
+contract ExchangeRentableFacet is IRentableErrors, SignatureValidator, DiamondOverride {
   using SafeCast for uint256;
 
   event Lend(address account, address to, uint64 expires, uint256 externalId, Asset item, Asset[] price);
@@ -77,7 +77,7 @@ contract ExchangeRentableFacet is SignatureValidator, DiamondOverride {
     }
 
     if (items.length == 0) {
-      revert NoItems();
+      revert RentableNoItems();
     }
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));

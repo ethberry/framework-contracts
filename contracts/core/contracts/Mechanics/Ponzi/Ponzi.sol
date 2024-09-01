@@ -20,7 +20,6 @@ import { TopUp } from "../../utils/TopUp.sol";
 import { IPonzi } from "./interfaces/IPonzi.sol";
 import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
-import { ZeroBalance, StakeNotExist, RuleNotActive, BalanceExceed, DepositNotComplete, StakeAlreadyWithdrawn, NotAnOwner, StakeNotExist } from "../../utils/errors.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract Ponzi is
@@ -42,9 +41,9 @@ contract Ponzi is
   mapping(uint256 => Rule) internal _rules;
   mapping(uint256 => Stake) internal _stakes;
 
-  event StakingStart(uint256 stakingId, uint256 ruleId, address owner, uint256 startTimestamp, uint256 tokenId);
-  event StakingWithdraw(uint256 stakingId, address owner, uint256 withdrawTimestamp);
-  event StakingFinish(uint256 stakingId, address owner, uint256 finishTimestamp, uint256 multiplier);
+  event PonziStart(uint256 ponziId, uint256 ruleId, address owner, uint256 startTimestamp, uint256 tokenId);
+  event PonziWithdraw(uint256 ponziId, address owner, uint256 withdrawTimestamp);
+  event PonziFinish(uint256 ponziId, address owner, uint256 finishTimestamp, uint256 multiplier);
   event WithdrawToken(address token, uint256 amount);
   event FinalizedToken(address token, uint256 amount);
 
@@ -73,10 +72,10 @@ contract Ponzi is
 
     // Ensure that the rule exists and is active
     if (rule.terms.period == 0) {
-      revert StakeNotExist();
+      revert PonziStakeNotExist();
     }
     if (!rule.active) {
-      revert RuleNotActive();
+      revert PonziRuleNotActive();
     }
 
     uint256 stakeId = ++_stakeIdCounter;
@@ -84,7 +83,7 @@ contract Ponzi is
     Asset memory depositItem = Asset(rule.deposit.tokenType, rule.deposit.token, 0, rule.deposit.amount);
     _stakes[stakeId] = Stake(_msgSender(), depositItem, ruleId, block.timestamp, 0, true);
 
-    emit StakingStart(stakeId, ruleId, _msgSender(), block.timestamp, 0);
+    emit PonziStart(stakeId, ruleId, _msgSender(), block.timestamp, 0);
 
     // Transfer tokens from user to this contract.
     ExchangeUtils.spendFrom(ExchangeUtils._toArray(depositItem), _msgSender(), address(this), _allowedTypes);
@@ -107,13 +106,13 @@ contract Ponzi is
 
     // Verify that the stake exists and the caller is the owner of the stake.
     if (stake.owner == address(0)) {
-      revert StakeNotExist();
+      revert PonziStakeNotExist();
     }
     if (stake.owner != _msgSender()) {
-      revert NotAnOwner(_msgSender());
+      revert PonziNotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
-      revert StakeAlreadyWithdrawn();
+      revert PonziStakeAlreadyWithdrawn();
     }
 
     uint256 startTimestamp = stake.startTimestamp;
@@ -123,7 +122,7 @@ contract Ponzi is
     address payable receiver = payable(stake.owner);
 
     if (withdrawDeposit) {
-      emit StakingWithdraw(stakeId, receiver, block.timestamp);
+      emit PonziWithdraw(stakeId, receiver, block.timestamp);
       stake.activeDeposit = false;
 
       // PENALTY
@@ -154,7 +153,7 @@ contract Ponzi is
     }
 
     if (multiplier > 0) {
-      emit StakingFinish(stakeId, receiver, block.timestamp, multiplier);
+      emit PonziFinish(stakeId, receiver, block.timestamp, multiplier);
       stake.cycles += multiplier;
 
       Asset storage reward = rule.reward;
@@ -171,7 +170,7 @@ contract Ponzi is
     }
 
     if (multiplier == 0 && !withdrawDeposit && !breakLastPeriod) {
-      revert DepositNotComplete();
+      revert PonziDepositNotComplete();
     }
   }
 
@@ -205,7 +204,7 @@ contract Ponzi is
   function _updateRule(uint256 ruleId, bool active) internal {
     Rule storage rule = _rules[ruleId];
     if (rule.terms.period == 0) {
-      revert StakeNotExist();
+      revert PonziStakeNotExist();
     }
     _rules[ruleId].active = active;
     emit RuleUpdated(ruleId, active);
@@ -221,7 +220,7 @@ contract Ponzi is
       //      require(totalBalance >= amount, "Ponzi: balance exceeded");
       //      Address.sendValue(payable(_msgSender()), amount);
       if (totalBalance < amount) {
-        revert BalanceExceed();
+        revert PonziBalanceExceed();
       }
 
       ExchangeUtils.spend(
@@ -232,7 +231,7 @@ contract Ponzi is
     } else {
       totalBalance = IERC20(token).balanceOf(address(this));
       if (totalBalance < amount) {
-        revert BalanceExceed();
+        revert PonziBalanceExceed();
       }
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.ERC20, token, 0, amount)),
@@ -250,13 +249,13 @@ contract Ponzi is
     if (token == address(0)) {
       finalBalance = address(this).balance;
       if (finalBalance == 0) {
-        revert ZeroBalance();
+        revert PonziZeroBalance();
       }
       Address.sendValue(payable(_msgSender()), finalBalance);
     } else {
       finalBalance = IERC20(token).balanceOf(address(this));
       if (finalBalance == 0) {
-        revert ZeroBalance();
+        revert PonziZeroBalance();
       }
       SafeERC20.safeTransfer(IERC20(token), _msgSender(), finalBalance);
     }
@@ -268,7 +267,7 @@ contract Ponzi is
 
     // Ensure that the rule exists
     if (rule.terms.period == 0) {
-      revert StakeNotExist();
+      revert PonziStakeNotExist();
     }
 
     address token = rule.deposit.token;
@@ -277,7 +276,7 @@ contract Ponzi is
     if (token == address(0)) {
       finalBalance = address(this).balance;
       if (finalBalance == 0) {
-        revert ZeroBalance();
+        revert PonziZeroBalance();
       }
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.NATIVE, token, 0, finalBalance)),
@@ -287,7 +286,7 @@ contract Ponzi is
     } else {
       finalBalance = IERC20(token).balanceOf(address(this));
       if (finalBalance == 0) {
-        revert ZeroBalance();
+        revert PonziZeroBalance();
       }
       ExchangeUtils.spend(
         ExchangeUtils._toArray(Asset(TokenType.ERC20, token, 0, finalBalance)),

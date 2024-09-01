@@ -74,7 +74,7 @@ export function shouldSetReward(factory: () => Promise<any>) {
         .withArgs(receiver.address, DEFAULT_ADMIN_ROLE);
     });
 
-    it("should fail: NoReward", async function () {
+    it("should fail: WaitListNoReward", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -96,10 +96,10 @@ export function shouldSetReward(factory: () => Promise<any>) {
       };
 
       const tx = contractInstance.setReward(params, []);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "NoReward");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "WaitListNoReward");
     });
 
-    it("should fail: RootAlreadySet", async function () {
+    it("should fail: WaitListRootAlreadySet", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
 
       const contractInstance = await factory();
@@ -135,7 +135,7 @@ export function shouldSetReward(factory: () => Promise<any>) {
         .withArgs(params.externalId, merkleTree.root, isEqualEventArgArrObj(...items));
 
       const tx2 = contractInstance.setReward(params, items);
-      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "RootAlreadySet");
+      await expect(tx2).to.be.revertedWithCustomError(contractInstance, "WaitListRootAlreadySet");
     });
   });
 }

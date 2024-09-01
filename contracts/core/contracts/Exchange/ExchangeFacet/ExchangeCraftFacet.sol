@@ -13,7 +13,6 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
-import { SignerMissingRole } from "../../utils/errors.sol";
 
 contract ExchangeCraftFacet is SignatureValidator, DiamondOverride {
   event Craft(address account, uint256 externalId, Asset[] items, Asset[] price);
