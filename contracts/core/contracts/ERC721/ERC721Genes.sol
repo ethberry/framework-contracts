@@ -62,7 +62,7 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
   function breed(
     uint256 motherId,
     uint256 fatherId
-  ) external onlyRole(MINTER_ROLE) {
+  ) external {
     if (ownerOf(motherId) != _msgSender() && getApproved(motherId) != _msgSender()) {
       revert NotOwnerNorApproved(_msgSender());
     }

@@ -3,10 +3,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contract
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
 import { deployERC721 } from "./shared/fixtures";
-import { shouldNotMint } from "./shared/simple/base/shouldNotMint";
-import { shouldNotSafeMint } from "./shared/simple/base/shouldNotSafeMint";
-import { shouldNotMintCommon } from "./shared/shouldNotMintCommon";
-import { shouldMintRandomGenes } from "./shared/random/mintRandom";
+import { shouldBehaveLikeERC721Genes } from "./shared/genes/genesBehavior";
 import { FrameworkInterfaceId } from "../constants";
 
 describe("ERC721Genes", function () {
@@ -14,10 +11,7 @@ describe("ERC721Genes", function () {
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);
 
-  shouldNotMint(factory);
-  shouldNotMintCommon(factory);
-  shouldNotSafeMint(factory);
-  shouldMintRandomGenes(factory);
+  shouldBehaveLikeERC721Genes(factory);
 
   shouldSupportsInterface(factory)([
     InterfaceId.IERC165,
@@ -25,7 +19,7 @@ describe("ERC721Genes", function () {
     InterfaceId.IERC721,
     InterfaceId.IERC721Metadata,
     InterfaceId.IRoyalty,
-    FrameworkInterfaceId.ERC721Random,
+    FrameworkInterfaceId.ERC721Genes,
     FrameworkInterfaceId.ERC721Simple,
   ]);
 });

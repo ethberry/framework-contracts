@@ -52,6 +52,7 @@ export const tokenAttributes = {
 export enum FrameworkInterfaceId {
   ERC721Simple = "0xbf290e49",
   ERC721Random = "0x32034d27",
+  ERC721Genes = "0x06cc81f2",
   ERC721Mystery = "0xf0f47261",
   ERC721Loot = "0x3d97437a",
   IERC721Discrete = "0x1b7abe93",

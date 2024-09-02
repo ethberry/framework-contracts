@@ -11,6 +11,7 @@ import "hardhat/console.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC721Discrete } from "../../ERC721/interfaces/IERC721Discrete.sol";
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
+import { IERC721Genes } from "../../ERC721/interfaces/IERC721Genes.sol";
 
 import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IERC721LootBox } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";
@@ -26,6 +27,8 @@ contract InterfaceIdCalculator {
     console.logBytes4(type(IERC721Discrete).interfaceId);
     console.logString("IERC721Random");
     console.logBytes4(type(IERC721Random).interfaceId);
+    console.logString("IERC721Genes");
+    console.logBytes4(type(IERC721Genes).interfaceId);
 
     console.logString("IERC721MysteryBox");
     console.logBytes4(type(IERC721MysteryBox).interfaceId);
