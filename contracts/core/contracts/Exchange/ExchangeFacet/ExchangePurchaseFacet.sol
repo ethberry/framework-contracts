@@ -8,7 +8,6 @@ pragma solidity ^0.8.20;
 
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";

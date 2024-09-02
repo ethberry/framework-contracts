@@ -6,8 +6,6 @@
 
 pragma solidity ^0.8.20;
 
-import "hardhat/console.sol";
-
 import { IDiamondErrors } from "../../Diamond/interfaces/IDiamondErrors.sol";
 import { IDiamondInitErrors } from "../../Diamond/interfaces/IDiamondInitErrors.sol";
 import { ISignatureValidatorErrors } from "../../Exchange/interfaces/ISignatureValidatorErrors.sol";
@@ -23,7 +21,6 @@ import { IRaffleErrors } from "../../Mechanics/Raffle/interfaces/IRaffleErrors.s
 import { IStakingErrors } from "../../Mechanics/Staking/interfaces/IStakingErrors.sol";
 import { IPonziErrors } from "../../Mechanics/Ponzi/interfaces/IPonziErrors.sol";
 import { IWaitListErrors } from "../../Mechanics/WaitList/interfaces/IWaitListErrors.sol";
-
 
 contract ErrorsIdCalculator is
 IDiamondErrors,

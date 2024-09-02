@@ -328,19 +328,6 @@ library ExchangeUtils {
     return items;
   }
 
-  /**
-   * @dev Utility function that concatenate item and price into array of items
-   *
-   * @param item a single Asset to be converted to array
-   * @param price a single Asset to be converted to array
-   */
-  function _toArrayConcat(Asset memory item, Asset memory price) internal pure returns (Asset[] memory) {
-    Asset[] memory items = new Asset[](2);
-    items[0] = item;
-    items[1] = price;
-    return items;
-  }
-
   function _isERC1363Supported(address receiver, address token) internal view returns (bool) {
     return
       (receiver == address(this) ||

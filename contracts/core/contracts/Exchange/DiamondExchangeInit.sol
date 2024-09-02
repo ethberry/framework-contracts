@@ -16,12 +16,12 @@ import { AccessControlInit, DiamondInit, PausableInit, WalletInit } from "../Dia
 
 contract DiamondExchangeInit is Context, DiamondInit, AccessControlInit, PausableInit, WalletInit, AccessControlInternal {
 
-    function init() public override(DiamondInit, AccessControlInit, PausableInit, WalletInit) {
-        super.init();
+  function init() public override(DiamondInit, AccessControlInit, PausableInit, WalletInit) {
+    super.init();
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _grantRole(MINTER_ROLE, _msgSender());
-        _grantRole(PAUSER_ROLE, _msgSender());
-        _grantRole(METADATA_ROLE, _msgSender());
-    }
+    _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    _grantRole(MINTER_ROLE, _msgSender());
+    _grantRole(PAUSER_ROLE, _msgSender());
+    _grantRole(METADATA_ROLE, _msgSender());
+  }
 }

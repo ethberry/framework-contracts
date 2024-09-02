@@ -16,11 +16,11 @@ import { IERC1363Spender } from "@gemunion/contracts-erc1363/contracts/interface
 import { LibDiamond } from "../../lib/LibDiamond.sol";
 
 contract WalletInit {
-    function init() public virtual {
-        LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-        ds.supportedInterfaces[type(IERC1363Receiver).interfaceId] = true;
-        ds.supportedInterfaces[type(IERC1363Spender).interfaceId] = true;
-        ds.supportedInterfaces[type(IERC721Receiver).interfaceId] = true;
-        ds.supportedInterfaces[type(IERC1155Receiver).interfaceId] = true;
-    }
+  function init() public virtual {
+    LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
+    ds.supportedInterfaces[type(IERC1363Receiver).interfaceId] = true;
+    ds.supportedInterfaces[type(IERC1363Spender).interfaceId] = true;
+    ds.supportedInterfaces[type(IERC721Receiver).interfaceId] = true;
+    ds.supportedInterfaces[type(IERC1155Receiver).interfaceId] = true;
+  }
 }

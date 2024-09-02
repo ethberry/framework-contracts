@@ -6,13 +6,13 @@
 
 pragma solidity ^0.8.0;
 
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import { IERC165 } from "../../interfaces/IERC165.sol";
 
 import { LibDiamond } from "../../lib/LibDiamond.sol";
 
-contract AccessControlInit {
+contract LoupeInit {
   function init() public virtual {
     LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
-    ds.supportedInterfaces[type(IAccessControl).interfaceId] = true;
+    ds.supportedInterfaces[type(IERC165).interfaceId] = true;
   }
 }
