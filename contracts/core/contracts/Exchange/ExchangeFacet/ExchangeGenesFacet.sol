@@ -23,42 +23,22 @@ import { PregnancyFrequencyExceeded, PregnancyThresholdExceeded, SignerMissingRo
 contract ExchangeGenesFacet is SignatureValidator, DiamondOverride {
   event Breed(address account, uint256 externalId, Asset matron, Asset sire);
 
-  uint256 internal PREGNANCY_THRESHOLD_LIMIT = 3;
-  uint256 internal PREGNANCY_FREQUENCY_LIMIT = 7 * 24 * 60 * 60; // one week
+  uint256 public constant PREGNANCY_THRESHOLD_LIMIT = 3;
+  uint256 public constant PREGNANCY_FREQUENCY_LIMIT = 7 * 24 * 60 * 60; // one week
 
   constructor() SignatureValidator() {}
 
-  function breed(
-    Params memory params,
-    Asset memory mother,
-    Asset memory father,
-    bytes calldata signature
-  ) external payable whenNotPaused {
-    _validateParams(params);
-
-    address signer = _recoverOneToOneSignature(params, mother, father, signature);
-    if (!_hasRole(MINTER_ROLE, signer)) {
-      revert SignerMissingRole();
-    }
-
-    allowanceCheckup(mother, father);
-    pregnancyCheckup(mother, father);
-
-    IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
-
-    emit Breed(_msgSender(), params.externalId, mother, father);
-  }
-
-  function allowanceCheckup(Asset memory mother, Asset memory father) internal pure {
+  modifier checkAllowance(Asset memory mother, Asset memory father) {
     if (mother.token != father.token) {
-       revert GenesDifferentContracts();
+      revert GenesDifferentContracts();
     }
+    _;
   }
 
-  function pregnancyCheckup(Asset memory mother, Asset memory father) internal view {
+  modifier checkPregnancy(Asset memory mother, Asset memory father) {
     uint256 motherPregnancyCounter = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_COUNTER);
     if (motherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-      revert PregnancyThresholdExceeded();
+      revert PregnancyThresholdExceeded(motherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
     }
 
     uint256 motherPregnancyTimestamp = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_TIMESTAMP);
@@ -68,12 +48,31 @@ contract ExchangeGenesFacet is SignatureValidator, DiamondOverride {
 
     uint256 fatherPregnancyCounter = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_COUNTER);
     if (fatherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-      revert PregnancyThresholdExceeded();
+      revert PregnancyThresholdExceeded(fatherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
     }
 
     uint256 fatherPregnancyTimestamp = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_TIMESTAMP);
     if (block.timestamp - fatherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
       revert PregnancyFrequencyExceeded();
     }
+    _;
+  }
+
+  function breed(
+    Params memory params,
+    Asset memory mother,
+    Asset memory father,
+    bytes calldata signature
+  ) external payable whenNotPaused checkAllowance(mother, father) checkPregnancy(mother, father) {
+    _validateParams(params);
+
+    address signer = _recoverOneToOneSignature(params, mother, father, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
+      revert SignerMissingRole();
+    }
+
+    IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
+
+    emit Breed(_msgSender(), params.externalId, mother, father);
   }
 }

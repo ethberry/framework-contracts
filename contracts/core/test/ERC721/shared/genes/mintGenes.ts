@@ -29,5 +29,29 @@ export function shouldMintGenes(factory: () => Promise<any>) {
         "TemplateZero",
       );
     });
+
+    it("should fail to mint with invalid genes", async function () {
+      const [owner] = await ethers.getSigners();
+      const contractInstance = await factory();
+
+      await expect(contractInstance.mintGenes(owner, 1, -1)).to.be.revertedWith("InvalidGenes");
+    });
+
+    it("should mint multiple tokens with different genes", async function () {
+      const [_owner, receiver] = await ethers.getSigners();
+      const contractInstance = await factory();
+
+      const tx1 = await contractInstance.mintGenes(receiver, 1, 12345);
+      await expect(tx1).to.emit(contractInstance, "Transfer").withArgs(ethers.ZeroAddress, receiver, 1);
+
+      const tx2 = await contractInstance.mintGenes(receiver, 2, 67890);
+      await expect(tx2).to.emit(contractInstance, "Transfer").withArgs(ethers.ZeroAddress, receiver, 2);
+
+      const genes1 = await contractInstance.getRecordFieldValue(1, tokenAttributes.GENES);
+      expect(genes1).to.equal(12345);
+
+      const genes2 = await contractInstance.getRecordFieldValue(2, tokenAttributes.GENES);
+      expect(genes2).to.equal(67890);
+    });
   });
 }

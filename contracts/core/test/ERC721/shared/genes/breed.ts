@@ -29,11 +29,9 @@ export function shouldBreed(factory: () => Promise<any>) {
 
       const contractInstance = await factory();
 
-      // Set VRFV2 Subscription
       const tx01 = await contractInstance.setSubscriptionId(subId);
       await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
 
-      // Add Consumer to VRFV2
       const tx02 = await vrfInstance.addConsumer(subId, contractInstance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
 
@@ -47,7 +45,6 @@ export function shouldBreed(factory: () => Promise<any>) {
       // Simulate Chainlink VRF response
       await randomRequest(contractInstance, vrfInstance, 54321n);
 
-      // Verify the new token's owner and genes
       const newTokenId = await contractInstance.totalSupply();
       const newTokenOwner = await contractInstance.ownerOf(newTokenId);
       expect(newTokenOwner).to.equal(receiver.address);
@@ -62,11 +59,9 @@ export function shouldBreed(factory: () => Promise<any>) {
 
       const contractInstance = await factory();
 
-      // Set VRFV2 Subscription
       const tx01 = await contractInstance.setSubscriptionId(subId);
       await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
 
-      // Add Consumer to VRFV2
       const tx02 = await vrfInstance.addConsumer(subId, contractInstance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
 
@@ -79,6 +74,49 @@ export function shouldBreed(factory: () => Promise<any>) {
         contractInstance,
         "NotOwnerNorApproved",
       );
+    });
+
+    it("should revert if tokens are not owned by the same address", async function () {
+      const { vrfInstance, subId } = await loadFixture(deployLinkVrfFixture);
+      const [owner, receiver, other] = await ethers.getSigners();
+      const genes = 12345;
+
+      const contractInstance = await factory();
+
+      const tx01 = await contractInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
+
+      const tx02 = await vrfInstance.addConsumer(subId, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
+
+      // Mint two tokens for breeding
+      await contractInstance.mintGenes(receiver.address, templateId, genes);
+      await contractInstance.mintGenes(other.address, templateId, genes);
+
+      // Attempt to breed tokens owned by different addresses
+      await expect(contractInstance.connect(receiver).breed(1, 2)).to.be.revertedWithCustomError(
+        contractInstance,
+        "NotOwnerNorApproved",
+      );
+    });
+
+    it("should revert if one of the tokens does not exist", async function () {
+      const [_owner, receiver] = await ethers.getSigners();
+      const genes = 12345;
+
+      const contractInstance = await factory();
+
+      const tx01 = await contractInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(contractInstance, "VrfSubscriptionSet").withArgs(subId);
+
+      const tx02 = await vrfInstance.addConsumer(subId, contractInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
+
+      // Mint one token for breeding
+      await contractInstance.mintGenes(receiver.address, templateId, genes);
+
+      // Attempt to breed with a non-existent token
+      await expect(contractInstance.connect(receiver).breed(1, 999)).to.be.revertedWith("ERC721: owner query for nonexistent token");
     });
   });
 }
