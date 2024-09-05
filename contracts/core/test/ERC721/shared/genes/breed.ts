@@ -8,8 +8,22 @@ import { deployLinkVrfFixture } from "../../../shared/link";
 
 export function shouldBreed(factory: () => Promise<any>) {
   describe("breed", function () {
+    let vrfInstance: VRFCoordinatorV2PlusMock;
+    let subId: bigint;
+
+    before(async function () {
+      await network.provider.send("hardhat_reset");
+
+        ({ vrfInstance, subId } = await loadFixture(function exchange() {
+        return deployLinkVrfFixture();
+      }));
+    });
+
+    after(async function () {
+      await network.provider.send("hardhat_reset");
+    });
+    
     it("should breed successfully", async function () {
-      const { vrfInstance, subId } = await loadFixture(deployLinkVrfFixture);
       const [_owner, receiver] = await ethers.getSigners();
       const genes = 12345;
 
@@ -43,7 +57,6 @@ export function shouldBreed(factory: () => Promise<any>) {
     });
 
     it("should revert if sender is not owner nor approved", async function () {
-      const { vrfInstance, subId } = await loadFixture(deployLinkVrfFixture);
       const [owner, receiver, other] = await ethers.getSigners();
       const genes = 12345;
 
