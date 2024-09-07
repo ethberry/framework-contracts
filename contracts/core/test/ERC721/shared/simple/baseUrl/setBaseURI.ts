@@ -14,7 +14,7 @@ export function shouldSetBaseURI(factory: () => Promise<any>, options: IERC721En
       const [owner] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
+      await mint(contractInstance, owner, owner);
       const tx = contractInstance.setBaseURI(newURI);
 
       await expect(tx).to.emit(contractInstance, "BaseURIUpdate").withArgs(newURI);

@@ -16,7 +16,7 @@ export function shouldBehaveLikeERC721Blacklist(factory: () => Promise<any>, opt
       await mint(contractInstance, owner, owner);
       await contractInstance.blacklist(owner);
       const tx = contractInstance.transferFrom(owner, receiver, defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner);
     });
 
     it("should fail: BlackListError (transferFrom to)", async function () {
@@ -27,7 +27,7 @@ export function shouldBehaveLikeERC721Blacklist(factory: () => Promise<any>, opt
       await contractInstance.blacklist(receiver);
 
       const tx = contractInstance.transferFrom(owner, receiver, defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: BlackListError (safeTransferFrom from)", async function () {
@@ -38,7 +38,7 @@ export function shouldBehaveLikeERC721Blacklist(factory: () => Promise<any>, opt
       await contractInstance.blacklist(owner);
 
       const tx = contractInstance["safeTransferFrom(address,address,uint256)"](owner, receiver, defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner);
     });
 
     it("should fail: BlackListError (safeTransferFrom to)", async function () {
@@ -49,21 +49,21 @@ export function shouldBehaveLikeERC721Blacklist(factory: () => Promise<any>, opt
       await contractInstance.blacklist(receiver);
 
       const tx = contractInstance["safeTransferFrom(address,address,uint256)"](owner, receiver, defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: BlackListError (transferFrom approved)", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
-      await contractInstance.blacklist(receiver.address);
-      await contractInstance.approve(receiver.address, defaultTokenId);
+      await mint(contractInstance, owner, owner);
+      await contractInstance.blacklist(receiver);
+      await contractInstance.approve(receiver, defaultTokenId);
 
       const tx = contractInstance
         .connect(receiver)
         ["safeTransferFrom(address,address,uint256)"](owner, receiver, defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: BlackListError (mintCommon)", async function () {
@@ -72,18 +72,18 @@ export function shouldBehaveLikeERC721Blacklist(factory: () => Promise<any>, opt
 
       await contractInstance.blacklist(receiver);
       const tx = mint(contractInstance, owner, receiver);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: BlackListError (burn)", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, receiver.address);
-      await contractInstance.blacklist(receiver.address);
+      await mint(contractInstance, owner, receiver);
+      await contractInstance.blacklist(receiver);
 
       const tx = contractInstance.connect(receiver).burn(defaultTokenId);
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
   });
 }

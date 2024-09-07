@@ -14,8 +14,8 @@ export function shouldTransferFrom(factory: () => Promise<any>, options: IERC721
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
-      const tx = contractInstance.transferFrom(owner.address, receiver.address, defaultTokenId);
+      await mint(contractInstance, owner, owner);
+      const tx = contractInstance.transferFrom(owner, receiver, defaultTokenId);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "Soulbound");
     });
 
@@ -23,10 +23,10 @@ export function shouldTransferFrom(factory: () => Promise<any>, options: IERC721
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
-      await contractInstance.approve(receiver.address, defaultTokenId);
+      await mint(contractInstance, owner, owner);
+      await contractInstance.approve(receiver, defaultTokenId);
 
-      const tx = contractInstance.connect(receiver).transferFrom(owner.address, receiver.address, defaultTokenId);
+      const tx = contractInstance.connect(receiver).transferFrom(owner, receiver, defaultTokenId);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "Soulbound");
     });
   });

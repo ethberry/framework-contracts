@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
-import { FacetCutAction, getSelector, getSelectors } from "../../shared/diamond";
 import { BaseContract, ZeroAddress, Result } from "ethers";
+
+import { FacetCutAction, getSelector, getSelectors } from "../../shared/diamond";
 import { recursivelyDecodeResult } from "../../utils";
 
 export interface IDiamondCut {
@@ -71,20 +72,19 @@ export async function deployDiamond(
   await diamondCutFacet.waitForDeployment();
   if (log) console.info("DiamondCutFacet deployed:", await diamondCutFacet.getAddress());
 
-  // DEPLOY DIAMOND
+  // deploy Diamond
   const diamondFactory = await ethers.getContractFactory(DiamondName);
   const diamond = await diamondFactory.deploy(owner.address, await diamondCutFacet.getAddress());
   await diamond.waitForDeployment();
   if (log) console.info("Diamond deployed:", await diamond.getAddress());
 
-  // DEPLOY DIAMOND-INIT (diamondInit)
-  /* DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
-     Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions  */
-
+  // deploy DiamondInit
+  // DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
+  // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
   const diamondInitFactory = await ethers.getContractFactory(InitContractName);
   const diamondInit = await diamondInitFactory.deploy();
   await diamondInit.waitForDeployment();
-  if (log) console.info("DiamondInit deployed:", await diamondInit.getAddress());
+  // if (log) console.info("DiamondInit deployed:", await diamond.getAddress());
 
   // * deploy facets
   if (log) console.info("");
@@ -105,11 +105,11 @@ export async function deployDiamond(
   // cut Facets & Init
   if (log) console.info("");
   if (log) console.info("Diamond Cut:", cut);
-  const diamondCut = await ethers.getContractAt("IDiamondCut", await diamond.getAddress());
+  const diamondCut = await ethers.getContractAt("IDiamondCut", diamond);
   // upgrade diamond with facets & call to init function
   const functionCall = diamondInit.interface.encodeFunctionData("init");
 
-  const tx = await diamondCut.diamondCut(cut, await diamondInit.getAddress(), functionCall);
+  const tx = await diamondCut.diamondCut(cut, diamondInit, functionCall);
 
   if (log) console.info("Diamond cut tx: ", tx.hash);
   const receipt = await tx.wait();

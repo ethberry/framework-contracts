@@ -12,7 +12,7 @@ import {
   recursivelyDecodeResult,
 } from "../../utils";
 import { externalId } from "../../constants";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("LotteryFactoryDiamoond", function () {
   const factory = async (facetName = "LotteryFactoryFacet"): Promise<any> => {

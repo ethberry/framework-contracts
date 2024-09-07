@@ -100,7 +100,7 @@
     "prepare:contracts:besu": "hardhat --network besu run scripts/deploy-dev.ts",
     "prepublish": "npm run build",
     "solhint": "solhint -f table contracts/**/*.sol --fix --noPrompt",
-    "test": "NODE_ENV=test hardhat test --network hardhat"
+    "test": "NODE_ENV=test hardhat test"
   },
   "types": "./typechain-types/index.ts",
   "version": "0.0.1"

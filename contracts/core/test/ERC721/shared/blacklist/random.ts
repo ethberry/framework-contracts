@@ -27,14 +27,14 @@ export function shouldBehaveLikeERC721BlacklistRandom(factory: () => Promise<any
 
       await vrfInstance.addConsumer(subId, contractInstance);
 
-      await contractInstance.blacklist(receiver.address);
-      const tx = contractInstance.mintRandom(receiver.address, templateId);
+      await contractInstance.blacklist(receiver);
+      const tx = contractInstance.mintRandom(receiver, templateId);
 
       if (network.name === "hardhat") {
         await randomRequest(contractInstance, vrfInstance);
       }
 
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
   });
 }

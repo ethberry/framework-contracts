@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 
 import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 
-import { deployDiamond } from "./shared/fixture";
+import { deployDiamond } from "../Exchange/shared";
 
 describe.skip("PausableFacetDiamond", function () {
   const factory = async (facetName = "PausableFacet"): Promise<any> => {

@@ -9,7 +9,7 @@ export function shouldNotMintCommon(factory: () => Promise<any>) {
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      const tx = contractInstance.mintCommon(receiver.address, 1);
+      const tx = contractInstance.mintCommon(receiver, 1);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "MethodNotSupported");
     });
 
@@ -17,10 +17,10 @@ export function shouldNotMintCommon(factory: () => Promise<any>) {
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      const tx = contractInstance.connect(receiver).mintCommon(receiver.address, 1);
+      const tx = contractInstance.connect(receiver).mintCommon(receiver, 1);
       await expect(tx)
         .to.be.revertedWithCustomError(contractInstance, "AccessControlUnauthorizedAccount")
-        .withArgs(receiver.address, MINTER_ROLE);
+        .withArgs(receiver, MINTER_ROLE);
     });
   });
 }

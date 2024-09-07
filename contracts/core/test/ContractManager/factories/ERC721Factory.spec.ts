@@ -14,7 +14,7 @@ import {
 
 import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC721FactoryDiamond", function () {
   const factory = async (facetName = "ERC721FactoryFacet"): Promise<any> => {

@@ -11,72 +11,68 @@ export function shouldBehaveLikeERC1155BlackList(factory: () => Promise<any>) {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(owner.address);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(owner);
 
-      const tx = contractInstance.safeTransferFrom(owner.address, receiver.address, tokenId, amount, "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner.address);
+      const tx = contractInstance.safeTransferFrom(owner, receiver, tokenId, amount, "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner);
     });
 
     it("should fail: safeTransferFrom to", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(receiver.address);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(receiver);
 
-      const tx = contractInstance.safeTransferFrom(owner.address, receiver.address, tokenId, amount, "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      const tx = contractInstance.safeTransferFrom(owner, receiver, tokenId, amount, "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: safeTransferFrom approved", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(receiver.address);
-      await contractInstance.setApprovalForAll(stranger.address, true);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(receiver);
+      await contractInstance.setApprovalForAll(stranger, true);
 
-      const tx = contractInstance
-        .connect(stranger)
-        .safeTransferFrom(owner.address, receiver.address, tokenId, amount, "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      const tx = contractInstance.connect(stranger).safeTransferFrom(owner, receiver, tokenId, amount, "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: safeBatchTransferFrom from", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(owner.address);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(owner);
 
-      const tx = contractInstance.safeBatchTransferFrom(owner.address, receiver.address, [tokenId], [amount], "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner.address);
+      const tx = contractInstance.safeBatchTransferFrom(owner, receiver, [tokenId], [amount], "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(owner);
     });
 
     it("should fail: safeBatchTransferFrom to", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(receiver.address);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(receiver);
 
-      const tx = contractInstance.safeBatchTransferFrom(owner.address, receiver.address, [tokenId], [amount], "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      const tx = contractInstance.safeBatchTransferFrom(owner, receiver, [tokenId], [amount], "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
 
     it("should fail: safeBatchTransferFrom approve", async function () {
       const [owner, receiver, stranger] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      await contractInstance.blacklist(receiver.address);
-      await contractInstance.setApprovalForAll(stranger.address, true);
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      await contractInstance.blacklist(receiver);
+      await contractInstance.setApprovalForAll(stranger, true);
 
-      const tx = contractInstance
-        .connect(stranger)
-        .safeBatchTransferFrom(owner.address, receiver.address, [tokenId], [amount], "0x");
-      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver.address);
+      const tx = contractInstance.connect(stranger).safeBatchTransferFrom(owner, receiver, [tokenId], [amount], "0x");
+      await expect(tx).to.be.revertedWithCustomError(contractInstance, "BlackListError").withArgs(receiver);
     });
   });
 }

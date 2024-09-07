@@ -12,9 +12,9 @@ import {
   tokenSymbol,
 } from "@gemunion/contracts-constants";
 
-import { contractTemplate, externalId, cap } from "../../constants";
+import { contractTemplate, externalId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("AbstractFactoryFacet", function () {
   const factory = async (facetName = "ERC721FactoryFacet"): Promise<any> => {

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-constants";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 
-import { deployDiamond } from "./shared/fixture";
+import { deployDiamond } from "../Exchange/shared";
 
 describe("AccessControlFacetDiamond", function () {
   const factory = async (facetName = "AccessControlFacet"): Promise<any> => {

@@ -14,7 +14,7 @@ export function shouldTokenURI(factory: () => Promise<any>, options: IERC721Enum
       const [owner] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
+      await mint(contractInstance, owner, owner);
       const uri = await contractInstance.tokenURI(defaultTokenId);
       expect(uri).to.equal(`${baseTokenURI}/${(await contractInstance.getAddress()).toLowerCase()}/${defaultTokenId}`);
     });

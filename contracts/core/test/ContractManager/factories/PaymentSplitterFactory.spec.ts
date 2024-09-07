@@ -6,7 +6,7 @@ import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { externalId } from "../../constants";
 import { buildBytecode, buildCreate2Address, recursivelyDecodeResult } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("PaymentSplitterDiamoond", function () {
   const factory = async (facetName = "PaymentSplitterFactoryFacet"): Promise<any> => {

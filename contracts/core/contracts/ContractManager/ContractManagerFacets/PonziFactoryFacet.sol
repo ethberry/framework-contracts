@@ -11,8 +11,6 @@ import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contract
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
 import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 
-import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
-
 contract PonziFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
 

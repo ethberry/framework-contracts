@@ -6,7 +6,7 @@ import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { contractTemplate, externalId } from "../../constants";
 import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("PonziFactoryDiamond", function () {
   const factory = async (facetName = "PonziFactoryFacet"): Promise<any> => {

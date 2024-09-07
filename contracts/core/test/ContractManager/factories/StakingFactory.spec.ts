@@ -5,7 +5,7 @@ import { keccak256, getCreate2Address } from "ethers";
 import { DEFAULT_ADMIN_ROLE, PAUSER_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { contractTemplate, externalId } from "../../constants";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("StakingFactoryDiamond", function () {
   const factory = async (facetName = "StakingFactoryFacet"): Promise<any> => {

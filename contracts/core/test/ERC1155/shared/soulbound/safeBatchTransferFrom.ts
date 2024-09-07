@@ -10,8 +10,8 @@ export function shouldSafeBatchTransferFrom(factory: () => Promise<any>) {
     it("should fail: can't be transferred", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
-      await contractInstance.mint(owner.address, tokenId, amount, "0x");
-      const tx = contractInstance.safeTransferFrom(owner.address, receiver.address, tokenId, amount, "0x");
+      await contractInstance.mint(owner, tokenId, amount, "0x");
+      const tx = contractInstance.safeTransferFrom(owner, receiver, tokenId, amount, "0x");
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "Soulbound");
     });
   });

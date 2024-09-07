@@ -36,13 +36,13 @@ export function shouldMintRandom(factory: () => Promise<any>) {
       // Add Consumer to VRFV2
       const tx02 = vrfInstance.addConsumer(subId, contractInstance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
-      await contractInstance.mintRandom(receiver.address, templateId);
+      await contractInstance.mintRandom(receiver, templateId);
 
       if (network.name === "hardhat") {
         await randomRequest(contractInstance, vrfInstance);
       }
 
-      const balance = await contractInstance.balanceOf(receiver.address);
+      const balance = await contractInstance.balanceOf(receiver);
       expect(balance).to.equal(1);
 
       const value1 = await contractInstance.getRecordFieldValue(tokenId, tokenAttributes.TEMPLATE_ID);
@@ -64,7 +64,7 @@ export function shouldMintRandom(factory: () => Promise<any>) {
       const tx02 = vrfInstance.addConsumer(subId, contractInstance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
 
-      const tx03 = contractInstance.mintRandom(receiver.address, templateId);
+      const tx03 = contractInstance.mintRandom(receiver, templateId);
       await expect(tx03).to.be.revertedWithCustomError(contractInstance, "InvalidSubscription");
     });
 
@@ -84,10 +84,10 @@ export function shouldMintRandom(factory: () => Promise<any>) {
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      const tx = contractInstance.connect(receiver).mintRandom(receiver.address, templateId);
+      const tx = contractInstance.connect(receiver).mintRandom(receiver, templateId);
       await expect(tx)
         .to.be.revertedWithCustomError(contractInstance, "AccessControlUnauthorizedAccount")
-        .withArgs(receiver.address, MINTER_ROLE);
+        .withArgs(receiver, MINTER_ROLE);
     });
 
     it("should fail: TemplateZero", async function () {
@@ -96,7 +96,7 @@ export function shouldMintRandom(factory: () => Promise<any>) {
 
       await linkInstance.transfer(contractInstance, WeiPerEther);
 
-      const tx = contractInstance.mintRandom(receiver.address, 0);
+      const tx = contractInstance.mintRandom(receiver, 0);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "TemplateZero");
     });
   });
@@ -128,13 +128,13 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
       // Add Consumer to VRFV2
       const tx02 = vrfInstance.addConsumer(subId, contractInstance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, contractInstance);
-      await contractInstance.mintRandom(receiver.address, templateId);
+      await contractInstance.mintRandom(receiver, templateId);
 
       if (network.name === "hardhat") {
         await randomRequest(contractInstance, vrfInstance);
       }
 
-      const balance = await contractInstance.balanceOf(receiver.address);
+      const balance = await contractInstance.balanceOf(receiver);
       expect(balance).to.equal(1);
 
       const value1 = await contractInstance.getRecordFieldValue(tokenId, tokenAttributes.TEMPLATE_ID);
@@ -151,10 +151,10 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
       const [_owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      const tx = contractInstance.connect(receiver).mintRandom(receiver.address, templateId);
+      const tx = contractInstance.connect(receiver).mintRandom(receiver, templateId);
       await expect(tx)
         .to.be.revertedWithCustomError(contractInstance, "AccessControlUnauthorizedAccount")
-        .withArgs(receiver.address, MINTER_ROLE);
+        .withArgs(receiver, MINTER_ROLE);
     });
 
     it("should fail: TemplateZero", async function () {
@@ -163,7 +163,7 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
 
       await linkInstance.transfer(contractInstance, WeiPerEther);
 
-      const tx = contractInstance.mintRandom(receiver.address, 0);
+      const tx = contractInstance.mintRandom(receiver, 0);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "TemplateZero");
     });
   });

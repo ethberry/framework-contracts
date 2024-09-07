@@ -6,7 +6,7 @@ import { amount, baseTokenURI, DEFAULT_ADMIN_ROLE, nonce, royalty } from "@gemun
 
 import { contractTemplate, externalId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC1155FactoryDiamoond", function () {
   const factory = async (facetName = "ERC1155FactoryFacet"): Promise<any> => {

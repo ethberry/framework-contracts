@@ -9,7 +9,7 @@ import { deployERC20Mock } from "@gemunion/contracts-mocks";
 
 import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
 import { claimId, externalId, tokenId, userId, contractTemplate } from "../../constants";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("VestingFactoryDiamond", function () {
   const factory = async (facetName = "VestingFactoryFacet"): Promise<any> => {

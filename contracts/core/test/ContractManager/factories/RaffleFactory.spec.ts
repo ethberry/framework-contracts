@@ -6,7 +6,7 @@ import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { getContractName, isContract } from "../../utils";
 import { externalId } from "../../constants";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("RaffleFactoryDiamond", function () {
   const factory = async (facetName = "RaffleFactoryFacet"): Promise<any> => {

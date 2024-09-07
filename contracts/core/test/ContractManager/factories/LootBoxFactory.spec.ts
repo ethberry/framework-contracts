@@ -13,7 +13,7 @@ import {
 
 import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("LootBoxFactoryDiamond", function () {
   const factory = async (facetName = "LootBoxFactoryFacet"): Promise<any> => {

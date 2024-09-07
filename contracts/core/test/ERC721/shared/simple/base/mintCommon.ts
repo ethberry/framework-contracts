@@ -11,8 +11,8 @@ export function shouldMintCommon(factory: () => Promise<any>) {
 
       const contractInstance = await factory();
 
-      const tx = contractInstance.mintCommon(receiver.address, templateId);
-      await expect(tx).to.emit(contractInstance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
+      const tx = contractInstance.mintCommon(receiver, templateId);
+      await expect(tx).to.emit(contractInstance, "Transfer").withArgs(ZeroAddress, receiver, tokenId);
 
       const value1 = await contractInstance.getRecordFieldValue(tokenId, tokenAttributes.TEMPLATE_ID);
       expect(value1).to.equal(templateId);
@@ -29,7 +29,7 @@ export function shouldMintCommon(factory: () => Promise<any>) {
 
       const contractInstance = await factory();
 
-      const tx = contractInstance.mintCommon(receiver.address, 0);
+      const tx = contractInstance.mintCommon(receiver, 0);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "TemplateZero");
     });
   });

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 
 import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE, PREDICATE_ROLE } from "@gemunion/contracts-constants";
 
-import { deployDiamond } from "./shared/fixture";
+import { deployDiamond } from "../Exchange/shared";
 
 describe("ContractManagerDiamond", function () {
   const factory = async (facetName = "AccessControlFacet"): Promise<any> => {
@@ -48,8 +48,8 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        await contractInstance.addFactory(receiver.address, MINTER_ROLE);
-        await contractInstance.addFactory(receiver.address, MINTER_ROLE);
+        await contractInstance.addFactory(receiver, MINTER_ROLE);
+        await contractInstance.addFactory(receiver, MINTER_ROLE);
 
         const minters = await contractInstance.getMinters();
         expect(minters).to.have.lengthOf(1);
@@ -60,11 +60,11 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        await contractInstance.addFactory(receiver.address, MINTER_ROLE);
+        await contractInstance.addFactory(receiver, MINTER_ROLE);
 
         const minters = await contractInstance.getMinters();
         expect(minters).to.have.lengthOf(1);
-        expect(minters[0]).to.equal(receiver.address);
+        expect(minters[0]).to.equal(receiver);
       });
     });
 
@@ -80,8 +80,8 @@ describe("ContractManagerDiamond", function () {
         const [_owner, receiver] = await ethers.getSigners();
 
         const contractInstance = await factory("UseFactoryFacet");
-        await contractInstance.addFactory(receiver.address, METADATA_ROLE);
-        await contractInstance.addFactory(receiver.address, METADATA_ROLE);
+        await contractInstance.addFactory(receiver, METADATA_ROLE);
+        await contractInstance.addFactory(receiver, METADATA_ROLE);
 
         const manipulators = await contractInstance.getManipulators();
         expect(manipulators).to.have.lengthOf(1);
@@ -91,11 +91,11 @@ describe("ContractManagerDiamond", function () {
         const [_owner, receiver] = await ethers.getSigners();
 
         const contractInstance = await factory("UseFactoryFacet");
-        await contractInstance.addFactory(receiver.address, METADATA_ROLE);
+        await contractInstance.addFactory(receiver, METADATA_ROLE);
 
         const manipulators = await contractInstance.getManipulators();
         expect(manipulators).to.have.lengthOf(1);
-        expect(manipulators[0]).to.equal(receiver.address);
+        expect(manipulators[0]).to.equal(receiver);
       });
     });
 
@@ -105,7 +105,7 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        const tx = contractInstance.addFactory(receiver.address, PREDICATE_ROLE);
+        const tx = contractInstance.addFactory(receiver, PREDICATE_ROLE);
         await expect(tx).to.be.revertedWithCustomError(contractInstance, "WrongRole");
       });
 
@@ -114,10 +114,10 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        const tx = contractInstance.connect(receiver).addFactory(receiver.address, PREDICATE_ROLE);
+        const tx = contractInstance.connect(receiver).addFactory(receiver, PREDICATE_ROLE);
         await expect(tx)
           .to.be.revertedWithCustomError(contractInstance, "AccessControlUnauthorizedAccount")
-          .withArgs(receiver.address, DEFAULT_ADMIN_ROLE);
+          .withArgs(receiver, DEFAULT_ADMIN_ROLE);
       });
     });
   });
@@ -129,21 +129,21 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        await contractInstance.addFactory(receiver.address, MINTER_ROLE);
-        await contractInstance.addFactory(receiver.address, METADATA_ROLE);
-        await contractInstance.addFactory(stranger.address, MINTER_ROLE);
-        await contractInstance.addFactory(stranger.address, METADATA_ROLE);
+        await contractInstance.addFactory(receiver, MINTER_ROLE);
+        await contractInstance.addFactory(receiver, METADATA_ROLE);
+        await contractInstance.addFactory(stranger, MINTER_ROLE);
+        await contractInstance.addFactory(stranger, METADATA_ROLE);
 
-        await contractInstance.removeFactory(receiver.address, MINTER_ROLE);
+        await contractInstance.removeFactory(receiver, MINTER_ROLE);
 
         const minters = await contractInstance.getMinters();
         expect(minters).to.have.lengthOf(1);
-        expect(minters[0]).to.equal(stranger.address);
+        expect(minters[0]).to.equal(stranger);
 
         const manipulators = await contractInstance.getManipulators();
         expect(manipulators).to.have.lengthOf(2);
-        expect(manipulators[0]).to.equal(receiver.address);
-        expect(manipulators[1]).to.equal(stranger.address);
+        expect(manipulators[0]).to.equal(receiver);
+        expect(manipulators[1]).to.equal(stranger);
       });
     });
 
@@ -153,21 +153,21 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        await contractInstance.addFactory(receiver.address, MINTER_ROLE);
-        await contractInstance.addFactory(receiver.address, METADATA_ROLE);
-        await contractInstance.addFactory(stranger.address, MINTER_ROLE);
-        await contractInstance.addFactory(stranger.address, METADATA_ROLE);
+        await contractInstance.addFactory(receiver, MINTER_ROLE);
+        await contractInstance.addFactory(receiver, METADATA_ROLE);
+        await contractInstance.addFactory(stranger, MINTER_ROLE);
+        await contractInstance.addFactory(stranger, METADATA_ROLE);
 
-        await contractInstance.removeFactory(receiver.address, METADATA_ROLE);
+        await contractInstance.removeFactory(receiver, METADATA_ROLE);
 
         const minters = await contractInstance.getMinters();
         expect(minters).to.have.lengthOf(2);
-        expect(minters[0]).to.equal(receiver.address);
-        expect(minters[1]).to.equal(stranger.address);
+        expect(minters[0]).to.equal(receiver);
+        expect(minters[1]).to.equal(stranger);
 
         const manipulators = await contractInstance.getManipulators();
         expect(manipulators).to.have.lengthOf(1);
-        expect(manipulators[0]).to.equal(stranger.address);
+        expect(manipulators[0]).to.equal(stranger);
       });
     });
 
@@ -177,7 +177,7 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        const tx = contractInstance.removeFactory(receiver.address, PREDICATE_ROLE);
+        const tx = contractInstance.removeFactory(receiver, PREDICATE_ROLE);
         await expect(tx).to.be.revertedWithCustomError(contractInstance, "WrongRole");
       });
 
@@ -186,10 +186,10 @@ describe("ContractManagerDiamond", function () {
 
         const contractInstance = await factory("UseFactoryFacet");
 
-        const tx = contractInstance.connect(receiver).removeFactory(receiver.address, PREDICATE_ROLE);
+        const tx = contractInstance.connect(receiver).removeFactory(receiver, PREDICATE_ROLE);
         await expect(tx)
           .to.be.revertedWithCustomError(contractInstance, "AccessControlUnauthorizedAccount")
-          .withArgs(receiver.address, DEFAULT_ADMIN_ROLE);
+          .withArgs(receiver, DEFAULT_ADMIN_ROLE);
       });
     });
   });

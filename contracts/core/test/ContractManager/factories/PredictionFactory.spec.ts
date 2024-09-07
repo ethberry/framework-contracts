@@ -5,7 +5,7 @@ import { getAddress } from "ethers";
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
 
 import { externalId } from "../../constants";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
 
 describe("PredictionFactoryDiamond", function () {

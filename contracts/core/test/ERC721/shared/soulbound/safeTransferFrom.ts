@@ -14,13 +14,9 @@ export function shouldSafeTransferFrom(factory: () => Promise<any>, options: IER
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
+      await mint(contractInstance, owner, owner);
 
-      const tx = contractInstance["safeTransferFrom(address,address,uint256)"](
-        owner.address,
-        receiver.address,
-        defaultTokenId,
-      );
+      const tx = contractInstance["safeTransferFrom(address,address,uint256)"](owner, receiver, defaultTokenId);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "Soulbound");
     });
 
@@ -28,12 +24,12 @@ export function shouldSafeTransferFrom(factory: () => Promise<any>, options: IER
       const [owner, receiver] = await ethers.getSigners();
       const contractInstance = await factory();
 
-      await mint(contractInstance, owner, owner.address);
-      await contractInstance.approve(receiver.address, defaultTokenId);
+      await mint(contractInstance, owner, owner);
+      await contractInstance.approve(receiver, defaultTokenId);
 
       const tx = contractInstance
         .connect(receiver)
-        ["safeTransferFrom(address,address,uint256)"](owner.address, receiver.address, defaultTokenId);
+        ["safeTransferFrom(address,address,uint256)"](owner, receiver, defaultTokenId);
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "Soulbound");
     });
   });

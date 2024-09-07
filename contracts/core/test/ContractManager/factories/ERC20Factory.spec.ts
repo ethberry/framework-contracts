@@ -6,7 +6,7 @@ import { amount, DEFAULT_ADMIN_ROLE, nonce, tokenName, tokenSymbol } from "@gemu
 
 import { cap, contractTemplate, externalId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC20FactoryDiamond", function () {
   const factory = async (facetName = "ERC20FactoryFacet"): Promise<any> => {

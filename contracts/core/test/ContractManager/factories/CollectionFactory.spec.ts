@@ -14,7 +14,7 @@ import {
 
 import { contractTemplate, externalId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";
-import { deployDiamond } from "../shared/fixture";
+import { deployDiamond } from "../../Exchange/shared";
 
 describe("CollectionFactoryDiamond", function () {
   const factory = async (facetName = "CollectionFactoryFacet"): Promise<any> => {
