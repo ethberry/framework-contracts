@@ -7,7 +7,7 @@ task("calc-string-hash", "Prints Errors enum").setAction(async (args, hre) => {
   await errInstance.test();
   console.log("---");
   console.log(zeroPadValue(toUtf8Bytes("GENES"), 32));
-  console.log(zeroPadValue(toUtf8Bytes("MOTHER_ID"), 32));
+  console.log(zeroPadValue(toUtf8Bytes("MOTHER_ID"), 32)); // careful: MOTHER_ID == FATHER_ID 
   console.log(zeroPadValue(toUtf8Bytes("FATHER_ID"), 32));
   console.log(zeroPadValue(toUtf8Bytes("PREGNANCY_COUNTER"), 32));
   console.log(zeroPadValue(toUtf8Bytes("PREGNANCY_TIMESTAMP"), 32));

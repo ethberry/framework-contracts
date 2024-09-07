@@ -6,7 +6,8 @@ import { concat, Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
 
-import { expiresAt, externalId, extra, params, tokenId } from "../constants";
+import { amount, nonce } from "@gemunion/contracts-constants";
+import { expiresAt, externalId, extra, params, tokenId, tokenAttributes } from "../constants";
 import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployDiamond, deployErc721Base, wrapOneToOneSignature } from "./shared";

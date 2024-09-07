@@ -11,7 +11,7 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
 import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { TemplateZero, MethodNotSupported, NotOwnerNorApproved } from "../utils/errors.sol";
+import { TemplateZero, MethodNotSupported, NotOwnerNorApproved, InvalidGenes } from "../utils/errors.sol";
 import { GENES, MOTHER_ID, FATHER_ID, PREGNANCY_COUNTER, PREGNANCY_TIMESTAMP } from "../Mechanics/Genes/attributes.sol";
 import { GenesCryptoKitties } from "../Mechanics/Genes/GenesCK.sol";
 import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
@@ -47,6 +47,12 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
   ) external override onlyRole(MINTER_ROLE) {
     if (templateId == 0) {
       revert TemplateZero();
+    }
+
+    for (uint256 i = 0; i < 256; i += 16) {
+      if ((genes >> i) & 0xFFFF == 0) {
+        revert InvalidGenes();
+      }
     }
 
     // first generation

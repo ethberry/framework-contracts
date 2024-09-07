@@ -4,6 +4,9 @@ import { nonce } from "@gemunion/contracts-constants";
 
 import { TokenMetadata } from "./types";
 
+export const motherGenes = 107914390657248203931494128369229995047683281774584692748922102830935711579232n;
+export const fatherGenes = 70681664159614147522986300818112080314741133087508264051542039665822922212221n;
+
 export const tokenId = 1n;
 export const tokenIds = [1];
 export const tokenIdsZero = [0];

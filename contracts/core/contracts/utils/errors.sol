@@ -53,12 +53,14 @@ error WrongArrayLength(); // is used when two arrays has to be of the length siz
 
 // BREED
 error PregnancyThresholdExceeded(uint256 counter, uint256 max);
-error PregnancyFrequencyExceeded();
-// error NotOwnerNorApproved(address account);
+error PregnancyFrequencyExceeded(uint256 current, uint256 limit);
 error GenesDifferentContracts();
+error InvalidGenes();
+
+// LOTTERY/RAFFLE/BREED
+error NotOwnerNorApproved(address account);
 
 // LOTTERY/RAFFLE
-error NotOwnerNorApproved(address account);
 error WrongRound();
 error PrizeNotEligible();
 error TicketLimitExceed();
@@ -82,10 +84,3 @@ error WrongTemplate();
 // MERGE
 error MergeDifferentContracts();
 error MergeDifferentTemplate();
-
-
-
-
-
-
-

@@ -135,3 +135,41 @@ export const isContract = async (address: string, provider: Provider) => {
   const code = await provider.getCode(address);
   return code.slice(2).length > 0;
 };
+
+export const decodeNumber = encoded => {
+  const genes = {
+    baseColor: encoded >> 176,
+    highlightColor: (encoded >> 160) & 0xffff,
+    accentColor: (encoded >> 144) & 0xffff,
+    mouth: (encoded >> 128) & 0xffff,
+    fur: (encoded >> 112) & 0xffff,
+    pattern: (encoded >> 95) & 0xffff,
+    eyeShape: (encoded >> 80) & 0xffff,
+    eyeColor: (encoded >> 64) & 0xffff,
+    wild: (encoded >> 48) & 0xffff,
+    environment: (encoded >> 32) & 0xffff,
+    secret: (encoded >> 16) & 0xffff,
+    purrstige: (encoded >> 0) & 0xffff,
+  };
+  return genes;
+};
+
+export const mixGenes = (motherGenes: bigint, fatherGenes: bigint, randomWord: bigint): bigint => {
+  let childGenes = 0n;
+  let mask = 1n;
+
+  for (let i = 0; i < 256; i++) {
+    if ((randomWord & mask) === 0n) {
+      childGenes |= motherGenes & mask;
+    } else {
+      childGenes |= fatherGenes & mask;
+    }
+    mask <<= 1n;
+  }
+
+  return childGenes;
+};
+
+export const generateRandomGenes = () => {
+  return BigInt("0x" + ethers.hexlify(ethers.randomBytes(32)).slice(2));
+};

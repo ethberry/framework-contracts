@@ -28,51 +28,48 @@ contract ExchangeGenesFacet is SignatureValidator, DiamondOverride {
 
   constructor() SignatureValidator() {}
 
-  modifier checkAllowance(Asset memory mother, Asset memory father) {
-    if (mother.token != father.token) {
-      revert GenesDifferentContracts();
-    }
-    _;
-  }
+   function breed(
+     Params memory params,
+     Asset memory mother,
+     Asset memory father,
+     bytes calldata signature
+   ) external payable whenNotPaused {
+     // Check allowance
+     if (mother.token != father.token) {
+       revert GenesDifferentContracts();
+     }
 
-  modifier checkPregnancy(Asset memory mother, Asset memory father) {
-    uint256 motherPregnancyCounter = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_COUNTER);
-    if (motherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-      revert PregnancyThresholdExceeded(motherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
-    }
+     // Check pregnancy for mother
+     uint256 motherPregnancyCounter = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_COUNTER);
+     if (motherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
+       revert PregnancyThresholdExceeded(motherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
+     }
 
-    uint256 motherPregnancyTimestamp = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_TIMESTAMP);
-    if (block.timestamp - motherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
-      revert PregnancyFrequencyExceeded();
-    }
+     uint256 motherPregnancyTimestamp = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_TIMESTAMP);
+     if (block.timestamp - motherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
+       revert PregnancyFrequencyExceeded(motherPregnancyTimestamp, block.timestamp);
+     }
 
-    uint256 fatherPregnancyCounter = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_COUNTER);
-    if (fatherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-      revert PregnancyThresholdExceeded(fatherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
-    }
+     // Check pregnancy for father
+     uint256 fatherPregnancyCounter = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_COUNTER);
+     if (fatherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
+       revert PregnancyThresholdExceeded(fatherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
+     }
 
-    uint256 fatherPregnancyTimestamp = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_TIMESTAMP);
-    if (block.timestamp - fatherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
-      revert PregnancyFrequencyExceeded();
-    }
-    _;
-  }
+     uint256 fatherPregnancyTimestamp = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_TIMESTAMP);
+     if (block.timestamp - fatherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
+       revert PregnancyFrequencyExceeded(block.timestamp - fatherPregnancyTimestamp, PREGNANCY_FREQUENCY_LIMIT);
+     }
 
-  function breed(
-    Params memory params,
-    Asset memory mother,
-    Asset memory father,
-    bytes calldata signature
-  ) external payable whenNotPaused checkAllowance(mother, father) checkPregnancy(mother, father) {
-    _validateParams(params);
+     _validateParams(params);
 
-    address signer = _recoverOneToOneSignature(params, mother, father, signature);
-    if (!_hasRole(MINTER_ROLE, signer)) {
-      revert SignerMissingRole();
-    }
+     address signer = _recoverOneToOneSignature(params, mother, father, signature);
+     if (!_hasRole(MINTER_ROLE, signer)) {
+       revert SignerMissingRole();
+     }
 
-    IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
+     IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
 
-    emit Breed(_msgSender(), params.externalId, mother, father);
-  }
+     emit Breed(_msgSender(), params.externalId, mother, father);
+   }
 }
