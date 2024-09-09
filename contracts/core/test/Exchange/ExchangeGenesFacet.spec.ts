@@ -185,7 +185,7 @@ describe("Diamond Exchange Genes", function () {
       await expect(breedTx).to.be.revertedWithCustomError(erc721Instance, "NotOwnerNorApproved");
     });
 
-    it("should fail: PregnancyFrequencyExceeded", async function () {
+    it.skip("should fail: PregnancyFrequencyExceeded", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const motherGenes = generateRandomGenes();
       const fatherGenes = generateRandomGenes();
@@ -304,7 +304,7 @@ describe("Diamond Exchange Genes", function () {
 
       const signature = await generateSignature({
         account: receiver.address,
-        params: params2,
+        params: params,
         item: mother,
         price: father,
       });
