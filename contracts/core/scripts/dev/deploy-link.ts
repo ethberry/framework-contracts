@@ -13,7 +13,8 @@ interface IObj {
 }
 
 const debug = async (obj: IObj | Record<string, Contract> | TransactionResponse, name?: string) => {
-  if (obj && obj.hash) {
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
     console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
     const transaction: TransactionResponse = obj as TransactionResponse;

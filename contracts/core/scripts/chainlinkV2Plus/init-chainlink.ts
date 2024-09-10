@@ -1,6 +1,7 @@
 import { ethers, network } from "hardhat";
 import { Contract, Result, toBeHex, TransactionReceipt, TransactionResponse, WeiPerEther, zeroPadValue } from "ethers";
 import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { recursivelyDecodeResult } from "../../utis/decoder";
 
 const delay = 2; // block delay
 const delayMs = 1000; // block delay ms
@@ -12,30 +13,10 @@ interface IObj {
   hash?: string;
   wait: () => Promise<TransactionReceipt> | void;
 }
-const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-  if (typeof result !== "object") {
-    // Raw primitive value
-    return result;
-  }
-  try {
-    const obj = result.toObject();
-    if (obj._) {
-      throw new Error("Decode as array, not object");
-    }
-    Object.keys(obj).forEach(key => {
-      obj[key] = recursivelyDecodeResult(obj[key]);
-    });
-    return obj;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    // Result is array.
-    return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-  }
-};
 
 const debug = async (obj: IObj | Record<string, Contract> | TransactionResponse, name?: string) => {
-  if (obj && obj.hash) {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
     console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
     const transaction: TransactionResponse = obj as TransactionResponse;
