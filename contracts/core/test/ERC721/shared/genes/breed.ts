@@ -45,6 +45,9 @@ export function shouldBreed(factory: () => Promise<any>) {
       await randomRequest(erc721Instance, vrfInstance, 54321n);
 
       const newTokenId = await erc721Instance.totalSupply();
+
+      expect(newTokenId).to.be.equal(3);
+      
       const newTokenOwner = await erc721Instance.ownerOf(newTokenId);
       expect(newTokenOwner).to.equal(receiver.address);
 
