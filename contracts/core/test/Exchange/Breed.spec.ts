@@ -5,6 +5,7 @@ import { concat, Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, 
 
 import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
@@ -14,7 +15,6 @@ import { isEqualEventArgObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
-import { recursivelyDecodeResult } from "../../utis/decoder";
 
 describe("Diamond Exchange Breed", function () {
   const factory = async (facetName = "ExchangeBreedFacet"): Promise<any> => {

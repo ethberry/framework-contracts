@@ -1,7 +1,9 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
+
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+
 import { Staking } from "../typechain-types";
-import { recursivelyDecodeResult } from "../utis/decoder";
 
 task("get-rule", "Prints a Staking rule")
   .addParam("staking", "The Staking address")

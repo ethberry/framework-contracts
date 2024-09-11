@@ -1,8 +1,9 @@
 import { ethers } from "hardhat";
 import { BaseContract, ZeroAddress, Result } from "ethers";
 
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+
 import { FacetCutAction, getSelector, getSelectors } from "../../shared/diamond";
-import { recursivelyDecodeResult } from "../../../utis/decoder";
 
 export interface IDiamondCut {
   facetAddress: string;

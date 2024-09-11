@@ -3,9 +3,10 @@ import { ethers } from "hardhat";
 import { getAddress } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
 
 import { externalId } from "../../constants";
-import { buildBytecode, buildCreate2Address, recursivelyDecodeResult } from "../../utils";
+import { buildBytecode, buildCreate2Address } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("PaymentSplitterDiamoond", function () {

@@ -5,6 +5,7 @@ import { Contract, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
 
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployDiamond, deployErc20Base, deployErc721Base, wrapOneToManySignature } from "./shared";
@@ -15,7 +16,6 @@ import { deployLinkVrfFixture } from "../shared/link";
 import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
-import { recursivelyDecodeResult } from "../../utis/decoder";
 
 describe("Diamond Exchange Purchase", function () {
   const factory = async (facetName = "ExchangePurchaseFacet"): Promise<any> => {

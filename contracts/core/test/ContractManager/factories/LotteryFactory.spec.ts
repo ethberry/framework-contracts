@@ -3,14 +3,9 @@ import { ethers } from "hardhat";
 import { getAddress } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
 
-import {
-  buildBytecode,
-  buildCreate2Address,
-  getContractName,
-  isEqualArray,
-  recursivelyDecodeResult,
-} from "../../utils";
+import { buildBytecode, buildCreate2Address, getContractName, isEqualArray } from "../../utils";
 import { externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
 

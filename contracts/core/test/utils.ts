@@ -1,18 +1,9 @@
 import { snakeToCamelCase } from "@gemunion/utils";
 import { AbiCoder, concat, id, keccak256, Provider, toBeArray, toBeHex, zeroPadValue } from "ethers";
 
-// Patch BigNumber
-// https://github.com/GoogleChromeLabs/jsbi/issues/30
-// eslint-disable-next-line no-extend-native
-Object.defineProperty(BigInt.prototype, "toJSON", {
-  value: function () {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.toString();
-  },
-  configurable: true,
-  enumerable: false,
-  writable: true,
-});
+import { patchBigInt } from "@gemunion/utils-eth";
+
+patchBigInt();
 
 export const getNumbersBytes = (selected = [8, 5, 3, 2, 1, 0]) => {
   const numbers: Array<any> = [];

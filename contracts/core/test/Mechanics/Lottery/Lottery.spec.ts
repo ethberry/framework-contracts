@@ -16,6 +16,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
 import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
 import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
+import { recursivelyDecodeResult } from "@gemunion/utils-eth";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
@@ -25,7 +26,6 @@ import { deployLottery } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
-import { recursivelyDecodeResult } from "../../../utis/decoder";
 
 const delay = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
