@@ -1,9 +1,9 @@
 import { ethers, network } from "hardhat";
 import { hexlify, randomBytes, Result, toBeHex, WeiPerEther, zeroPadValue } from "ethers";
 import { blockAwait } from "@gemunion/contracts-helpers";
-import { ERC721RandomBesu, VRFCoordinatorV2PlusMock } from "../../typechain-types";
+import { ERC721RandomGemunion, VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { baseTokenURI, royalty } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "../../test/utils";
+import { recursivelyDecodeResult } from "../../utis/decoder";
 
 const wait = 2;
 async function main() {
@@ -39,12 +39,12 @@ async function main() {
   console.info(`transferAndCall:`, txf.hash);
 
   // ERC721 contract - random
-  // const itemrInstance = await ethers.getContractAt("ERC721RandomBesu", "0xad9d9e5619f9fcd9540dcc6da29a07d743c5aca5");
-  const erc721RandomFactory = await ethers.getContractFactory("ERC721RandomBesu");
-  const itemrInstance: ERC721RandomBesu =
+  // const itemrInstance = await ethers.getContractAt("ERC721RandomGemunion", "0xad9d9e5619f9fcd9540dcc6da29a07d743c5aca5");
+  const erc721RandomFactory = await ethers.getContractFactory("ERC721RandomGemunion");
+  const itemrInstance: ERC721RandomGemunion =
     RANDOM_ADDR === ""
       ? await erc721RandomFactory.deploy("ERC721 WEAPON", "RNG721", royalty, baseTokenURI)
-      : await ethers.getContractAt("ERC721RandomBesu", RANDOM_ADDR);
+      : await ethers.getContractAt("ERC721RandomGemunion", RANDOM_ADDR);
   console.info("Random addr:", await itemrInstance.getAddress());
   await blockAwait(wait);
   const _sub0 = await itemrInstance.getSub();

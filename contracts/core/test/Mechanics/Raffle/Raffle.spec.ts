@@ -14,8 +14,9 @@ import { IERC721Random, VRFCoordinatorV2PlusMock } from "../../../typechain-type
 import { randomRequest } from "../../shared/randomRequest";
 import { deployRaffle } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
-import { isEqualEventArgObj, recursivelyDecodeResult } from "../../utils";
+import { isEqualEventArgObj } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
+import { recursivelyDecodeResult } from "../../../utis/decoder";
 
 const delay = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));

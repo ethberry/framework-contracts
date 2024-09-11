@@ -10,10 +10,11 @@ import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployDiamond, deployErc721Base, wrapOneToOneSignature } from "./shared";
-import { isEqualEventArgObj, recursivelyDecodeResult } from "../utils";
+import { isEqualEventArgObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
 import { decodeMetadata } from "../shared/metadata";
+import { recursivelyDecodeResult } from "../../utis/decoder";
 
 describe("Diamond Exchange Breed", function () {
   const factory = async (facetName = "ExchangeBreedFacet"): Promise<any> => {

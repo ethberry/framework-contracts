@@ -9,9 +9,10 @@ import { METADATA_ROLE, MINTER_ROLE, nonce, royalty, wallet, wallets } from "@ge
 import { getContractName } from "../test/utils";
 import { expiresAt, externalId } from "../test/constants";
 import { deployDiamond } from "../test/Exchange/shared";
-import { debug, grantRoles, recursivelyDecodeResult } from "./utils/deploy-utils";
+import { debug, grantRoles } from "./utils/deploy-utils";
 import { getBaseTokenURI } from "../test/shared/uri";
 import { TypedContractEvent, TypedEventLog } from "../typechain-types/common";
+import { recursivelyDecodeResult } from "../utis/decoder";
 
 // DELAY CONFIG
 const delay = 1; // block delay

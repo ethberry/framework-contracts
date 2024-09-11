@@ -23,8 +23,9 @@ import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLottery } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
-import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj, recursivelyDecodeResult } from "../../utils";
+import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
+import { recursivelyDecodeResult } from "../../../utis/decoder";
 
 const delay = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
