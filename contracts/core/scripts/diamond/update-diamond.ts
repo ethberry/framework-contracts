@@ -83,9 +83,7 @@ main()
     for (const [key, value] of Object.entries(contracts)) {
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${(await value.getAddress()).toLowerCase()}`);
     }
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

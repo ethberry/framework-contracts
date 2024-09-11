@@ -1,6 +1,6 @@
 import fs from "fs";
 import { ethers } from "hardhat";
-import { Contract, Result } from "ethers";
+import { Contract } from "ethers";
 import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
 
 export interface IObj {
@@ -8,30 +8,9 @@ export interface IObj {
   hash?: string;
 }
 
-export const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-  if (typeof result !== "object") {
-    // Raw primitive value
-    return result;
-  }
-  try {
-    const obj = result.toObject();
-    if (obj._) {
-      throw new Error("Decode as array, not object");
-    }
-    Object.keys(obj).forEach(key => {
-      obj[key] = recursivelyDecodeResult(obj[key]);
-    });
-    return obj;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    // Result is array.
-    return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-  }
-};
-
 export const debug = async (obj: IObj | Record<string, Contract>, name?: string, delay = 1, delayMs = 300) => {
-  if (obj && obj.hash) {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
     console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
   } else {
@@ -50,15 +29,15 @@ export const debug = async (obj: IObj | Record<string, Contract>, name?: string,
 export const grantRoles = async (contracts: Array<string>, grantee: Array<string>, roles: Array<string>) => {
   let idx = 1;
   const max = contracts.length * grantee.length * roles.length;
-  for (let i = 0; i < contracts.length; i++) {
-    for (let j = 0; j < grantee.length; j++) {
-      for (let k = 0; k < roles.length; k++) {
-        if (contracts[i] !== grantee[j]) {
-          const accessInstance = await ethers.getContractAt("ERC721Simple", contracts[i]);
-          console.info(`grantRole [${idx} of ${max}] ${contracts[i]} ${grantee[j]}`);
+  for (const contract of contracts) {
+    for (const account of grantee) {
+      for (const role of roles) {
+        if (contract !== account) {
+          const accessInstance = await ethers.getContractAt("ERC721Simple", contract);
+          console.info(`grantRole [${idx} of ${max}] ${contract} ${account}`);
           idx++;
           await blockAwaitMs(300);
-          await accessInstance.grantRole(roles[k], grantee[j]);
+          await accessInstance.grantRole(role, account);
           // await debug(await accessInstance.grantRole(roles[k], grantee[j]), "grantRole");
         }
       }

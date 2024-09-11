@@ -2,6 +2,7 @@ import { ethers, network } from "hardhat";
 import { Contract, Result, toBeHex, TransactionReceipt, TransactionResponse, WeiPerEther, zeroPadValue } from "ethers";
 
 import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { recursivelyDecodeResult } from "../../utis/decoder";
 
 const delay = 2; // block delay
 const delayMs = 1000; // block delay ms
@@ -14,28 +15,9 @@ interface IObj {
   wait: () => Promise<TransactionReceipt> | void;
 }
 
-const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-  if (typeof result !== "object") {
-    // Raw primitive value
-    return result;
-  }
-  try {
-    const obj = result.toObject();
-    if (obj._) {
-      throw new Error("Decode as array, not object");
-    }
-    Object.keys(obj).forEach(key => {
-      obj[key] = recursivelyDecodeResult(obj[key]);
-    });
-    return obj;
-  } catch (err) {
-    // Result is array.
-    return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-  }
-};
-
 const debug = async (obj: IObj | Record<string, Contract> | TransactionResponse, name?: string) => {
-  if (obj && obj.hash) {
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
     console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
     const transaction: TransactionResponse = obj as TransactionResponse;
@@ -93,7 +75,7 @@ async function main() {
   //   address(0x1fa66727cDD4e3e4a6debE4adF84985873F6cd8a), // LINK token
   // SETUP CHAIN_LINK VRF-V2 TO WORK
   const linkAmount = WeiPerEther * 1000n;
-  process.exit(0);
+
   /**
    * @notice Sets the configuration of the vrfv2 coordinator
    * @param minimumRequestConfirmations global min for request confirmations
@@ -144,9 +126,7 @@ main()
     for (const [key, value] of Object.entries(contracts)) {
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${(await value.getAddress()).toLowerCase()}`);
     }
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

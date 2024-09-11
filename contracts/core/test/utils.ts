@@ -1,5 +1,5 @@
 import { snakeToCamelCase } from "@gemunion/utils";
-import { AbiCoder, concat, id, keccak256, Provider, Result, toBeArray, toBeHex, zeroPadValue } from "ethers";
+import { AbiCoder, concat, id, keccak256, Provider, toBeArray, toBeHex, zeroPadValue } from "ethers";
 
 // Patch BigNumber
 // https://github.com/GoogleChromeLabs/jsbi/issues/30
@@ -33,8 +33,8 @@ export const decodeNumbersBytes = (selected = "0x0000000000000000000000000000000
 export const getBytesNumbersArr = (selected = "4328719624n"): Array<number> => {
   const arrStr = toBeArray(selected);
   const arr = [];
-  for (let i = 0; i < arrStr.length; i++) {
-    arr.push(Number(arrStr[i]));
+  for (const item of arrStr) {
+    arr.push(Number(item));
   }
   return arr;
 };
@@ -80,26 +80,6 @@ export const isEqualEventArgArrObj = (...args: any[]): any => {
     }
     return true;
   };
-};
-
-export const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-  if (typeof result !== "object") {
-    // Raw primitive value
-    return result;
-  }
-  try {
-    const obj = result.toObject();
-    if (obj._) {
-      throw new Error("Decode as array, not object");
-    }
-    Object.keys(obj).forEach(key => {
-      obj[key] = recursivelyDecodeResult(obj[key]);
-    });
-    return obj;
-  } catch (err) {
-    // Result is array.
-    return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-  }
 };
 
 // solidity-create2-deployer/src/utils

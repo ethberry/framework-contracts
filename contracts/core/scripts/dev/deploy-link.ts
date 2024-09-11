@@ -13,7 +13,8 @@ interface IObj {
 }
 
 const debug = async (obj: IObj | Record<string, Contract> | TransactionResponse, name?: string) => {
-  if (obj && obj.hash) {
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
     console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
     const transaction: TransactionResponse = obj as TransactionResponse;
@@ -53,9 +54,7 @@ main()
     Object.entries(contracts).map(([key, value]) =>
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${value.address.toLowerCase()}`),
     );
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

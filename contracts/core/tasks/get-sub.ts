@@ -1,26 +1,7 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
 import { VRFCoordinatorV2PlusMock } from "../typechain-types";
-
-export const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-  if (typeof result !== "object") {
-    // Raw primitive value
-    return result;
-  }
-  try {
-    const obj = result.toObject();
-    if (obj._) {
-      throw new Error("Decode as array, not object");
-    }
-    Object.keys(obj).forEach(key => {
-      obj[key] = recursivelyDecodeResult(obj[key]);
-    });
-    return obj;
-  } catch (err) {
-    // Result is array.
-    return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-  }
-};
+import { recursivelyDecodeResult } from "../utis/decoder";
 
 task("get-sub", "Prints a VRF subscription data")
   .addParam("sub", "The Subscription ID")

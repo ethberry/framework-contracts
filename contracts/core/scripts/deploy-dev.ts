@@ -59,7 +59,7 @@ async function main() {
   // console.info(`VRF_ADDR=${contracts.vrf.address}`);
   // await debug(await linkInstance.mint(owner.address, linkAmountInWei.mul(100)), "LinkInstance.mint");
   // console.info("afterDebug");
-  // process.exit(0);
+
   // HAVE TO PASS VRF AND LINK ADDRESSES TO CHAINLINK-BESU CONCTRACT
   const vrfAddr =
     network.name === "gemunion_besu"
@@ -784,9 +784,7 @@ main()
     for (const [key, value] of Object.entries(contracts)) {
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${(await value.getAddress()).toLowerCase()}`);
     }
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

@@ -285,15 +285,15 @@ task("abis", "Save all functions abi separately")
 
       // events
       for (const event of abiEvents) {
-        const isUnique = globEventArr.indexOf(JSON.stringify(event)) === -1;
+        const includes = globEventArr.includes(JSON.stringify(event));
 
-        if (isUnique) {
+        if (!includes) {
           globEventArr.push(JSON.stringify(event));
 
           // FRAMEWORK EVENT ABIS
           if (fwEventNames.includes(event.name)) {
-            const unique = fwEventArr.indexOf(event) === -1;
-            if (unique) {
+            const includes = fwEventArr.includes(event);
+            if (!includes) {
               fwEventArr.push(event);
             }
           }

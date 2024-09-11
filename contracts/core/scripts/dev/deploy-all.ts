@@ -26,29 +26,10 @@ interface IObj {
   hash?: string;
 }
 
-// const recursivelyDecodeResult = (result: Result): Record<string, any> => {
-//   if (typeof result !== "object") {
-//     // Raw primitive value
-//     return result;
-//   }
-//   try {
-//     const obj = result.toObject();
-//     if (obj._) {
-//       throw new Error("Decode as array, not object");
-//     }
-//     Object.keys(obj).forEach(key => {
-//       obj[key] = recursivelyDecodeResult(obj[key]);
-//     });
-//     return obj;
-//   } catch (err) {
-//     // Result is array.
-//     return result.toArray().map(item => recursivelyDecodeResult(item as Result));
-//   }
-// };
-
 const debug = async (obj: IObj | Record<string, Contract>, name?: string) => {
-  if (obj && obj.hash) {
-    console.info(`${name} tx: ${obj.hash as string}`);
+  if (obj?.hash) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
+    console.info(`${name} tx: ${obj.hash}`);
     await blockAwaitMs(delayMs);
   } else {
     console.info(`${Object.keys(obj).pop()} deployed`);
@@ -64,18 +45,18 @@ const debug = async (obj: IObj | Record<string, Contract>, name?: string) => {
   }
 };
 
-const grantRoles = async (contracts: Array<string>, grantee: Array<string>, roles: Array<string>) => {
+export const grantRoles = async (contracts: Array<string>, grantee: Array<string>, roles: Array<string>) => {
   let idx = 1;
   const max = contracts.length * grantee.length * roles.length;
-  for (let i = 0; i < contracts.length; i++) {
-    for (let j = 0; j < grantee.length; j++) {
-      for (let k = 0; k < roles.length; k++) {
-        if (contracts[i] !== grantee[j]) {
-          const accessInstance = await ethers.getContractAt("ERC721Simple", contracts[i]);
-          console.info(`grantRole [${idx} of ${max}] ${contracts[i]} ${grantee[j]}`);
+  for (const contract of contracts) {
+    for (const account of grantee) {
+      for (const role of roles) {
+        if (contract !== account) {
+          const accessInstance = await ethers.getContractAt("ERC721Simple", contract);
+          console.info(`grantRole [${idx} of ${max}] ${contract} ${account}`);
           idx++;
-          await blockAwaitMs(50);
-          await accessInstance.grantRole(roles[k], grantee[j]);
+          await blockAwaitMs(300);
+          await accessInstance.grantRole(role, account);
           // await debug(await accessInstance.grantRole(roles[k], grantee[j]), "grantRole");
         }
       }
@@ -113,7 +94,7 @@ async function main() {
   // console.info(`VRF_ADDR=${contracts.vrf.address}`);
   // await debug(await linkInstance.mint(owner.address, linkAmountInWei.mul(100)), "LinkInstance.mint");
   // console.info("afterDebug");
-  // process.exit(0);
+
   // HAVE TO PASS VRF AND LINK ADDRESSES TO CHAINLINK-BESU CONCTRACT
   const vrfAddr =
     network.name === "gemunion_besu"
@@ -129,7 +110,6 @@ async function main() {
   contracts.contractManager = await cmFactory.deploy();
   await debug(contracts);
   // console.info("contracts.contractManager.address", contracts.contractManager.address);
-  // process.exit(0);
 
   const exchangeFactory = await ethers.getContractFactory("Exchange");
   const exchangeInstance = await exchangeFactory.deploy(
@@ -695,9 +675,7 @@ main()
     for (const [key, value] of Object.entries(contracts)) {
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${(await value.getAddress()).toLowerCase()}`);
     }
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

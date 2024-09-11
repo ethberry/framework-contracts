@@ -113,12 +113,9 @@ async function main() {
   console.info("MintRandom", eventData1);
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch(error => {
+  console.error(error);
+});
 // hardhat run scripts/chainlink/init-chainlink.ts --network besu && hardhat run scripts/chainlink/sub-chainlink.ts --network besu && npm run prepare:contracts:besu
 // && hardhat run scripts/dev/random-call.ts --network besu
 // 46743535047904397907744975192256974478360060631460259718233215649634546163919n,

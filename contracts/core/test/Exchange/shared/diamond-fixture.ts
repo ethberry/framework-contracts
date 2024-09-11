@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { BaseContract, ZeroAddress, Result } from "ethers";
 
 import { FacetCutAction, getSelector, getSelectors } from "../../shared/diamond";
-import { recursivelyDecodeResult } from "../../utils";
+import { recursivelyDecodeResult } from "../../../utis/decoder";
 
 export interface IDiamondCut {
   facetAddress: string;
@@ -16,6 +16,7 @@ export async function loupeExists(addr: string): Promise<boolean> {
     await diamondLoupeFacet.facetAddresses();
     return true;
   } catch (e) {
+    void e;
     return false;
   }
 }
