@@ -54,9 +54,7 @@ main()
     Object.entries(contracts).map(([key, value]) =>
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${value.address.toLowerCase()}`),
     );
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-/* global ethers */
-
 import { BaseContract, Contract, FunctionFragment, Interface } from "ethers";
 
 export const FacetCutAction = { Add: 0, Replace: 1, Remove: 2 };

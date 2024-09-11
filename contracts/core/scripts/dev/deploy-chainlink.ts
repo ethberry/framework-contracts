@@ -75,7 +75,7 @@ async function main() {
   //   address(0x1fa66727cDD4e3e4a6debE4adF84985873F6cd8a), // LINK token
   // SETUP CHAIN_LINK VRF-V2 TO WORK
   const linkAmount = WeiPerEther * 1000n;
-  process.exit(0);
+
   /**
    * @notice Sets the configuration of the vrfv2 coordinator
    * @param minimumRequestConfirmations global min for request confirmations
@@ -126,9 +126,7 @@ main()
     for (const [key, value] of Object.entries(contracts)) {
       console.info(`${camelToSnakeCase(key).toUpperCase()}_ADDR=${(await value.getAddress()).toLowerCase()}`);
     }
-    process.exit(0);
   })
   .catch(error => {
     console.error(error);
-    process.exit(1);
   });

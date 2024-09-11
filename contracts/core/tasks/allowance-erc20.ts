@@ -11,7 +11,6 @@ task("allowance-erc20", "Prints an ERC20 balance")
     const coinInstance = coinFactory.attach(contract);
     const allowance = await coinInstance.allowance(account, spender);
     console.info("ERC20 Allowance:", hre.ethers.utils.formatEther(allowance.toString()));
-    process.exit(0);
   });
 
 // hardhat allowance-erc20 --account 0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73 --spender 0xfeae27388a65ee984f452f86effed42aabd438fd --contract 0x5e98e8a494ab6ce0a09d3b4c76534e7e00faed71 --network besu

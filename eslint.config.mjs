@@ -1,44 +1,105 @@
 import globals from "globals";
 import js from "@eslint/js";
-import stylisticJs from "@stylistic/eslint-plugin-js";
 import stylisticTs from "@stylistic/eslint-plugin-ts";
-import stylisticJsx from "@stylistic/eslint-plugin-jsx";
+import stylisticJs from "@stylistic/eslint-plugin-js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import tsEslint from "typescript-eslint";
-import reactPlugin from "eslint-plugin-react";
+import nodePlugin from "eslint-plugin-n";
+import pluginPromise from "eslint-plugin-promise";
+import mochaPlugin from "eslint-plugin-mocha";
 
-// DON'T disable any rules! Fix your shit!
+// DON'T ADD ANY RULES!
+// FIX YOUR SHIT!!!
+
 export default [
   {
-    ignores: ["**/artifacts", "**/cache", "**/coverage", "**/typechain-types", "**/.solcover.js"]
+    ignores: [
+      "**/artifacts",
+      "**/cache",
+      "**/coverage",
+      "**/typechain-types",
+      "**/.solcover.js"
+    ]
   },
-  js.configs.recommended,
+
+  {
+    rules: {
+      ...js.configs.recommended.rules,
+      "no-console": [
+        "error",
+        {
+          allow: ["error", "warn", "info"],
+        },
+      ],
+      "no-unused-vars": [
+        "error",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          args: "after-used",
+          vars: "all",
+        },
+      ],
+      "no-void": "off",
+    }
+  },
+
   ...tsEslint.configs.recommendedTypeChecked,
   ...tsEslint.configs.stylisticTypeChecked,
+
   {
     files: ["**/*.{js,mjs,cjs,jsx}"],
     ...tsEslint.configs.disableTypeChecked
   },
+
   {
+    ...pluginPromise.configs["flat/recommended"],
+    rules: {
+      ...pluginPromise.configs["flat/recommended"].rules,
+      "promise/always-return": "off",
+    }
+  },
+
+  {
+    ...nodePlugin.configs["flat/recommended-module"],
+    rules: {
+      ...nodePlugin.configs["flat/recommended-module"].rules,
+      "n/exports-style": ["error", "exports"],
+      // https://github.com/eslint-community/eslint-plugin-n/issues/314
+      "n/no-missing-import": "off"
+    }
+  },
+
+  {
+    ...mochaPlugin.configs.flat.recommended,
+    rules: {
+      ...mochaPlugin.configs.flat.recommended.rules,
+      "mocha/no-exports": "off",
+      "mocha/no-hooks-for-single-case": "off",
+      "mocha/no-skipped-tests": "off",
+      "mocha/no-setup-in-describe": "off",
+      "mocha/no-exclusive-tests": "error",
+    },
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+      },
+    },
+  },
+
+  {
+    ignores: ["eslint.config.mjs"],
     languageOptions: {
       parserOptions: {
         project: [
-          "./tsconfig.json",
-          "./contracts/*/tsconfig.json"
+          "./tsconfig.test.json",
+          "./contracts/*/tsconfig.test.json"
         ],
         tsconfigRootDir: import.meta.dirname
       },
-      globals: {
-        ...globals.serviceworker,
-        ...globals.browser
-      }
     }
   },
-  {
-    plugins: {
-      "@stylistic/ts": stylisticTs
-    }
-  },
+
   {
     files: ["**/*.{ts,tsx,mtsx}"],
     rules: {
@@ -77,5 +138,52 @@ export default [
       ]
     }
   },
+
+  {
+    plugins: {
+      "@stylistic/js": stylisticJs
+    },
+    rules: {
+      "max-len": [
+        "error",
+        {
+          code: 120,
+          ignoreRegExpLiterals: true,
+          ignoreTemplateLiterals: true,
+          ignorePattern: '^\\s+d="', // ignore path in svg icons
+        },
+      ],
+      "arrow-parens": ["error", "as-needed"],
+      "comma-dangle": ["error", "always-multiline"],
+      indent: [
+        "error",
+        2,
+        {
+          MemberExpression: 1,
+          SwitchCase: 1,
+        },
+      ],
+      "linebreak-style": ["error", "unix"],
+      "multiline-ternary": ["error", "always-multiline"],
+      "no-multiple-empty-lines": [
+        "error",
+        {
+          max: 2,
+          maxEOF: 1,
+        },
+      ],
+      "object-curly-spacing": ["error", "never"],
+      "operator-linebreak": ["error", "before"],
+      quotes: ["error", "double"],
+      semi: ["error", "always"],
+    },
+  },
+
+  {
+    plugins: {
+      "@stylistic/ts": stylisticTs
+    }
+  },
+
   eslintConfigPrettier
 ];
