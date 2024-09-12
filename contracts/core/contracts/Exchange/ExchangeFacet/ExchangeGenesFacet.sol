@@ -20,56 +20,60 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params } from "../lib/interfaces/IAsset.sol";
 import { PregnancyFrequencyExceeded, PregnancyThresholdExceeded, SignerMissingRole, GenesDifferentContracts } from "../../utils/errors.sol";
 
+import "hardhat/console.sol";
+
 contract ExchangeGenesFacet is SignatureValidator, DiamondOverride {
   event Breed(address account, uint256 externalId, Asset matron, Asset sire);
 
   uint256 public constant PREGNANCY_THRESHOLD_LIMIT = 3;
-  uint256 public constant PREGNANCY_FREQUENCY_LIMIT = 7 * 24 * 60 * 60; // one week
+  uint256 public constant PREGNANCY_FREQUENCY_LIMIT = 7 days;
 
   constructor() SignatureValidator() {}
 
-   function breed(
-     Params memory params,
-     Asset memory mother,
-     Asset memory father,
-     bytes calldata signature
-   ) external payable whenNotPaused {
-     // Check allowance
-     if (mother.token != father.token) {
-       revert GenesDifferentContracts();
-     }
+  function breed(
+    Params memory params,
+    Asset memory mother,
+    Asset memory father,
+    bytes calldata signature
+  ) external payable whenNotPaused {
+    // Check allowance
+    if (mother.token != father.token) {
+      revert GenesDifferentContracts();
+    }
 
-     // Check pregnancy for mother
-     uint256 motherPregnancyCounter = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_COUNTER);
-     if (motherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-       revert PregnancyThresholdExceeded(motherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
-     }
+    // Check pregnancy for mother
+    _checkPregnancyThreshold(mother.token, mother.tokenId);
+    _checkPregnancyFrequency(mother.token, mother.tokenId);
 
-     uint256 motherPregnancyTimestamp = IERC721GeneralizedCollection(mother.token).getRecordFieldValue(mother.tokenId, PREGNANCY_TIMESTAMP);
-     if (block.timestamp - motherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
-       revert PregnancyFrequencyExceeded(motherPregnancyTimestamp, block.timestamp);
-     }
+    // Check pregnancy for father
+    _checkPregnancyThreshold(father.token, father.tokenId);
+    _checkPregnancyFrequency(father.token, father.tokenId);
 
-     // Check pregnancy for father
-     uint256 fatherPregnancyCounter = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_COUNTER);
-     if (fatherPregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
-       revert PregnancyThresholdExceeded(fatherPregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
-     }
+    _validateParams(params);
 
-     uint256 fatherPregnancyTimestamp = IERC721GeneralizedCollection(father.token).getRecordFieldValue(father.tokenId, PREGNANCY_TIMESTAMP);
-     if (block.timestamp - fatherPregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
-       revert PregnancyFrequencyExceeded(block.timestamp - fatherPregnancyTimestamp, PREGNANCY_FREQUENCY_LIMIT);
-     }
+    address signer = _recoverOneToOneSignature(params, mother, father, signature);
+    if (!_hasRole(MINTER_ROLE, signer)) {
+      revert SignerMissingRole();
+    }
 
-     _validateParams(params);
+    IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
 
-     address signer = _recoverOneToOneSignature(params, mother, father, signature);
-     if (!_hasRole(MINTER_ROLE, signer)) {
-       revert SignerMissingRole();
-     }
+    emit Breed(_msgSender(), params.externalId, mother, father);
+  }
 
-     IERC721Genes(mother.token).breed(mother.tokenId, father.tokenId);
+  function _checkPregnancyThreshold(address token, uint256 tokenId) internal view {
+    uint256 pregnancyCounter = IERC721GeneralizedCollection(token).getRecordFieldValue(tokenId, PREGNANCY_COUNTER);
+    console.log("[ExchangeGenesFacet] Pregnancy Counter for token", tokenId, ":", pregnancyCounter);
+    if (pregnancyCounter >= PREGNANCY_THRESHOLD_LIMIT) {
+      revert PregnancyThresholdExceeded(pregnancyCounter, PREGNANCY_THRESHOLD_LIMIT);
+    }
+  }
 
-     emit Breed(_msgSender(), params.externalId, mother, father);
-   }
+  function _checkPregnancyFrequency(address token, uint256 tokenId) internal view {
+    uint256 pregnancyTimestamp = IERC721GeneralizedCollection(token).getRecordFieldValue(tokenId, PREGNANCY_TIMESTAMP);
+    console.log("[ExchangeGenesFacet] Pregnancy Timestamp for token", tokenId, ":", pregnancyTimestamp);
+    if (block.timestamp - pregnancyTimestamp < PREGNANCY_FREQUENCY_LIMIT) {
+      revert PregnancyFrequencyExceeded(pregnancyTimestamp, block.timestamp);
+    }
+  }
 }

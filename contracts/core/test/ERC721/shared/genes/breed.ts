@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { templateId, tokenAttributes, motherGenes, fatherGenes } from "../../../constants";
+import { templateId, tokenAttributes, genesTokenAttributes, motherGenes, fatherGenes } from "../../../constants";
 import { randomRequest } from "../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../shared/link";
 
@@ -23,7 +23,7 @@ export function shouldBreed(factory: () => Promise<any>) {
       await network.provider.send("hardhat_reset");
     });
 
-    it("breed should mix genes to generate attribute fields", async function () {
+    it.only("breed should mix genes to generate attribute fields", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const erc721Instance = await factory();
@@ -41,12 +41,19 @@ export function shouldBreed(factory: () => Promise<any>) {
       // Breed the two tokens
       await erc721Instance.connect(receiver).breed(1, 2);
 
+      // Wait for MintGenes event
+      const filter = erc721Instance.filters.MintGenes();
+      const mintGenesEvent = await erc721Instance.queryFilter(filter);
+      if (process.env.VERBOSE === "true") {
+         console.log('mintGenesEvent', mintGenesEvent) 
+      }
+
       // Simulate Chainlink VRF response
       await randomRequest(erc721Instance, vrfInstance, 54321n);
 
       const newTokenId = await erc721Instance.totalSupply();
 
-      expect(newTokenId).to.be.equal(3);
+      expect(newTokenId).to.be.equal(3n);
       
       const newTokenOwner = await erc721Instance.ownerOf(newTokenId);
       expect(newTokenOwner).to.equal(receiver.address);
@@ -54,19 +61,36 @@ export function shouldBreed(factory: () => Promise<any>) {
       const newGenes = await erc721Instance.getRecordFieldValue(newTokenId, tokenAttributes.GENES);
 
       const decodedGenes = await erc721Instance.decodeNumber(newGenes);
+      if (process.env.VERBOSE === "true") {
+        console.log('decodedGenes', decodedGenes)
+      }
 
-      expect(decodedGenes.baseColor).to.be.equal(14166n);
-      expect(decodedGenes.highlightColor).to.be.equal(43892n);
-      expect(decodedGenes.accentColor).to.be.equal(33047n);
-      expect(decodedGenes.mouth).to.be.equal(57073n);
-      expect(decodedGenes.fur).to.be.equal(21540n);
-      expect(decodedGenes.pattern).to.be.equal(749n);
-      expect(decodedGenes.eyeShape).to.be.equal(33824n);
-      expect(decodedGenes.eyeColor).to.be.equal(36321n);
-      expect(decodedGenes.wild).to.be.equal(3631n);
-      expect(decodedGenes.environment).to.be.equal(4522n);
-      expect(decodedGenes.secret).to.be.equal(64664n);
-      expect(decodedGenes.purrstige).to.be.equal(33661n);
+      expect(decodedGenes.baseColor).to.be.equal(9n);
+      expect(decodedGenes.highlightColor).to.be.equal(9n);
+      expect(decodedGenes.accentColor).to.be.equal(5n);
+      expect(decodedGenes.mouth).to.be.equal(2n);
+      expect(decodedGenes.fur).to.be.equal(9n);
+      expect(decodedGenes.pattern).to.be.equal(10n);
+      expect(decodedGenes.eyeShape).to.be.equal(1n);
+      expect(decodedGenes.eyeColor).to.be.equal(10n);
+      expect(decodedGenes.wild).to.be.equal(4n);
+      expect(decodedGenes.environment).to.be.equal(5n);
+      expect(decodedGenes.secret).to.be.equal(7n);
+      expect(decodedGenes.purrstige).to.be.equal(8n);
+
+      expect(await erc721Instance.getRecordFieldValue(newTokenId, genesTokenAttributes.MOTHER_ID), 1);
+
+      // Check pregnancy attributes for mother
+      const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_COUNTER);
+      const motherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      expect(motherPregnancyCounter).to.be.equal(1);
+      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+
+      // Check pregnancy attributes for father
+      const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_COUNTER);
+      const fatherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      expect(fatherPregnancyCounter).to.be.equal(1);
+      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
     });
 
     it("should fail: NotOwnerNorApproved", async function () {

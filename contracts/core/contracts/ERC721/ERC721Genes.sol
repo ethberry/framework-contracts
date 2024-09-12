@@ -18,6 +18,8 @@ import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
 import { IERC721Genes } from "./interfaces/IERC721Genes.sol";
 import { ERC721Simple } from "./ERC721Simple.sol";
 
+import "hardhat/console.sol";
+
 abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties, Rarity {
   using SafeCast for uint;
 
@@ -87,6 +89,12 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
 
+     console.log("[ERC721Genes-Before] Mother Timestamp:", _getRecordFieldValue(request.motherId, PREGNANCY_TIMESTAMP));
+     console.log("[ERC721Genes-Before] Father Timestamp:", _getRecordFieldValue(request.fatherId, PREGNANCY_TIMESTAMP));
+     console.log("[ERC721Genes-Before] Mother Counter:", _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER));
+     console.log("[ERC721Genes-Before] Father Counter:", _getRecordFieldValue(request.fatherId, PREGNANCY_COUNTER));
+
+
     // child will have moms template id
     uint256 templateId = _getRecordFieldValue(request.motherId, TEMPLATE_ID);
 
@@ -112,6 +120,12 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
     delete _queue[requestId];
 
     _mintCommon(request.account, templateId);
+
+     console.log("[ERC721Genes-After] Mother Timestamp:", _getRecordFieldValue(request.motherId, PREGNANCY_TIMESTAMP));
+     console.log("[ERC721Genes-After] Father Timestamp:", _getRecordFieldValue(request.fatherId, PREGNANCY_TIMESTAMP));
+     console.log("[ERC721Genes-After] Mother Counter:", _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER));
+     console.log("[ERC721Genes-After] Father Counter:", _getRecordFieldValue(request.fatherId, PREGNANCY_COUNTER));
+
   }
 
   function _mixGenes(uint256 motherGenes, uint256 fatherGenes, uint256 randomWord) internal pure returns (uint256 childGenes) {
@@ -126,7 +140,20 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties,
       mask <<= 1;
     }
 
+    // Normalize the genes to ensure attributes are in the range of 1 to 10
+    childGenes = _normalizeGenes(childGenes);
+
     return childGenes;
+  }
+
+  function _normalizeGenes(uint256 genes) internal pure returns (uint256 normalizedGenes) {
+    for (uint256 i = 0; i < 256; i += 16) {
+      uint256 attribute = (genes >> i) & 0xFFFF;
+      if (attribute > 10) {
+        attribute = (attribute % 10) + 1;
+      }
+      normalizedGenes |= (attribute << i);
+    }
   }
 
   function getRandomNumber() internal virtual returns (uint256 requestId);

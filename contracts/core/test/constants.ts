@@ -2,7 +2,7 @@ import { toUtf8Bytes, WeiPerEther, ZeroAddress, ZeroHash, zeroPadValue } from "e
 
 import { nonce } from "@gemunion/contracts-constants";
 
-import { TokenMetadata } from "./types";
+import { TokenMetadata, GenesTokenMetadata } from "./types";
 
 export const motherGenes = 107914390657248203931494128369229995047683281774584692748922102830935711579232n;
 export const fatherGenes = 70681664159614147522986300818112080314741133087508264051542039665822922212221n;
@@ -51,6 +51,14 @@ export const tokenAttributes = {
   TRAITS: zeroPadValue(toUtf8Bytes(TokenMetadata.TRAITS), 32),
   TEMPLATE_ID: zeroPadValue(toUtf8Bytes(TokenMetadata.TEMPLATE_ID), 32),
 };
+
+export const genesTokenAttributes = {
+  GENES: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.GENES), 32),
+  MOTHER_ID: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.MOTHER_ID), 32),
+  FATHER_ID: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.FATHER_ID), 32),
+  PREGNANCY_COUNTER: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.PREGNANCY_COUNTER), 32),
+  PREGNANCY_TIMESTAMP: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.PREGNANCY_TIMESTAMP), 32),
+}
 
 export enum FrameworkInterfaceId {
   ERC721Simple = "0xbf290e49",

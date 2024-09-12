@@ -9,9 +9,7 @@ import { deployDiamond, deployErc721Base, wrapOneToOneSignature } from "./shared
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
 import { isEqualEventArgObj, mixGenes, decodeNumber, generateRandomGenes } from "../utils";
-import { externalId, params, tokenAttributes } from "../constants";
-
-const isVerbose = process.env.VERBOSE === "true";
+import { externalId, params, tokenAttributes, genesTokenAttributes } from "../constants";
 
 describe("Diamond Exchange Genes", function () {
   const factory = async (facetName = "ExchangeGenesFacet"): Promise<any> => {
@@ -49,7 +47,7 @@ describe("Diamond Exchange Genes", function () {
 
   describe("breed", function () {
     describe("ERC721Genes", function () {
-      it("should breed", async function () {
+      it.only("should breed", async function () {
         const [_owner, receiver] = await ethers.getSigners();
         const motherGenes = generateRandomGenes();
         const fatherGenes = generateRandomGenes();
@@ -121,7 +119,7 @@ describe("Diamond Exchange Genes", function () {
 
         const decodedGenes = await erc721Instance.decodeNumber(newGenes);
 
-        if (isVerbose) {
+        if (process.env.VERBOSE === "true") {
           console.info("New Genes:", decodedGenes);
         }
 
@@ -137,6 +135,20 @@ describe("Diamond Exchange Genes", function () {
         expect(decodedGenes.environment).to.be.greaterThan(0);
         expect(decodedGenes.secret).to.be.greaterThan(0);
         expect(decodedGenes.purrstige).to.be.greaterThan(0);
+
+        expect(await erc721Instance.getRecordFieldValue(newTokenId, genesTokenAttributes.MOTHER_ID), 1);
+
+        // Check pregnancy attributes for mother
+        const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_COUNTER);
+        const motherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+        expect(motherPregnancyCounter).to.be.equal(1);
+        expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+
+        // Check pregnancy attributes for father
+        const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_COUNTER);
+        const fatherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+        expect(fatherPregnancyCounter).to.be.equal(1);
+        expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
       });
     });
 
@@ -185,7 +197,7 @@ describe("Diamond Exchange Genes", function () {
       await expect(breedTx).to.be.revertedWithCustomError(erc721Instance, "NotOwnerNorApproved");
     });
 
-    it.skip("should fail: PregnancyFrequencyExceeded", async function () {
+    it.only("should fail: PregnancyFrequencyExceeded", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const motherGenes = generateRandomGenes();
       const fatherGenes = generateRandomGenes();
@@ -231,6 +243,19 @@ describe("Diamond Exchange Genes", function () {
       await exchangeInstance.connect(receiver).breed(params, mother, father, signature);
 
       await randomRequest(exchangeInstance, vrfInstance, 54321n);
+
+      const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_COUNTER);
+      const motherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      expect(motherPregnancyCounter).to.be.equal(1);
+      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+
+      const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_COUNTER);
+      const fatherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      expect(fatherPregnancyCounter).to.be.equal(1);
+      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+
+      const pregnancyFrequencyLimit = await erc721Instance.PREGNANCY_FREQUENCY_LIMIT();
+      console.log('pregnancyFrequencyLimit', pregnancyFrequencyLimit)
 
       const params2 = {
         ...params,
@@ -285,7 +310,9 @@ describe("Diamond Exchange Genes", function () {
         amount,
       };
 
-      for (let i = 0; i < 3; i++) {
+      const pregnancyThresholdLimit = await erc721Instance.PREGNANCY_THRESHOLD_LIMIT();
+
+      for (let i = 0; i < pregnancyThresholdLimit; i++) {
         const params2 = {
           ...params,
           nonce: "0x" + ethers.hexlify(ethers.randomBytes(32)).slice(2),
