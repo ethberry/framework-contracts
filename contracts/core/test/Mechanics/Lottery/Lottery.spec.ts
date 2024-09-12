@@ -1898,13 +1898,13 @@ describe("Lottery", function () {
       // Start a new round
       const ticketAsset = {
         tokenType: 2,
-        token: erc721Instance.address,
+        token: erc721Instance.target,
         tokenId: 0,
         amount: 0,
       };
       const priceAsset = {
         tokenType: 1,
-        token: erc20Instance.address,
+        token: erc20Instance.target,
         tokenId: 0,
         amount: parseEther("1000"),
       };
