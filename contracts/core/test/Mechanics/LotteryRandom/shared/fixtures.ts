@@ -8,6 +8,5 @@ export async function deployLotteryRandomContract(): Promise<Contract> {
     commission: 30, // 30%
   };
   const lottery = await LotteryRandom.deploy(config);
-  await lottery.deployed();
   return lottery;
 }
