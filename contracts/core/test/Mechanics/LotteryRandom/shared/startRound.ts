@@ -3,25 +3,20 @@ import { ethers } from "hardhat";
 import { Contract } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-export function shouldStartRound(deployLotteryRandomContract: () => Promise<{ lottery: Contract; deployer: SignerWithAddress }>) {
+export function shouldStartRound(factory) {
   describe("startRound", function () {
-    let lottery: Contract;
-    let deployer: SignerWithAddress;
-
-    beforeEach(async function () {
-      ({ lottery, deployer } = await deployLotteryRandomContract());
-    });
-
-    it("should start a new round", async function () {
+    it.only("should start a new round", async function () {
+			const lottery = await factory();
+			
       const ticket = {
         tokenType: 1,
-        token: ethers.constants.AddressZero,
+        token: ethers.ZeroAddress,
         tokenId: 0,
         amount: 0,
       };
       const price = {
         tokenType: 1,
-        token: ethers.constants.AddressZero,
+        token: ethers.ZeroAddress,
         tokenId: 0,
         amount: ethers.utils.parseEther("0.1"),
       };
