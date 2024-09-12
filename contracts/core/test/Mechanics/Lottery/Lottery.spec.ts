@@ -1925,7 +1925,7 @@ describe("Lottery", function () {
       // TEST METADATA
       try {
         const encodedMetadata = await erc721Instance.getTokenMetadata(tokenId);
-        console.log('encodedMetadata', encodedMetadata
+        console.log('encodedMetadata', encodedMetadata);
         const metadata = recursivelyDecodeResult(encodedMetadata);
         const decodedMeta = decodeMetadata(metadata as any[]);
         expect(decodedMeta.PRIZE).to.equal(1n);
