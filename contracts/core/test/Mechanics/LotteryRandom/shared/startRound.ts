@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { amount, tokenId, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
+import { time } from "@openzeppelin/test-helpers";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
 
 export function shouldStartRound(factory) {
