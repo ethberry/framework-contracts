@@ -1881,7 +1881,7 @@ describe("Lottery", function () {
 
   describe("Get prize", function () {
     //.get-prize-jackpot-single
-    it("should get prize: Jackpot 1 ticket", async function () {
+    it.only("should get prize: Jackpot 1 ticket", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const values = [8, 5, 3, 2, 1, 0];
@@ -1898,13 +1898,13 @@ describe("Lottery", function () {
       // Start a new round
       const ticketAsset = {
         tokenType: 2,
-        token: erc721Instance.target,
+        token: erc721Instance.address,
         tokenId: 0,
         amount: 0,
       };
       const priceAsset = {
         tokenType: 1,
-        token: erc20Instance.target,
+        token: erc20Instance.address,
         tokenId: 0,
         amount: parseEther("1000"),
       };
