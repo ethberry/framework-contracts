@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { Contract } from "ethers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
 
 export function shouldStartRound(factory) {
   describe("startRound", function () {
@@ -18,7 +17,7 @@ export function shouldStartRound(factory) {
         tokenType: 1,
         token: ethers.ZeroAddress,
         tokenId: 0,
-        amount: ethers.utils.parseEther("0.1"),
+        amount: ethers.parseEther("0.1"),
       };
 
       await expect(lottery.startRound(ticket, price, 100))
