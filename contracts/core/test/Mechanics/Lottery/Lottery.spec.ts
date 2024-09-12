@@ -1895,32 +1895,39 @@ describe("Lottery", function () {
 
       await erc20Instance.mint(lotteryInstance, parseEther("20000"));
 
-      await lotteryInstance.setDummyRound(
-        defNumbers,
-        values,
-        aggregation,
-        nonce,
-        {
-          tokenType: 2,
-          token: erc721Instance,
-          tokenId: 0,
-          amount,
-        },
-        {
-          tokenType: 1,
-          token: erc20Instance,
-          tokenId: 0,
-          amount,
-        },
-        0, // maxTicket count
-      );
+      // Start a new round
+      const ticketAsset = {
+        tokenType: 2,
+        token: erc721Instance.address,
+        tokenId: 0,
+        amount: 0,
+      };
+      const priceAsset = {
+        tokenType: 1,
+        token: erc20Instance.address,
+        tokenId: 0,
+        amount: parseEther("1000"),
+      };
+      await lotteryInstance.startRound(ticketAsset, priceAsset, 0);
+
+      // End the round to set the winning numbers
+      await lotteryInstance.endRound();
+
+      // Manually set the round data
+      const roundId = (await lotteryInstance.getCurrentRoundInfo()).roundId;
+      const round = await lotteryInstance._rounds(roundId);
+      round.values = values;
+      round.aggregation = aggregation;
+      round.tickets.push(defNumbers);
 
       await erc721Instance.connect(receiver).approve(lotteryInstance, 1);
 
-      const prizeAmount = WeiPerEther * 7000n - 180n; // rounding error
+      const WeiPerEther = ethers.constants.WeiPerEther; // Define WeiPerEther
+      const prizeAmount = WeiPerEther.mul(7000).sub(180); // rounding error
 
-      const tx = lotteryInstance.connect(receiver).getPrize(tokenId, 1);
-      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, 1, 1, prizeAmount);
+      const tokenId = 1; // Define tokenId
+      const tx = lotteryInstance.connect(receiver).getPrize(tokenId, roundId);
+      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, roundId, tokenId, prizeAmount);
 
       // TEST METADATA
       try {
@@ -1933,7 +1940,7 @@ describe("Lottery", function () {
         expect(toBeHex(decodedMeta.NUMBERS, 32)).to.equal(ticketNumbers);
         expect(getBytesNumbersArr(decodedMeta.NUMBERS)).to.have.all.members(values);
       } catch (err) {
-        console.log(err);
+        console.error('Error decoding metadata:', err);
       }
     });
 
