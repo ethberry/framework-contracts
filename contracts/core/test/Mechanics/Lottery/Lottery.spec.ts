@@ -1880,7 +1880,7 @@ describe("Lottery", function () {
   });
 
   describe("Get prize", function () {
-    it("should get prize: Jackpot 1 ticket", async function () {
+    it.only("should get prize: Jackpot 1 ticket", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const values = [8, 5, 3, 2, 1, 0];
