@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
+import { amount, tokenId, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
+import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
 
 export function shouldStartRound(factory) {
   describe("startRound", function () {
@@ -8,21 +9,45 @@ export function shouldStartRound(factory) {
 			const lottery = await factory();
 			
       const ticket = {
-        tokenType: 1,
+        tokenType: 2,
         token: ethers.ZeroAddress,
-        tokenId: 0,
+        tokenId,
         amount: 0,
       };
       const price = {
         tokenType: 1,
         token: ethers.ZeroAddress,
-        tokenId: 0,
-        amount: ethers.parseEther("0.1"),
+        tokenId,
+        amount,
       };
 
+			const blockNumber = await ethers.provider.getBlockNumber();
+			console.log('blockNumber', blockNumber);
+			
       await expect(lottery.startRound(ticket, price, 100))
         .to.emit(lottery, "RoundStarted")
-        .withArgs(1, await ethers.provider.getBlockNumber(), 100, ticket, price);
+        .withArgs(1, blockNumber, 100, ticket, price);
+
+      const current: number = (await time.latest()).toNumber();
+      await expect(tx)
+        .to.emit(lotteryInstance, "RoundStarted")
+        .withArgs(
+          1n,
+          ethers.toQuantity(current),
+          0n,
+          isEqualEventArgObj({
+            tokenType: 2n,
+            token: await erc721Instance.getAddress(),
+            tokenId,
+            amount: 1n,
+          }),
+          isEqualEventArgObj({
+            tokenType: 1n,
+            token: await erc20Instance.getAddress(),
+            tokenId: 0n,
+            amount,
+          }),
+        );
 
       const roundInfo = await lottery.getCurrentRoundInfo();
       expect(roundInfo.roundId).to.equal(1);
