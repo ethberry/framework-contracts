@@ -21,13 +21,6 @@ export function shouldStartRound(factory) {
         amount,
       };
 
-			const blockNumber = await ethers.provider.getBlockNumber();
-			console.log('blockNumber', blockNumber);
-			
-      await expect(lottery.startRound(ticket, price, 100))
-        .to.emit(lottery, "RoundStarted")
-        .withArgs(1, blockNumber, 100, ticket, price);
-
       const current: number = (await time.latest()).toNumber();
       await expect(tx)
         .to.emit(lotteryInstance, "RoundStarted")
