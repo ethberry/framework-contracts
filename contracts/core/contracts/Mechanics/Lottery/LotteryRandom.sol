@@ -16,7 +16,7 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { NativeReceiver, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
 
-import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ILottery } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
@@ -99,6 +99,10 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
 
   // ROUND
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    if (ticket.tokenType != TokenType.ERC721) {
+      revert WrongAsset();
+    }
+  
     Round memory prevRound = _rounds[_rounds.length - 1];
     if (prevRound.endTimestamp == 0) {
       revert LotteryRoundNotComplete();

@@ -6,14 +6,17 @@ import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../.
 
 export function shouldStartRound(factory) {
   describe("startRound", function () {
-    it.only("should start a new round", async function () {
+		it("should start a new round with valid ERC721 ticket asset", async function () {
 			const lottery = await factory();
+
+			const roundId = 1n;
+			const maxTicket = 0n;
 			
       const ticket = {
         tokenType: 2,
         token: ethers.ZeroAddress,
         tokenId,
-        amount: 0,
+        amount,
       };
       const price = {
         tokenType: 1,
@@ -22,30 +25,65 @@ export function shouldStartRound(factory) {
         amount,
       };
 
-      const current: number = (await time.latest()).toNumber();
+      const startTimestamp = (await time.latest()).toNumber();
       await expect(tx)
         .to.emit(lotteryInstance, "RoundStarted")
         .withArgs(
-          1n,
-          ethers.toQuantity(current),
-          0n,
-          isEqualEventArgObj({
-            tokenType: 2n,
-            token: await erc721Instance.getAddress(),
-            tokenId,
-            amount: 1n,
-          }),
-          isEqualEventArgObj({
-            tokenType: 1n,
-            token: await erc20Instance.getAddress(),
-            tokenId: 0n,
-            amount,
-          }),
+          roundId,
+          ethers.toQuantity(startTimestamp),
+          maxTicket,
+          isEqualEventArgObj(ticket),
+          isEqualEventArgObj(price),
         );
 
       const roundInfo = await lottery.getCurrentRoundInfo();
+
       expect(roundInfo.roundId).to.equal(1);
       expect(roundInfo.maxTicket).to.equal(100);
     });
+
+	  it("should revert if ticket asset is not ERC721", async function () {
+	    const lottery = await factory();
+
+	    const ticket = {
+	      tokenType: TokenType.ERC20,
+	      token: ethers.constants.AddressZero,
+	      tokenId,
+	      amount,
+	    };
+
+	    const price = {
+	      tokenType: TokenType.ERC20,
+	      token: ethers.constants.AddressZero,
+	      tokenId,
+	      amount,
+	    };
+
+	    await expect(lottery.connect(admin).startRound(ticket, price, 100)).to.be.revertedWith("WrongAsset");
+	  });
+
+	  it("should fail: LotteryRoundNotComplete", async function () {
+	    const { lottery, admin } = await deployLotteryRandomContract();
+
+	    const ticket = {
+	      tokenType: TokenType.ERC721,
+	      token: ethers.constants.AddressZero,
+	      tokenId: 0,
+	      amount: 1,
+	    };
+
+	    const price = {
+	      tokenType: TokenType.ERC20,
+	      token: ethers.constants.AddressZero,
+	      tokenId: 0,
+	      amount: ethers.utils.parseEther("1"),
+	    };
+
+	    // Start the first round
+	    await lottery.connect(admin).startRound(ticket, price, 100);
+
+	    // Attempt to start another round without ending the previous one
+	    await expect(lottery.connect(admin).startRound(ticket, price, 100)).to.be.revertedWith("LotteryRoundNotComplete");
+	  });
   });
 }
