@@ -41,15 +41,15 @@ export function shouldBreed(factory: () => Promise<any>) {
       // Breed the two tokens
       await erc721Instance.connect(receiver).breed(1, 2);
 
+      // Simulate Chainlink VRF response
+      await randomRequest(erc721Instance, vrfInstance, 54321n);
+
       // Wait for MintGenes event
       const filter = erc721Instance.filters.MintGenes();
       const mintGenesEvent = await erc721Instance.queryFilter(filter);
       if (process.env.VERBOSE === "true") {
          console.log('mintGenesEvent', mintGenesEvent) 
       }
-
-      // Simulate Chainlink VRF response
-      await randomRequest(erc721Instance, vrfInstance, 54321n);
 
       const newTokenId = await erc721Instance.totalSupply();
 
