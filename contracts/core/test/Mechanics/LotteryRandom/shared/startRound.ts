@@ -14,7 +14,7 @@ export function shouldStartRound(factory) {
 
       const roundId = 1n;
       const maxTicket = 100n;
-      
+
       const ticket = {
         tokenType: 2, // ERC721
         token: ZeroAddress,

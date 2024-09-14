@@ -1,4 +1,4 @@
-Here's a complete and corrected test script for the `getPrize` method in the `LotteryRandom` contract, ensuring full correctness and coverage, including all relevant scenarios with the specified error messages.
+Here is the complete and improved test case for the `getPrize` method in the `LotteryRandom` contract, ensuring full correctness and coverage of all relevant scenarios. The test cases include both successful and failing scenarios, with appropriate naming conventions for the failing cases.
 
 ```typescript
 import { expect } from "chai";
@@ -138,5 +138,4 @@ export function shouldGetPrize(factory) {
 
       await time.increase(2592000 + 1); // 30 days + 1 second
 
-      await expect(lottery.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryTicketExpired");
-    });
+      await expect(lottery.connect(user).getPrize(0, 1

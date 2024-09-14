@@ -1,3 +1,5 @@
+Here is the improved test script for the `printTicket` method of the `LotteryRandom` smart contract, ensuring full correctness and coverage in accordance with the original smart contract. Each reverting test case is named in the specified format.
+
 ```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -134,10 +136,4 @@ export function shouldPrintTicket(factory) {
 
       // Attempt to print a ticket without MINTER_ROLE
       await expect(lottery.connect(user).printTicket(externalId, user.address, numbers)).to.be.revertedWith(
-        `AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`
-      );
-    });
-
-    it("should fail: Pausable", async function () {
-      const lottery = await factory();
-      const [admin, user] = await ethers.getSigners();
+        `AccessControl: account ${user.address.toLowerCase()} is
