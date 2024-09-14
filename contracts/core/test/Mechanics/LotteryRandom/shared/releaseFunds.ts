@@ -60,7 +60,7 @@ export function shouldReleaseFunds(factory) {
 
       await expect(lotteryInstance.releaseFunds(1))
         .to.emit(lotteryInstance, "Released")
-        .withArgs(1, ethers.utils.parseEther("1"));
+        .withArgs(1, formatEther("1"));
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
@@ -143,4 +143,4 @@ export function shouldReleaseFunds(factory) {
 
       const lotteryInstance = await factory();
 
-      await expect
+      await expect(lottery

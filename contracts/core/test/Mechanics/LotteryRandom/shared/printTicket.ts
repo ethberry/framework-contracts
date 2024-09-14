@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { amount, tokenId, MINTER_ROLE } from "@gemunion/contracts-constants";
 import { formatEther, ZeroAddress } from "ethers";
-import { getBytesNumbersArr, getNumbersBytes } from "../../../utils";
+import { getNumbersBytes } from "../../../utils";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -31,9 +31,7 @@ export function shouldPrintTicket(factory) {
 
       await lotteryInstance.connect(admin).grantRole(MINTER_ROLE, admin.address);
 
-      const tx = await lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers);
-
-      await expect(tx)
+      await expect(lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers))
         .to.emit(lotteryInstance, "TicketPrinted")
         .withArgs(1, user.address, externalId, numbers);
 
@@ -67,9 +65,7 @@ export function shouldPrintTicket(factory) {
 
       await lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers);
 
-      await expect(
-        lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers)
-      ).to.be.revertedWith("LotteryTicketLimitExceed");
+      await expect(lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers)).to.be.revertedWith("LotteryTicketLimitExceed");
     });
 
     it("should fail: LotteryWrongRound", async function () {
@@ -99,9 +95,7 @@ export function shouldPrintTicket(factory) {
       const externalId = 1;
       const numbers = getNumbersBytes([1, 2, 3, 4, 5, 6]);
 
-      await expect(lotteryInstance.connect(minter).printTicket(externalId, user.address, numbers)).to.be.revertedWith(
-        "LotteryWrongRound"
-      );
+      await expect(lotteryInstance.connect(minter).printTicket(externalId, user.address, numbers)).to.be.revertedWith("LotteryWrongRound");
     });
 
     it("should fail: AccessControl", async function () {
@@ -127,9 +121,7 @@ export function shouldPrintTicket(factory) {
       const externalId = 1;
       const numbers = getNumbersBytes([1, 2, 3, 4, 5, 6]);
 
-      await expect(lotteryInstance.connect(user).printTicket(externalId, user.address, numbers)).to.be.revertedWith(
-        `AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`
-      );
+      await expect(lotteryInstance.connect(user).printTicket(externalId, user.address, numbers)).to.be.revertedWith(`AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`);
     });
   });
 }

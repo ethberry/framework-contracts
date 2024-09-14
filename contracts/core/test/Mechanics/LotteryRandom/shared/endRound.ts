@@ -1,4 +1,3 @@
-```typescript
 import { formatEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -35,8 +34,8 @@ export function shouldEndRound(factory) {
       await lotteryInstance.connect(admin).startRound(ticket, price, 100);
 
       // End the current round
-      const tx = await lotteryInstance.connect(admin).endRound();
-      const receipt = await tx.wait();
+      const tx = lotteryInstance.connect(admin).endRound();
+      const receipt = await (await tx).wait();
 
       const endTimestamp = (await time.latest()).toNumber();
 
@@ -67,4 +66,3 @@ export function shouldEndRound(factory) {
     });
   });
 }
-```

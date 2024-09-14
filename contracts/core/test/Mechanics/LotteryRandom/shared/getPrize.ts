@@ -1,4 +1,5 @@
 ```typescript
+import { formatBytes32String, parseEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
@@ -6,7 +7,6 @@ import { TokenType } from "@gemunion/types-blockchain";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { randomRequest } from "../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../shared/link";
-import { formatBytes32String, parseEther, ZeroAddress } from "ethers";
 
 export function shouldGetPrize(factory) {
   describe("getPrize", function () {
@@ -42,7 +42,6 @@ export function shouldGetPrize(factory) {
         amount: parseEther("1"),
       };
 
-      // Set subscription ID
       await lotteryInstance.setSubscriptionId(subId);
       await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
@@ -53,10 +52,9 @@ export function shouldGetPrize(factory) {
 
       await lotteryInstance.endRound();
 
-      // Simulate Chainlink VRF response
       await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
-      await time.increase(2592000); // 30 days
+      await time.increase(2592000);
 
       await expect(lotteryInstance.connect(user).getPrize(0, 1))
         .to.emit(lotteryInstance, "Prize")
@@ -82,7 +80,6 @@ export function shouldGetPrize(factory) {
         amount: parseEther("1"),
       };
 
-      // Set subscription ID
       await lotteryInstance.setSubscriptionId(subId);
       await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
@@ -93,10 +90,9 @@ export function shouldGetPrize(factory) {
 
       await lotteryInstance.endRound();
 
-      // Simulate Chainlink VRF response
       await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
-      await time.increase(2592000); // 30 days
+      await time.increase(2592000);
 
       await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryWrongToken");
     });
@@ -120,7 +116,6 @@ export function shouldGetPrize(factory) {
         amount: parseEther("1"),
       };
 
-      // Set subscription ID
       await lotteryInstance.setSubscriptionId(subId);
       await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
@@ -131,12 +126,24 @@ export function shouldGetPrize(factory) {
 
       await lotteryInstance.endRound();
 
-      // Simulate Chainlink VRF response
       await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
-      await time.increase(2592000 + 1); // 30 days + 1 second
+      await time.increase(2592000 + 1);
 
       await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryTicketExpired");
     });
 
-    it("should fail: LotteryRoundNotComplete", async function ()
+    it("should fail: LotteryRoundNotComplete", async function () {
+      const [owner, user] = await ethers.getSigners();
+
+      const lotteryInstance = await factory();
+
+      const ticket = {
+        tokenType: TokenType.ERC721,
+        token: ZeroAddress,
+        tokenId: 0,
+        amount: 1,
+      };
+
+      const price = {
+        tokenType
