@@ -140,6 +140,6 @@ export function shouldReleaseFunds(factory) {
     });
 
     it("should fail: LotteryWrongRound", async function () {
-      const [owner, user] = await ethers.getSigners();
-
-      const lotteryInstance = await factory();
+    });
+  });
+}
