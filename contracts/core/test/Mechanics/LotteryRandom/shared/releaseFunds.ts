@@ -65,7 +65,6 @@ export function shouldReleaseFunds(factory) {
       const [owner, user] = await ethers.getSigners();
 
       const lottery = await factory();
-
       const ticket = {
         tokenType: TokenType.ERC721,
         token: ethers.constants.AddressZero,
