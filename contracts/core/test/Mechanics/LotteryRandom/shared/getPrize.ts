@@ -17,6 +17,7 @@ export function shouldGetPrize(factory) {
       ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
     });
 
+
     after(async function () {
       await network.provider.send("hardhat_reset");
     });
