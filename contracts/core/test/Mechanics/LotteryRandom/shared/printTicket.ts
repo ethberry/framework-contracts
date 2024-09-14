@@ -1,3 +1,4 @@
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { amount, tokenId, MINTER_ROLE } from "@gemunion/contracts-constants";
@@ -64,7 +65,8 @@ export function shouldPrintTicket(factory) {
 
       await lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers);
 
-      await expect(lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers)).to.be.revertedWith("LotteryTicketLimitExceed");
+      const tx = lotteryInstance.connect(admin).printTicket(externalId, user.address, numbers);
+      await expect(tx).to.be.revertedWith("LotteryTicketLimitExceed");
     });
 
     it("should fail: LotteryWrongRound", async function () {
@@ -94,7 +96,8 @@ export function shouldPrintTicket(factory) {
       const externalId = 1;
       const numbers = getNumbersBytes([1, 2, 3, 4, 5, 6]);
 
-      await expect(lotteryInstance.connect(minter).printTicket(externalId, user.address, numbers)).to.be.revertedWith("LotteryWrongRound");
+      const tx = lotteryInstance.connect(minter).printTicket(externalId, user.address, numbers);
+      await expect(tx).to.be.revertedWith("LotteryWrongRound");
     });
 
     it("should fail: AccessControl", async function () {
@@ -120,7 +123,9 @@ export function shouldPrintTicket(factory) {
       const externalId = 1;
       const numbers = getNumbersBytes([1, 2, 3, 4, 5, 6]);
 
-      await expect(lotteryInstance.connect(user).printTicket(externalId, user.address, numbers)).to.be.revertedWith(`AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`);
+      const tx = lotteryInstance.connect(user).printTicket(externalId, user.address, numbers);
+      await expect(tx).to.be.revertedWith(`AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`);
     });
   });
 }
+```

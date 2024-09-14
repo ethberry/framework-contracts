@@ -1,4 +1,3 @@
-```typescript
 import { formatBytes32String, parseEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
@@ -146,4 +145,4 @@ export function shouldGetPrize(factory) {
       };
 
       const price = {
-        tokenType
+        tokenType: TokenType

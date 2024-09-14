@@ -1,3 +1,4 @@
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
@@ -26,7 +27,7 @@ export function shouldStartRound(factory) {
       };
 
       const startTimestamp = (await time.latest()).toNumber();
-      const tx = await lotteryInstance.startRound(ticket, price, 100);
+      const tx = lotteryInstance.startRound(ticket, price, 100);
 
       await expect(tx)
         .to.emit(lotteryInstance, "RoundStarted")
@@ -61,7 +62,8 @@ export function shouldStartRound(factory) {
         amount: 1n,
       };
 
-      await expect(lotteryInstance.startRound(ticket, price, 100)).to.be.revertedWith("WrongAsset");
+      const tx = lotteryInstance.startRound(ticket, price, 100);
+      await expect(tx).to.be.revertedWith("WrongAsset");
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
@@ -85,7 +87,8 @@ export function shouldStartRound(factory) {
       await lotteryInstance.startRound(ticket, price, 100);
 
       // Attempt to start another round without ending the previous one
-      await expect(lotteryInstance.startRound(ticket, price, 100)).to.be.revertedWith("LotteryRoundNotComplete");
+      const tx = lotteryInstance.startRound(ticket, price, 100);
+      await expect(tx).to.be.revertedWith("LotteryRoundNotComplete");
     });
 
     it("should fail: AccessControl: account is missing role", async function () {
@@ -107,9 +110,11 @@ export function shouldStartRound(factory) {
       };
 
       // Attempt to start a round with a non-admin account
-      await expect(lotteryInstance.connect(nonAdmin).startRound(ticket, price, 100)).to.be.revertedWith(
+      const tx = lotteryInstance.connect(nonAdmin).startRound(ticket, price, 100);
+      await expect(tx).to.be.revertedWith(
         `AccessControl: account ${nonAdmin.address.toLowerCase()} is missing role ${ethers.id("DEFAULT_ADMIN_ROLE")}`
       );
     });
   });
 }
+```

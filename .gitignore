@@ -26,4 +26,3 @@ yarn.lock
 .env.*
 !.env.sample
 
-prompts

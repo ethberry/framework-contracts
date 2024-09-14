@@ -1,4 +1,3 @@
-```typescript
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
@@ -95,7 +94,8 @@ export function shouldReleaseFunds(factory) {
       // Simulate Chainlink VRF response
       await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
-      await expect(lotteryInstance.releaseFunds(1)).to.be.revertedWith("LotteryRoundNotComplete");
+      const tx = lotteryInstance.releaseFunds(1);
+      await expect(tx).to.be.revertedWith("LotteryRoundNotComplete");
     });
 
     it("should fail: LotteryZeroBalance", async function () {
@@ -135,12 +135,11 @@ export function shouldReleaseFunds(factory) {
 
       await lotteryInstance.releaseFunds(1);
 
-      await expect(lotteryInstance.releaseFunds(1)).to.be.revertedWith("LotteryZeroBalance");
+      const tx = lotteryInstance.releaseFunds(1);
+      await expect(tx).to.be.revertedWith("LotteryZeroBalance");
     });
 
     it("should fail: LotteryWrongRound", async function () {
       const [owner, user] = await ethers.getSigners();
 
-      const lotteryInstance = await factory();
-
-      await expect(lottery
+      const lotteryInstance = await

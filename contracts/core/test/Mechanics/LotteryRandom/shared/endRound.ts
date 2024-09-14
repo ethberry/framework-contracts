@@ -1,3 +1,4 @@
+```typescript
 import { formatEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -30,10 +31,7 @@ export function shouldEndRound(factory) {
     });
 
     it("should end the current round", async function () {
-      // Start a new round
       await lotteryInstance.connect(admin).startRound(ticket, price, 100);
-
-      // End the current round
       const tx = lotteryInstance.connect(admin).endRound();
       const receipt = await (await tx).wait();
 
@@ -50,19 +48,16 @@ export function shouldEndRound(factory) {
     });
 
     it("should fail: LotteryRoundNotActive", async function () {
-      // Start a new round
       await lotteryInstance.connect(admin).startRound(ticket, price, 100);
-
-      // End the current round
       await lotteryInstance.connect(admin).endRound();
-
-      // Attempt to end the round again
-      await expect(lotteryInstance.connect(admin).endRound()).to.be.revertedWith("LotteryRoundNotActive");
+      const tx = lotteryInstance.connect(admin).endRound();
+      await expect(tx).to.be.revertedWith("LotteryRoundNotActive");
     });
 
     it("should fail: LotteryWrongRound", async function () {
-      // Attempt to end a round without starting one
-      await expect(lotteryInstance.connect(admin).endRound()).to.be.revertedWith("LotteryWrongRound");
+      const tx = lotteryInstance.connect(admin).endRound();
+      await expect(tx).to.be.revertedWith("LotteryWrongRound");
     });
   });
 }
+```
