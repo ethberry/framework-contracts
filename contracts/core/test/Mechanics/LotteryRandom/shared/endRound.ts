@@ -25,7 +25,7 @@ export function shouldEndRound(factory) {
         tokenType: 1, // ERC20
         token: ZeroAddress,
         tokenId: 0,
-        amount: ethers.utils.parseEther("1"),
+        amount: ethers.parseEther("1"),
       };
     });
 

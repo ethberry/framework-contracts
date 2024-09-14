@@ -1,3 +1,4 @@
+import { formatEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
@@ -5,7 +6,6 @@ import { TokenType } from "@gemunion/types-blockchain";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { randomRequest } from "../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../shared/link";
-import { formatEther, ZeroAddress } from "ethers";
 
 export function shouldReleaseFunds(factory) {
   describe("releaseFunds", function () {
@@ -47,7 +47,7 @@ export function shouldReleaseFunds(factory) {
 
       await lotteryInstance.startRound(ticket, price, 100);
 
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = ethers.formatBytes32String("123456");
       await lotteryInstance.printTicket(1, user.address, numbers);
 
       await lotteryInstance.endRound();
@@ -86,7 +86,7 @@ export function shouldReleaseFunds(factory) {
 
       await lotteryInstance.startRound(ticket, price, 100);
 
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = ethers.formatBytes32String("123456");
       await lotteryInstance.printTicket(1, user.address, numbers);
 
       await lotteryInstance.endRound();
@@ -123,7 +123,7 @@ export function shouldReleaseFunds(factory) {
 
       await lotteryInstance.startRound(ticket, price, 100);
 
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = ethers.formatBytes32String("123456");
       await lotteryInstance.printTicket(1, user.address, numbers);
 
       await lotteryInstance.endRound();
@@ -142,4 +142,4 @@ export function shouldReleaseFunds(factory) {
     it("should fail: LotteryWrongRound", async function () {
       const [owner, user] = await ethers.getSigners();
 
-      const lotteryInstance = await
+      const lotteryInstance = await factory();
