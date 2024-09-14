@@ -1,5 +1,3 @@
-Here is the complete and improved test case for the `getPrize` method in the `LotteryRandom` contract, ensuring full correctness and coverage of all relevant scenarios. The test cases include both successful and failing scenarios, with appropriate naming conventions for the failing cases.
-
 ```typescript
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
@@ -28,7 +26,7 @@ export function shouldGetPrize(factory) {
     it("should get prize for a winning ticket", async function () {
       const [owner, user] = await ethers.getSigners();
 
-      const lottery = await factory();
+      const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
@@ -45,30 +43,30 @@ export function shouldGetPrize(factory) {
       };
 
       // Set subscription ID
-      await lottery.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lottery.address);
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
-      await lottery.startRound(ticket, price, 100);
+      await lotteryInstance.startRound(ticket, price, 100);
 
       const numbers = formatBytes32String("123456");
-      await lottery.printTicket(1, user.address, numbers);
+      await lotteryInstance.printTicket(1, user.address, numbers);
 
-      await lottery.endRound();
+      await lotteryInstance.endRound();
 
       // Simulate Chainlink VRF response
-      await randomRequest(lottery, vrfInstance, 123456n);
+      await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
       await time.increase(2592000); // 30 days
 
-      await expect(lottery.connect(user).getPrize(0, 1))
-        .to.emit(lottery, "Prize")
+      await expect(lotteryInstance.connect(user).getPrize(0, 1))
+        .to.emit(lotteryInstance, "Prize")
         .withArgs(user.address, 1, 0, parseEther("1"));
     });
 
     it("should fail: LotteryWrongToken", async function () {
       const [owner, user] = await ethers.getSigners();
 
-      const lottery = await factory();
+      const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
@@ -85,28 +83,28 @@ export function shouldGetPrize(factory) {
       };
 
       // Set subscription ID
-      await lottery.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lottery.address);
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
-      await lottery.startRound(ticket, price, 100);
+      await lotteryInstance.startRound(ticket, price, 100);
 
       const numbers = formatBytes32String("654321");
-      await lottery.printTicket(1, user.address, numbers);
+      await lotteryInstance.printTicket(1, user.address, numbers);
 
-      await lottery.endRound();
+      await lotteryInstance.endRound();
 
       // Simulate Chainlink VRF response
-      await randomRequest(lottery, vrfInstance, 123456n);
+      await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
       await time.increase(2592000); // 30 days
 
-      await expect(lottery.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryWrongToken");
+      await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryWrongToken");
     });
 
     it("should fail: LotteryTicketExpired", async function () {
       const [owner, user] = await ethers.getSigners();
 
-      const lottery = await factory();
+      const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
@@ -123,19 +121,22 @@ export function shouldGetPrize(factory) {
       };
 
       // Set subscription ID
-      await lottery.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lottery.address);
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.address);
 
-      await lottery.startRound(ticket, price, 100);
+      await lotteryInstance.startRound(ticket, price, 100);
 
       const numbers = formatBytes32String("123456");
-      await lottery.printTicket(1, user.address, numbers);
+      await lotteryInstance.printTicket(1, user.address, numbers);
 
-      await lottery.endRound();
+      await lotteryInstance.endRound();
 
       // Simulate Chainlink VRF response
-      await randomRequest(lottery, vrfInstance, 123456n);
+      await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
       await time.increase(2592000 + 1); // 30 days + 1 second
 
-      await expect(lottery.connect(user).getPrize(0, 1
+      await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryTicketExpired");
+    });
+
+    it("should fail: LotteryRoundNotComplete", async function ()
