@@ -93,7 +93,8 @@ export function shouldGetPrize(factory) {
 
       await time.increase(2592000);
 
-      await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryWrongToken");
+      const tx = lotteryInstance.connect(user).getPrize(0, 1);
+      await expect(tx).to.be.revertedWith("LotteryWrongToken");
     });
 
     it("should fail: LotteryTicketExpired", async function () {
@@ -129,10 +130,18 @@ export function shouldGetPrize(factory) {
 
       await time.increase(2592000 + 1);
 
-      await expect(lotteryInstance.connect(user).getPrize(0, 1)).to.be.revertedWith("LotteryTicketExpired");
+      const tx = lotteryInstance.connect(user).getPrize(0, 1);
+      await expect(tx).to.be.revertedWith("LotteryTicketExpired");
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
-    });
-  });
-}
+      const [owner, user] = await ethers.getSigners();
+
+      const lotteryInstance = await factory();
+
+      const ticket = {
+        tokenType: TokenType.ERC721,
+        token: ZeroAddress,
+        tokenId: 0,
+        amount: 1,
+      };
