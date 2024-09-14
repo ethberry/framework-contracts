@@ -52,7 +52,7 @@ export default {
       accounts: [process.env.PRIVATE_KEY],
       timeout: 142000,
     },
-    amoy: {
+    polygon_amoy: {
       url: process.env.JSON_RPC_ADDR_POLYGON_AMOY,
       accounts: [process.env.PRIVATE_KEY],
       timeout: 142000,
