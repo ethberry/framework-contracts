@@ -135,13 +135,6 @@ export function shouldGetPrize(factory) {
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
-      const [owner, user] = await ethers.getSigners();
-
-      const lotteryInstance = await factory();
-
-      const ticket = {
-        tokenType: TokenType.ERC721,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: 1,
-      };
+    });
+  });
+}
