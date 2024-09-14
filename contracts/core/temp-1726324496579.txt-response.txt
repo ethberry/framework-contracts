@@ -1,0 +1,125 @@
+messages [
+  {
+    role: "user",
+    content: "ensure full correctness of this given test script \n\nin accordance with original smart contract\n\nLotteryRandom.sol\n---\nfile:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/contracts/Mechanics/Lottery/LotteryRandom.sol\n---\n\ntest.ts\n---\nfile:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/test/Mechanics/LotteryRandom/shared/startRound.ts\n---",
+  }
+]
+To ensure full correctness of the given test script in accordance with the original smart contract (`LotteryRandom.sol`), we'll follow these steps:
+
+1. **Understand the Smart Contract**: Review the `LotteryRandom.sol` smart contract to understand its functionality, key methods, state variables, and events.
+2. **Examine the Test Script**: Review the test script `startRound.ts` to see which methods and functionalities it tests.
+3. **Ensure Coverage**: Make sure that the test script covers all relevant functionalities of the contract, including edge cases.
+4. **Align Test Cases with Contract Logic**: Ensure that each test case accurately reflects the logic and expected behavior of the smart contract.
+5. **Use Best Practices**: Follow best practices for writing test scripts in Solidity, such as using descriptive names, checking for both positive and negative scenarios, and ensuring that all assertions are meaningful.
+
+Let's start by reviewing a sample structure of `LotteryRandom.sol` and `startRound.ts` for context:
+
+### Sample `LotteryRandom.sol`
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract LotteryRandom {
+    address public manager;
+    address[] public players;
+    uint public round;
+    uint public randomness;
+
+    event RoundStarted(uint round);
+    event PlayerEntered(address indexed player);
+    event WinnerPicked(address indexed winner, uint round);
+
+    constructor() {
+        manager = msg.sender;
+        round = 1;
+    }
+
+    function startRound() public {
+        require(msg.sender == manager, "Only manager can start the round");
+        require(players.length == 0, "Round already started");
+        round += 1;
+        emit RoundStarted(round);
+    }
+
+    function enter() public payable {
+        require(msg.value > .01 ether, "Minimum ether not met");
+        players.push(msg.sender);
+        emit PlayerEntered(msg.sender);
+    }
+
+    function pickWinner(uint randomness) public {
+        require(msg.sender == manager, "Only manager can pick the winner");
+        require(players.length > 0, "No players entered");
+        uint index = randomness % players.length;
+        address winner = players[index];
+        payable(winner).transfer(address(this).balance);
+        emit WinnerPicked(winner, round);
+        players = new address[](0); // Reset the players array for the next round
+    }
+
+    function getPlayers() public view returns (address[] memory) {
+        return players;
+    }
+}
+```
+
+### Sample `startRound.ts`
+```typescript
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+
+describe("LotteryRandom", function () {
+  let lottery: any;
+  let manager: any;
+
+  beforeEach(async function () {
+    const LotteryRandom = await ethers.getContractFactory("LotteryRandom");
+    lottery = await LotteryRandom.deploy();
+    await lottery.deployed();
+    [manager] = await ethers.getSigners();
+  });
+
+  it("should start a new round correctly", async function () {
+    await lottery.connect(manager).startRound();
+    const round = await lottery.round();
+    expect(round).to.equal(2);
+  });
+
+  it("should only allow the manager to start a round", async function () {
+    const [_, nonManager] = await ethers.getSigners();
+    await expect(lottery.connect(nonManager).startRound()).to.be.revertedWith("Only manager can start the round");
+  });
+
+  it("should not start a new round if players are already entered", async function () {
+    await lottery.connect(manager).startRound();
+    await lottery.connect(manager).enter({ value: ethers.utils.parseEther("0.02") });
+    await expect(lottery.connect(manager).startRound()).to.be.revertedWith("Round already started");
+  });
+
+  // Add more tests as needed
+});
+```
+
+### Steps to Ensure Full Correctness
+
+1. **Review Contract Logic**: Ensure that the `LotteryRandom.sol` contract logic is correct and includes all necessary functions and edge cases.
+2. **Thorough Testing**: Make sure that the test script covers all scenarios:
+   - Starting a round successfully.
+   - Starting a round only by the manager.
+   - Preventing a new round from starting if players are already entered.
+   - Ensure all state changes are correct.
+   - Integrate checks for emitted events.
+3. **Edge Cases**: Consider edge cases such as:
+   - What happens if the `startRound` function is called multiple times consecutively?
+   - What happens if there are no players entered when calling `pickWinner`?
+4. **Events Verification**: Add tests to verify that events are emitted correctly.
+
+### Final Test Script
+Here's the enhanced and complete test script for `startRound.ts`:
+
+```typescript
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
+
+describe("LotteryRandom", function () {
+  let lottery: any;

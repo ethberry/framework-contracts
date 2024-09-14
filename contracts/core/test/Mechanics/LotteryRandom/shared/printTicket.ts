@@ -1,8 +1,9 @@
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { amount, tokenId, nonce, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { time } from "@openzeppelin/test-helpers";
-import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
+import { amount, tokenId, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { formatEther, ZeroAddress } from "ethers";
+import { getBytesNumbersArr, getNumbersBytes } from "../../../utils";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -12,13 +13,13 @@ export function shouldPrintTicket(factory) {
 
       const ticket = {
         tokenType: 2,
-        token: ethers.ZeroAddress,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
       const price = {
         tokenType: 1,
-        token: ethers.ZeroAddress,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
@@ -40,19 +41,19 @@ export function shouldPrintTicket(factory) {
       expect(roundInfo.tickets.length).to.equal(1);
     });
 
-    it("should revert if max tickets limit is exceeded", async function () {
+    it("should fail: LotteryTicketLimitExceed", async function () {
       const lottery = await factory();
       const [admin, user] = await ethers.getSigners();
 
       const ticket = {
         tokenType: 2,
-        token: ethers.ZeroAddress,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
       const price = {
         tokenType: 1,
-        token: ethers.ZeroAddress,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
@@ -71,7 +72,7 @@ export function shouldPrintTicket(factory) {
       ).to.be.revertedWith("LotteryTicketLimitExceed");
     });
 
-    it("should revert if round is not active", async function () {
+    it("should fail: LotteryWrongRound", async function () {
       const lottery = await factory();
       const [owner, minter, user] = await ethers.getSigners();
 
@@ -80,14 +81,14 @@ export function shouldPrintTicket(factory) {
 
       const ticket = {
         tokenType: 2, // ERC721
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
 
       const price = {
         tokenType: 1, // ERC20
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
@@ -107,21 +108,20 @@ export function shouldPrintTicket(factory) {
       );
     });
 
-
-    it("should revert if not called by minter", async function () {
+    it("should fail: AccessControl", async function () {
       const lottery = await factory();
       const [owner, user] = await ethers.getSigners();
 
       const ticket = {
         tokenType: 2, // ERC721
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
 
       const price = {
         tokenType: 1, // ERC20
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId,
         amount,
       };
@@ -137,5 +137,7 @@ export function shouldPrintTicket(factory) {
         `AccessControl: account ${user.address.toLowerCase()} is missing role ${MINTER_ROLE}`
       );
     });
-  });
-}
+
+    it("should fail: Pausable", async function () {
+      const lottery = await factory();
+      const [admin, user] = await ethers.getSigners();

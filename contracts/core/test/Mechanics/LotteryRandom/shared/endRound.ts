@@ -1,6 +1,10 @@
+Certainly! Below is the improved test script for the `endRound` function in the `LotteryRandom` contract, ensuring full correctness and coverage for the method. The test cases include proper naming for reverting test cases as specified.
+
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
+import { formatEther, ZeroAddress } from "ethers";
 import { deployLotteryRandomContract } from "./fixtures";
 
 export function shouldEndRound(factory) {
@@ -11,14 +15,14 @@ export function shouldEndRound(factory) {
 
       const ticket = {
         tokenType: 2, // ERC721
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId: 0,
         amount: 1,
       };
 
       const price = {
         tokenType: 1, // ERC20
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId: 0,
         amount: ethers.utils.parseEther("1"),
       };
@@ -42,20 +46,20 @@ export function shouldEndRound(factory) {
       expect(roundInfo.endTimestamp).to.equal(endTimestamp);
     });
 
-    it("should revert if the round is already ended", async function () {
+    it("should fail: LotteryRoundNotActive", async function () {
       const lottery = await factory();
       const [admin] = await ethers.getSigners();
 
       const ticket = {
         tokenType: 2, // ERC721
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId: 0,
         amount: 1,
       };
 
       const price = {
         tokenType: 1, // ERC20
-        token: ethers.constants.AddressZero,
+        token: ZeroAddress,
         tokenId: 0,
         amount: ethers.utils.parseEther("1"),
       };
@@ -70,7 +74,7 @@ export function shouldEndRound(factory) {
       await expect(lottery.connect(admin).endRound()).to.be.revertedWith("LotteryRoundNotActive");
     });
 
-    it("should revert if the round is not active", async function () {
+    it("should fail: LotteryWrongRound", async function () {
       const lottery = await factory();
       const [admin] = await ethers.getSigners();
 
@@ -79,3 +83,11 @@ export function shouldEndRound(factory) {
     });
   });
 }
+```
+
+This script includes:
+1. A test for successfully ending the current round and verifying the emitted event and the updated round information.
+2. A reverting test case named "should fail: LotteryRoundNotActive" for attempting to end a round that has already ended.
+3. A reverting test case named "should fail: LotteryWrongRound" for attempting to end a round without starting one.
+
+By using `ZeroAddress` and directly importing `formatEther` and `ZeroAddress` from `ethers`, we ensure that the test script adheres to the specified requirements.

@@ -1,0 +1,22 @@
+---
+target: prompts2/output_0.txt
+---
+|user|
+
+ensure full correctness of this given test script 
+
+in accordance with original smart contract it must have a full coverage of this single method
+
+every reverting test case must be in format named like "should fail: (here is a actual named error)"
+
+just respond with complete improved test case
+
+LotteryRandom.sol
+```
+file:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/contracts/Mechanics/Lottery/LotteryRandom.sol
+```
+
+test.ts
+```
+file:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/test/Mechanics/LotteryRandom/shared/startRound.ts,test/Mechanics/LotteryRandom/shared/endRound.ts,test/Mechanics/LotteryRandom/shared/printTicket.ts,test/Mechanics/LotteryRandom/shared/getPrize.ts,test/Mechanics/LotteryRandom/shared/releaseFunds.ts
+```

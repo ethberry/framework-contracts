@@ -1,0 +1,15 @@
+|user|
+
+ensure full correctness of this given test script 
+
+in accordance with original smart contract
+
+LotteryRandom.sol
+---
+file:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/contracts/Mechanics/Lottery/LotteryRandom.sol
+---
+
+test.ts
+---
+file:/Users/gur/Documents/gemunion/framework-contracts/contracts/core/test/Mechanics/LotteryRandom/shared/startRound.ts
+---
