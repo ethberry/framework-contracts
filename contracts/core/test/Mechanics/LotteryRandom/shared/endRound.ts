@@ -1,4 +1,3 @@
-```typescript
 import { formatEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -60,4 +59,3 @@ export function shouldEndRound(factory) {
     });
   });
 }
-```
