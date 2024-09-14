@@ -1,4 +1,3 @@
-```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { amount, tokenId, MINTER_ROLE } from "@gemunion/contracts-constants";
@@ -128,4 +127,4 @@ export function shouldPrintTicket(factory) {
     });
   });
 }
-```
+
