@@ -19,9 +19,10 @@ import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/ro
 import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ILottery } from "./interfaces/ILottery.sol";
+import { ILotteryErrors } from "./interfaces/ILotteryErrors.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
 
-abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder, NativeReceiver {
+abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Pausable, CoinHolder, NativeReceiver {
   using Address for address;
   using SafeERC20 for IERC20;
 

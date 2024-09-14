@@ -7,9 +7,8 @@
 pragma solidity ^0.8.20;
 
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
-import { ILotteryErrors } from "./ILotteryErrors.sol";
 
-interface ILottery is ILotteryErrors {
+interface ILottery {
   struct LotteryConfig {
     uint256 timeLagBeforeRelease;
     uint256 commission;
