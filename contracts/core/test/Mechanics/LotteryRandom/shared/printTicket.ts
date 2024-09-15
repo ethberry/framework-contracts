@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
 import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
 import { TokenType } from "../../../types";
