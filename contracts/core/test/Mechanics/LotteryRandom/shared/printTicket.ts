@@ -32,7 +32,7 @@ export function shouldPrintTicket(factory) {
       };
 
       const price = {
-        tokenType: TokenType.ERC20,
+        tokenType: TokenType.NATIVE,
         token: ZeroAddress,
         tokenId,
         amount,
@@ -53,13 +53,13 @@ export function shouldPrintTicket(factory) {
 
       const ticket = {
         tokenType: TokenType.ERC721,
-        token: await erc721TicketInstance.target,
+        token: erc721TicketInstance.target,
         tokenId: 1n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: TokenType.ERC20,
+        tokenType: TokenType.NATIVE,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
