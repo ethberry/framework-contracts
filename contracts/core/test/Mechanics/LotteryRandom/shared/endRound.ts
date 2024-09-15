@@ -1,12 +1,10 @@
-endRound.ts
-```typescript
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { deployLinkVrfFixture } from "../../shared/link";
-import { randomRequest } from "../../shared/randomRequest";
+import { deployLinkVrfFixture } from "../../../shared/link";
+import { randomRequest } from "../../../shared/randomRequest";
 
 export function shouldEndRound(factory) {
   describe("endRound", function () {
@@ -100,4 +98,3 @@ export function shouldEndRound(factory) {
     });
   });
 }
-```
