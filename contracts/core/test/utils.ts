@@ -50,6 +50,7 @@ export const isEqualArray = (...args: any[]): any => {
 export const isEqualEventArgObj = (args: any): any => {
   return (eventValues: any): boolean => {
     for (const key of Object.keys(args)) {
+      console.log(eventValues[key], args[key])
       if (JSON.stringify(eventValues[key]) !== JSON.stringify(args[key])) {
         return false;
       }
