@@ -1,4 +1,5 @@
 import { formatEther } from "ethers";
+import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 export function shouldEndRound(factory) {

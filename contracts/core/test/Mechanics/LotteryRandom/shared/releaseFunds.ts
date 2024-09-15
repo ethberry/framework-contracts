@@ -1,6 +1,7 @@
 import { formatEther, ZeroAddress } from "ethers";
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 
 export function shouldReleaseFunds(factory) {
   describe("releaseFunds", function () {

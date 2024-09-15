@@ -59,6 +59,7 @@ export function shouldPrintTicket(factory) {
       await lotteryInstance.startRound(ticket, price, 100);
 
       const tx = await lotteryInstance.printTicket(1, ZeroAddress, "0x1234");
+      const tx = lotteryInstance.printTicket(1, ZeroAddress, "0x1234");
       await expect(tx).to.emit(lotteryInstance, "Transfer"); // Assuming the mintTicket function emits a Transfer event
     });
   });
