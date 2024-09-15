@@ -77,7 +77,7 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
     uint256 externalId,
     address account,
     bytes32 numbers
-  ) external onlyRole(MINTER_ROLE) whenNotPaused returns (uint256 tokenId, uint256 roundId) {
+  ) external onlyRole(MINTER_ROLE) whenNotPaused returns (uint256 tokenId) {
     // get current round
     roundId = _rounds.length - 1;
     Round storage currentRound = _rounds[roundId];
@@ -97,7 +97,7 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
 
     tokenId = IERC721LotteryTicket(currentRound.ticketAsset.token).mintTicket(account, roundId, externalId, numbers);
 
-    return (tokenId, roundId);
+    return tokenId;
   }
 
   // ROUND
