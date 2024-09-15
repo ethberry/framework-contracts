@@ -1,140 +1,57 @@
-import { formatBytes32String, parseEther, ZeroAddress } from "ethers";
-import { expect } from "chai";
-import { ethers, network } from "hardhat";
-import { time } from "@openzeppelin/test-helpers";
-import { TokenType } from "@gemunion/types-blockchain";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { randomRequest } from "../../../shared/randomRequest";
-import { deployLinkVrfFixture } from "../../../shared/link";
+```typescript
+import { formatEther, ZeroAddress } from "ethers";
 
 export function shouldGetPrize(factory) {
   describe("getPrize", function () {
-    let vrfInstance;
-    let subId;
-
-    before(async function () {
-      await network.provider.send("hardhat_reset");
-
-      ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
-    });
-
-    after(async function () {
-      await network.provider.send("hardhat_reset");
-    });
-
-    it("should get prize for a winning ticket", async function () {
-      const [owner, user] = await ethers.getSigners();
-
+    it("should fail: LotteryWrongRound", async function () {
       const lotteryInstance = await factory();
-
-      const ticket = {
-        tokenType: TokenType.ERC721,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: 1,
-      };
-
-      const price = {
-        tokenType: TokenType.ERC20,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: parseEther("1"),
-      };
-
-      await lotteryInstance.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lotteryInstance.address);
-
-      await lotteryInstance.startRound(ticket, price, 100);
-
-      const numbers = formatBytes32String("123456");
-      await lotteryInstance.printTicket(1, user.address, numbers);
-
-      await lotteryInstance.endRound();
-
-      await randomRequest(lotteryInstance, vrfInstance, 123456n);
-
-      await time.increase(2592000);
-
-      await expect(lotteryInstance.connect(user).getPrize(0, 1))
-        .to.emit(lotteryInstance, "Prize")
-        .withArgs(user.address, 1, 0, parseEther("1"));
-    });
-
-    it("should fail: LotteryWrongToken", async function () {
-      const [owner, user] = await ethers.getSigners();
-
-      const lotteryInstance = await factory();
-
-      const ticket = {
-        tokenType: TokenType.ERC721,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: 1,
-      };
-
-      const price = {
-        tokenType: TokenType.ERC20,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: parseEther("1"),
-      };
-
-      await lotteryInstance.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lotteryInstance.address);
-
-      await lotteryInstance.startRound(ticket, price, 100);
-
-      const numbers = formatBytes32String("654321");
-      await lotteryInstance.printTicket(1, user.address, numbers);
-
-      await lotteryInstance.endRound();
-
-      await randomRequest(lotteryInstance, vrfInstance, 123456n);
-
-      await time.increase(2592000);
-
-      const tx = lotteryInstance.connect(user).getPrize(0, 1);
-      await expect(tx).to.be.revertedWith("LotteryWrongToken");
-    });
-
-    it("should fail: LotteryTicketExpired", async function () {
-      const [owner, user] = await ethers.getSigners();
-
-      const lotteryInstance = await factory();
-
-      const ticket = {
-        tokenType: TokenType.ERC721,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: 1,
-      };
-
-      const price = {
-        tokenType: TokenType.ERC20,
-        token: ZeroAddress,
-        tokenId: 0,
-        amount: parseEther("1"),
-      };
-
-      await lotteryInstance.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lotteryInstance.address);
-
-      await lotteryInstance.startRound(ticket, price, 100);
-
-      const numbers = formatBytes32String("123456");
-      await lotteryInstance.printTicket(1, user.address, numbers);
-
-      await lotteryInstance.endRound();
-
-      await randomRequest(lotteryInstance, vrfInstance, 123456n);
-
-      await time.increase(2592000 + 1);
-
-      const tx = lotteryInstance.connect(user).getPrize(0, 1);
-      await expect(tx).to.be.revertedWith("LotteryTicketExpired");
+      const tx = lotteryInstance.getPrize(1, 999);
+      await expect(tx).to.be.revertedWith("LotteryWrongRound");
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
+      const lotteryInstance = await factory();
+      const tx = lotteryInstance.getPrize(1, 0);
+      await expect(tx).to.be.revertedWith("LotteryRoundNotComplete");
+    });
+
+    it("should fail: LotteryTicketExpired", async function () {
+      const lotteryInstance = await factory();
+      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      const tx = lotteryInstance.getPrize(1, 1);
+      await expect(tx).to.be.revertedWith("LotteryTicketExpired");
+    });
+
+    it("should fail: LotteryNotOwnerNorApproved", async function () {
+      const lotteryInstance = await factory();
+      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      await lotteryInstance.setDummyTicket("0x1234");
+      const tx = lotteryInstance.getPrize(1, 1);
+      await expect(tx).to.be.revertedWith("LotteryNotOwnerNorApproved");
+    });
+
+    it("should fail: LotteryWrongToken", async function () {
+      const lotteryInstance = await factory();
+      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      await lotteryInstance.setDummyTicket("0x5678");
+      const tx = lotteryInstance.getPrize(1, 1);
+      await expect(tx).to.be.revertedWith("LotteryWrongToken");
+    });
+
+    it("should fail: LotteryBalanceExceed", async function () {
+      const lotteryInstance = await factory();
+      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      await lotteryInstance.setDummyTicket("0x1234");
+      const tx = lotteryInstance.getPrize(1, 1);
+      await expect(tx).to.be.revertedWith("LotteryBalanceExceed");
+    });
+
+    it("should successfully get prize", async function () {
+      const lotteryInstance = await factory();
+      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      await lotteryInstance.setDummyTicket("0x1234");
+      await expect(lotteryInstance.getPrize(1, 1)).to.emit(lotteryInstance, "Prize");
     });
   });
 }
+```

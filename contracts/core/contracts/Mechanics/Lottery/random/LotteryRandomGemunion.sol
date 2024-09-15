@@ -32,42 +32,6 @@ contract LotteryRandomGemunion is LotteryRandom, ChainLinkGemunionV2Plus {
     super.fulfillRandomWords(requestId, randomWords);
   }
 
-  function setDummyRound(
-    bytes32 ticket,
-    uint8[6] calldata values,
-    uint8[7] calldata aggregation,
-    uint256 requestId,
-    Asset memory item,
-    Asset memory price,
-    uint256 maxTicket
-  ) external {
-    Round memory dummyRound;
-    _rounds.push(dummyRound);
-
-    uint256 roundNumber = _rounds.length - 1;
-    Round storage currentRound = _rounds[roundNumber];
-
-    currentRound.maxTicket = maxTicket;
-    currentRound.startTimestamp = block.timestamp;
-    currentRound.endTimestamp = block.timestamp + 1;
-    currentRound.balance = 10000 ether;
-    currentRound.total = 10000 ether;
-    currentRound.total -= (currentRound.total * fee) / 100;
-    currentRound.tickets.push(ticket);
-    currentRound.values = values;
-    currentRound.ticketAsset = item;
-    currentRound.acceptedAsset = price;
-    // prize numbers
-    currentRound.aggregation = aggregation;
-    currentRound.requestId = requestId;
-  }
-
-  function setDummyTicket(bytes32 ticket) external {
-    uint256 roundNumber = _rounds.length - 1;
-    Round storage currentRound = _rounds[roundNumber];
-    currentRound.tickets.push(ticket);
-  }
-
   /**
    * @dev See {IERC165-supportsInterface}.
    */
