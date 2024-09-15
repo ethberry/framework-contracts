@@ -23,7 +23,7 @@ export function shouldEndRound(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotActive");
     });
 
-    it("should fail: Ownable: caller is not the owner", async function () {
+    it("should fail: SignerMissingRole", async function () {
       const lotteryInstance = await factory();
       const [_, addr1] = await ethers.getSigners();
       await lotteryInstance.startRound({ tokenType: 1, token: "0x123" }, { tokenType: 1, token: "0x456" }, 100);
@@ -32,4 +32,4 @@ export function shouldEndRound(factory) {
     });
   });
 }
-```
+
