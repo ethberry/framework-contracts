@@ -7,7 +7,6 @@ import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../.
 export function shouldStartRound(factory) {
   describe("startRound", function () {
 
-
     it.only("should start a new round with valid ERC721 ticket asset", async function () {
       const lotteryInstance = await factory();
 
