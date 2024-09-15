@@ -71,7 +71,6 @@ export function shouldPrintTicket(factory) {
 
       const tx = lotteryInstance.printTicket(1, receiver, ticketNumbers);
 
-
       await expect(tx).to.emit(lotteryInstance, "Transfer").withArgs(ZeroAddress, receiver, tokenId);
     });
   });
