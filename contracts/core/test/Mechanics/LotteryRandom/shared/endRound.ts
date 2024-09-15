@@ -1,3 +1,4 @@
+```typescript
 import { expect } from "chai";
 import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
@@ -26,10 +27,11 @@ export function shouldEndRound(factory) {
 
       // End the current round
       const tx = lotteryInstance.endRound();
-      await expect(tx).to.emit(lotteryInstance, "RoundEnded");
+      const currentTimestamp = (await time.latest()).toNumber();
+      await expect(tx).to.emit(lotteryInstance, "RoundEnded").withArgs(1, currentTimestamp);
 
       const roundInfo = await lotteryInstance.getCurrentRoundInfo();
-      expect(roundInfo.endTimestamp).to.be.gt(0);
+      expect(roundInfo.endTimestamp).to.be.gte(currentTimestamp);
     });
 
     it("should fail: LotteryWrongRound", async function () {
@@ -94,3 +96,4 @@ export function shouldEndRound(factory) {
     });
   });
 }
+```
