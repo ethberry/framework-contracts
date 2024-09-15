@@ -53,7 +53,7 @@ export function shouldPrintTicket(factory) {
 
       const ticket = {
         tokenType: TokenType.ERC721,
-        token: await erc721Instance.getAddress(),
+        token: await erc721TicketInstance.target,
         tokenId: 1n,
         amount: 1n,
       };
@@ -73,10 +73,10 @@ export function shouldPrintTicket(factory) {
       const tx = lotteryInstance.printTicket(1, receiver.address, ticketNumbers);
 
       await expect(tx)
-        .to.emit(erc721Instance, "Transfer")
-        .withArgs(ZeroAddress, receiver.address, tokenId);
+        .to.emit(erc721TicketInstance, "Transfer")
+        .withArgs(ZeroAddress, receiver.address, 1n);
 
-      const newTicketId = await erc721Instance.ownerOf(tokenId);
+      const newTicketId = await erc721TicketInstance.ownerOf(1n);
       expect(newTicketId).to.equal(receiver.address);
     });
   });
