@@ -10,9 +10,9 @@ export enum TokenMetadata {
 }
 
 export enum TokenType {
-  NATIVE = 0,
-  ERC20 = 1,
-  ERC721 = 2,
-  ERC998 = 3,
-  ERC1155 = 4
+  NATIVE = 0n,
+  ERC20 = 1n,
+  ERC721 = 2n,
+  ERC998 = 3n,
+  ERC1155 = 4n
 }
