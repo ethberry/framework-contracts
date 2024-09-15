@@ -4,6 +4,7 @@ import { formatEther, ZeroAddress } from "ethers";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
 import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
 import { TokenType } from "../../../types";
+import { deployERC721 } from "../../../ERC721/shared/fixtures";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -48,8 +49,7 @@ export function shouldPrintTicket(factory) {
       const [_owner, receiver] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
-      const erc721TicketInstance = await ethers.getContractFactory("ERC721LotteryTicket");
-      const erc721Instance = await erc721TicketInstance.deploy();
+      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
       const ticket = {
         tokenType: TokenType.ERC721,
