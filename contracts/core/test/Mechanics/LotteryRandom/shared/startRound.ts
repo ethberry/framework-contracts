@@ -14,13 +14,13 @@ export function shouldStartRound(factory) {
       const maxTicket = 100n;
 
       const ticket = {
-        tokenType: 2, // ERC721
+        tokenType: 2n, // ERC721
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
       };
       const price = {
-        tokenType: 1, // ERC20
+        tokenType: 1n, // ERC20
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
