@@ -105,8 +105,7 @@ export function shouldGetPrize(factory) {
       };
       await lotteryInstance.startRound(ticket, price, 100);
       await lotteryInstance.endRound();
-      await lotteryInstance.fulfillRandomWords(1, [123456789]); // Mock random number
-      const tx = await lotteryInstance.getPrize(1, 1);
+      await lotteryInstance.fulfillRandomWords(1, [123456789]);
       const tx = lotteryInstance.getPrize(1, 1);
       await expect(tx).to.emit(lotteryInstance, "Prize");
     });
