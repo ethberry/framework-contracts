@@ -26,7 +26,7 @@ export function shouldStartRound(factory) {
         amount: 1n,
       };
 
-      const startTimestamp = (await time.latest()).toNumber();
+      const startTimestamp = (await time.latest()).toNumber() + 1;
       const tx = lotteryInstance.startRound(ticket, price, 100);
 
       await expect(tx)
