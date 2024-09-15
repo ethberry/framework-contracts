@@ -1,6 +1,4 @@
-import { expect } from "chai";
-import { formatEther } from "ethers";
-import { ethers } from "hardhat";
+import { formatBytes32String } from "ethers";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -8,7 +6,7 @@ export function shouldPrintTicket(factory) {
       const lotteryInstance = await factory();
       const [owner, account] = await ethers.getSigners();
       const externalId = 1;
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = formatBytes32String("123456");
 
       await lotteryInstance.startRound(
         { tokenType: 1, token: account.address, amount: 0 },
@@ -24,7 +22,7 @@ export function shouldPrintTicket(factory) {
       const lotteryInstance = await factory();
       const [owner, account] = await ethers.getSigners();
       const externalId = 1;
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = formatBytes32String("123456");
 
       const tx = lotteryInstance.printTicket(externalId, account.address, numbers);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
@@ -34,7 +32,7 @@ export function shouldPrintTicket(factory) {
       const lotteryInstance = await factory();
       const [owner, account] = await ethers.getSigners();
       const externalId = 1;
-      const numbers = ethers.utils.formatBytes32String("123456");
+      const numbers = formatBytes32String("123456");
 
       await lotteryInstance.startRound(
         { tokenType: 1, token: account.address, amount: 0 },
