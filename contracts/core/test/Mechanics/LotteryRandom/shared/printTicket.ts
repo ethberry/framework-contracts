@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { formatEther } from "ethers";
 import { ethers } from "hardhat";
 
-export function shouldPrintTicket(factory: () => Promise<any>) {
+export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
     it("should print ticket successfully", async function () {
       const lotteryInstance = await factory();
@@ -27,7 +27,7 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
       const numbers = ethers.utils.formatBytes32String("123456");
 
       const tx = lotteryInstance.printTicket(externalId, account.address, numbers);
-      await expect(tx).to.be.revertedWith("LotteryWrongRound");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
     });
 
     it("should fail: LotteryTicketLimitExceed", async function () {
@@ -45,7 +45,7 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
       await lotteryInstance.printTicket(externalId, account.address, numbers);
 
       const tx = lotteryInstance.printTicket(externalId, account.address, numbers);
-      await expect(tx).to.be.revertedWith("LotteryTicketLimitExceed");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
   });
 }

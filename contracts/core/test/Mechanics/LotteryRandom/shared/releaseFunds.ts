@@ -38,7 +38,7 @@ export function shouldReleaseFunds(factory) {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 0,
-        amount: ethers.utils.parseEther("1"),
+        amount: ethers.parseEther("1"),
       };
 
       // Set subscription ID
@@ -77,7 +77,7 @@ export function shouldReleaseFunds(factory) {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 0,
-        amount: ethers.utils.parseEther("1"),
+        amount: ethers.parseEther("1"),
       };
 
       // Set subscription ID
@@ -95,7 +95,7 @@ export function shouldReleaseFunds(factory) {
       await randomRequest(lotteryInstance, vrfInstance, 123456n);
 
       const tx = lotteryInstance.releaseFunds(1);
-      await expect(tx).to.be.revertedWith("LotteryRoundNotComplete");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
     it("should fail: LotteryZeroBalance", async function () {
@@ -114,7 +114,7 @@ export function shouldReleaseFunds(factory) {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 0,
-        amount: ethers.utils.parseEther("1"),
+        amount: ethers.parseEther("1"),
       };
 
       // Set subscription ID
@@ -136,7 +136,7 @@ export function shouldReleaseFunds(factory) {
       await lotteryInstance.releaseFunds(1);
 
       const tx = lotteryInstance.releaseFunds(1);
-      await expect(tx).to.be.revertedWith("LotteryZeroBalance");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryZeroBalance");
     });
 
     it("should fail: LotteryWrongRound", async function () {

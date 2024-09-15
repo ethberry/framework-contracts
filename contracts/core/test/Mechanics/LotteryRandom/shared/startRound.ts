@@ -62,7 +62,7 @@ export function shouldStartRound(factory) {
       };
 
       const tx = lotteryInstance.startRound(ticket, price, 100);
-      await expect(tx).to.be.revertedWith("WrongAsset");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "WrongAsset");
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
@@ -87,7 +87,7 @@ export function shouldStartRound(factory) {
 
       // Attempt to start another round without ending the previous one
       const tx = lotteryInstance.startRound(ticket, price, 100);
-      await expect(tx).to.be.revertedWith("LotteryRoundNotComplete");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
     it("should fail: AccessControl: account is missing role", async function () {

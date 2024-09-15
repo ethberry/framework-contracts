@@ -12,7 +12,7 @@ export function shouldEndRound(factory) {
     it("should fail: LotteryWrongRound", async function () {
       const lotteryInstance = await factory();
       const tx = lotteryInstance.endRound();
-      await expect(tx).to.be.revertedWith("LotteryWrongRound");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
     });
 
     it("should fail: LotteryRoundNotActive", async function () {
@@ -20,7 +20,7 @@ export function shouldEndRound(factory) {
       await lotteryInstance.startRound({ tokenType: 1, token: "0x123" }, { tokenType: 1, token: "0x456" }, 100);
       await lotteryInstance.endRound();
       const tx = lotteryInstance.endRound();
-      await expect(tx).to.be.revertedWith("LotteryRoundNotActive");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotActive");
     });
 
     it("should fail: Ownable: caller is not the owner", async function () {
@@ -28,7 +28,8 @@ export function shouldEndRound(factory) {
       const [_, addr1] = await ethers.getSigners();
       await lotteryInstance.startRound({ tokenType: 1, token: "0x123" }, { tokenType: 1, token: "0x456" }, 100);
       const tx = lotteryInstance.connect(addr1).endRound();
-      await expect(tx).to.be.revertedWith("Ownable: caller is not the owner");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "SignerMissingRole");
     });
   });
 }
+```
