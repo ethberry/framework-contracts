@@ -70,6 +70,8 @@ export function shouldPrintTicket(factory) {
       const values = [1, 2, 3, 4, 5, 6];
       const ticketNumbers = getNumbersBytes(values);
 
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
+
       const tx = lotteryInstance.printTicket(1, receiver.address, ticketNumbers);
 
       await expect(tx)
