@@ -79,7 +79,7 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
     bytes32 numbers
   ) external onlyRole(MINTER_ROLE) whenNotPaused returns (uint256 tokenId) {
     // get current round
-    roundId = _rounds.length - 1;
+    uint256 roundId = _rounds.length - 1;
     Round storage currentRound = _rounds[roundId];
 
     if (currentRound.endTimestamp != 0) {
