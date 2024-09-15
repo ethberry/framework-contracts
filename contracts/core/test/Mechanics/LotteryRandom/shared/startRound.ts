@@ -90,7 +90,7 @@ export function shouldStartRound(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
-    it("should fail: AccessControl: account is missing role", async function () {
+    it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
       const [_, nonAdmin] = await ethers.getSigners();
 
@@ -110,9 +110,7 @@ export function shouldStartRound(factory) {
 
       // Attempt to start a round with a non-admin account
       const tx = lotteryInstance.connect(nonAdmin).startRound(ticket, price, 100);
-      await expect(tx).to.be.revertedWith(
-        `AccessControl: account ${nonAdmin.address.toLowerCase()} is missing role ${ethers.id("DEFAULT_ADMIN_ROLE")}`
-      );
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
   });
 }

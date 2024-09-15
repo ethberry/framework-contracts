@@ -23,13 +23,12 @@ export function shouldEndRound(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotActive");
     });
 
-    it("should fail: SignerMissingRole", async function () {
+    it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
       const [_, addr1] = await ethers.getSigners();
       await lotteryInstance.startRound({ tokenType: 1, token: "0x123" }, { tokenType: 1, token: "0x456" }, 100);
       const tx = lotteryInstance.connect(addr1).endRound();
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "SignerMissingRole");
+      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
   });
 }
-
