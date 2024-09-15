@@ -1,3 +1,4 @@
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
@@ -79,7 +80,7 @@ export function shouldStartRound(factory) {
         tokenType: 1, // ERC20 TokenType
         token: ZeroAddress,
         tokenId: 0n,
-        amount: ethers.parseEther("1"),
+        amount: 1n,
       };
 
       // Start the first round
@@ -105,7 +106,7 @@ export function shouldStartRound(factory) {
         tokenType: 1, // ERC20 TokenType
         token: ZeroAddress,
         tokenId: 0n,
-        amount: ethers.parseEther("1"),
+        amount: 1n,
       };
 
       // Attempt to start a round with a non-admin account
@@ -114,3 +115,4 @@ export function shouldStartRound(factory) {
     });
   });
 }
+```

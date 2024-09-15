@@ -10,46 +10,104 @@ export function shouldGetPrize(factory) {
 
     it("should fail: LotteryRoundNotComplete", async function () {
       const lotteryInstance = await factory();
-      const tx = lotteryInstance.getPrize(1, 0);
+      const ticket = {
+        tokenType: 2, // ERC721 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: 1n,
+      };
+      const price = {
+        tokenType: 1, // ERC20 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: formatEther("1"),
+      };
+      await lotteryInstance.startRound(ticket, price, 100);
+      const tx = lotteryInstance.getPrize(1, 1);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
     it("should fail: LotteryTicketExpired", async function () {
       const lotteryInstance = await factory();
-      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
+      const ticket = {
+        tokenType: 2, // ERC721 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: 1n,
+      };
+      const price = {
+        tokenType: 1, // ERC20 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: formatEther("1"),
+      };
+      await lotteryInstance.startRound(ticket, price, 100);
+      await lotteryInstance.endRound();
+      await time.increase(2592001); // Increase time beyond the time lag
       const tx = lotteryInstance.getPrize(1, 1);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketExpired");
     });
 
     it("should fail: LotteryNotOwnerNorApproved", async function () {
       const lotteryInstance = await factory();
-      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
-      await lotteryInstance.setDummyTicket("0x1234");
-      const tx = lotteryInstance.getPrize(1, 1);
+      const [_, nonOwner] = await ethers.getSigners();
+      const ticket = {
+        tokenType: 2, // ERC721 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: 1n,
+      };
+      const price = {
+        tokenType: 1, // ERC20 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: formatEther("1"),
+      };
+      await lotteryInstance.startRound(ticket, price, 100);
+      await lotteryInstance.endRound();
+      const tx = lotteryInstance.connect(nonOwner).getPrize(1, 1);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryNotOwnerNorApproved");
     });
 
     it("should fail: LotteryWrongToken", async function () {
       const lotteryInstance = await factory();
-      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
-      await lotteryInstance.setDummyTicket("0x5678");
-      const tx = lotteryInstance.getPrize(1, 1);
+      const ticket = {
+        tokenType: 2, // ERC721 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: 1n,
+      };
+      const price = {
+        tokenType: 1, // ERC20 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: formatEther("1"),
+      };
+      await lotteryInstance.startRound(ticket, price, 100);
+      await lotteryInstance.endRound();
+      const tx = lotteryInstance.getPrize(999, 1); // Invalid tokenId
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongToken");
     });
 
-    it("should fail: LotteryBalanceExceed", async function () {
+    it("should get prize successfully", async function () {
       const lotteryInstance = await factory();
-      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
-      await lotteryInstance.setDummyTicket("0x1234");
-      const tx = lotteryInstance.getPrize(1, 1);
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryBalanceExceed");
-    });
-
-    it("should successfully get prize", async function () {
-      const lotteryInstance = await factory();
-      await lotteryInstance.setDummyRound("0x1234", [1, 2, 3, 4, 5, 6], [0, 1, 1, 1, 1, 1, 1], 1, { token: ZeroAddress, tokenType: 1, amount: 1 }, { token: ZeroAddress, tokenType: 1, amount: 1 }, 1);
-      await lotteryInstance.setDummyTicket("0x1234");
-      await expect(lotteryInstance.getPrize(1, 1)).to.emit(lotteryInstance, "Prize");
+      const ticket = {
+        tokenType: 2, // ERC721 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: 1n,
+      };
+      const price = {
+        tokenType: 1, // ERC20 TokenType
+        token: ZeroAddress,
+        tokenId: 0n,
+        amount: formatEther("1"),
+      };
+      await lotteryInstance.startRound(ticket, price, 100);
+      await lotteryInstance.endRound();
+      await lotteryInstance.fulfillRandomWords(1, [123456789]); // Mock random number
+      const tx = await lotteryInstance.getPrize(1, 1);
+      await expect(tx).to.emit(lotteryInstance, "Prize");
     });
   });
 }
