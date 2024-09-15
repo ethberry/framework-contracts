@@ -69,7 +69,7 @@ export function shouldPrintTicket(factory) {
       const values = [1, 2, 3, 4, 5, 6];
       const ticketNumbers = getNumbersBytes(values);
 
-      const tx = lotteryInstance.printTicket(1, stranger, ticketNumbers);
+      const tx = lotteryInstance.printTicket(1, receiver, ticketNumbers);
 
       await expect(tx).to.emit(lotteryInstance, "Transfer").withArgs(ZeroAddress, receiver, tokenId);
     });
