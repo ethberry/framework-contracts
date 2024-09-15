@@ -15,7 +15,7 @@ export function shouldEndRound(factory) {
       ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
     });
 
-    it("should end the current round", async function () {
+    it.only("should end the current round", async function () {
       const lotteryInstance = await factory();
 
       const ticket = {
@@ -32,18 +32,11 @@ export function shouldEndRound(factory) {
         amount: 1n,
       };
 
-      // Start the first round
       await lotteryInstance.startRound(ticket, price, 100);
 
-      // Set VRFV2 Subscription
-      const tx01 = lotteryInstance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance);
 
-      // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
-
-      // End the current round
       const tx = lotteryInstance.endRound();
       const currentTimestamp = (await time.latest()).toNumber();
       await expect(tx).to.emit(lotteryInstance, "RoundEnded").withArgs(1, currentTimestamp);

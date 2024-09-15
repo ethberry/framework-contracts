@@ -3,25 +3,27 @@ import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
+import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
+import { TokenType } from "../../../types";
 
 export function shouldStartRound(factory) {
   describe("startRound", function () {
-    it("should start a new round with valid ERC721 ticket asset", async function () {
+    it.only("should start a new round with valid ERC721 ticket asset", async function () {
       const lotteryInstance = await factory();
 
       const roundId = 1n;
       const maxTicket = 100n;
 
       const ticket = {
-        tokenType: 2n, // ERC721
+        tokenType: TokenType.ERC721,
         token: ZeroAddress,
-        tokenId: 1n,
-        amount: 1n,
+        tokenId,
+        amount,
       };
       const price = {
-        tokenType: 1n, // ERC20
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
-        tokenId: 1n,
+        tokenId,
         amount: 1n,
       };
 

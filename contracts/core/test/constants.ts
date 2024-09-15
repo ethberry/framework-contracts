@@ -4,6 +4,7 @@ import { nonce } from "@gemunion/contracts-constants";
 
 import { TokenMetadata } from "./types";
 
+export const amount = 1n;
 export const tokenId = 1n;
 export const tokenIds = [1];
 export const tokenIdsZero = [0];

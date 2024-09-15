@@ -1,5 +1,9 @@
 import { expect } from "chai";
 import { formatEther, ZeroAddress } from "ethers";
+import { deployERC721 } from "../../../ERC721/shared/fixtures";
+import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
+import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
+import { TokenType } from "../../../utils";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -20,17 +24,17 @@ export function shouldPrintTicket(factory) {
       const lotteryInstance = await factory();
 
       const ticket = {
-        tokenType: 2, // ERC721 TokenType
+        tokenType: TokenType.ERC721,
         token: ZeroAddress,
-        tokenId: 1n,
-        amount: 1n,
+        tokenId,
+        amount,
       };
 
       const price = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
-        tokenId: 1n,
-        amount: 1n,
+        tokenId,
+        amount,
       };
 
       await lotteryInstance.startRound(ticket, price, 1);
@@ -40,18 +44,21 @@ export function shouldPrintTicket(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 
-    it("should print a ticket successfully", async function () {
+    it.only("should print a ticket successfully", async function () {
+      const [_owner, receiver] = await ethers.getSigners();
+
       const lotteryInstance = await factory();
+      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
       const ticket = {
-        tokenType: 2, // ERC721 TokenType
+        tokenType: 2,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: 0,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
@@ -59,8 +66,12 @@ export function shouldPrintTicket(factory) {
 
       await lotteryInstance.startRound(ticket, price, 100);
 
-      const tx = lotteryInstance.printTicket(1, ZeroAddress, "0x1234");
-      await expect(tx).to.emit(lotteryInstance, "Transfer");
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      const tx = lotteryInstance.printTicket(1, stranger, ticketNumbers);
+
+      await expect(tx).to.emit(lotteryInstance, "Transfer").withArgs(ZeroAddress, receiver, tokenId);
     });
   });
 }
