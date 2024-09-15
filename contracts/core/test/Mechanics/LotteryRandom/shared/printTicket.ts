@@ -1,4 +1,3 @@
-```typescript
 import { expect } from "chai";
 import { formatEther } from "ethers";
 import { ethers } from "hardhat";
@@ -50,4 +49,3 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
     });
   });
 }
-```
