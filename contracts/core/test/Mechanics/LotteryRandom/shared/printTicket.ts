@@ -1,9 +1,9 @@
 import { expect } from "chai";
+import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
-import { deployERC721 } from "../../../ERC721/shared/fixtures";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
 import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
-import { TokenType } from "../../../utils";
+import { TokenType } from "../../../types";
 
 export function shouldPrintTicket(factory) {
   describe("printTicket", function () {
@@ -44,21 +44,22 @@ export function shouldPrintTicket(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 
-    it.only("should print a ticket successfully", async function () {
+    it("should print a ticket successfully", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
-      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
+      const erc721TicketInstance = await ethers.getContractFactory("ERC721LotteryTicket");
+      const erc721Instance = await erc721TicketInstance.deploy();
 
       const ticket = {
-        tokenType: 2,
-        token: ZeroAddress,
+        tokenType: TokenType.ERC721,
+        token: await erc721Instance.getAddress(),
         tokenId: 1n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: 0,
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
@@ -69,9 +70,14 @@ export function shouldPrintTicket(factory) {
       const values = [1, 2, 3, 4, 5, 6];
       const ticketNumbers = getNumbersBytes(values);
 
-      const tx = lotteryInstance.printTicket(1, receiver, ticketNumbers);
+      const tx = lotteryInstance.printTicket(1, receiver.address, ticketNumbers);
 
-      await expect(tx).to.emit(lotteryInstance, "Transfer").withArgs(ZeroAddress, receiver, tokenId);
+      await expect(tx)
+        .to.emit(erc721Instance, "Transfer")
+        .withArgs(ZeroAddress, receiver.address, tokenId);
+
+      const newTicketId = await erc721Instance.ownerOf(tokenId);
+      expect(newTicketId).to.equal(receiver.address);
     });
   });
 }
