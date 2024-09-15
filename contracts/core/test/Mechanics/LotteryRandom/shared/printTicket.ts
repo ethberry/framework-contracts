@@ -44,7 +44,7 @@ export function shouldPrintTicket(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 
-    it("should print a ticket successfully", async function () {
+    it.only("should print a ticket successfully", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const lotteryInstance = await factory();

@@ -15,7 +15,7 @@ export function shouldEndRound(factory) {
       ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
     });
 
-    it.only("should end the current round", async function () {
+    it("should end the current round", async function () {
       const lotteryInstance = await factory();
 
       const ticket = {
