@@ -1,3 +1,4 @@
+import { expect } from "chai";
 import { formatEther, ZeroAddress } from "ethers";
 
 export function shouldGetPrize(factory) {
