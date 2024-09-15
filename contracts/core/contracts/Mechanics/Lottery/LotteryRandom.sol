@@ -96,6 +96,8 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
     currentRound.total += currentRound.acceptedAsset.amount;
 
     tokenId = IERC721LotteryTicket(currentRound.ticketAsset.token).mintTicket(account, roundId, externalId, numbers);
+
+    return (tokenId, roundId);
   }
 
   // ROUND
