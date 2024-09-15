@@ -1,4 +1,3 @@
-```typescript
 import { formatEther, ZeroAddress } from "ethers";
 
 export function shouldGetPrize(factory) {
@@ -54,4 +53,3 @@ export function shouldGetPrize(factory) {
     });
   });
 }
-```
