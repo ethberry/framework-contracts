@@ -8,7 +8,7 @@ import { TokenType } from "../../../types";
 import { deployERC721 } from "../../../ERC721/shared/fixtures";
 
 export function shouldPrintTicket(factory) {
-  describe("printTicket", function () {
+  describe.only("printTicket", function () {
     it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
       const [_, nonMinter] = await ethers.getSigners();
@@ -46,7 +46,7 @@ export function shouldPrintTicket(factory) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 
-    it.only("should print a ticket successfully", async function () {
+    it("should print a ticket successfully", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
