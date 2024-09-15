@@ -1,3 +1,5 @@
+endRound.ts
+```typescript
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
@@ -12,9 +14,7 @@ export function shouldEndRound(factory) {
     let subId;
 
     before(async function () {
-      if (network.name === "hardhat") {
-        ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
-      }
+      ({ vrfInstance, subId } = await loadFixture(deployLinkVrfFixture));
     });
 
     it("should end the current round", async function () {
@@ -37,15 +37,13 @@ export function shouldEndRound(factory) {
       // Start the first round
       await lotteryInstance.startRound(ticket, price, 100);
 
-      if (network.name === "hardhat") {
-        // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
+      // Set VRFV2 Subscription
+      const tx01 = lotteryInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
-        // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
-      }
+      // Add Consumer to VRFV2
+      const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
 
       // End the current round
       const tx = lotteryInstance.endRound();
@@ -55,9 +53,7 @@ export function shouldEndRound(factory) {
       const roundInfo = await lotteryInstance.getCurrentRoundInfo();
       expect(roundInfo.endTimestamp).to.be.gte(currentTimestamp);
 
-      if (network.name === "hardhat") {
-        await randomRequest(lotteryInstance, vrfInstance);
-      }
+      await randomRequest(lotteryInstance, vrfInstance);
     });
 
     it("should fail: LotteryWrongRound", async function () {
@@ -87,15 +83,13 @@ export function shouldEndRound(factory) {
       // Start the first round
       await lotteryInstance.startRound(ticket, price, 100);
 
-      if (network.name === "hardhat") {
-        // Set VRFV2 Subscription
-        const tx01 = lotteryInstance.setSubscriptionId(subId);
-        await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
+      // Set VRFV2 Subscription
+      const tx01 = lotteryInstance.setSubscriptionId(subId);
+      await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
 
-        // Add Consumer to VRFV2
-        const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
-        await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
-      }
+      // Add Consumer to VRFV2
+      const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
+      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
 
       // End the current round
       await lotteryInstance.endRound();
@@ -106,3 +100,4 @@ export function shouldEndRound(factory) {
     });
   });
 }
+```
