@@ -1,6 +1,8 @@
+```typescript
 import { expect } from "chai";
 import { formatEther, ZeroAddress } from "ethers";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
+import { TokenType } from "../../../types";
 
 export function shouldReleaseFunds(factory) {
   describe("releaseFunds", function () {
@@ -26,13 +28,13 @@ export function shouldReleaseFunds(factory) {
     it("should fail: LotteryRoundNotComplete", async function () {
       const lotteryInstance = await factory();
       const ticket = {
-        tokenType: 2, // ERC721
+        tokenType: TokenType.ERC721,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
       };
       const price = {
-        tokenType: 1, // ERC20
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
@@ -46,13 +48,13 @@ export function shouldReleaseFunds(factory) {
     it("should release funds successfully", async function () {
       const lotteryInstance = await factory();
       const ticket = {
-        tokenType: 2, // ERC721
+        tokenType: TokenType.ERC721,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
       };
       const price = {
-        tokenType: 1, // ERC20
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
@@ -70,3 +72,4 @@ export function shouldReleaseFunds(factory) {
     });
   });
 }
+```

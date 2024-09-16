@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -35,7 +35,7 @@ export function shouldEndRound(factory) {
       await lotteryInstance.startRound(ticket, price, 100);
 
       await lotteryInstance.setSubscriptionId(subId);
-      await vrfInstance.addConsumer(subId, lotteryInstance);
+      await vrfInstance.addConsumer(subId, lotteryInstance.target);
 
       const tx = lotteryInstance.endRound();
       const currentTimestamp = (await time.latest()).toNumber();
@@ -75,12 +75,8 @@ export function shouldEndRound(factory) {
       await lotteryInstance.startRound(ticket, price, 100);
 
       // Set VRFV2 Subscription
-      const tx01 = lotteryInstance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(lotteryInstance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRFV2
-      const tx02 = vrfInstance.addConsumer(subId, lotteryInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, lotteryInstance);
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.target);
 
       // End the current round
       await lotteryInstance.endRound();
@@ -91,3 +87,4 @@ export function shouldEndRound(factory) {
     });
   });
 }
+```

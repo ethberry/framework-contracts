@@ -13,13 +13,21 @@ export function shouldPrintTicket(factory) {
     it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
       const [_, nonMinter] = await ethers.getSigners();
-      const tx = lotteryInstance.connect(nonMinter).printTicket(1, nonMinter.address, "0x1234");
+
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      const tx = lotteryInstance.connect(nonMinter).printTicket(1, nonMinter.address, ticketNumbers);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
 
     it("should fail: LotteryWrongRound", async function () {
       const lotteryInstance = await factory();
-      const tx = lotteryInstance.printTicket(1, ZeroAddress, "0x1234");
+
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      const tx = lotteryInstance.printTicket(1, ZeroAddress, ticketNumbers);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
     });
 
@@ -42,8 +50,11 @@ export function shouldPrintTicket(factory) {
 
       await lotteryInstance.startRound(ticket, price, 1);
 
-      await lotteryInstance.printTicket(1, ZeroAddress, "0x1234");
-      const tx = lotteryInstance.printTicket(2, ZeroAddress, "0x5678");
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      await lotteryInstance.printTicket(1, ZeroAddress, ticketNumbers);
+      const tx = lotteryInstance.printTicket(2, ZeroAddress, ticketNumbers);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 

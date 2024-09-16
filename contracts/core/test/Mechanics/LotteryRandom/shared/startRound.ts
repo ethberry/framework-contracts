@@ -1,14 +1,14 @@
+```typescript
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../../utils";
-import { expiresAt, externalId, params, templateId, tokenId, amount } from "../../../constants";
 import { TokenType } from "../../../types";
 
 export function shouldStartRound(factory) {
   describe("startRound", function () {
-    it.only("should start a new round with valid ERC721 ticket asset", async function () {
+    it("should start a new round with valid ERC721 ticket asset", async function () {
       const lotteryInstance = await factory();
 
       const roundId = 1n;
@@ -17,13 +17,13 @@ export function shouldStartRound(factory) {
       const ticket = {
         tokenType: TokenType.ERC721,
         token: ZeroAddress,
-        tokenId,
-        amount,
+        tokenId: 1n,
+        amount: 1n,
       };
       const price = {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
-        tokenId,
+        tokenId: 1n,
         amount: 1n,
       };
 
@@ -50,14 +50,14 @@ export function shouldStartRound(factory) {
       const lotteryInstance = await factory();
 
       const ticket = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: TokenType.ERC20, // ERC20 TokenType
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: 1,
+        tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 1n,
         amount: 1n,
@@ -71,14 +71,14 @@ export function shouldStartRound(factory) {
       const lotteryInstance = await factory();
 
       const ticket = {
-        tokenType: 2, // ERC721 TokenType
+        tokenType: TokenType.ERC721, // ERC721 TokenType
         token: ZeroAddress,
         tokenId: 0n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: TokenType.ERC20, // ERC20 TokenType
         token: ZeroAddress,
         tokenId: 0n,
         amount: 1n,
@@ -97,14 +97,14 @@ export function shouldStartRound(factory) {
       const [_, nonAdmin] = await ethers.getSigners();
 
       const ticket = {
-        tokenType: 2, // ERC721 TokenType
+        tokenType: TokenType.ERC721, // ERC721 TokenType
         token: ZeroAddress,
         tokenId: 0n,
         amount: 1n,
       };
 
       const price = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: TokenType.ERC20, // ERC20 TokenType
         token: ZeroAddress,
         tokenId: 0n,
         amount: 1n,
@@ -116,3 +116,4 @@ export function shouldStartRound(factory) {
     });
   });
 }
+```
