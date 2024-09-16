@@ -8,6 +8,7 @@ import { TokenType } from "../../../types";
 import { deployERC721 } from "../../../ERC721/shared/fixtures";
 
 export function shouldPrintTicket(factory) {
+
   describe.only("printTicket", function () {
     it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
