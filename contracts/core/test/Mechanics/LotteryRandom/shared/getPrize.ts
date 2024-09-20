@@ -11,6 +11,7 @@ import { getNumbersBytes } from "../../../utils";
 import { deployERC721 } from "../../../ERC721/shared/fixtures";
 
 export function shouldGetPrize(factory) {
+
   describe.only("getPrize", function () {
     let vrfInstance;
     let subId;
