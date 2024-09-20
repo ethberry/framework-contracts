@@ -122,6 +122,7 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
     currentRound.maxTicket = maxTicket;
     currentRound.ticketAsset = ticket;
     currentRound.acceptedAsset = price;
+    currentRound.endTimestamp = 0;
 
     emit RoundStarted(roundId, block.timestamp, maxTicket, ticket, price);
   }
@@ -129,11 +130,6 @@ abstract contract LotteryRandom is ILottery, ILotteryErrors, AccessControl, Paus
   function endRound() external onlyRole(DEFAULT_ADMIN_ROLE) {
     uint256 roundNumber = _rounds.length - 1;
     Round storage currentRound = _rounds[roundNumber];
-
-    // TODO should never happen?
-    if (currentRound.roundId != roundNumber) {
-      revert LotteryWrongRound();
-    }
 
     if (currentRound.endTimestamp != 0) {
       revert LotteryRoundNotActive();

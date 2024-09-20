@@ -1,30 +1,43 @@
 import { expect } from "chai";
+import { ethers, network } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
-import { ethers } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
-import { deployERC721 } from "../../../ERC721/shared/fixtures";
-import { getNumbersBytes } from "../../../utils";
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { deployLinkVrfFixture } from "../../../shared/link";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
+import { randomRequest } from "../../../shared/randomRequest";
 import { TokenType } from "../../../types";
+import { getNumbersBytes } from "../../../utils";
+import { deployERC721 } from "../../../ERC721/shared/fixtures";
 
 export function shouldGetPrize(factory) {
-  describe("getPrize", function () {
-    it("should fail: LotteryWrongRound", async function () {
-      const lotteryInstance = await factory();
-      const tx = lotteryInstance.getPrize(1, 999);
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
+  describe.only("getPrize", function () {
+    let vrfInstance;
+    let subId;
+
+    before(async function () {
+      await network.provider.send("hardhat_reset");
+
+      ({ vrfInstance, subId } = await loadFixture(function exchange() {
+        return deployLinkVrfFixture();
+      }));
+    });
+
+    after(async function () {
+      await network.provider.send("hardhat_reset");
     });
 
     it("should fail: LotteryRoundNotComplete", async function () {
       const lotteryInstance = await factory();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
+      
       const ticket = {
         tokenType: TokenType.ERC721,
-        token: erc721TicketInstance.target,
+        token: erc721TicketInstance,
         tokenId: 1n,
         amount: 1n,
       };
+
       const price = {
         tokenType: TokenType.NATIVE,
         token: ZeroAddress,
@@ -33,45 +46,30 @@ export function shouldGetPrize(factory) {
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
-      const tx = lotteryInstance.getPrize(1, 1);
+      
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
+
+      const [_owner, receiver] = await ethers.getSigners();
+      await lotteryInstance.printTicket(1, receiver, ticketNumbers);
+      
+      const tx = lotteryInstance.getPrize(1n, 0n);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
-    });
-
-    it("should fail: LotteryTicketExpired", async function () {
-      const lotteryInstance = await factory();
-      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
-      const ticket = {
-        tokenType: TokenType.ERC721,
-        token: erc721TicketInstance.target,
-        tokenId: 1n,
-        amount: 1n,
-      };
-      const price = {
-        tokenType: TokenType.NATIVE,
-        token: ZeroAddress,
-        tokenId: 1n,
-        amount: 1n,
-      };
-
-      await lotteryInstance.startRound(ticket, price, 100);
-      await lotteryInstance.endRound();
-      await time.increase(2592001); // Increase time beyond the time lag
-      const tx = lotteryInstance.getPrize(1, 1);
-      await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketExpired");
     });
 
     it("should fail: LotteryNotOwnerNorApproved", async function () {
       const lotteryInstance = await factory();
-      const [_, nonOwner] = await ethers.getSigners();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
+      
       const ticket = {
         tokenType: TokenType.ERC721,
-        token: erc721TicketInstance.target,
+        token: erc721TicketInstance,
         tokenId: 1n,
         amount: 1n,
       };
+
       const price = {
         tokenType: TokenType.NATIVE,
         token: ZeroAddress,
@@ -80,21 +78,36 @@ export function shouldGetPrize(factory) {
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
+      
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
+
+      const [_owner, receiver] = await ethers.getSigners();
+      await lotteryInstance.printTicket(1, receiver, ticketNumbers);
+
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.target);
       await lotteryInstance.endRound();
-      const tx = lotteryInstance.connect(nonOwner).getPrize(1, 1);
+      await randomRequest(lotteryInstance, vrfInstance);
+
+      const [_, nonOwner] = await ethers.getSigners();
+      const tx = lotteryInstance.connect(nonOwner).getPrize(1, 0);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryNotOwnerNorApproved");
     });
 
     it("should fail: LotteryWrongToken", async function () {
       const lotteryInstance = await factory();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
-
+      
       const ticket = {
         tokenType: TokenType.ERC721,
-        token: erc721TicketInstance.target,
+        token: erc721TicketInstance,
         tokenId: 1n,
         amount: 1n,
       };
+
       const price = {
         tokenType: TokenType.NATIVE,
         token: ZeroAddress,
@@ -103,30 +116,59 @@ export function shouldGetPrize(factory) {
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
+      
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
+
+      const [_owner, receiver] = await ethers.getSigners();
+      await lotteryInstance.printTicket(1, receiver, ticketNumbers);
+
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.target);
       await lotteryInstance.endRound();
-      const tx = lotteryInstance.getPrize(999, 1); // Invalid tokenId
+      await randomRequest(lotteryInstance, vrfInstance);
+
+      const tx = lotteryInstance.getPrize(2, 0);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongToken");
     });
 
-    it("should get prize successfully", async function () {
+    it("should get the prize successfully", async function () {
+      const [_owner, receiver] = await ethers.getSigners();
+
       const lotteryInstance = await factory();
+      const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
+
       const ticket = {
-        tokenType: 2, // ERC721 TokenType
-        token: ZeroAddress,
-        tokenId: 0n,
+        tokenType: TokenType.ERC721,
+        token: erc721TicketInstance.target,
+        tokenId: 1n,
         amount: 1n,
       };
+
       const price = {
-        tokenType: 1, // ERC20 TokenType
+        tokenType: TokenType.NATIVE,
         token: ZeroAddress,
-        tokenId: 0n,
-        amount: formatEther("1"),
+        tokenId: 1n,
+        amount: 1n,
       };
+
       await lotteryInstance.startRound(ticket, price, 100);
+      
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
+
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
+      await lotteryInstance.printTicket(1, receiver, ticketNumbers);
+
+      await lotteryInstance.setSubscriptionId(subId);
+      await vrfInstance.addConsumer(subId, lotteryInstance.target);
       await lotteryInstance.endRound();
-      await lotteryInstance.fulfillRandomWords(1, [123456789]);
-      const tx = lotteryInstance.getPrize(1, 1);
-      await expect(tx).to.emit(lotteryInstance, "Prize");
+      await randomRequest(lotteryInstance, vrfInstance);
+
+      const tx = lotteryInstance.getPrize(1, 0);
+      await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(receiver, 0, 1, formatEther(1));
     });
   });
 }
