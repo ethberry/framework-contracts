@@ -1,4 +1,3 @@
-```typescript
 import { expect } from "chai";
 import { ethers, web3 } from "hardhat";
 import { formatEther, ZeroAddress } from "ethers";
@@ -139,4 +138,3 @@ export function shouldReleaseFunds(factory) {
     });
   });
 }
-```
