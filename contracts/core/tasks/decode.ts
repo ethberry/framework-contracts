@@ -9,5 +9,6 @@ task("decode", "Decode error message")
     // dummy
     await Promise.resolve();
 
+
     console.info(toUtf8String(`0x${data.substr(138)}`));
   });

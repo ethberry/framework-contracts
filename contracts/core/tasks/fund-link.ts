@@ -44,5 +44,3 @@ task("fund-link", "Funds a contract with LINK")
       console.info("Contract ", address, " funded with 1 LINK. Transaction Hash: ", transaction.hash);
     });
   });
-
-module.exports = {};

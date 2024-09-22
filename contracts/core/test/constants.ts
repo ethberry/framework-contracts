@@ -36,7 +36,7 @@ export const params = {
   receiver: ZeroAddress,
 };
 
-export const contractTemplate = "SIMPLE";
+export const contractTemplate = 0; // SIMPLE
 
 // toUtf8String(stripZerosLeft(tokenAttribute))
 export const tokenAttributes = {

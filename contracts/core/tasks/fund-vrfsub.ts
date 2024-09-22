@@ -44,5 +44,3 @@ task("fund-vrf-sub", "Funds vRF subscription with LINK")
       console.info("Contract ", address, " funded with 1 LINK. Transaction Hash: ", transaction.hash);
     });
   });
-
-module.exports = {};

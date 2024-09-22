@@ -52,5 +52,3 @@ task("add-sub", "Add vRF subscription").setAction(async (_, hre) => {
     console.info("Subscription", subId, "created", " Transaction Hash: ", transaction.hash);
   });
 });
-
-module.exports = {};
