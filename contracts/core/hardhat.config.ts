@@ -19,7 +19,7 @@ export default {
       gas: "auto",
     },
     // do not change!!!
-    gemunion_besu: {
+    ethberry_besu: {
       url: process.env.JSON_RPC_ADDR_ETHBERRY_BESU,
       timeout: 142000,
       accounts: [
@@ -28,7 +28,7 @@ export default {
         "0xae6ae8e5ccbfb04590405997ee2d52d2b330726137b875053c36d94e974d162f", // 0xf17f52151EbEF6C7334FAD080c5704D77216b732
       ],
     },
-    gemunion: {
+    ethberry: {
       url: process.env.JSON_RPC_ADDR_ETHBERRY,
       timeout: 30000,
       accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY1, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3],

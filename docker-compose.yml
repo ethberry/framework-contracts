@@ -32,7 +32,7 @@ services:
     restart: "on-failure"
     image: alethio/ethereum-lite-explorer
     environment:
-      APP_NODE_URL: "${JSON_RPC_ADDR_GEMUNION_BESU}"
+      APP_NODE_URL: "${JSON_RPC_ADDR_ETHBERRY_BESU}"
     ports:
       - "${PORT_EXPL_API}:80"
     depends_on:
