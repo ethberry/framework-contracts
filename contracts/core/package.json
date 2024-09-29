@@ -51,7 +51,6 @@
     "web3": "1.10.4"
   },
   "devDependencies": {
-    "@ethberry/eslint-config": "5.0.3",
     "@typechain/ethers-v6": "0.5.1",
     "@typechain/hardhat": "9.1.0",
     "@types/chai": "4.3.20",
