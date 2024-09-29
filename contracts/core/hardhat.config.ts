@@ -20,7 +20,7 @@ export default {
     },
     // do not change!!!
     gemunion_besu: {
-      url: process.env.JSON_RPC_ADDR_GEMUNION_BESU,
+      url: process.env.JSON_RPC_ADDR_ETHBERRY_BESU,
       timeout: 142000,
       accounts: [
         "0x8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63", // 0xfe3b557e8fb62b89f4916b721be55ceb828dbd73
@@ -29,7 +29,7 @@ export default {
       ],
     },
     gemunion: {
-      url: process.env.JSON_RPC_ADDR_GEMUNION,
+      url: process.env.JSON_RPC_ADDR_ETHBERRY,
       timeout: 30000,
       accounts: [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY1, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3],
     },
