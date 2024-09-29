@@ -7,20 +7,20 @@
   "dependencies": {
     "@lerna/legacy-package-management": "8.1.8",
     "lerna": "8.1.8",
-    "nx": "19.8.0"
+    "nx": "19.8.2"
   },
   "devDependencies": {
     "@ethberry/eslint-config": "5.0.3",
     "@stylistic/eslint-plugin-js": "2.8.0",
     "@stylistic/eslint-plugin-jsx": "2.8.0",
     "@stylistic/eslint-plugin-ts": "2.8.0",
-    "@types/node": "20.16.5",
+    "@types/node": "20.16.10",
     "husky": "4.3.8",
     "lint-staged": "15.2.10",
     "prettier": "3.3.3",
     "prettier-plugin-solidity": "1.4.1",
     "typescript": "5.6.2",
-    "typescript-eslint": "8.6.0"
+    "typescript-eslint": "8.7.0"
   },
   "engines": {
     "node": ">=22"
