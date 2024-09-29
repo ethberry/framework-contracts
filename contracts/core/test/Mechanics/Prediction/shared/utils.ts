@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { ContractTransactionResponse } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
-import { TokenType } from "@gemunion/types-blockchain";
+import { TokenType } from "@ethberry/types-blockchain";
 
 export enum Position {
   LEFT,

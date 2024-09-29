@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
@@ -11,7 +11,7 @@ import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import { ERC165 } from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 
-import { MINTER_ROLE, METADATA_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { MINTER_ROLE, METADATA_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { AccessControlInternal } from "../../Diamond/override/AccessControlInternal.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";

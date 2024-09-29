@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { amount } from "@gemunion/contracts-constants";
+import { amount } from "@ethberry/contracts-constants";
 
 import { tokenId } from "../../../constants";
 

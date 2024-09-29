@@ -1,4 +1,4 @@
-import { TokenType } from "@gemunion/types-blockchain";
+import { TokenType } from "@ethberry/types-blockchain";
 
 import { getBetAsset } from "./fixtures";
 import { shouldStartPrediction } from "./start";

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { deployERC721 } from "../../../ERC721/shared/fixtures";
 import { expiresAt, externalId, tokenId } from "../../../constants";

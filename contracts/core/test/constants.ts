@@ -1,6 +1,6 @@
 import { toUtf8Bytes, WeiPerEther, ZeroAddress, ZeroHash, zeroPadValue } from "ethers";
 
-import { nonce } from "@gemunion/contracts-constants";
+import { nonce } from "@ethberry/contracts-constants";
 
 import { TokenMetadata } from "./types";
 

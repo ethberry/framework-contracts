@@ -1,6 +1,6 @@
-import { shouldBehaveLikeAccessControl, shouldBehaveLikeWhiteList } from "@gemunion/contracts-access";
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { shouldBehaveLikeAccessControl, shouldBehaveLikeWhiteList } from "@ethberry/contracts-access";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@ethberry/contracts-constants";
 
 import { deployERC1363 } from "./shared/fixtures";
 import { shouldWhiteList } from "./shared/whitelist/whitelist";

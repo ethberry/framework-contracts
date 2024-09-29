@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
-import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";

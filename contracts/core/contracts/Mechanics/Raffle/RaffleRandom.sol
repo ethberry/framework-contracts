@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
@@ -12,8 +12,8 @@ import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
-import { MINTER_ROLE, PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { NativeRejector, CoinHolder } from "@ethberry/contracts-finance/contracts/Holder.sol";
+import { MINTER_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";

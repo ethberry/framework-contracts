@@ -4,10 +4,11 @@ import { encodeBytes32String, getUint, parseEther, toQuantity, ZeroAddress, Cont
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { shouldBehaveLikePausable } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@ethberry/contracts-constants";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
+import { delay } from "@ethberry/utils";
 
 import { expiresAt, extra, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
@@ -17,10 +18,6 @@ import { deployRaffle } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
 import { isEqualEventArgObj } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
-
-const delay = (milliseconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-};
 
 describe("Raffle", function () {
   let vrfInstance: VRFCoordinatorV2PlusMock;

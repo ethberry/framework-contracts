@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import fs from "fs";
-import { camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { camelToSnakeCase } from "@ethberry/contracts-helpers";
 import { updateFacetDiamond } from "../../test/Exchange/shared";
 
 const currentBlock: { number: number } = { number: 1 };

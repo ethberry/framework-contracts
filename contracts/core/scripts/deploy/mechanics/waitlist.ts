@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-import { blockAwait, blockAwaitMs } from "@gemunion/contracts-helpers";
+import { blockAwait, blockAwaitMs } from "@ethberry/contracts-helpers";
 
 export async function deployWaitList(contracts: Record<string, any>) {
   const waitListFactory = await ethers.getContractFactory("WaitList");

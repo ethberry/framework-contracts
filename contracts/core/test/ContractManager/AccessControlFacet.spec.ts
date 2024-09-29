@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
-import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-constants";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
+import { DEFAULT_ADMIN_ROLE } from "@ethberry/contracts-constants";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 
 import { deployDiamond } from "../Exchange/shared";
 

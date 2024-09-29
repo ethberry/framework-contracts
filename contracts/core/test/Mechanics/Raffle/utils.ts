@@ -1,6 +1,6 @@
 import { Network, Signer } from "ethers";
 
-import { tokenName } from "@gemunion/contracts-constants";
+import { tokenName } from "@ethberry/contracts-constants";
 
 export const wrapRaffleSignature = (network: Network, contract: any, account: Signer) => {
   return (values: Record<string, any>) => {

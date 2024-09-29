@@ -3,9 +3,9 @@ import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { concat, Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, zeroPadValue } from "ethers";
 
-import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { decodeNumber, decodeTraits } from "@gemunion/traits-v6";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
+import { decodeNumber, decodeTraits } from "@ethberry/traits-v6";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";

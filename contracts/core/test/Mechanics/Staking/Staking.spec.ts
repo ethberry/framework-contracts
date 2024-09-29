@@ -4,8 +4,8 @@ import { encodeBytes32String, parseEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
+import { shouldBehaveLikePausable, shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 import {
   amount,
   DEFAULT_ADMIN_ROLE,
@@ -14,7 +14,7 @@ import {
   nonce,
   PAUSER_ROLE,
   TEMPLATE_ID,
-} from "@gemunion/contracts-constants";
+} from "@ethberry/contracts-constants";
 
 import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { expiresAt, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";

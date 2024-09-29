@@ -1,4 +1,4 @@
-import type { IERC721Options } from "@gemunion/contracts-erc721";
+import type { IERC721Options } from "@ethberry/contracts-erc721";
 import {
   shouldApprove,
   shouldGetBalanceOf,
@@ -7,7 +7,7 @@ import {
   shouldSafeTransferFrom,
   shouldSetApprovalForAll,
   shouldTransferFrom,
-} from "@gemunion/contracts-erc721";
+} from "@ethberry/contracts-erc721";
 
 import { shouldReceive } from "../../../../../shared/receive";
 import { shouldNotMint } from "./shouldNotMint";

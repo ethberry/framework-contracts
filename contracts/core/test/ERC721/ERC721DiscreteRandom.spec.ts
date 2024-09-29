@@ -1,4 +1,4 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
 import {
   DEFAULT_ADMIN_ROLE,
   InterfaceId,
@@ -6,8 +6,8 @@ import {
   MINTER_ROLE,
   RARITY,
   TEMPLATE_ID,
-} from "@gemunion/contracts-constants";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
+} from "@ethberry/contracts-constants";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 
 import { FrameworkInterfaceId, templateId } from "../constants";
 import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";

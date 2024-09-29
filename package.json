@@ -1,8 +1,8 @@
 {
   "author": {
-    "email": "trejgun@gemunion.io",
+    "email": "trejgun@gmail.com",
     "name": "TrejGun",
-    "url": "https://gemunion.io/"
+    "url": "https://ethberry.io/"
   },
   "dependencies": {
     "@lerna/legacy-package-management": "8.1.8",
@@ -10,19 +10,11 @@
     "nx": "19.8.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.11.0",
-    "@gemunion/eslint-config": "4.0.6",
+    "@ethberry/eslint-config": "5.0.3",
     "@stylistic/eslint-plugin-js": "2.8.0",
     "@stylistic/eslint-plugin-jsx": "2.8.0",
     "@stylistic/eslint-plugin-ts": "2.8.0",
     "@types/node": "20.16.5",
-    "eslint": "9.11.0",
-    "eslint-plugin-mocha": "10.5.0",
-    "eslint-plugin-n": "17.10.3",
-    "eslint-plugin-promise": "7.1.0",
-    "eslint-plugin-testing-library": "6.3.0",
-    "eslint-config-prettier": "9.1.0",
-    "globals": "15.9.0",
     "husky": "4.3.8",
     "lint-staged": "15.2.10",
     "prettier": "3.3.3",
@@ -38,7 +30,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/gemunion/framework-contracts"
+    "url": "https://github.com/ethberry/framework-contracts"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap --concurrency 1 --hoist --ignore-scripts",
@@ -52,12 +44,12 @@
     "installdep": "sh scripts/install.sh",
     "kill": "sudo pkill -9 node",
     "lerna:publish:npm": "lerna version patch --yes --ignore-scripts && lerna publish from-package --yes --exact --ignore-scripts --registry=https://registry.npmjs.org/",
-    "lint": "lerna run lint --stream",
+    "lint": "lerna run lint --concurrency 1",
     "precommit": "lint-staged",
     "prepare:contracts:besu": "npm run --prefix ./contracts/core prepare:contracts:besu",
     "prepare:contracts:binance": "npm run --prefix ./contracts/core prepare:contracts:binance",
     "prepare:env": "bash scripts/set-env.sh development",
-    "prettier": "prettier \"packages/**/*.{ts,tsx}\" \"services/**/*.{ts,tsx}\" \"microservices/**/*.{ts,tsx}\" --write",
+    "prettier": "prettier . --write",
     "registry": "lerna publish",
     "release": "lerna publish --exact --conventional-commits --registry=https://npm.pkg.github.com/",
     "release:git": "lerna publish from-package --yes --exact --conventional-commits --ignore-scripts --registry=https://npm.pkg.github.com/",

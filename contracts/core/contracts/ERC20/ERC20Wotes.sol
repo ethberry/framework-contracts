@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { ERC20Votes } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import { EIP712 } from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-import { ERC20ABC } from "@gemunion/contracts-erc20/contracts/preset/ERC20ABC.sol";
+import { ERC20ABC } from "@ethberry/contracts-erc20/contracts/preset/ERC20ABC.sol";
 
 import { ERC20Simple } from "./ERC20Simple.sol";
 

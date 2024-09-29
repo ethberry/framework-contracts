@@ -1,5 +1,5 @@
 import { task } from "hardhat/config";
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 task("grant", "Grants address a role to contract")
   .addParam("contract", "The contract's address")

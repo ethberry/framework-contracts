@@ -2,11 +2,11 @@
 
 // Author: TrejGun
 // Email: trejgun+gemunion@gmail.com
-// Website: https://gemunion.io/
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
-import { CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
+import { CoinHolder } from "@ethberry/contracts-finance/contracts/Holder.sol";
 
 import { IERC721Wrapper } from "../Mechanics/Wrapper/interfaces/IERC721Wrapper.sol";
 

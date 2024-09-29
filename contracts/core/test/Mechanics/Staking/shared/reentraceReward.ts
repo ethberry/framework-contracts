@@ -3,7 +3,7 @@ import { ethers, web3 } from "hardhat";
 import { parseEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
-import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { expiresAt, extra, templateId, tokenId, tokenIds } from "../../../constants";
 import { IStakingRule } from "../interface/staking";

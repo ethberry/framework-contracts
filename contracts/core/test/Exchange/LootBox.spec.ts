@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { AbiCoder, Contract, encodeBytes32String, keccak256, ZeroAddress } from "ethers";
 
-import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
 
 import { deployDiamond, deployErc721Base, wrapOneToManyToManySignature } from "./shared";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";

@@ -3,8 +3,8 @@ import { ethers, web3 } from "hardhat";
 import { parseEther, WeiPerEther, ZeroAddress } from "ethers";
 
 import { time } from "@openzeppelin/test-helpers";
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { deployContract } from "@gemunion/contracts-utils";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { tokenZero } from "../../constants";
 import type { IRule } from "./interface/ponzi";

@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { Contract, TransactionReceipt, TransactionResponse } from "ethers";
 
-import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@ethberry/contracts-helpers";
 
 const delay = 2; // block delay
 const delayMs = 1000; // block delay ms

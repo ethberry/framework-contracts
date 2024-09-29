@@ -3,7 +3,7 @@ import { Contract, WeiPerEther, ZeroAddress } from "ethers";
 import fs from "fs";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@ethberry/contracts-helpers";
 import {
   baseTokenURI,
   METADATA_ROLE,
@@ -12,7 +12,7 @@ import {
   royalty,
   wallet,
   wallets,
-} from "@gemunion/contracts-constants";
+} from "@ethberry/contracts-constants";
 
 import { getContractName } from "../../test/utils";
 import { expiresAt, externalId } from "../../test/constants";

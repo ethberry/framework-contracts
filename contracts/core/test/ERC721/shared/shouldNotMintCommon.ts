@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 export function shouldNotMintCommon(factory: () => Promise<any>) {
   describe("mintCommon", function () {

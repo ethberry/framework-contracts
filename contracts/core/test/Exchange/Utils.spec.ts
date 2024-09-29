@@ -3,9 +3,9 @@ import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { ZeroAddress } from "ethers";
 
-import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { deployRejector, deployHolder } from "@gemunion/contracts-finance";
-import { deployContract } from "@gemunion/contracts-utils";
+import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
+import { deployRejector, deployHolder } from "@ethberry/contracts-finance";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { templateId, tokenId } from "../constants";
@@ -91,7 +91,7 @@ describe("Diamond Exchange Utils", function () {
         it("should spendFrom: ETH => Holder", async function () {
           const [owner] = await ethers.getSigners();
 
-          const walletInstance = await deployContract("NativeReceiver");
+          const walletInstance = await deployContract("NativeReceiverMock");
           const exchangeInstance = await factory();
 
           const tx = exchangeInstance.testSpendFrom(

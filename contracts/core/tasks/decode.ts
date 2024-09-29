@@ -9,6 +9,5 @@ task("decode", "Decode error message")
     // dummy
     await Promise.resolve();
 
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.info(toUtf8String(`0x${data.substr(138)}`));
   });

@@ -1,9 +1,9 @@
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import { amount } from "@gemunion/contracts-constants";
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { deployContract } from "@gemunion/contracts-utils";
+import { amount } from "@ethberry/contracts-constants";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { deployContract } from "@ethberry/contracts-utils";
 
 async function main() {
   const totalTransfers = 10n;

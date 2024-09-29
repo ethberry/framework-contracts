@@ -4,8 +4,8 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Contract, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
-import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { amount, METADATA_ROLE, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployDiamond, deployErc20Base, deployErc721Base, wrapOneToManySignature } from "./shared";

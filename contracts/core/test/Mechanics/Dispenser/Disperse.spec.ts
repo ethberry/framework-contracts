@@ -2,8 +2,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import { amount, InterfaceId } from "@gemunion/contracts-constants";
-import { deployContract, shouldSupportsInterface } from "@gemunion/contracts-utils";
+import { amount, InterfaceId } from "@ethberry/contracts-constants";
+import { deployContract, shouldSupportsInterface } from "@ethberry/contracts-utils";
 
 import { FrameworkInterfaceId, templateId, tokenId } from "../../constants";
 import { deployERC20 } from "../../ERC20/shared/fixtures";

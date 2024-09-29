@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { deployContract } from "@gemunion/contracts-utils";
+import { deployContract } from "@ethberry/contracts-utils";
 
 describe("Rarity", function () {
   const factory = () => deployContract("Dispersion");

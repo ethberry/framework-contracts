@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress, getAddress } from "ethers";
 
-import { amount, baseTokenURI, DEFAULT_ADMIN_ROLE, nonce, royalty } from "@gemunion/contracts-constants";
+import { amount, baseTokenURI, DEFAULT_ADMIN_ROLE, nonce, royalty } from "@ethberry/contracts-constants";
 
 import { contractTemplate, externalId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";

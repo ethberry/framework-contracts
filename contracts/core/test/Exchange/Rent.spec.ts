@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Contract, toBeHex, ZeroAddress, ZeroHash, zeroPadValue } from "ethers";
 
-import { amount, METADATA_ROLE, nonce } from "@gemunion/contracts-constants";
+import { amount, METADATA_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { isEqualArray, isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { deployERC1363 } from "../ERC20/shared/fixtures";

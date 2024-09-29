@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import { IERC721Options } from "@gemunion/contracts-erc721";
+import { IERC721Options } from "@ethberry/contracts-erc721";
 
 import { tokenId } from "../../../../../constants";
 

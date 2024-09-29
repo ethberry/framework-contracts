@@ -1,6 +1,6 @@
-import type { IERC721EnumOptions, TERC721MetadataOptions } from "@gemunion/contracts-erc721e";
-import { shouldBehaveLikeERC998WhiteListChild } from "@gemunion/contracts-erc998td";
-import { TEMPLATE_ID } from "@gemunion/contracts-constants";
+import type { IERC721EnumOptions, TERC721MetadataOptions } from "@ethberry/contracts-erc721e";
+import { shouldBehaveLikeERC998WhiteListChild } from "@ethberry/contracts-erc998td";
+import { TEMPLATE_ID } from "@ethberry/contracts-constants";
 
 import { templateId, tokenId } from "../../../constants";
 import { shouldBehaveLikeERC721Simple } from "../../../ERC721/shared/simple";

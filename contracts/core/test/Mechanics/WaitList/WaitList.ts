@@ -1,6 +1,6 @@
-import { DEFAULT_ADMIN_ROLE, InterfaceId } from "@gemunion/contracts-constants";
-import { deployContract, shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
+import { DEFAULT_ADMIN_ROLE, InterfaceId } from "@ethberry/contracts-constants";
+import { deployContract, shouldBehaveLikePausable, shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 import { shouldBehaveLikeTopUp } from "../../shared/topUp";
 import { shouldClaim } from "./shared/claim";
 import { shouldSetReward } from "./shared/setReward";

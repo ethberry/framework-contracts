@@ -7,8 +7,8 @@ import {
   shouldSafeTransferFrom,
   shouldTransferChild,
   shouldTransferChildToParent,
-} from "@gemunion/contracts-erc998td";
-import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
+} from "@ethberry/contracts-erc998td";
+import type { IERC721EnumOptions } from "@ethberry/contracts-erc721e";
 
 export function shouldBehaveLikeERC998(factory: () => Promise<any>, options: IERC721EnumOptions = {}) {
   shouldChildContractsFor(factory, options);

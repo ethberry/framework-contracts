@@ -3,7 +3,7 @@ import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, zeroPadValue } from "ethers";
 
-import { amount, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { amount, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";

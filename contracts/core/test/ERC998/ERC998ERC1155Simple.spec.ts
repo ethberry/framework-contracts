@@ -1,7 +1,7 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { shouldBehaveLikeERC998ERC1155 } from "@gemunion/contracts-erc998td";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@ethberry/contracts-constants";
+import { shouldBehaveLikeERC998ERC1155 } from "@ethberry/contracts-erc998td";
 
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
 import { deployERC721 } from "../ERC721/shared/fixtures";

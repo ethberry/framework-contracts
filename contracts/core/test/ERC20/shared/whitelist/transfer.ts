@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { amount } from "@gemunion/contracts-constants";
-import { deployRejector } from "@gemunion/contracts-finance";
-import type { IERC20Options } from "@gemunion/contracts-erc20";
-import { defaultMintERC20 } from "@gemunion/contracts-erc20";
+import { amount } from "@ethberry/contracts-constants";
+import { deployRejector } from "@ethberry/contracts-finance";
+import type { IERC20Options } from "@ethberry/contracts-erc20";
+import { defaultMintERC20 } from "@ethberry/contracts-erc20";
 
 export function shouldTransfer(factory: () => Promise<any>, options: IERC20Options = {}) {
   const { mint = defaultMintERC20 } = options;

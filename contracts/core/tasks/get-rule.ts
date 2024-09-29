@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { Result } from "ethers";
 
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { Staking } from "../typechain-types";
 

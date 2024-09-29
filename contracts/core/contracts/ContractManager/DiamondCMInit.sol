@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
-import { DEFAULT_ADMIN_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { DEFAULT_ADMIN_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { LibDiamond } from "../Diamond/lib/LibDiamond.sol";
 import { AccessControlInternal } from "../Diamond/override/AccessControlInternal.sol";

@@ -3,7 +3,7 @@ import { ethers, network } from "hardhat";
 import { WeiPerEther } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 import { LinkToken, VRFCoordinatorV2PlusMock } from "../../../../typechain-types";
 import { deployLinkVrfFixture } from "../../../shared/link";

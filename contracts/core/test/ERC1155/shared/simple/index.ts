@@ -2,7 +2,7 @@ import {
   shouldBehaveLikeERC1155Burnable,
   shouldBehaveLikeERC1155Royalty,
   shouldBehaveLikeERC1155Supply,
-} from "@gemunion/contracts-erc1155";
+} from "@ethberry/contracts-erc1155";
 
 import { shouldBehaveLikeERC1155 } from "./base";
 

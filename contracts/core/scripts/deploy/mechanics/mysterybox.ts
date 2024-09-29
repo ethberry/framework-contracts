@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { baseTokenURI, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { baseTokenURI, MINTER_ROLE } from "@ethberry/contracts-constants";
 
 export async function deployMysteryBox(contracts: Record<string, any>) {
   const mysteryboxSimpleFactory = await ethers.getContractFactory("ERC721MysteryBoxSimple");

@@ -3,9 +3,9 @@ import { ethers, network } from "hardhat";
 import { Contract, parseEther, ZeroAddress } from "ethers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { amount, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { deployERC1363Mock, deployERC20Mock } from "@gemunion/contracts-mocks";
-import { deployContract } from "@gemunion/contracts-utils";
+import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
+import { deployERC1363Mock, deployERC20Mock } from "@ethberry/contracts-mocks";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { VRFCoordinatorV2PlusMock } from "../../../../../../typechain-types";
 import { templateId, tokenId } from "../../../../../constants";

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-import { deployContract } from "@gemunion/contracts-utils";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { deployCollection } from "../../test/Mechanics/Collection/shared/fixtures";
 

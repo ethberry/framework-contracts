@@ -1,4 +1,4 @@
-import { deployContract } from "@gemunion/contracts-utils";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { shouldBehaveLikeTopUp } from "../shared/topUp";
 

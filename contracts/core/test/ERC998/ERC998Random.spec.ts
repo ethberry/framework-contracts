@@ -1,6 +1,6 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@gemunion/contracts-constants";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@ethberry/contracts-constants";
 
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
 import { shouldMintRandom } from "../ERC721/shared/random/mintRandom";

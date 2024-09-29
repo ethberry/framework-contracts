@@ -1,6 +1,6 @@
-import type { IERC721EnumOptions, TERC721MetadataOptions } from "@gemunion/contracts-erc721e";
-import { shouldBehaveLikeERC721Burnable, shouldBehaveLikeERC721Metadata } from "@gemunion/contracts-erc721e";
-import { TEMPLATE_ID } from "@gemunion/contracts-constants";
+import type { IERC721EnumOptions, TERC721MetadataOptions } from "@ethberry/contracts-erc721e";
+import { shouldBehaveLikeERC721Burnable, shouldBehaveLikeERC721Metadata } from "@ethberry/contracts-erc721e";
+import { TEMPLATE_ID } from "@ethberry/contracts-constants";
 
 import { tokenId, templateId } from "../../../constants";
 import { customMintCommonERC721 } from "../customMintFn";

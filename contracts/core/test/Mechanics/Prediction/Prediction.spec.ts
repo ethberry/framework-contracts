@@ -1,7 +1,7 @@
-import { shouldBehaveLikePausable, shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { InterfaceId } from "@gemunion/contracts-constants";
+import { shouldBehaveLikePausable, shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { InterfaceId } from "@ethberry/contracts-constants";
 
-import { TokenType } from "@gemunion/types-blockchain";
+import { TokenType } from "@ethberry/types-blockchain";
 
 import { shouldBehaveLikePrediction } from "./shared/predictionBehavior";
 import { deployPredictionContract } from "./shared/fixtures";

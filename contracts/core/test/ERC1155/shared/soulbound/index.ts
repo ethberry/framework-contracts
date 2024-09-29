@@ -8,7 +8,7 @@ import {
   shouldMint,
   shouldMintBatch,
   shouldSetApprovalForAll,
-} from "@gemunion/contracts-erc1155";
+} from "@ethberry/contracts-erc1155";
 
 import { shouldSafeTransferFrom } from "./shouldSafeTransferFrom";
 import { shouldSafeBatchTransferFrom } from "./safeBatchTransferFrom";

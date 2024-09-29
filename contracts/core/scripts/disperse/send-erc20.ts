@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
-import { deployContract } from "@gemunion/contracts-utils";
-import { amount } from "@gemunion/contracts-constants";
+import { deployContract } from "@ethberry/contracts-utils";
+import { amount } from "@ethberry/contracts-constants";
 
 import { deployERC20 } from "../../test/ERC20/shared/fixtures";
 

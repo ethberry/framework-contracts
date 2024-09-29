@@ -1,7 +1,7 @@
-import { batchSize, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeERC721Consecutive } from "@gemunion/contracts-erc721c";
+import { batchSize, DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@ethberry/contracts-constants";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeERC721Consecutive } from "@ethberry/contracts-erc721c";
 
 import { deployCollection } from "./shared/fixtures";
 import { shouldMintConsecutive } from "./shared/simple/base/mintConsecutive";

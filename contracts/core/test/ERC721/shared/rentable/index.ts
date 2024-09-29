@@ -1,5 +1,5 @@
-import { shouldUserExprires, shouldUserOf } from "@gemunion/contracts-erc721e";
-import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
+import { shouldUserExprires, shouldUserOf } from "@ethberry/contracts-erc721e";
+import type { IERC721EnumOptions } from "@ethberry/contracts-erc721e";
 
 import { shouldSetUser } from "./setUser";
 import { customMintCommonERC721 } from "../customMintFn";

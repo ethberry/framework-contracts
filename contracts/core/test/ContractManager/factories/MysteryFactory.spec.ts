@@ -10,7 +10,7 @@ import {
   royalty,
   tokenName,
   tokenSymbol,
-} from "@gemunion/contracts-constants";
+} from "@ethberry/contracts-constants";
 
 import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";

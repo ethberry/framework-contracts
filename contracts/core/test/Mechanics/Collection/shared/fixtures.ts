@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 
-import { baseTokenURI, batchSize, royalty, tokenName, tokenSymbol } from "@gemunion/contracts-constants";
+import { baseTokenURI, batchSize, royalty, tokenName, tokenSymbol } from "@ethberry/contracts-constants";
 
 export async function deployCollection(name = "ERC721CSimple", defaultBatchSize = batchSize): Promise<any> {
   const [owner] = await ethers.getSigners();

@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { amount, MINTER_ROLE, nonce } from "@gemunion/contracts-constants";
+import { amount, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { expiresAt, externalId, tokenId } from "../../../constants";
 import { isEqualEventArgArrObj } from "../../../utils";

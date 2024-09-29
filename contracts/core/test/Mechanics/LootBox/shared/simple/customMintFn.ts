@@ -1,7 +1,7 @@
 import { BaseContract, Signer } from "ethers";
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 import { templateId } from "../../../../constants";
 import { deployERC721 } from "../../../../ERC721/shared/fixtures";

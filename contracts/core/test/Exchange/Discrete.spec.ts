@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { Contract, encodeBytes32String, ZeroAddress, ZeroHash } from "ethers";
 
-import { amount, METADATA_ROLE } from "@gemunion/contracts-constants";
+import { amount, METADATA_ROLE } from "@ethberry/contracts-constants";
 
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";

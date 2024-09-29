@@ -3,9 +3,9 @@ import { ethers } from "hardhat";
 import { concat, getAddress, toBeHex, ZeroAddress, zeroPadValue } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
-import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
-import { decodeTraits } from "@gemunion/traits-v6";
-import { deployERC20Mock } from "@gemunion/contracts-mocks";
+import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
+import { decodeTraits } from "@ethberry/traits-v6";
+import { deployERC20Mock } from "@ethberry/contracts-mocks";
 
 import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
 import { claimId, externalId, tokenId, userId, contractTemplate } from "../../constants";

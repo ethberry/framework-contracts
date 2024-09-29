@@ -1,7 +1,7 @@
 import { BaseContract, Signer, ZeroAddress } from "ethers";
 import type { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-import { amount } from "@gemunion/contracts-constants";
+import { amount } from "@ethberry/contracts-constants";
 
 import { templateId } from "../../../constants";
 

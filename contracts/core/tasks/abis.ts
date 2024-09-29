@@ -241,7 +241,7 @@ task("abis", "Save all functions abi separately")
     const artfcts = await hre.artifacts.getArtifactPaths();
     const conart = artfcts
       .filter(
-        art => art.includes(`${process.cwd()}/${files}`) || art.includes("@gemunion/contracts-chain-link-v2-plus"),
+        art => art.includes(`${process.cwd()}/${files}`) || art.includes("@ethberry/contracts-chain-link-v2-plus"),
       )
       .filter(art => !art.includes(`/interfaces`));
 

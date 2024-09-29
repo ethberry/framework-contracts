@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC721Burnable, ERC721 } from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
-import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { ERC721ABaseUrl } from "@gemunion/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
-import { ERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/extensions/ERC721GeneralizedCollection.sol";
-import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
+import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
+import { ERC721ABaseUrl } from "@ethberry/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";
+import { ERC721GeneralizedCollection } from "@ethberry/contracts-erc721/contracts/extensions/ERC721GeneralizedCollection.sol";
+import { ERC721ABER } from "@ethberry/contracts-erc721e/contracts/preset/ERC721ABER.sol";
 
 import { PRIZE, NUMBERS, ROUND } from "../../utils/constants.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";

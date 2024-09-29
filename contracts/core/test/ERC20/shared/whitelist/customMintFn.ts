@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { BaseContract, Signer } from "ethers";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 
-import { amount } from "@gemunion/contracts-constants";
+import { amount } from "@ethberry/contracts-constants";
 
 export const customMint = async (
   contractInstance: any,

@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
-import { amount } from "@gemunion/contracts-constants";
-import { deployContract } from "@gemunion/contracts-utils";
+import { amount } from "@ethberry/contracts-constants";
+import { deployContract } from "@ethberry/contracts-utils";
 
 import { tokenId } from "../../test/constants";
 import { deployERC1155 } from "../../test/ERC1155/shared/fixtures";

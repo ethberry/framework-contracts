@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { WeiPerEther, ZeroAddress } from "ethers";
 
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 export async function deployStaking(contracts: Record<string, any>) {
   const stakingFactory = await ethers.getContractFactory("Staking");

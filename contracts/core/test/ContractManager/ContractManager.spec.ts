@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE, PREDICATE_ROLE } from "@gemunion/contracts-constants";
+import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE, PREDICATE_ROLE } from "@ethberry/contracts-constants";
 
 import { deployDiamond } from "../Exchange/shared";
 

@@ -7,7 +7,7 @@ import {
   shouldSafeBatchTransferFrom,
   shouldSafeTransferFrom,
   shouldSetApprovalForAll,
-} from "@gemunion/contracts-erc1155";
+} from "@ethberry/contracts-erc1155";
 
 export function shouldBehaveLikeERC1155(factory: () => Promise<any>) {
   shouldMint(factory);

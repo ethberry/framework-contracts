@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { ERC721, IERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import { ERC998ERC721Enumerable } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721Enumerable.sol";
-import { WhiteListChild } from "@gemunion/contracts-erc998td/contracts/extensions/WhiteListChild.sol";
-import { IWhiteListChild } from "@gemunion/contracts-erc998td/contracts/interfaces/IWhiteListChild.sol";
-import { ERC998ERC721 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
-import { ERC721ABER } from "@gemunion/contracts-erc721e/contracts/preset/ERC721ABER.sol";
+import { ERC998ERC721Enumerable } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998ERC721Enumerable.sol";
+import { WhiteListChild } from "@ethberry/contracts-erc998td/contracts/extensions/WhiteListChild.sol";
+import { IWhiteListChild } from "@ethberry/contracts-erc998td/contracts/interfaces/IWhiteListChild.sol";
+import { ERC998ERC721 } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
+import { ERC721ABER } from "@ethberry/contracts-erc721e/contracts/preset/ERC721ABER.sol";
 
 import { ERC721Simple } from "../ERC721/ERC721Simple.sol";
 

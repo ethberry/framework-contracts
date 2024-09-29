@@ -1,6 +1,6 @@
-import type { IERC721Options } from "@gemunion/contracts-erc721";
-import { shouldBehaveLikeERC721Burnable } from "@gemunion/contracts-erc721";
-import { batchSize } from "@gemunion/contracts-constants";
+import type { IERC721Options } from "@ethberry/contracts-erc721";
+import { shouldBehaveLikeERC721Burnable } from "@ethberry/contracts-erc721";
+import { batchSize } from "@ethberry/contracts-constants";
 
 import { shouldBehaveLikeERC721 } from "./base";
 import { shouldBaseUrl } from "./baseUrl";

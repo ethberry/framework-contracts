@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers, web3 } from "hardhat";
 import { time } from "@openzeppelin/test-helpers";
 
-import { deployERC20Mock } from "@gemunion/contracts-mocks";
+import { deployERC20Mock } from "@ethberry/contracts-mocks";
 
 import { deployVesting } from "./fixture";
 

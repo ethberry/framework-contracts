@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
@@ -10,8 +10,8 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkHardhatV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkHardhatV2Plus.sol";
-import { ChainLinkBaseV2Plus } from "@gemunion/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
+import { ChainLinkHardhatV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkHardhatV2Plus.sol";
+import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC721DiscreteRandom } from "../ERC721DiscreteRandom.sol";
 

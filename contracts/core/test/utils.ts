@@ -1,7 +1,7 @@
-import { snakeToCamelCase } from "@gemunion/utils";
+import { snakeToCamelCase } from "@ethberry/utils";
 import { AbiCoder, concat, id, keccak256, Provider, toBeArray, toBeHex, zeroPadValue } from "ethers";
 
-import { patchBigInt } from "@gemunion/utils-eth";
+import { patchBigInt } from "@ethberry/utils-eth";
 
 patchBigInt();
 

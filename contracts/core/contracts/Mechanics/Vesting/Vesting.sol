@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { VestingWallet } from "@openzeppelin/contracts/finance/VestingWallet.sol";
-import { NativeRejector, CoinHolder } from "@gemunion/contracts-finance/contracts/Holder.sol";
+import { NativeRejector, CoinHolder } from "@ethberry/contracts-finance/contracts/Holder.sol";
 
 import { TopUp } from "../../utils/TopUp.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";

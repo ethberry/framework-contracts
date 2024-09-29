@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { IERC1363_RECEIVER_ID } from "@gemunion/contracts-utils/contracts/interfaces.sol";
-import { IERC1363Receiver } from "@gemunion/contracts-erc1363/contracts/interfaces/IERC1363Receiver.sol";
+import { IERC1363_RECEIVER_ID } from "@ethberry/contracts-utils/contracts/interfaces.sol";
+import { IERC1363Receiver } from "@ethberry/contracts-erc1363/contracts/interfaces/IERC1363Receiver.sol";
 
 import { Prediction } from "./Prediction.sol";
 

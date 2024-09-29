@@ -1,6 +1,6 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@gemunion/contracts-constants";
-import { shouldBehaveLikeAccessControl, shouldBehaveLikeBlackList } from "@gemunion/contracts-access";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@ethberry/contracts-constants";
+import { shouldBehaveLikeAccessControl, shouldBehaveLikeBlackList } from "@ethberry/contracts-access";
 
 import { FrameworkInterfaceId, templateId } from "../constants";
 import { deployERC721 } from "./shared/fixtures";

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import fs from "fs";
-import { camelToSnakeCase } from "@gemunion/contracts-helpers";
+import { camelToSnakeCase } from "@ethberry/contracts-helpers";
 import { debug } from "../utils/deploy-utils";
 import { addFacetDiamond, deployDiamond, updateFacetDiamond, removeFacetDiamond } from "../../test/Exchange/shared";
 

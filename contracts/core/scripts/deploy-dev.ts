@@ -3,10 +3,10 @@ import { formatEther, Result, WeiPerEther, ZeroAddress } from "ethers";
 import fs from "fs";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { camelToSnakeCase } from "@gemunion/utils";
-import { METADATA_ROLE, MINTER_ROLE, nonce, royalty, wallet, wallets } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { camelToSnakeCase } from "@ethberry/utils";
+import { METADATA_ROLE, MINTER_ROLE, nonce, royalty, wallet, wallets } from "@ethberry/contracts-constants";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { getContractName } from "../test/utils";
 import { expiresAt, externalId } from "../test/constants";

@@ -1,4 +1,4 @@
-import type { IERC721EnumOptions, TERC721MetadataOptions } from "@gemunion/contracts-erc721e";
+import type { IERC721EnumOptions, TERC721MetadataOptions } from "@ethberry/contracts-erc721e";
 import {
   shouldApprove,
   shouldBehaveLikeERC721Burnable,
@@ -7,8 +7,8 @@ import {
   shouldGetOwnerOf,
   shouldSafeMint,
   shouldSetApprovalForAll,
-} from "@gemunion/contracts-erc721e";
-import { TEMPLATE_ID } from "@gemunion/contracts-constants";
+} from "@ethberry/contracts-erc721e";
+import { TEMPLATE_ID } from "@ethberry/contracts-constants";
 
 import { templateId, tokenId } from "../../../constants";
 import { shouldReceive } from "../../../shared/receive";

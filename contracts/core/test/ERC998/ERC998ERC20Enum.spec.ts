@@ -1,11 +1,11 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE } from "@ethberry/contracts-constants";
 import {
   shouldBehaveLikeERC998Enumerable,
   shouldBehaveLikeERC998ERC20,
   shouldBehaveLikeERC998ERC20Enumerable,
-} from "@gemunion/contracts-erc998td";
+} from "@ethberry/contracts-erc998td";
 
 import { FrameworkInterfaceId, tokenId } from "../constants";
 import { deployERC721 } from "../ERC721/shared/fixtures";

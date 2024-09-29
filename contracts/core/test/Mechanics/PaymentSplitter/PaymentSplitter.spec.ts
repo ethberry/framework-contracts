@@ -1,6 +1,6 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { InterfaceId } from "@gemunion/contracts-constants";
-import { shouldBehaveLikeSplitterWallet } from "@gemunion/contracts-finance";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { InterfaceId } from "@ethberry/contracts-constants";
+import { shouldBehaveLikeSplitterWallet } from "@ethberry/contracts-finance";
 
 import { deployPaymentSplitter } from "./fixture";
 

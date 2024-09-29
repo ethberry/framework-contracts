@@ -1,11 +1,11 @@
-import type { IERC20Options } from "@gemunion/contracts-erc20";
+import type { IERC20Options } from "@ethberry/contracts-erc20";
 import {
   shouldApprove,
   shouldBalanceOf,
   shouldBehaveLikeERC20Burnable,
   shouldBehaveLikeERC20Capped,
   shouldMint,
-} from "@gemunion/contracts-erc20";
+} from "@ethberry/contracts-erc20";
 
 import { shouldReceive } from "../../../shared/receive";
 import { shouldTransfer } from "./transfer";

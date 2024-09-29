@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 // Author: 7flash
-// Website: https://gemunion.io/
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.0;
 pragma abicoder v2;
@@ -11,8 +11,8 @@ import { Pausable } from "@openzeppelin/contracts/utils/Pausable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { CoinHolder, NativeReceiver } from "@gemunion/contracts-finance/contracts/Holder.sol";
-import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { CoinHolder, NativeReceiver } from "@ethberry/contracts-finance/contracts/Holder.sol";
+import { PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";

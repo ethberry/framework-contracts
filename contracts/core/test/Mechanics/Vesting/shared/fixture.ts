@@ -2,7 +2,7 @@ import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
-import { amount } from "@gemunion/contracts-constants";
+import { amount } from "@ethberry/contracts-constants";
 
 export async function deployVesting(name: string, cliffInMonth: number, monthlyRelease: number): Promise<any> {
   const [owner] = await ethers.getSigners();
@@ -27,6 +27,5 @@ export async function deployVesting(name: string, cliffInMonth: number, monthlyR
     { value: amount * 100n },
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return vestingInstance;
 }

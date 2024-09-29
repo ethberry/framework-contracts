@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
-import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { DEFAULT_ADMIN_ROLE, METADATA_ROLE, MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { AccessControlInternal } from "../../Diamond/override/AccessControlInternal.sol";
 import { CMStorage } from "../storage/CMStorage.sol";

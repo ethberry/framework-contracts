@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
-import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
-import { IERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
+import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
+import { TEMPLATE_ID } from "@ethberry/contracts-utils/contracts/attributes.sol";
+import { IERC721GeneralizedCollection } from "@ethberry/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
 
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 

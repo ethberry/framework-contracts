@@ -13,10 +13,11 @@ import {
 import { time } from "@openzeppelin/test-helpers";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
-import { shouldBehaveLikeAccessControl } from "@gemunion/contracts-access";
-import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
-import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
+import { shouldBehaveLikePausable } from "@ethberry/contracts-utils";
+import { amount, DEFAULT_ADMIN_ROLE, MINTER_ROLE, nonce, PAUSER_ROLE } from "@ethberry/contracts-constants";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
+import { delay } from "@ethberry/utils";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
@@ -26,10 +27,6 @@ import { deployLottery } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";
 import { getBytesNumbersArr, getNumbersBytes, isEqualEventArgObj } from "../../utils";
 import { decodeMetadata } from "../../shared/metadata";
-
-const delay = (milliseconds: number) => {
-  return new Promise(resolve => setTimeout(resolve, milliseconds));
-};
 
 describe("Lottery", function () {
   let vrfInstance: VRFCoordinatorV2PlusMock;

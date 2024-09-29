@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
-import { blockAwait } from "@gemunion/contracts-helpers";
-import { METADATA_ROLE, MINTER_ROLE } from "@gemunion/contracts-constants";
+import { blockAwait } from "@ethberry/contracts-helpers";
+import { METADATA_ROLE, MINTER_ROLE } from "@ethberry/contracts-constants";
 
 export async function deploySystem(contracts: Record<string, any>) {
   const vestFactory = await ethers.getContractFactory("ContractManager");

@@ -2,8 +2,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import type { IERC721EnumOptions } from "@gemunion/contracts-erc721e";
-import { shouldBehaveLikePausable } from "@gemunion/contracts-utils";
+import type { IERC721EnumOptions } from "@ethberry/contracts-erc721e";
+import { shouldBehaveLikePausable } from "@ethberry/contracts-utils";
 
 import { tokenId } from "../../../../constants";
 import { customMint } from "../simple/customMintFn";

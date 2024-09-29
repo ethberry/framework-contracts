@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { METADATA_ROLE } from "@gemunion/contracts-constants";
+import { METADATA_ROLE } from "@ethberry/contracts-constants";
 
 import { FrameworkInterfaceId, templateId, tokenAttributes, tokenId } from "../../constants";
 

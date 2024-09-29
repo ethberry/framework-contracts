@@ -1,6 +1,6 @@
 import { Network, Signer } from "ethers";
 
-import { tokenName } from "@gemunion/contracts-constants";
+import { tokenName } from "@ethberry/contracts-constants";
 
 export const wrapOneToOneSignature = (
   network: Network,

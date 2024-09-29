@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { Context } from "@openzeppelin/contracts/utils/Context.sol";
 import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-import { ERC998ERC1155Enumerable } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC1155Enumerable.sol";
-import { ERC998ERC20Enumerable } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC20Enumerable.sol";
-import { ERC998Utils } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
-import { ERC998ERC721 } from "@gemunion/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
+import { ERC998ERC1155Enumerable } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998ERC1155Enumerable.sol";
+import { ERC998ERC20Enumerable } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998ERC20Enumerable.sol";
+import { ERC998Utils } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998Utils.sol";
+import { ERC998ERC721 } from "@ethberry/contracts-erc998td/contracts/extensions/ERC998ERC721.sol";
 
 import { ERC998SimpleEnum } from "./ERC998SimpleEnum.sol";
 

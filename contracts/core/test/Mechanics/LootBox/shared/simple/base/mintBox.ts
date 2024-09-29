@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress, parseEther } from "ethers";
 
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 import { templateId } from "../../../../../constants";
 

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import { MINTER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
+import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";

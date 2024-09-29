@@ -1,4 +1,4 @@
-import type { IERC721Options } from "@gemunion/contracts-erc721";
+import type { IERC721Options } from "@ethberry/contracts-erc721";
 
 import { shouldSetBaseURI } from "./setBaseURI";
 import { shouldTokenURI } from "./tokenURI";

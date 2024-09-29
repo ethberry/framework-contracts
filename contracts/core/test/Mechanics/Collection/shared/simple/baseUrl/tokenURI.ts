@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { baseTokenURI } from "@gemunion/contracts-constants";
-import type { IERC721Options } from "@gemunion/contracts-erc721";
+import { baseTokenURI } from "@ethberry/contracts-constants";
+import type { IERC721Options } from "@ethberry/contracts-erc721";
 
 import { tokenId } from "../../../../../constants";
 import { customMintConsecutive } from "../../customMintFn";

@@ -2,8 +2,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import { amount } from "@gemunion/contracts-constants";
-import { deployERC1363Mock, deployERC20Mock, deployERC1155Mock, deployERC721Mock } from "@gemunion/contracts-mocks";
+import { amount } from "@ethberry/contracts-constants";
+import { deployERC1363Mock, deployERC20Mock, deployERC1155Mock, deployERC721Mock } from "@ethberry/contracts-mocks";
 
 import { templateId, tokenId } from "../constants";
 import { deployUsdt, deployWeth } from "../ERC20/shared/fixtures";

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
@@ -14,10 +14,10 @@ import { EnumerableMap } from "@openzeppelin/contracts/utils/structs/EnumerableM
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-import { AllTypesHolder, NativeRejector } from "@gemunion/contracts-finance/contracts/Holder.sol";
-import { PAUSER_ROLE } from "@gemunion/contracts-utils/contracts/roles.sol";
-import { TEMPLATE_ID } from "@gemunion/contracts-utils/contracts/attributes.sol";
-import { IERC721GeneralizedCollection } from "@gemunion/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
+import { AllTypesHolder, NativeRejector } from "@ethberry/contracts-finance/contracts/Holder.sol";
+import { PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
+import { TEMPLATE_ID } from "@ethberry/contracts-utils/contracts/attributes.sol";
+import { IERC721GeneralizedCollection } from "@ethberry/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
 
 import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";

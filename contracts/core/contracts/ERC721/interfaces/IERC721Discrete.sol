@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 
 // Author: TrejGun
-// Email: trejgun@gemunion.io
-// Website: https://gemunion.io/
+// Email: trejgun@gmail.com
+// Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;
 
-import { IERC4906 } from "@gemunion/contracts-erc721/contracts/interfaces/IERC4906.sol";
+import { IERC4906 } from "@ethberry/contracts-erc721/contracts/interfaces/IERC4906.sol";
 
 import { IERC721Simple } from "./IERC721Simple.sol";
 

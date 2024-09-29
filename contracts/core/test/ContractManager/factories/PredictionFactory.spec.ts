@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { getAddress } from "ethers";
 
-import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
+import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";

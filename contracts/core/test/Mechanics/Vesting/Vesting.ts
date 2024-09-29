@@ -1,6 +1,6 @@
-import { shouldSupportsInterface } from "@gemunion/contracts-utils";
-import { shouldBehaveLikeOwnable } from "@gemunion/contracts-access";
-import { InterfaceId } from "@gemunion/contracts-constants";
+import { shouldSupportsInterface } from "@ethberry/contracts-utils";
+import { shouldBehaveLikeOwnable } from "@ethberry/contracts-access";
+import { InterfaceId } from "@ethberry/contracts-constants";
 
 import { deployVesting } from "./shared/fixture";
 import { calc } from "./shared/calc";

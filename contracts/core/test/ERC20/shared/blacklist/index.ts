@@ -1,4 +1,4 @@
-import type { IERC20Options } from "@gemunion/contracts-erc20";
+import type { IERC20Options } from "@ethberry/contracts-erc20";
 
 import { shouldBlacklist } from "./blacklist";
 

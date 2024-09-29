@@ -2,8 +2,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { getAddress } from "ethers";
 
-import { DEFAULT_ADMIN_ROLE, nonce } from "@gemunion/contracts-constants";
-import { recursivelyDecodeResult } from "@gemunion/utils-eth";
+import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { externalId } from "../../constants";
 import { buildBytecode, buildCreate2Address } from "../../utils";

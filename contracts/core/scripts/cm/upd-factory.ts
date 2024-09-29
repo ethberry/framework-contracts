@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import fs from "fs";
-import { blockAwait, camelToSnakeCase } from "@gemunion/contracts-helpers";
-import { MINTER_ROLE } from "@gemunion/contracts-constants";
+import { blockAwait, camelToSnakeCase } from "@ethberry/contracts-helpers";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 // import { addFacetDiamond, updateFacetDiamond } from "../../test/Exchange/shared";
 import * as process from "node:process";
