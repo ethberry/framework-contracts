@@ -11,6 +11,13 @@ config({
 });
 
 export default {
+  ignition: {
+    strategyConfig: {
+      create2: {
+        salt: "0x2334567890abcdef1234567890abcdef1234567890abcdef1234567890abcded",
+      },
+    },
+  },
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
