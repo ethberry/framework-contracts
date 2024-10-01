@@ -1,5 +1,4 @@
 services:
-
   besu:
     container_name: besu
     user: root

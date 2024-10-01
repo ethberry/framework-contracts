@@ -1,11 +1,10 @@
 # Project
-**/typechain-types/
-**/artifacts/
-**/cache/
-**/dist/
-/code/
-/besu/
-/besu/**
+typechain-types/
+artifacts/
+cache/
+dist/
+code/
+besu/
 
 # IDE
 .idea
@@ -25,3 +24,6 @@ yarn.lock
 # env
 .env.*
 !.env.sample
+
+/coverage
+/coverage.json
