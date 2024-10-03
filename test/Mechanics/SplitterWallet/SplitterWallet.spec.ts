@@ -2,10 +2,10 @@ import { shouldSupportsInterface } from "@ethberry/contracts-utils";
 import { InterfaceId } from "@ethberry/contracts-constants";
 import { shouldBehaveLikeSplitterWallet } from "@ethberry/contracts-finance";
 
-import { deployPaymentSplitter } from "./fixture";
+import { deploySplitterWallet } from "./fixture";
 
-describe("PaymentSplitter", function () {
-  const factory = () => deployPaymentSplitter();
+describe("SplitterWallet", function () {
+  const factory = () => deploySplitterWallet();
 
   shouldBehaveLikeSplitterWallet(factory);
 
