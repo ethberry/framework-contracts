@@ -1,6 +1,6 @@
 {
   "extends": ["github>ethberry/renovate-config"],
-  "baseBranches": ["dev"],
+  "baseBranches": ["dev", "ethers8"],
   "packageRules": [
     {
       "matchPackageNames": ["hardhat-gas-reporter"],
