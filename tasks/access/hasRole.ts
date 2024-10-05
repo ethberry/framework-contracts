@@ -13,4 +13,4 @@ task("access-has-role", "Returns `true` if `account` has been granted `role`")
     process.exit(0);
   });
 
-// hardhat access-has-role --contract 0x5e98e8a494ab6ce0a09d3b4c76534e7e00faed71 --role MINTER_ROLE --account 0x5e98e8a494ab6ce0a09d3b4c76534e7e00faed71 --network gemunion_besu
+// hardhat access-has-role --contract 0x5e98e8a494ab6ce0a09d3b4c76534e7e00faed71 --role MINTER_ROLE --account 0x5e98e8a494ab6ce0a09d3b4c76534e7e00faed71 --network ethberry_besu

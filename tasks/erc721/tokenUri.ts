@@ -12,4 +12,4 @@ task("erc721-get-uri", "Prints a token's uri")
     console.info("Token URI:", uri);
   });
 
-// hardhat erc721-get-uri --contract 0x2f4cf7825f1bd896e9e29ff887fb008c19d9d3b4 --id 1 --network gemunion_besu
+// hardhat erc721-get-uri --contract 0x2f4cf7825f1bd896e9e29ff887fb008c19d9d3b4 --id 1 --network ethberry_besu

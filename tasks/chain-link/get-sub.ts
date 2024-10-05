@@ -3,38 +3,29 @@ import { Result } from "ethers";
 
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
-task("get-sub", "Prints a VRF subscription data")
+task("sub-get", "Prints a VRF subscription data")
+  .addParam("vrf", "The VRF coordinator contract's address")
   .addParam("sub", "The Subscription ID")
   .setAction(async (args, hre) => {
-    const { sub } = args;
-    const networkName = hre.network.name;
-    // console.log("networkName", networkName);
-    // set the VRF token contract address according to the environment
-    let vrfContractAddr: string;
-    switch (networkName) {
-      case "binance_test":
-        vrfContractAddr = "0x84b9b910527ad5c03a9ca831909e21e236ea7b06";
-        break;
-      case "polygon_amoy":
-        vrfContractAddr = "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
-        break;
-      case "gemunion_besu":
-        vrfContractAddr = "0xa50a51c09a5c451c52bb714527e1974b686d8e77";
-        break;
-      case "gemunion":
-        vrfContractAddr = "0x86c86939c631d53c6d812625bd6ccd5bf5beb774";
-        break;
-      default:
-        throw new Error(`Unsupported network ${networkName}`);
-    }
+      const { vrf, sub } = args;
 
-    const vrfTokenContract = await hre.ethers.getContractAt(
+      const vrfInstance = await hre.ethers.getContractAt(
       "VRFCoordinatorV2PlusMock",
-      vrfContractAddr,
+        vrf
     );
 
-    const data = await vrfTokenContract.getSubscription(sub);
-    console.info("Subscription", recursivelyDecodeResult(data as unknown as Result));
+      const data = await vrfInstance.getSubscription(sub);
+      const result = recursivelyDecodeResult(data as unknown as Result);
+      console.info("Subscription", result);
   });
 
-// hardhat get-sub --sub 107047671614105181605855861266364170459723373514078878123604030694679782559997 --network gemunion
+// hardhat sub-get --vrf 0xa50a51c09a5c451C52BB714527E1974b686D8e77 --sub 26054867937820587328159301681415153712869728729402639383884357844206994385379 --network ethberry_besu
+
+// ethereum         0xD7f86b4b8Cae7D942340FF628F82735b7a20893a
+// ethereum_sepolia 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B
+// binance          0xd691f04bc0C9a24Edb78af9E005Cf85768F694C9
+// binance_test     0xDA3b641D438362C440Ac5458c57e00a712b66700
+// polygon          0xec0Ed46f36576541C75739E915ADbCb3DE24bD77
+// polygon_amoy     0x343300b5d84D444B2ADc9116FEF1bED02BE49Cf2
+
+// https://docs.chain.link/vrf/v2/subscription/supported-networks

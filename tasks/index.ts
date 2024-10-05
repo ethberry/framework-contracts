@@ -7,11 +7,13 @@ import "./erc20/mint";
 import "./erc20/transfer";
 import "./erc20/balanceOf";
 import "./erc721/deploy";
-import "./erc721/get-uri";
-import "./erc721/mint";
+import "./erc721/mintCommon";
 import "./erc721/royaltyInfo";
+import "./erc721/tokenUri";
+import "./erc721-random/deploy";
 import "./erc1155/balanceOf";
 import "./erc1155/deploy";
+import "./erc1155/mint";
 import "./erc1155/royaltyInfo";
 
 // HASHES
@@ -24,10 +26,11 @@ import "./access/hasRole";
 import "./access/grantRole";
 
 // INTEGRATIONS
-import "./chain-link/fund-link";
-import "./chain-link/fund-vrfsub";
+import "./chain-link/consumer-add";
+import "./chain-link/consumer-rem";
+import "./chain-link/fund-sub";
 import "./chain-link/get-sub";
-import "./chain-link/add-sub";
+import "./chain-link/sub-create";
 
 import "./abis";
 import "./accounts";
@@ -37,7 +40,6 @@ import "./flat";
 import "./get-hash";
 import "./get-receipt-by-hash";
 import "./get-rule";
-import "./grant";
 import "./parse-dispenser-tx";
 
 

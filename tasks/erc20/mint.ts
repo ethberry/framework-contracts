@@ -14,4 +14,4 @@ task("erc20-mint", "Mints ERC20 tokens")
     console.info("ERC20 mint");
   });
 
-// hardhat erc20-mint --contract 0xfeae27388a65ee984f452f86effed42aabd438fd --value 100000 --network gemunion_besu
+// hardhat erc20-mint --contract 0xfeae27388a65ee984f452f86effed42aabd438fd --value 100000 --network ethberry_besu

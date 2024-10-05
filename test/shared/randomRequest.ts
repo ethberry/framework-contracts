@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { ZeroAddress } from "ethers";
 
-import { VRFCoordinatorV2PlusMock } from "../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 
 export async function randomRequest(_rndInstance: any, vrfInstance: VRFCoordinatorV2PlusMock, fix = 32n) {
   const eventFilter = vrfInstance.filters.RandomWordsRequested();

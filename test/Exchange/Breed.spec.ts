@@ -9,7 +9,7 @@ import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
 import { TokenMetadata } from "../types";
-import { VRFCoordinatorV2PlusMock } from "../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployDiamond, deployErc721Base, wrapOneToOneSignature } from "./shared";
 import { isEqualEventArgObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";

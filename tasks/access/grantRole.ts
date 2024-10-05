@@ -12,4 +12,4 @@ task("access-grant-role", "Grants address a role to contract")
     console.info("Role granted, tx:", tx.hash);
   });
 
-// hardhat access-grant-role --contract 0x4fc5a9628132cea372add62c846cd817ef46bbf5 --address 0x6cec229d5b711a0f1ad6772a4d568e54b036b321 --network gemunion_besu
+// hardhat access-grant-role --contract 0x4fc5a9628132cea372add62c846cd817ef46bbf5 --address 0x6cec229d5b711a0f1ad6772a4d568e54b036b321 --network ethberry_besu

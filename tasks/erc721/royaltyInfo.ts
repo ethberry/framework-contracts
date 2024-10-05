@@ -17,4 +17,4 @@ task("erc721-royalty-info", "Prints a contract's royalty")
     console.info("Token Royalty receiver:", account);
   });
 
-// hardhat erc721-royalty-info --contract 0x2f4cf7825f1bd896e9e29ff887fb008c19d9d3b4 --id 1 --network gemunion_besu
+// hardhat erc721-royalty-info --contract 0x2f4cf7825f1bd896e9e29ff887fb008c19d9d3b4 --id 1 --network ethberry_besu
