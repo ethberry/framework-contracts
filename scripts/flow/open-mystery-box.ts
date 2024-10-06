@@ -3,6 +3,7 @@ import { Result, toBeHex, WeiPerEther, zeroPadValue, ZeroAddress } from "ethers"
 
 import { baseTokenURI, royalty } from "@ethberry/contracts-constants";
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
+import { MINTER_ROLE } from "@ethberry/contracts-constants";
 import { VrfCoordinatorV2PlusAddress, LinkTokenAddress } from "@framework/types";
 
 import { getContractName, chainIdToSuffix } from "../../test/utils";
@@ -94,16 +95,37 @@ async function main() {
   const result4 = recursivelyDecodeResult(events4[0].args as unknown as Result);
   console.info("VrfSubscriptionSet", result4);
 
-  const tx7 = await nftInstance.mintRandom(owner, 1);
+  const mysteryFactory = await ethers.getContractFactory("ERC721MysteryBoxSimple");
+  const mysteryInstance = await mysteryFactory.deploy("NFT", "EBT721", royalty, baseTokenURI);
+  const mysteryAddress = await mysteryInstance.getAddress();
+  console.info(`MYSTERY deployed to ${mysteryAddress}`);
+
+  const tx7 = await mysteryInstance.mintBox(owner, 1, [{
+    tokenType: 2,
+    token: nftAddress,
+    tokenId: 1,
+    amount: 1,
+  }]);
   await tx7.wait();
 
-  const eventFilter5 = vrfInstance.filters.RandomWordsRequested();
-  const events5 = await vrfInstance.queryFilter(eventFilter5);
+  const eventFilter5 = mysteryInstance.filters.Transfer();
+  const events5 = await mysteryInstance.queryFilter(eventFilter5);
   const result5 = recursivelyDecodeResult(events5[0].args as unknown as Result);
-  console.info("RandomWordsRequested", result5);
+  console.info("Transfer", result5);
+
+  const tx8 = await nftInstance.grantRole(MINTER_ROLE, mysteryAddress);
+  await tx8.wait();
+
+  const tx9 = await mysteryInstance.unpack(result5.tokenId);
+  await tx9.wait();
+
+  const eventFilter6 = vrfInstance.filters.RandomWordsRequested();
+  const events6 = await vrfInstance.queryFilter(eventFilter6);
+  const result6 = recursivelyDecodeResult(events6[0].args as unknown as Result);
+  console.info("RandomWordsRequested", result6);
 
   const blockNum = await ethers.provider.getBlockNumber();
-  const tx8 = await vrfInstance.fulfillRandomWords(
+  const tx10 = await vrfInstance.fulfillRandomWords(
     // Proof
     {
       pk: [0, 0],
@@ -114,27 +136,27 @@ async function main() {
       uWitness: ZeroAddress,
       cGammaWitness: [0, 0],
       sHashWitness: [0, 0],
-      zInv: result5.requestId // requestId
+      zInv: result6.requestId // requestId
     },
     // RequestCommitmentV2Plus
     {
       blockNum,
       subId,
-      callbackGasLimit: result5.callbackGasLimit,
-      numWords: result5.numWords,
-      sender: result5.sender,
-      extraArgs: result5.extraArgs,
+      callbackGasLimit: result6.callbackGasLimit,
+      numWords: result6.numWords,
+      sender: result6.sender,
+      extraArgs: result6.extraArgs,
     },
     // onlyPremium
     false,
     { gasLimit: 800000 },
   );
-  await tx8.wait();
+  await tx10.wait();
 
-  const eventFilter6 = nftInstance.filters.Transfer();
-  const events6 = await nftInstance.queryFilter(eventFilter6, blockNum);
-  const result6 = recursivelyDecodeResult(events6[0].args as unknown as Result);
-  console.info("Transfer", result6);
+  const eventFilter7 = nftInstance.filters.Transfer();
+  const events7 = await nftInstance.queryFilter(eventFilter7, blockNum);
+  const result7 = recursivelyDecodeResult(events7[0].args as unknown as Result);
+  console.info("Transfer", result7);
 
   return "OK";
 }
