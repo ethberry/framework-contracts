@@ -20,7 +20,7 @@ async function main() {
   // validate deployment
   const linkAddress = await linkInstance.getAddress();
   console.info(`LINK_ADDR=${linkAddress}`);
-  if (linkAddress.toLowerCase() !== LinkTokenAddress[chainIdToSuffix(chainId) as keyof typeof LinkTokenAddress]) {
+  if (linkAddress.toLowerCase() !== LinkTokenAddress[chainIdToSuffix(chainId) as keyof typeof LinkTokenAddress] as string) {
     console.info("LINK_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -32,7 +32,7 @@ async function main() {
   // validate deployment
   const vrfAddress = await vrfInstance.getAddress();
   console.info(`VRF_ADDR=${vrfAddress}`);
-  if (vrfAddress.toLowerCase() !== VrfCoordinatorV2PlusAddress[chainIdToSuffix(chainId) as keyof typeof VrfCoordinatorV2PlusAddress]) {
+  if (vrfAddress.toLowerCase() !== VrfCoordinatorV2PlusAddress[chainIdToSuffix(chainId) as keyof typeof VrfCoordinatorV2PlusAddress] as string) {
     console.info("VRF_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -73,7 +73,8 @@ async function main() {
   const result2 = recursivelyDecodeResult(events2[0].args as unknown as Result);
   console.info("SubscriptionFunded", result2);
 
-  const contractFactory = await ethers.getContractFactory(getContractName("ERC721Random", name));
+  const contractName = getContractName("ERC721Random", name) as "ERC721RandomEthberry";
+  const contractFactory = await ethers.getContractFactory(contractName);
   const contractInstance = await contractFactory.deploy("NFT", "EBT721", royalty, baseTokenURI);
   const address = await contractInstance.getAddress();
   console.info(`ERC721 deployed to ${address}`);
