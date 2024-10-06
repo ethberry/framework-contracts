@@ -34,7 +34,8 @@ async function main() {
     },
   );
 
-  console.info("CONTRACT_MANAGER_ADDR", contractManagerInstance.target);
+  const contractManagerAddress = await contractManagerInstance.getAddress();
+  console.info(`CONTRACT_MANAGER_ADDR=${contractManagerAddress}`);
 
   // DIAMOND EXCHANGE
   const exchangeInstance = await deployDiamond(
@@ -64,10 +65,11 @@ async function main() {
     },
   );
 
-  console.info("EXCHANGE_ADDR", exchangeInstance.target);
+  const exchangeAddress = await exchangeInstance.getAddress();
+  console.info(`EXCHANGE_ADDR=${exchangeAddress}`);
 
-  const useFactoryInstance = await ethers.getContractAt("UseFactoryFacet", contractManagerInstance.target);
-  const tx = await useFactoryInstance.addFactory(exchangeInstance.target, MINTER_ROLE);
+  const useFactoryInstance = await ethers.getContractAt("UseFactoryFacet", contractManagerAddress);
+  const tx = await useFactoryInstance.addFactory(exchangeAddress, MINTER_ROLE);
   await tx.wait();
 
   return "OK";

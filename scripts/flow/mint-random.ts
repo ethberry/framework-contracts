@@ -3,12 +3,14 @@ import { Result, toBeHex, WeiPerEther, zeroPadValue, ZeroAddress } from "ethers"
 
 import { baseTokenURI, royalty } from "@ethberry/contracts-constants";
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
+import { VrfCoordinatorV2PlusAddress, LinkTokenAddress } from "@framework/types";
 
-import { getContractName } from "../../test/utils";
+import { getContractName, chainIdToSuffix } from "../../test/utils";
 
 // ChainLink V2Plus
 async function main() {
   const [owner] = await ethers.getSigners();
+  const { name, chainId } = await ethers.provider.getNetwork();
 
   // Deploy LINK token
   const linkFactory = await ethers.getContractFactory("LinkToken");
@@ -18,7 +20,7 @@ async function main() {
   // validate deployment
   const linkAddress = await linkInstance.getAddress();
   console.info(`LINK_ADDR=${linkAddress}`);
-  if (linkAddress.toLowerCase() !== "0x42699a7612a82f1d9c36148af9c77354759b210b") {
+  if (linkAddress.toLowerCase() !== LinkTokenAddress[chainIdToSuffix(chainId) as keyof typeof LinkTokenAddress]) {
     console.info("LINK_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -30,7 +32,7 @@ async function main() {
   // validate deployment
   const vrfAddress = await vrfInstance.getAddress();
   console.info(`VRF_ADDR=${vrfAddress}`);
-  if (vrfAddress.toLowerCase() !== "0xa50a51c09a5c451c52bb714527e1974b686d8e77") {
+  if (vrfAddress.toLowerCase() !== VrfCoordinatorV2PlusAddress[chainIdToSuffix(chainId) as keyof typeof VrfCoordinatorV2PlusAddress]) {
     console.info("VRF_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -70,8 +72,6 @@ async function main() {
   const events2 = await vrfInstance.queryFilter(eventFilter2);
   const result2 = recursivelyDecodeResult(events2[0].args as unknown as Result);
   console.info("SubscriptionFunded", result2);
-
-  const { name } = await ethers.provider.getNetwork();
 
   const contractFactory = await ethers.getContractFactory(getContractName("ERC721Random", name));
   const contractInstance = await contractFactory.deploy("NFT", "EBT721", royalty, baseTokenURI);
@@ -129,7 +129,6 @@ async function main() {
     false,
     { gasLimit: 800000 },
   );
-
   await tx8.wait();
 
   const eventFilter6 = contractInstance.filters.Transfer();
