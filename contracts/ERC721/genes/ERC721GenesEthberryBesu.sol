@@ -10,12 +10,12 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkGemunionBesuV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkGemunionBesuV2Plus.sol";
+import { ChainLinkEthberryBesuV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkEthberryBesuV2Plus.sol";
 import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC721Genes } from "../ERC721Genes.sol";
 
-contract ERC721GenesEthberryBesu is ERC721Genes, ChainLinkGemunionBesuV2Plus {
+contract ERC721GenesEthberryBesu is ERC721Genes, ChainLinkEthberryBesuV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,7 +23,7 @@ contract ERC721GenesEthberryBesu is ERC721Genes, ChainLinkGemunionBesuV2Plus {
     string memory baseTokenURI
   )
     ERC721Genes(name, symbol, royalty, baseTokenURI)
-    ChainLinkGemunionBesuV2Plus(uint16(6), uint32(600000), uint32(1))
+    ChainLinkEthberryBesuV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC721Genes) returns (uint256 requestId) {

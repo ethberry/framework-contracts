@@ -88,7 +88,6 @@
     "docker:up:besu": "docker compose up -d besu explorer",
     "flatten": "sh ./scripts/flatten.sh",
     "lint": "eslint . --fix",
-    "prebuild": "hardhat clean",
     "precommit": "lint-staged",
     "prepare": "husky",
     "prepare:contracts:besu": "hardhat --network besu run ./scripts/deploy-dev.ts",

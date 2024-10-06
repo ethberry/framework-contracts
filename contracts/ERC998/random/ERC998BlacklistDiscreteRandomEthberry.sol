@@ -10,12 +10,12 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkGemunionV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkGemunionV2Plus.sol";
+import { ChainLinkEthberryV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkEthberryV2Plus.sol";
 import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { ERC998BlacklistDiscreteRandom } from "../ERC998BlacklistDiscreteRandom.sol";
 
-contract ERC998BlacklistDiscreteRandomEthberry is ERC998BlacklistDiscreteRandom, ChainLinkGemunionV2Plus {
+contract ERC998BlacklistDiscreteRandomEthberry is ERC998BlacklistDiscreteRandom, ChainLinkEthberryV2Plus {
   constructor(
     string memory name,
     string memory symbol,
@@ -23,7 +23,7 @@ contract ERC998BlacklistDiscreteRandomEthberry is ERC998BlacklistDiscreteRandom,
     string memory baseTokenURI
   )
     ERC998BlacklistDiscreteRandom(name, symbol, royalty, baseTokenURI)
-    ChainLinkGemunionV2Plus(uint16(6), uint32(600000), uint32(1))
+    ChainLinkEthberryV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
   function getRandomNumber()
     internal

@@ -126,8 +126,10 @@ async function main() {
       extraArgs: result5.extraArgs,
     },
     // onlyPremium
-    false
+    false,
+    { gasLimit: 800000 },
   );
+
   await tx8.wait();
 
   const eventFilter6 = contractInstance.filters.Transfer();
