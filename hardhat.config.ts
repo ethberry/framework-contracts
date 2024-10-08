@@ -18,7 +18,6 @@ export default {
       blockGasLimit: 40966424, // default: 3e7
       gas: "auto",
     },
-    // do not change!!!
     ethberry_besu: {
       url: process.env.JSON_RPC_ADDR_ETHBERRY_BESU,
       timeout: 142000,
@@ -39,7 +38,6 @@ export default {
       gasPrice: 20000000000,
       accounts: [process.env.PRIVATE_KEY],
     },
-    // has to have underscore
     binance_test: {
       url: process.env.JSON_RPC_ADDR_BINANCE_TEST,
       chainId: 97,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 // Author: TrejGun
-// Email: trejgun+gemunion@gmail.com
+// Email: trejgun@gmail.com
 // Website: https://ethberry.io/
 
 pragma solidity ^0.8.20;

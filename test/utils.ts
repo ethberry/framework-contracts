@@ -2,6 +2,7 @@ import { snakeToCamelCase } from "@ethberry/utils";
 import { AbiCoder, concat, id, keccak256, Provider, toBeArray, toBeHex, zeroPadValue } from "ethers";
 
 import { patchBigInt } from "@ethberry/utils-eth";
+import { Networks } from "@ethberry/types-blockchain";
 
 patchBigInt();
 
@@ -105,4 +106,8 @@ export const saltToHex = (salt: string | number) => id(salt.toString());
 export const isContract = async (address: string, provider: Provider) => {
   const code = await provider.getCode(address);
   return code.slice(2).length > 0;
+};
+
+export const chainIdToSuffix = (chainId: string | bigint | number) => {
+  return Object.keys(Networks)[Object.values(Networks).indexOf(Number(chainId))];
 };

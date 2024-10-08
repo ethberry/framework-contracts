@@ -13,7 +13,6 @@ import { VRFCoordinatorV2PlusMock } from "@ethberry/contracts-chain-link-v2-plus
 import { ERC998ERC721ABERS } from "@ethberry/contracts-erc998td/contracts/preset/ERC998ERC721ABERS.sol";
 import { ERC721ABEC } from "@ethberry/contracts-erc721e/contracts/preset/ERC721ABEC.sol";
 import { ERC20ABC } from "@ethberry/contracts-erc20/contracts/preset/ERC20ABC.sol";
-import { PaymentSplitter } from "@ethberry/contracts-finance/contracts/PaymentSplitter.sol";
 
 import { ERC20Mock } from "@ethberry/contracts-mocks/contracts/ERC20Mock.sol";
 import { ERC721Mock } from "@ethberry/contracts-mocks/contracts/ERC721Mock.sol";

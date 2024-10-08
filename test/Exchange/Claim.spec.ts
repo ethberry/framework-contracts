@@ -5,7 +5,7 @@ import { Contract, encodeBytes32String, toBeHex, ZeroAddress, ZeroHash, zeroPadV
 
 import { amount, MINTER_ROLE, nonce } from "@ethberry/contracts-constants";
 
-import { VRFCoordinatorV2PlusMock } from "../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { expiresAt, externalId, extra, params, templateId, tokenId } from "../constants";
 import {
   deployDiamond,

@@ -31,7 +31,6 @@ export enum ContractEventSignatures {
   TransferSingle = "TransferSingle(address,address,address,uint256,uint256)",
   URI = "URI(string,uint256)",
   Merge = "Merge(address,uint256,(uint8,address,uint256,uint256)[],(uint8,address,uint256,uint256)[])",
-  RoundFinalizedRaffle = "RoundFinalized(uint256,uint256,uint256)",
   RoundFinalized = "RoundFinalized(uint256,uint8[6])",
   RoundStarted = "RoundStarted(uint256,uint256,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256))",
   RoundEnded = "RoundEnded(uint256,uint256)",

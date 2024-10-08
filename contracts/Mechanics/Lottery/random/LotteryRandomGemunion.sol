@@ -10,16 +10,16 @@ import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol"
 
 import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
 
-import { ChainLinkGemunionV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkGemunionV2Plus.sol";
+import { ChainLinkEthberryV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkEthberryV2Plus.sol";
 import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
-contract LotteryRandomGemunion is LotteryRandom, ChainLinkGemunionV2Plus {
+contract LotteryRandomGemunion is LotteryRandom, ChainLinkEthberryV2Plus {
   constructor(
     LotteryConfig memory config
-  ) LotteryRandom(config) ChainLinkGemunionV2Plus(uint16(6), uint32(600000), uint32(1)) {}
+  ) LotteryRandom(config) ChainLinkEthberryV2Plus(uint16(6), uint32(600000), uint32(1)) {}
 
   function getRandomNumber() internal override(LotteryRandom, ChainLinkBaseV2Plus) returns (uint256 requestId) {
     return super.getRandomNumber();
