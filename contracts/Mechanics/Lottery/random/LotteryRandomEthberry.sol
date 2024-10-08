@@ -16,7 +16,7 @@ import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/cont
 import { LotteryRandom } from "../LotteryRandom.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
-contract LotteryRandomGemunion is LotteryRandom, ChainLinkEthberryV2Plus {
+contract LotteryRandomEthberry is LotteryRandom, ChainLinkEthberryV2Plus {
   constructor(
     LotteryConfig memory config
   ) LotteryRandom(config) ChainLinkEthberryV2Plus(uint16(6), uint32(600000), uint32(1)) {}

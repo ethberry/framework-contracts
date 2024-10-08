@@ -17,4 +17,5 @@ interface ILotteryErrors {
   error LotteryWrongToken();
   error LotteryBalanceExceed();
   error LotteryZeroBalance();
+  error WrongAsset();
 }

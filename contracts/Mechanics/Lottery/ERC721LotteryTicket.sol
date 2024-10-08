@@ -7,7 +7,7 @@
 pragma solidity ^0.8.20;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { ERC721Burnable, ERC721 } from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import { ERC721Burnable, ERC721 } from  "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 import { ERC721ABaseUrl } from "@ethberry/contracts-erc721/contracts/extensions/ERC721ABaseUrl.sol";

@@ -16,7 +16,7 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { NativeReceiver, CoinHolder } from "@ethberry/contracts-finance/contracts/Holder.sol";
 import { MINTER_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
-import { Asset, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { Asset, TokenType, AllowedTokenTypes } from "../../Exchange/lib/interfaces/IAsset.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ILottery } from "./interfaces/ILottery.sol";
 import { IERC721LotteryTicket, TicketLottery } from "./interfaces/IERC721LotteryTicket.sol";
@@ -99,6 +99,10 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
 
   // ROUND
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    if (ticket.tokenType != TokenType.ERC721) {
+      revert WrongAsset();
+    }
+
     Round memory prevRound = _rounds[_rounds.length - 1];
     if (prevRound.endTimestamp == 0) {
       revert LotteryRoundNotComplete();
@@ -115,6 +119,7 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
     currentRound.maxTicket = maxTicket;
     currentRound.ticketAsset = ticket;
     currentRound.acceptedAsset = price;
+    currentRound.endTimestamp = 0;
 
     emit RoundStarted(roundId, block.timestamp, maxTicket, ticket, price);
   }
@@ -122,11 +127,6 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
   function endRound() external onlyRole(DEFAULT_ADMIN_ROLE) {
     uint256 roundNumber = _rounds.length - 1;
     Round storage currentRound = _rounds[roundNumber];
-
-    // TODO should never happen?
-    if (currentRound.roundId != roundNumber) {
-      revert LotteryWrongRound();
-    }
 
     if (currentRound.endTimestamp != 0) {
       revert LotteryRoundNotActive();
@@ -365,9 +365,7 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(
-    bytes4 interfaceId
-  ) public view virtual override(AccessControl, CoinHolder) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }
