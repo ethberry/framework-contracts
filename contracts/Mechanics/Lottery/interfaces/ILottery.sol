@@ -32,6 +32,7 @@ interface ILottery is ILotteryErrors {
   function printTicket(
     uint256 externalId,
     address account,
-    bytes32 numbers
-  ) external returns (uint256 tokenId, uint256 roundId);
+    bytes32 numbers,
+    Asset memory price
+  ) external payable returns (uint256 tokenId, uint256 roundId);
 }

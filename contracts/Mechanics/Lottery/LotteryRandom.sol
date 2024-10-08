@@ -75,8 +75,9 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
   function printTicket(
     uint256 externalId,
     address account,
-    bytes32 numbers
-  ) external onlyRole(MINTER_ROLE) whenNotPaused returns (uint256 tokenId, uint256 roundId) {
+    bytes32 numbers,
+    Asset memory price
+  ) external payable onlyRole(MINTER_ROLE) whenNotPaused returns (uint256 tokenId, uint256 roundId) {
     // get current round
     roundId = _rounds.length - 1;
     Round storage currentRound = _rounds[roundId];
@@ -93,6 +94,13 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
 
     currentRound.balance += currentRound.acceptedAsset.amount;
     currentRound.total += currentRound.acceptedAsset.amount;
+
+    ExchangeUtils.spendFrom(
+      ExchangeUtils._toArray(price),
+      _msgSender(),
+      address(this),
+      AllowedTokenTypes(true, true, false, false, false)
+    );
 
     tokenId = IERC721LotteryTicket(currentRound.ticketAsset.token).mintTicket(account, roundId, externalId, numbers);
   }
@@ -263,6 +271,7 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
       uint256 amount = point * coefficient[result];
 
       if (amount > 0) {
+
         if (amount > ticketRound.total) {
           revert LotteryBalanceExceed();
         }
@@ -305,6 +314,7 @@ abstract contract LotteryRandom is ILottery, AccessControl, Pausable, CoinHolder
       hasWinners = aggregation[l] > 0;
     }
 
+    // TODO can be called on unfinished round
     if (hasWinners && block.timestamp < ticketRound.endTimestamp + _timeLag) {
       revert LotteryRoundNotComplete();
     }

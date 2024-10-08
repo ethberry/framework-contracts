@@ -1,14 +1,16 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-import { Contract, encodeBytes32String, ZeroAddress, ZeroHash } from "ethers";
+import { Contract, encodeBytes32String, ZeroAddress, ZeroHash, toBeHex } from "ethers";
 
+import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
 
-import { expiresAt, externalId, extra, params } from "../constants";
-import { getContractName, isEqualEventArgObj } from "../utils";
+import { expiresAt, externalId, extra, params, tokenId } from "../constants";
+import { getBytesNumbersArr, getContractName, getNumbersBytes, isEqualEventArgObj } from "../utils";
 import { deployERC20 } from "../ERC20/shared/fixtures";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { deployDiamond, wrapOneToOneSignature } from "./shared";
+import { decodeMetadata } from "../shared/metadata";
 
 describe("Diamond Exchange Lottery", function () {
   const factory = async (facetName = "ExchangeLotteryFacet"): Promise<any> => {
@@ -42,7 +44,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -63,10 +65,13 @@ describe("Diamond Exchange Lottery", function () {
       );
 
       await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance.target);
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
+
+      const values = [1, 2, 3, 4, 5, 6];
+      const ticketNumbers = getNumbersBytes(values);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -74,7 +79,7 @@ describe("Diamond Exchange Lottery", function () {
           externalId,
           expiresAt,
           nonce: encodeBytes32String("nonce"),
-          extra,
+          extra: ticketNumbers,
           receiver: await lotteryInstance.getAddress(),
           referrer: ZeroAddress,
         },
@@ -97,7 +102,7 @@ describe("Diamond Exchange Lottery", function () {
           externalId,
           expiresAt,
           nonce: encodeBytes32String("nonce"),
-          extra,
+          extra: ticketNumbers,
           receiver: lotteryInstance,
           referrer: ZeroAddress,
         },
@@ -115,9 +120,6 @@ describe("Diamond Exchange Lottery", function () {
         },
         signature,
       );
-
-      // PurchaseLottery(address account, uint256 externalId, Asset[] items, Asset price, uint256 roundId, bytes32 numbers);
-      // PurchaseLottery(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, bytes32 numbers);
 
       await expect(tx1)
         .to.emit(exchangeInstance, "PurchaseLottery")
@@ -137,132 +139,18 @@ describe("Diamond Exchange Lottery", function () {
             amount: amount * 1n,
           }),
           1n,
-          params.extra,
+          ticketNumbers,
         );
 
       const balance = await erc20Instance.balanceOf(lotteryInstance);
       expect(balance).to.equal(amount * 1n);
-    });
 
-    it("should fail: ETHInvalidReceiver", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
-
-      const exchangeInstance = await factory();
-      const generateSignature = await getSignatures(exchangeInstance);
-
-      const signature = await generateSignature({
-        account: receiver.address,
-        params: {
-          externalId,
-          expiresAt,
-          nonce: encodeBytes32String("nonce"),
-          extra,
-          receiver: ZeroAddress,
-          referrer: ZeroAddress,
-        },
-        item: {
-          tokenType: 2n,
-          token: ZeroAddress,
-          tokenId: 0,
-          amount: 1,
-        },
-        price: {
-          tokenType: 0n,
-          token: ZeroAddress,
-          tokenId: 121n,
-          amount,
-        },
-      });
-
-      const tx1 = exchangeInstance.connect(receiver).purchaseLottery(
-        {
-          externalId,
-          expiresAt,
-          nonce: encodeBytes32String("nonce"),
-          extra,
-          receiver: ZeroAddress,
-          referrer: ZeroAddress,
-        },
-        {
-          tokenType: 2n,
-          token: ZeroAddress,
-          tokenId: 0,
-          amount: 1,
-        },
-        {
-          tokenType: 0n,
-          token: ZeroAddress,
-          tokenId: 121n,
-          amount,
-        },
-        signature,
-        {
-          value: amount,
-        },
-      );
-
-      await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "ETHInvalidReceiver");
-    });
-
-    it("should fail: ERC20InvalidReceiver", async function () {
-      const [_owner, receiver] = await ethers.getSigners();
-
-      const exchangeInstance = await factory();
-      const generateSignature = await getSignatures(exchangeInstance);
-
-      const erc20Instance = await deployERC20();
-      await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
-
-      const signature = await generateSignature({
-        account: receiver.address,
-        params: {
-          externalId,
-          expiresAt,
-          nonce: encodeBytes32String("nonce"),
-          extra,
-          receiver: ZeroAddress,
-          referrer: ZeroAddress,
-        },
-        item: {
-          tokenType: 2n,
-          token: ZeroAddress,
-          tokenId: 0,
-          amount: 1,
-        },
-        price: {
-          tokenType: 1n,
-          token: await erc20Instance.getAddress(),
-          tokenId: 121n,
-          amount,
-        },
-      });
-
-      const tx1 = exchangeInstance.connect(receiver).purchaseLottery(
-        {
-          externalId,
-          expiresAt,
-          nonce: encodeBytes32String("nonce"),
-          extra,
-          receiver: ZeroAddress,
-          referrer: ZeroAddress,
-        },
-        {
-          tokenType: 2n,
-          token: ZeroAddress,
-          tokenId: 0,
-          amount: 1,
-        },
-        {
-          tokenType: 1n,
-          token: erc20Instance,
-          tokenId: 121n,
-          amount,
-        },
-        signature,
-      );
-
-      await expect(tx1).to.be.revertedWithCustomError(erc20Instance, "ERC20InvalidReceiver");
+      // TEST METADATA
+      const metadata = recursivelyDecodeResult(await erc721TicketInstance.getTokenMetadata(tokenId));
+      const decodedMeta = decodeMetadata(metadata as any[]);
+      expect(decodedMeta.ROUND).to.equal(1n);
+      expect(toBeHex(decodedMeta.NUMBERS, 32)).to.equal(ticketNumbers);
+      expect(getBytesNumbersArr(decodedMeta.NUMBERS)).to.have.all.members(values);
     });
 
     it("should fail: wrong signer", async function () {
@@ -276,7 +164,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -297,10 +185,10 @@ describe("Diamond Exchange Lottery", function () {
       );
 
       await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
       await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance);
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -363,7 +251,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -422,7 +310,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -443,10 +331,10 @@ describe("Diamond Exchange Lottery", function () {
       );
 
       await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance.target);
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -553,7 +441,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -574,10 +462,10 @@ describe("Diamond Exchange Lottery", function () {
       );
 
       await erc20Instance.mint(receiver, amount);
-      // await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      // await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance.target);
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -642,7 +530,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -662,10 +550,10 @@ describe("Diamond Exchange Lottery", function () {
         0, // maxTicket count
       );
 
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance.target);
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -732,7 +620,7 @@ describe("Diamond Exchange Lottery", function () {
       const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
 
       const lotteryConfig = {
-        timeLagBeforeRelease: 2592, // production: release after 2592000 seconds = 30 days
+        timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
         commission: 30, // lottery wallet gets 30% commission from each round balance
       };
       const lotteryInstance: any = await lotteryFactory.deploy(lotteryConfig);
@@ -753,10 +641,10 @@ describe("Diamond Exchange Lottery", function () {
       );
 
       await erc20Instance.mint(receiver, amount);
-      await erc20Instance.connect(receiver).approve(await exchangeInstance.getAddress(), amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance.target, amount);
 
-      await lotteryInstance.grantRole(MINTER_ROLE, await exchangeInstance.getAddress());
-      await erc721TicketInstance.grantRole(MINTER_ROLE, await lotteryInstance.getAddress());
+      await lotteryInstance.grantRole(MINTER_ROLE, exchangeInstance.target);
+      await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance.target);
 
       const signature = await generateSignature({
         account: receiver.address,

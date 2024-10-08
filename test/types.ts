@@ -17,3 +17,10 @@ export enum GenesTokenMetadata {
   PREGNANCY_COUNTER = "PREGNANCY_COUNTER",
 }
 
+export enum TokenType {
+  NATIVE = "0",
+  ERC20 = "1",
+  ERC721 = "2",
+  ERC998 = "3",
+  ERC1155 = "4"
+}

@@ -6,7 +6,10 @@
 
 pragma solidity ^0.8.20;
 
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
+import { CoinHolder, NativeReceiver, NativeRejector } from "@ethberry/contracts-finance/contracts/Holder.sol";
 
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -15,7 +18,7 @@ import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
-contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {
+contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral, CoinHolder, NativeReceiver {
   event PurchaseLottery(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, bytes32 numbers);
 
   constructor() SignatureValidator() {}
@@ -36,16 +39,19 @@ contract ExchangeLotteryFacet is SignatureValidator, DiamondOverride, Referral {
     Asset[] memory _price = ExchangeUtils._toArray(price);
 
     ExchangeUtils.spendFrom(
-      _price,
+      ExchangeUtils._toArray(price),
       _msgSender(),
-      params.receiver, // LOTTERY CONTRACT
-      AllowedTokenTypes(true, true, false, false, true)
+      address(this),
+      AllowedTokenTypes(true, true, false, false, false)
     );
+
+    IERC20(price.token).approve(params.receiver, price.amount);
 
     (uint256 tokenId, uint256 roundId) = ILottery(params.receiver).printTicket(
       params.externalId,
       _msgSender(),
-      params.extra // selected numbers
+      params.extra, // selected numbers
+      price
     );
 
     // set tokenID = ticketID
