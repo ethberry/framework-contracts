@@ -5,7 +5,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
-import { LinkToken, VRFCoordinatorV2PlusMock } from "../../../../contracts/core";
+import { LinkToken, VRFCoordinatorV2PlusMock } from "../../../../typechain-types";
 import { deployLinkVrfFixture } from "../../../shared/link";
 import { templateId, tokenAttributes, tokenId } from "../../../constants";
 import { randomRequest } from "../../../shared/randomRequest";
@@ -19,7 +19,6 @@ export function shouldMintRandomGenes(factory: () => Promise<any>) {
     before(async function () {
       await network.provider.send("hardhat_reset");
 
-      // https://github.com/NomicFoundation/hardhat/issues/2980
       ({ linkInstance, vrfInstance, subId } = await loadFixture(function shouldMintRandom() {
         return deployLinkVrfFixture();
       }));

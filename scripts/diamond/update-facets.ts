@@ -27,7 +27,7 @@ async function main() {
     cmAddr,
     [
       "VestingFactoryFacet",
-      // "ExchangeBreedFacet",
+      // "ExchangeGenesFacet",
       // "ExchangeClaimFacet",
       // "ExchangeCraftFacet",
       // "ExchangeDismantleFacet",

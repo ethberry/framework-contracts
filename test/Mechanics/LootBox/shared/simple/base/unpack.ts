@@ -7,7 +7,7 @@ import { amount, MINTER_ROLE } from "@ethberry/contracts-constants";
 import { deployERC1363Mock, deployERC20Mock } from "@ethberry/contracts-mocks";
 import { deployContract } from "@ethberry/contracts-utils";
 
-import { VRFCoordinatorV2PlusMock } from "../../../../../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../../../../../typechain-types";
 import { templateId, tokenId } from "../../../../../constants";
 import { randomRequest } from "../../../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../../../shared/link";

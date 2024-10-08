@@ -1,5 +1,16 @@
 import { snakeToCamelCase } from "@ethberry/utils";
-import { AbiCoder, concat, id, keccak256, Provider, toBeArray, toBeHex, zeroPadValue } from "ethers";
+import {
+  AbiCoder,
+  concat,
+  id,
+  keccak256,
+  Provider,
+  toBeArray,
+  toBeHex,
+  zeroPadValue,
+  hexlify,
+  randomBytes
+} from "ethers";
 
 import { patchBigInt } from "@ethberry/utils-eth";
 import { Networks } from "@ethberry/types-blockchain";
@@ -110,4 +121,43 @@ export const isContract = async (address: string, provider: Provider) => {
 
 export const chainIdToSuffix = (chainId: string | bigint | number) => {
   return Object.keys(Networks)[Object.values(Networks).indexOf(Number(chainId))];
+};
+
+
+export const decodeNumber = (encoded: bigint) => {
+  const genes = {
+    baseColor: encoded >> 176n,
+    highlightColor: (encoded >> 160n) & 0xffffn,
+    accentColor: (encoded >> 144n) & 0xffffn,
+    mouth: (encoded >> 128n) & 0xffffn,
+    fur: (encoded >> 112n) & 0xffffn,
+    pattern: (encoded >> 95n) & 0xffffn,
+    eyeShape: (encoded >> 80n) & 0xffffn,
+    eyeColor: (encoded >> 64n) & 0xffffn,
+    wild: (encoded >> 48n) & 0xffffn,
+    environment: (encoded >> 32n) & 0xffffn,
+    secret: (encoded >> 16n) & 0xffffn,
+    purrstige: (encoded >> 0n) & 0xffffn
+  };
+  return genes;
+};
+
+export const mixGenes = (motherGenes: bigint, fatherGenes: bigint, randomWord: bigint): bigint => {
+  let childGenes = 0n;
+  let mask = 1n;
+
+  for (let i = 0; i < 256; i++) {
+    if ((randomWord & mask) === 0n) {
+      childGenes |= motherGenes & mask;
+    } else {
+      childGenes |= fatherGenes & mask;
+    }
+    mask <<= 1n;
+  }
+
+  return childGenes;
+};
+
+export const generateRandomGenes = () => {
+  return BigInt("0x" + hexlify(randomBytes(32)).slice(2));
 };

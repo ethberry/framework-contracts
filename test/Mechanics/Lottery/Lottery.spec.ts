@@ -21,7 +21,7 @@ import { delay } from "@ethberry/utils";
 
 import { expiresAt, externalId, extra, params, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
-import { VRFCoordinatorV2PlusMock } from "../../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployLottery } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";

@@ -7,7 +7,7 @@
 pragma solidity ^0.8.0;
 
 interface IGenesErrors {
-  error GenesPregnancyCountLimitExceed();
-  error GenesPregnancyTimeLimitExceed();
-  error GenesNotOwnerNorApproved(address account);
+  error PregnancyThresholdExceeded(uint256 counter, uint256 max);
+  error PregnancyFrequencyExceeded(uint256 current, uint256 limit);
+  error GenesDifferentContracts();
 }

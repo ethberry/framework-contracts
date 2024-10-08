@@ -12,7 +12,7 @@ import { delay } from "@ethberry/utils";
 
 import { expiresAt, extra, tokenId } from "../../constants";
 import { deployLinkVrfFixture } from "../../shared/link";
-import { IERC721Random, VRFCoordinatorV2PlusMock } from "../../../contracts/core";
+import { IERC721Random, VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { randomRequest } from "../../shared/randomRequest";
 import { deployRaffle } from "./fixture";
 import { deployDiamond, wrapOneToOneSignature } from "../../Exchange/shared";

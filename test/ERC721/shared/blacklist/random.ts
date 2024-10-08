@@ -4,7 +4,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { templateId } from "../../../constants";
 import { deployLinkVrfFixture } from "../../../shared/link";
-import { VRFCoordinatorV2PlusMock } from "../../../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../../../typechain-types";
 import { randomRequest } from "../../../shared/randomRequest";
 
 export function shouldBehaveLikeERC721BlacklistRandom(factory: () => Promise<any>) {

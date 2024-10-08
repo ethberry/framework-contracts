@@ -51,10 +51,6 @@ describe("Diamond Exchange Claim", function () {
     }));
   });
 
-  after(async function () {
-    await network.provider.send("hardhat_reset");
-  });
-
   describe("claim", function () {
     describe("ERC721", function () {
       it("should claim (Simple)", async function () {

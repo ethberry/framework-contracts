@@ -111,7 +111,7 @@ async function main() {
   const exchangeInstance = await deployDiamond(
     "DiamondExchange",
     [
-      "ExchangeBreedFacet",
+      "ExchangeGenesFacet",
       "ExchangeClaimFacet",
       "ExchangeCraftFacet",
       "ExchangeDismantleFacet",

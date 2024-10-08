@@ -16,7 +16,7 @@ import {
   TEMPLATE_ID,
 } from "@ethberry/contracts-constants";
 
-import { VRFCoordinatorV2PlusMock } from "../../../contracts/core";
+import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { expiresAt, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
 import { IStakingRule } from "./interface/staking";
 import { randomRequest } from "../../shared/randomRequest";
@@ -121,10 +121,6 @@ describe("Staking", function () {
     ({ vrfInstance, subId } = await loadFixture(function staking() {
       return deployLinkVrfFixture();
     }));
-  });
-
-  after(async function () {
-    await network.provider.send("hardhat_reset");
   });
 
   describe("setRule", function () {

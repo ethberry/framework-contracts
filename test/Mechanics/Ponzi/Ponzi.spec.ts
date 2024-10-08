@@ -1320,7 +1320,7 @@ describe("Ponzi", function () {
       await expect(tx).to.emit(ponziInstance, "RuleCreatedP");
 
       // STAKE 1-1
-      const tx11 = ponziInstance.connect(owner).deposit(receiver.address, 1, {
+      const tx11 = ponziInstance.deposit(receiver.address, 1, {
         value: stakeRule1.deposit.amount,
       });
       await expect(tx11).to.emit(ponziInstance, "PonziStart");

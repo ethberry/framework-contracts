@@ -21,7 +21,7 @@ contract ERC721GenesHardhat is ERC721Genes, ChainLinkHardhatV2Plus {
     string memory symbol,
     uint96 royalty,
     string memory baseTokenURI
-  ) ERC721Genes(name, symbol, royalty, baseTokenURI) ChainLinkHardhatV2Plus(uint16(6), uint32(600000), uint32(1)) {}
+  ) ERC721Genes(name, symbol, royalty, baseTokenURI) ChainLinkHardhatV2Plus(uint16(6), uint32(1000000), uint32(1)) {}
 
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC721Genes) returns (uint256 requestId) {
     return super.getRandomNumber();

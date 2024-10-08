@@ -26,7 +26,7 @@ describe("PaymentSplitterDiamoond", function () {
     it("should deploy contract", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("GemunionSplitter");
+      const { bytecode } = await ethers.getContractFactory("SplitterWallet");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -107,7 +107,7 @@ describe("PaymentSplitterDiamoond", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("GemunionSplitter");
+      const { bytecode } = await ethers.getContractFactory("SplitterWallet");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
