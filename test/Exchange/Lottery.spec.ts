@@ -41,7 +41,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -161,7 +161,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -248,7 +248,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -307,7 +307,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -438,7 +438,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -527,7 +527,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days
@@ -617,7 +617,7 @@ describe("Diamond Exchange Lottery", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
-      const lotteryFactory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const lotteryFactory = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const lotteryConfig = {
         timeLagBeforeRelease: 2592000, // production: release after 2592000 seconds = 30 days

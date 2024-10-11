@@ -17,11 +17,11 @@ contract Referral is Context {
     referralEvent(referrer, price);
   }
 
-  function referralEvent(address initReferrer, Asset[] memory price) internal {
-    if (initReferrer == address(0) || initReferrer == _msgSender()) {
+  function referralEvent(address referrer, Asset[] memory price) internal {
+    if (referrer == address(0) || referrer == _msgSender()) {
       return;
     }
 
-    emit ReferralEvent(_msgSender(), initReferrer, price);
+    emit ReferralEvent(_msgSender(), referrer, price);
   }
 }

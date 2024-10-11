@@ -115,7 +115,7 @@ async function main() {
       "ExchangeClaimFacet",
       "ExchangeCraftFacet",
       "ExchangeDismantleFacet",
-      "ExchangeGradeFacet",
+      "ExchangeDiscreteFacet",
       "ExchangeLootBoxFacet",
       "ExchangeLotteryFacet",
       "ExchangeMergeFacet",
@@ -607,7 +607,7 @@ async function main() {
   );
   await debug(contracts);
 
-  const randomContractLotteryName = getContractName("LotteryRandom", network.name);
+  const randomContractLotteryName = getContractName("Lottery", network.name);
   const lotteryFactory = await ethers.getContractFactory(randomContractLotteryName);
   contracts.lottery = await lotteryFactory.deploy({
     timeLagBeforeRelease: 3600,
@@ -632,7 +632,7 @@ async function main() {
   );
   await debug(contracts);
 
-  const randomContractRaffleName = getContractName("RaffleRandom", network.name);
+  const randomContractRaffleName = getContractName("Raffle", network.name);
   const raffleFactory = await ethers.getContractFactory(randomContractRaffleName);
   contracts.raffle = await raffleFactory.deploy();
   await debug(contracts);
@@ -708,7 +708,7 @@ async function main() {
   contracts.dispenser = await dispenserFactory.deploy();
   await debug(contracts);
 
-  const paymentSplitterFactory = await ethers.getContractFactory("GemunionSplitter");
+  const paymentSplitterFactory = await ethers.getContractFactory("SplitterWallet");
   contracts.paymentSplitter = await paymentSplitterFactory.deploy([owner.address], [100]);
   await debug(contracts);
 

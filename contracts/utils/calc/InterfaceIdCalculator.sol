@@ -9,9 +9,9 @@ pragma solidity ^0.8.20;
 import "hardhat/console.sol";
 
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
-import { IERC721Discrete } from "../../ERC721/interfaces/IERC721Discrete.sol";
-import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
-import { IERC721Genes } from "../../ERC721/interfaces/IERC721Genes.sol";
+import { IERC721Discrete } from "../../Mechanics/Discrete/interfaces/IERC721Discrete.sol";
+import { IERC721Random } from "../../Mechanics/Random/interfaces/IERC721Random.sol";
+import { IERC721Genes } from "../../Mechanics/Genes/interfaces/IERC721Genes.sol";
 
 import { IERC721MysteryBox } from "../../Mechanics/MysteryBox/interfaces/IERC721MysteryBox.sol";
 import { IERC721LootBox } from "../../Mechanics/LootBox/interfaces/IERC721LootBox.sol";

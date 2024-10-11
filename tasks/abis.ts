@@ -34,8 +34,8 @@ export enum ContractEventSignatures {
   RoundFinalized = "RoundFinalized(uint256,uint8[6])",
   RoundStarted = "RoundStarted(uint256,uint256,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256))",
   RoundEnded = "RoundEnded(uint256,uint256)",
-  PurchaseLottery = "PurchaseLottery(address,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256),uint256,bytes32)",
-  PurchaseRaffle = "PurchaseRaffle(address,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256),uint256,uint256)",
+  PurchaseLottery = "PurchaseLottery(address,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256))",
+  PurchaseRaffle = "PurchaseRaffle(address,uint256,(uint8,address,uint256,uint256),(uint8,address,uint256,uint256))",
   Released = "Released(uint256,uint256)",
   Prize = "Prize(address,uint256,uint256,uint256)",
   UnpackWrapper = "UnpackWrapper(address,uint256)",
@@ -139,7 +139,7 @@ export const fwFunctionNames = [
   "ERC721Simple:setApprovalForAll",
   "ERC721Simple:isApprovedForAll",
   "ERC721Simple:setDefaultRoyalty",
-  "ERC721RandomGemunion:setSubscriptionId",
+  "ERC721RandomEthberry:setSubscriptionId",
   "ERC721LootBoxSimple:mintBox",
   "ERC721LootBoxSimple:unpack",
   "ERC721MysteryBoxSimple:mintBox",
@@ -177,13 +177,13 @@ export const fwFunctionNames = [
 
   "Dispenser:disperse",
 
-  "LotteryRandom:releaseFunds",
-  "LotteryRandom:endRound",
-  "LotteryRandom:startRound",
-  "LotteryRandom:getPrize",
+  "Lottery:releaseFunds",
+  "Lottery:endRound",
+  "Lottery:startRound",
+  "Lottery:getPrize",
 
-  "RaffleRandom:startRound",
-  "RaffleRandom:endRound",
+  "Raffle:startRound",
+  "Raffle:endRound",
 
   "Ponzi:updateRule",
   "Ponzi:setRules",
@@ -223,7 +223,7 @@ export const fwFunctionNames = [
   "ExchangeRentableFacet:lend",
   "ExchangeClaimFacet:claim",
   "ExchangeClaimFacet:spend",
-  "ExchangeGradeFacet:upgrade",
+  "ExchangeDiscreteFacet:upgrade",
   "ExchangeLootBoxFacet:purchaseLoot",
   "ExchangeLotteryFacet:purchaseLottery",
   "ExchangeMysteryBoxFacet:purchaseMystery",
@@ -266,7 +266,7 @@ task("abis", "Save all functions abi separately")
         if (fwFunctionNames.includes(`${name}:${func.name}`)) {
           const funcName = func.name;
           // create folder
-          const funcFolderPath = path.join(process.cwd(), `../../../packages/abis/json/${name}`);
+          const funcFolderPath = path.join(process.cwd(), `../packages/abis/json/${name}`);
           if (!fs.existsSync(funcFolderPath)) {
             fs.mkdirSync(funcFolderPath);
           }
@@ -298,7 +298,7 @@ task("abis", "Save all functions abi separately")
         }
       }
 
-      const eventsFolderPath = path.join(process.cwd(), `../../../packages/abis/json/events`);
+      const eventsFolderPath = path.join(process.cwd(), `../packages/abis/json/events`);
       if (!fs.existsSync(eventsFolderPath)) {
         fs.mkdirSync(eventsFolderPath);
       }

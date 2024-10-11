@@ -26,7 +26,7 @@ describe("LotteryFactoryDiamoond", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -94,7 +94,7 @@ describe("LotteryFactoryDiamoond", function () {
         .to.emit(contractInstance, "LotteryDeployed")
         .withArgs(address, externalId, isEqualArray(["100", "30"]));
 
-      const lotteryInstance = await ethers.getContractAt(getContractName("LotteryRandom", network.name), address);
+      const lotteryInstance = await ethers.getContractAt(getContractName("Lottery", network.name), address);
 
       const lotteryConfig = await lotteryInstance.getLotteryInfo();
       expect(recursivelyDecodeResult(lotteryConfig)).deep.include({
@@ -106,7 +106,7 @@ describe("LotteryFactoryDiamoond", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory(getContractName("Lottery", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();

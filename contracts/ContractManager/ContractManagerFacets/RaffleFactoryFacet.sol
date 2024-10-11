@@ -42,8 +42,4 @@ contract RaffleFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   function _hashRaffle(Params calldata params) internal view returns (bytes32) {
     return _hashTypedDataV4(keccak256(abi.encodePacked(RAFFLE_PERMIT_SIGNATURE, _hashParamsStruct(params))));
   }
-
-  //  function allRaffles() external view returns (address[] memory) {
-  //    return _raffles;
-  //  }
 }

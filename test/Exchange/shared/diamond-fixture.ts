@@ -76,7 +76,7 @@ export async function deployDiamond(
 
   // deploy Diamond
   const diamondFactory = await ethers.getContractFactory(DiamondName);
-  const diamond = await diamondFactory.deploy(owner.address, await diamondCutFacet.getAddress());
+  const diamond = await diamondFactory.deploy(owner, await diamondCutFacet.getAddress());
   await diamond.waitForDeployment();
   if (log) console.info("Diamond deployed:", await diamond.getAddress());
 

@@ -25,7 +25,7 @@ describe("RaffleFactoryDiamond", function () {
     it("should deploy contract", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -78,7 +78,7 @@ describe("RaffleFactoryDiamond", function () {
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const { bytecode } = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();

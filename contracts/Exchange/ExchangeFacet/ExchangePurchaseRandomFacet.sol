@@ -13,10 +13,10 @@ import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
-import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
+import { IERC721Random } from "../../Mechanics/Random/interfaces/IERC721Random.sol";
 
 contract ExchangePurchaseRandomFacet is SignatureValidator, DiamondOverride, Referral {
-  event PurchaseRandom(address account, uint256 externalId, /* template.id */ Asset item, Asset[] price);
+  event PurchaseRandom(address account, uint256 externalId, Asset item, Asset[] price);
 
   constructor() SignatureValidator() {}
 
@@ -33,7 +33,12 @@ contract ExchangePurchaseRandomFacet is SignatureValidator, DiamondOverride, Ref
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
+    ExchangeUtils.spendFrom(
+      price,
+      _msgSender(),
+      params.receiver,
+      AllowedTokenTypes(true, true, false, false, true)
+    );
 
     IERC721Random(item.token).mintRandom(_msgSender(), item.tokenId);
 

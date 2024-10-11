@@ -11,5 +11,5 @@ import { IERC721BoxErrors } from "../../../ERC721/interfaces/IERC721BoxErrors.so
 import { ITokenValidationErrors } from "../../../Exchange/interfaces/ITokenValidationErrors.sol";
 
 interface IERC721MysteryBox is IERC721BoxErrors, ITokenValidationErrors {
-  function mintBox(address to, uint256 templateId, Asset[] memory content) external;
+  function mintBox(address to, uint256 templateId, Asset[] memory content) external returns (uint256);
 }

@@ -13,7 +13,7 @@ import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 import { IERC721GeneralizedCollection } from "@ethberry/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
 
 import { PREGNANCY_COUNTER, PREGNANCY_TIMESTAMP } from "../../Mechanics/Genes/attributes.sol";
-import { IERC721Genes } from "../../ERC721/interfaces/IERC721Genes.sol";
+import { IERC721Genes } from "../../Mechanics/Genes/interfaces/IERC721Genes.sol";
 import { DiamondOverride } from "../../Diamond/override/DiamondOverride.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { SignatureValidator } from "../override/SignatureValidator.sol";
@@ -43,9 +43,17 @@ contract ExchangeGenesFacet is IGenesErrors, SignatureValidator, DiamondOverride
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
+    ExchangeUtils.spendFrom(
+      price,
+      _msgSender(),
+      params.receiver,
+      AllowedTokenTypes(true, true, false, false, true)
+    );
 
-    IERC721Genes(item.token).mintGenes(_msgSender(), item.tokenId, uint256(params.extra));
+    uint256 tokenId = IERC721Genes(item.token).mintGenes(_msgSender(), item.tokenId, uint256(params.extra));
+
+    // replace templateId with actual tokenId
+    item.tokenId = tokenId;
 
     emit PurchaseGenes(_msgSender(), params.externalId, item, price);
 

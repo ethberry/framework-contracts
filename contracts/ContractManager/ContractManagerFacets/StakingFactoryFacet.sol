@@ -61,6 +61,11 @@ contract StakingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   }
 
   function _hashStakingStruct(StakingArgs calldata args) private pure returns (bytes32) {
-    return keccak256(abi.encode(STAKING_ARGUMENTS_TYPEHASH, keccak256(bytes(args.contractTemplate))));
+    return keccak256(
+      abi.encode(
+        STAKING_ARGUMENTS_TYPEHASH,
+        keccak256(bytes(args.contractTemplate))
+      )
+    );
   }
 }

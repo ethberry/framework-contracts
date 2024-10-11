@@ -15,5 +15,5 @@ interface IERC721LootBox is IERC721BoxErrors {
     uint128 max;
   }
 
-  function mintBox(address to, uint256 templateId, Asset[] memory content, LootBoxConfig calldata boxConfig) external;
+  function mintBox(address to, uint256 templateId, Asset[] memory content, LootBoxConfig calldata boxConfig) external returns (uint256);
 }

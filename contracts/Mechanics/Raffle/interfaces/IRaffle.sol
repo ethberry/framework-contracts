@@ -40,5 +40,5 @@ interface IRaffle is IRaffleErrors {
   function printTicket(
     uint256 externalId,
     address account
-  ) external returns (uint256 tokenId, uint256 roundId, uint256 index);
+  ) external returns (uint256);
 }

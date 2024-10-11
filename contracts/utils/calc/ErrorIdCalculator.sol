@@ -15,7 +15,7 @@ import { IRentableErrors } from "../../Exchange/interfaces/IRentableErrors.sol";
 import { IMergeErrors } from "../../Exchange/interfaces/IMergeErrors.sol";
 import { IERC721SimpleErrors } from "../../ERC721/interfaces/IERC721SimpleErrors.sol";
 import { IERC721BoxErrors } from "../../ERC721/interfaces/IERC721BoxErrors.sol";
-import { IERC721GenesErrors } from "../../ERC721/interfaces/IERC721GenesErrors.sol";
+import { IERC721GenesErrors } from "../../Mechanics/Genes/interfaces/IERC721GenesErrors.sol";
 import { IPredictionErrors } from "../../Mechanics/Prediction/interfaces/IPredictionErrors.sol";
 import { ILotteryErrors } from "../../Mechanics/Lottery/interfaces/ILotteryErrors.sol";
 import { IRaffleErrors } from "../../Mechanics/Raffle/interfaces/IRaffleErrors.sol";

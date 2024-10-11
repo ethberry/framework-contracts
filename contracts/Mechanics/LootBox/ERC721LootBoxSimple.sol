@@ -41,7 +41,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     string memory baseTokenURI
   ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
 
-  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
+  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) returns (uint256) {
     revert MethodNotSupported();
   }
 
@@ -50,7 +50,7 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
     uint256 templateId,
     Asset[] memory content,
     LootBoxConfig calldata boxConfig
-  ) external onlyRole(MINTER_ROLE) {
+  ) external onlyRole(MINTER_ROLE) returns (uint256) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     uint256 length = content.length;
@@ -75,6 +75,8 @@ abstract contract ERC721LootBoxSimple is IERC721LootBox, ERC721Simple, AllTypesH
         i++;
       }
     }
+
+    return tokenId;
   }
 
   function unpack(uint256 tokenId) public virtual {
