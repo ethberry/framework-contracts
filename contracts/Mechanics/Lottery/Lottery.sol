@@ -271,7 +271,6 @@ abstract contract Lottery is ILottery, AccessControl, Pausable, CoinHolder, Nati
       uint256 amount = point * coefficient[result];
 
       if (amount > 0) {
-
         if (amount > ticketRound.total) {
           revert LotteryBalanceExceed();
         }
@@ -375,7 +374,9 @@ abstract contract Lottery is ILottery, AccessControl, Pausable, CoinHolder, Nati
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, CoinHolder) returns (bool) {
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(AccessControl, CoinHolder) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

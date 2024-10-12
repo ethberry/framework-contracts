@@ -12,10 +12,7 @@ task("consumer-add", "Add vRF subscription")
 
     const blockNumber = await hre.ethers.provider.getBlockNumber();
 
-    const vrfInstance = await hre.ethers.getContractAt(
-      "VRFCoordinatorV2PlusMock",
-      vrf
-    );
+    const vrfInstance = await hre.ethers.getContractAt("VRFCoordinatorV2PlusMock", vrf);
 
     const tx = await vrfInstance.addConsumer(sub, consumer);
     await tx.wait();

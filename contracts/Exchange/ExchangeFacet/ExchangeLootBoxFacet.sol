@@ -37,12 +37,7 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(
-      price,
-      _msgSender(),
-      params.receiver,
-      AllowedTokenTypes(true, true, false, false, true)
-    );
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     uint256 tokenId = IERC721LootBox(item.token).mintBox(_msgSender(), item.tokenId, content, boxConfig);
 

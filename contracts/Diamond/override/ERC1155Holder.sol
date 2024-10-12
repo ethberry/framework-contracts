@@ -14,13 +14,7 @@ pragma solidity ^0.8.0;
  * @dev _Available since v3.1._
  */
 contract ERC1155Holder {
-  function onERC1155Received(
-    address,
-    address,
-    uint256,
-    uint256,
-    bytes memory
-  ) public virtual returns (bytes4) {
+  function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
     return this.onERC1155Received.selector;
   }
 

@@ -32,12 +32,7 @@ contract ExchangeDiscreteFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(
-      price,
-      _msgSender(),
-      params.receiver,
-      AllowedTokenTypes(true, true, false, false, true)
-    );
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     uint256 level = IERC721Discrete(item.token).upgrade(item.tokenId, params.extra);
 

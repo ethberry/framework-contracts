@@ -13,7 +13,7 @@ import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRF
 import { ChainLinkEthberryV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkEthberryV2Plus.sol";
 import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
-import {Lottery} from "../Lottery.sol";
+import { Lottery } from "../Lottery.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
 contract LotteryEthberry is Lottery, ChainLinkEthberryV2Plus {
@@ -35,9 +35,7 @@ contract LotteryEthberry is Lottery, ChainLinkEthberryV2Plus {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(
-    bytes4 interfaceId
-  ) public view virtual override(AccessControl, Lottery) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, Lottery) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

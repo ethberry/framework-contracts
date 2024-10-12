@@ -8,11 +8,11 @@ import { randomRequest } from "../../../shared/randomRequest";
 import { deployLinkVrfFixture } from "../../../shared/link";
 
 export function shouldBreed(factory: () => Promise<any>) {
-  describe("breed", function() {
+  describe("breed", function () {
     let vrfInstance: VRFCoordinatorV2PlusMock;
     let subId: bigint;
 
-    before(async function() {
+    before(async function () {
       await network.provider.send("hardhat_reset");
 
       // https://github.com/NomicFoundation/hardhat/issues/2980
@@ -21,7 +21,7 @@ export function shouldBreed(factory: () => Promise<any>) {
       }));
     });
 
-    it("breed should mix genes to generate attribute fields", async function() {
+    it("breed should mix genes to generate attribute fields", async function () {
       const [owner] = await ethers.getSigners();
 
       const erc721Instance = await factory();
@@ -54,19 +54,31 @@ export function shouldBreed(factory: () => Promise<any>) {
       expect(fatherId).to.be.equal(2);
 
       // Check pregnancy attributes for mother
-      const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_COUNTER);
-      const motherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(1, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(
+        1,
+        genesTokenAttributes.PREGNANCY_COUNTER,
+      );
+      const motherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(
+        1,
+        genesTokenAttributes.PREGNANCY_TIMESTAMP,
+      );
       expect(motherPregnancyCounter).to.be.equal(1);
       expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
 
       // Check pregnancy attributes for father
-      const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_COUNTER);
-      const fatherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(2, genesTokenAttributes.PREGNANCY_TIMESTAMP);
+      const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(
+        2,
+        genesTokenAttributes.PREGNANCY_COUNTER,
+      );
+      const fatherPregnancyTimestamp = await erc721Instance.getRecordFieldValue(
+        2,
+        genesTokenAttributes.PREGNANCY_TIMESTAMP,
+      );
       expect(fatherPregnancyCounter).to.be.equal(1);
       expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
     });
 
-    it("should fail: NotOwnerNorApproved", async function() {
+    it("should fail: NotOwnerNorApproved", async function () {
       const [owner, _receiver, stranger] = await ethers.getSigners();
 
       const erc721Instance = await factory();
@@ -81,13 +93,10 @@ export function shouldBreed(factory: () => Promise<any>) {
       await erc721Instance.mintGenes(owner, templateId, fatherGenes);
 
       const tx = erc721Instance.breed(stranger, 1, 2);
-      await expect(tx).to.be.revertedWithCustomError(
-        erc721Instance,
-        "NotOwnerNorApproved"
-      ).withArgs(stranger);
+      await expect(tx).to.be.revertedWithCustomError(erc721Instance, "NotOwnerNorApproved").withArgs(stranger);
     });
 
-    it("should revert if one of the tokens does not exist", async function() {
+    it("should revert if one of the tokens does not exist", async function () {
       const [owner] = await ethers.getSigners();
 
       const erc721Instance = await factory();
@@ -101,10 +110,7 @@ export function shouldBreed(factory: () => Promise<any>) {
       await erc721Instance.mintGenes(owner, templateId, motherGenes);
 
       const tx = erc721Instance.breed(owner, 1, 999);
-      await expect(tx).to.be.revertedWithCustomError(
-        erc721Instance,
-        "ERC721NonexistentToken"
-      );
+      await expect(tx).to.be.revertedWithCustomError(erc721Instance, "ERC721NonexistentToken");
     });
   });
 }

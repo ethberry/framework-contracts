@@ -11,8 +11,5 @@ describe("Lottery", function () {
   shouldBehaveLikeAccessControl(deployLotteryContract)(DEFAULT_ADMIN_ROLE, PAUSER_ROLE);
   shouldBehaveLikePausable(deployLotteryContract);
 
-  shouldSupportsInterface(deployLotteryContract)([
-    InterfaceId.IERC165,
-    InterfaceId.IAccessControl,
-  ]);
+  shouldSupportsInterface(deployLotteryContract)([InterfaceId.IERC165, InterfaceId.IAccessControl]);
 });

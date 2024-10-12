@@ -231,7 +231,7 @@ library ExchangeUtils {
       } else if (
         (item.tokenType == TokenType.ERC721 && allowed.erc721) || (item.tokenType == TokenType.ERC998 && allowed.erc998)
       ) {
-        for (uint256 loopIndex = 0; loopIndex < item.amount;) {
+        for (uint256 loopIndex = 0; loopIndex < item.amount; ) {
           IERC721Simple(item.token).mintCommon(receiver, item.tokenId);
           unchecked {
             loopIndex++;

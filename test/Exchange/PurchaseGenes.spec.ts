@@ -15,15 +15,15 @@ import { deployERC1363 } from "../ERC20/shared/fixtures";
 import { decodeMetadata } from "../shared/metadata";
 import { TokenMetadata } from "../types";
 
-describe("Diamond Exchange Genes", function() {
+describe("Diamond Exchange Genes", function () {
   const factory = async (facetName = "ExchangeGenesFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
       [facetName, "AccessControlFacet", "PausableFacet"],
       "DiamondExchangeInit",
       {
-        logSelectors: false
-      }
+        logSelectors: false,
+      },
     );
     return ethers.getContractAt(facetName, diamondInstance);
   };
@@ -31,7 +31,7 @@ describe("Diamond Exchange Genes", function() {
   let vrfInstance: VRFCoordinatorV2PlusMock;
   let subId: bigint;
 
-  before(async function() {
+  before(async function () {
     await network.provider.send("hardhat_reset");
 
     // https://github.com/NomicFoundation/hardhat/issues/2980
@@ -46,8 +46,8 @@ describe("Diamond Exchange Genes", function() {
     return wrapOneToManySignature(network, contractInstance, "EXCHANGE", owner);
   };
 
-  describe("purchase", function() {
-    it("should purchase ERC721 Genes for ERC20", async function() {
+  describe("purchase", function () {
+    it("should purchase ERC721 Genes for ERC20", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -75,22 +75,22 @@ describe("Diamond Exchange Genes", function() {
           nonce,
           extra: zeroPadBytes(`0x${motherGenes.toString(16)}`, 32),
           receiver: owner.address,
-          referrer: ZeroAddress
+          referrer: ZeroAddress,
         },
         item: {
           tokenType: 2,
           token: erc721Instance.target,
           tokenId,
-          amount: 1
+          amount: 1,
         },
         price: [
           {
             tokenType: 1,
             token: erc20Instance.target,
             tokenId: 0,
-            amount
-          }
-        ]
+            amount,
+          },
+        ],
       });
 
       const tx1 = exchangeInstance.connect(receiver).purchaseGenes(
@@ -100,23 +100,23 @@ describe("Diamond Exchange Genes", function() {
           nonce,
           extra: zeroPadBytes(`0x${motherGenes.toString(16)}`, 32),
           receiver: owner.address,
-          referrer: ZeroAddress
+          referrer: ZeroAddress,
         },
         {
           tokenType: 2,
           token: erc721Instance,
           tokenId,
-          amount: 1
+          amount: 1,
         },
         [
           {
             tokenType: 1,
             token: erc20Instance,
             tokenId: 0,
-            amount
-          }
+            amount,
+          },
         ],
-        signature
+        signature,
       );
 
       await expect(tx1).to.emit(exchangeInstance, "PurchaseGenes");

@@ -10,11 +10,11 @@ import { randomRequest } from "../../../shared/randomRequest";
 import { TokenType } from "../../../types";
 
 export function shouldEndRound(factory: () => Promise<any>) {
-  describe("endRound", function() {
+  describe("endRound", function () {
     let vrfInstance: VRFCoordinatorV2PlusMock;
     let subId: bigint;
 
-    before(async function() {
+    before(async function () {
       await network.provider.send("hardhat_reset");
 
       ({ vrfInstance, subId } = await loadFixture(function exchange() {
@@ -22,25 +22,25 @@ export function shouldEndRound(factory: () => Promise<any>) {
       }));
     });
 
-    after(async function() {
+    after(async function () {
       await network.provider.send("hardhat_reset");
     });
 
-    it("should end the current round", async function() {
+    it("should end the current round", async function () {
       const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
         token: ZeroAddress,
         tokenId: 0n,
-        amount: 1n
+        amount: 1n,
       };
 
       const price = {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 0n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -58,7 +58,7 @@ export function shouldEndRound(factory: () => Promise<any>) {
       expect(roundInfo.endTimestamp).to.equal(currentTimestamp);
     });
 
-    it("should fail: AccessControlUnauthorizedAccount", async function() {
+    it("should fail: AccessControlUnauthorizedAccount", async function () {
       const lotteryInstance = await factory();
       const [_, nonAdmin] = await ethers.getSigners();
 
@@ -66,21 +66,21 @@ export function shouldEndRound(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
 
-    it("should fail: LotteryRoundNotActive", async function() {
+    it("should fail: LotteryRoundNotActive", async function () {
       const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
         token: ZeroAddress,
         tokenId: 0n,
-        amount: 1n
+        amount: 1n,
       };
 
       const price = {
         tokenType: TokenType.ERC20,
         token: ZeroAddress,
         tokenId: 0n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);

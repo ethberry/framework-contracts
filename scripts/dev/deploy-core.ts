@@ -75,6 +75,4 @@ async function main() {
   return "OK";
 }
 
-main()
-  .then(console.info)
-  .catch(console.error);
+main().then(console.info).catch(console.error);

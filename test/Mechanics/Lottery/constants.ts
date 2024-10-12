@@ -8,5 +8,5 @@ export const price = {
   tokenType: TokenType.NATIVE,
   token: ZeroAddress,
   tokenId: 0n,
-  amount: amount
+  amount: amount,
 };

@@ -9,7 +9,7 @@ import {
   toBeHex,
   zeroPadValue,
   hexlify,
-  randomBytes
+  randomBytes,
 } from "ethers";
 
 import { patchBigInt } from "@ethberry/utils-eth";
@@ -123,7 +123,6 @@ export const chainIdToSuffix = (chainId: string | bigint | number) => {
   return Object.keys(Networks)[Object.values(Networks).indexOf(Number(chainId))];
 };
 
-
 export const decodeNumber = (encoded: bigint) => {
   const genes = {
     baseColor: encoded >> 176n,
@@ -137,7 +136,7 @@ export const decodeNumber = (encoded: bigint) => {
     wild: (encoded >> 48n) & 0xffffn,
     environment: (encoded >> 32n) & 0xffffn,
     secret: (encoded >> 16n) & 0xffffn,
-    purrstige: (encoded >> 0n) & 0xffffn
+    purrstige: (encoded >> 0n) & 0xffffn,
   };
   return genes;
 };

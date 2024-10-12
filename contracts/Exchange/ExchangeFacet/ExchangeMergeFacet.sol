@@ -59,18 +59,9 @@ contract ExchangeMergeFacet is IMergeErrors, SignatureValidator, DiamondOverride
       }
     }
 
-    ExchangeUtils.burnFrom(
-      price,
-      _msgSender(),
-      AllowedTokenTypes(false, false, true, true, false)
-    );
+    ExchangeUtils.burnFrom(price, _msgSender(), AllowedTokenTypes(false, false, true, true, false));
 
-    ExchangeUtils.acquireFrom(
-      items,
-      params.receiver,
-      _msgSender(),
-      AllowedTokenTypes(false, false, true, true, false)
-    );
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, false, true, true, false));
 
     emit Merge(_msgSender(), params.externalId, items, price);
   }

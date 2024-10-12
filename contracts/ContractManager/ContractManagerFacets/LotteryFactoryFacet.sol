@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { ILottery } from "../../Mechanics/Lottery/interfaces/ILottery.sol";
@@ -52,13 +54,11 @@ contract LotteryFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(
-      params.bytecode,
-      abi.encode(args.config.timeLagBeforeRelease, args.config.commission),
-      params.nonce
-    );
-
+    bytes memory argument = abi.encode(args.config.timeLagBeforeRelease, args.config.commission);
+    bytes memory bytecode = abi.encodePacked(params.bytecode, argument);
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit LotteryDeployed(account, params.externalId, args);
+    Create2.deploy(0, params.nonce, bytecode);
 
     bytes32[] memory roles = new bytes32[](2);
     roles[0] = PAUSER_ROLE;

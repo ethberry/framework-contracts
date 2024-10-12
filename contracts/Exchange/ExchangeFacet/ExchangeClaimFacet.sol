@@ -33,12 +33,7 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       }
     }
 
-    ExchangeUtils.acquireFrom(
-      items,
-      params.receiver,
-      _msgSender(),
-      AllowedTokenTypes(false, false, true, true, true)
-    );
+    ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, false, true, true, true));
 
     emit Claim(_msgSender(), params.externalId, items);
   }

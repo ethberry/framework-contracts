@@ -15,11 +15,11 @@ import { getNumbersBytes } from "../../../utils";
 import { amount, price } from "../constants";
 
 export function shouldReleaseFunds(factory: () => Promise<any>) {
-  describe("releaseFunds", function() {
+  describe("releaseFunds", function () {
     let vrfInstance: VRFCoordinatorV2PlusMock;
     let subId: bigint;
 
-    before(async function() {
+    before(async function () {
       await network.provider.send("hardhat_reset");
 
       ({ vrfInstance, subId } = await loadFixture(function exchange() {
@@ -27,11 +27,11 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
       }));
     });
 
-    after(async function() {
+    after(async function () {
       await network.provider.send("hardhat_reset");
     });
 
-    it("should fail: AccessControlUnauthorizedAccount", async function() {
+    it("should fail: AccessControlUnauthorizedAccount", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const lotteryInstance = await factory();
 
@@ -39,21 +39,21 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
 
-    it("should fail: LotteryWrongRound", async function() {
+    it("should fail: LotteryWrongRound", async function () {
       const lotteryInstance = await factory();
 
       const tx = lotteryInstance.releaseFunds(999);
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
     });
 
-    it("should fail: LotteryZeroBalance", async function() {
+    it("should fail: LotteryZeroBalance", async function () {
       const lotteryInstance = await factory();
 
       const ticket = {
         tokenType: TokenType.ERC721,
         token: ZeroAddress,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -68,7 +68,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryZeroBalance");
     });
 
-    it("should fail: LotteryRoundNotComplete", async function() {
+    it("should fail: LotteryRoundNotComplete", async function () {
       const [owner] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
@@ -78,7 +78,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -88,7 +88,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
 
       await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
 
-      await lotteryInstance.printTicket(1, owner, ticketNumbers, price, {value: amount});
+      await lotteryInstance.printTicket(1, owner, ticketNumbers, price, { value: amount });
 
       await lotteryInstance.setSubscriptionId(subId);
       await vrfInstance.addConsumer(subId, lotteryInstance.target);
@@ -100,7 +100,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
-    it("should release funds successfully", async function() {
+    it("should release funds successfully", async function () {
       const lotteryInstance = await factory();
       const [owner] = await ethers.getSigners();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
@@ -109,7 +109,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -119,7 +119,7 @@ export function shouldReleaseFunds(factory: () => Promise<any>) {
 
       await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
 
-      await lotteryInstance.printTicket(1, owner, ticketNumbers, price, {value: amount});
+      await lotteryInstance.printTicket(1, owner, ticketNumbers, price, { value: amount });
 
       await lotteryInstance.setSubscriptionId(subId);
       await vrfInstance.addConsumer(subId, lotteryInstance.target);

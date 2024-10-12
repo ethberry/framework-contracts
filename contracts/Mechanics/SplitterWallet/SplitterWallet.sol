@@ -7,4 +7,3 @@
 pragma solidity ^0.8.20;
 
 import { SplitterWallet } from "@ethberry/contracts-finance/contracts/SplitterWallet.sol";
-

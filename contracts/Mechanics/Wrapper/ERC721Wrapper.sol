@@ -28,7 +28,11 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory content) external payable onlyRole(MINTER_ROLE) returns (uint256) {
+  function mintBox(
+    address account,
+    uint256 templateId,
+    Asset[] memory content
+  ) external payable onlyRole(MINTER_ROLE) returns (uint256) {
     if (content.length == 0) {
       revert NoContent();
     }

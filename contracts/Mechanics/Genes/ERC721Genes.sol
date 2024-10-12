@@ -65,11 +65,7 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
     return tokenId;
   }
 
-  function breed(
-    address account,
-    uint256 motherId,
-    uint256 fatherId
-  ) external {
+  function breed(address account, uint256 motherId, uint256 fatherId) external {
     if (account == address(0)) {
       revert NotOwnerNorApproved(account);
     }
@@ -82,11 +78,7 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
       revert NotOwnerNorApproved(account);
     }
 
-    _queue[getRandomNumber()] = Request(
-      account,
-      motherId,
-      fatherId
-    );
+    _queue[getRandomNumber()] = Request(account, motherId, fatherId);
   }
 
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
@@ -95,7 +87,7 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
     // child will have moms template id
     uint256 templateId = _getRecordFieldValue(request.motherId, TEMPLATE_ID);
 
-     emit MintGenes(requestId, request.account, randomWords, templateId, _nextTokenId);
+    emit MintGenes(requestId, request.account, randomWords, templateId, _nextTokenId);
 
     uint256 motherGenes = _getRecordFieldValue(request.motherId, GENES);
     uint256 motherCounter = _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER);
@@ -119,7 +111,11 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
     _mintCommon(request.account, templateId);
   }
 
-  function _mixGenes(uint256 motherGenes, uint256 fatherGenes, uint256 randomWord) internal pure returns (uint256 childGenes) {
+  function _mixGenes(
+    uint256 motherGenes,
+    uint256 fatherGenes,
+    uint256 randomWord
+  ) internal pure returns (uint256 childGenes) {
     uint256 mask = 1;
 
     for (uint256 i = 0; i < 256; i++) {
@@ -129,7 +125,7 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
         childGenes |= (fatherGenes & mask);
       }
       mask <<= 1;
-  }
+    }
 
     // Normalize the genes to ensure attributes are in the range of 1 to 10
     childGenes = _normalizeGenes(childGenes);

@@ -3,7 +3,6 @@ import { Result, WeiPerEther, zeroPadValue, toBeHex } from "ethers";
 
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
-
 task("sub-fund", "Add VRF subscription")
   .addParam("vrf", "The VRF coordinator contract's address")
   .addParam("token", "The LINK contract's address")
@@ -13,15 +12,9 @@ task("sub-fund", "Add VRF subscription")
 
     const blockNumber = await hre.ethers.provider.getBlockNumber();
 
-    const vrfInstance = await hre.ethers.getContractAt(
-      "VRFCoordinatorV2PlusMock",
-      vrf
-    );
+    const vrfInstance = await hre.ethers.getContractAt("VRFCoordinatorV2PlusMock", vrf);
 
-    const linkInstance = await hre.ethers.getContractAt(
-      "LinkToken",
-      token
-    );
+    const linkInstance = await hre.ethers.getContractAt("LinkToken", token);
 
     // fund subscription
     const tx = await linkInstance.transferAndCall(vrf, 1000n * WeiPerEther, zeroPadValue(toBeHex(sub), 32));

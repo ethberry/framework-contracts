@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -69,15 +71,13 @@ contract VestingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(
-      params.bytecode,
-      abi.encode(args.owner, args.startTimestamp, args.cliffInMonth, args.monthlyRelease),
-      params.nonce
-    );
+    bytes memory argument = abi.encode(args.owner, args.startTimestamp, args.cliffInMonth, args.monthlyRelease);
+    bytes memory bytecode = abi.encodePacked(params.bytecode, argument);
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
+    emit VestingDeployed(account, params.externalId, args, items);
+    Create2.deploy(0, params.nonce, bytecode);
 
     ExchangeUtils.spendFrom(items, signer, account, AllowedTokenTypes(false, true, false, false, false));
-
-    emit VestingDeployed(account, params.externalId, args, items);
   }
 
   /**

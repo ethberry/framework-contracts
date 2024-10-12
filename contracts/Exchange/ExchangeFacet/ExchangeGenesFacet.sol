@@ -43,12 +43,7 @@ contract ExchangeGenesFacet is IGenesErrors, SignatureValidator, DiamondOverride
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(
-      price,
-      _msgSender(),
-      params.receiver,
-      AllowedTokenTypes(true, true, false, false, true)
-    );
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     uint256 tokenId = IERC721Genes(item.token).mintGenes(_msgSender(), item.tokenId, uint256(params.extra));
 

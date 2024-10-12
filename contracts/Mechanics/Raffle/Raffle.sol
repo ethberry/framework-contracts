@@ -67,12 +67,13 @@ abstract contract Raffle is IRaffle, AccessControl, Pausable, NativeRejector, Co
     currentRound.balance += currentRound.acceptedAsset.amount;
     currentRound.total += currentRound.acceptedAsset.amount;
 
-    return IERC721RaffleTicket(currentRound.ticketAsset.token).mintTicket(
-      account,
-      roundId,
-      externalId,
-      currentRound.tickets.length + 1
-    );
+    return
+      IERC721RaffleTicket(currentRound.ticketAsset.token).mintTicket(
+        account,
+        roundId,
+        externalId,
+        currentRound.tickets.length + 1
+      );
   }
 
   function startRound(Asset memory ticket, Asset memory price, uint256 maxTicket) public onlyRole(DEFAULT_ADMIN_ROLE) {

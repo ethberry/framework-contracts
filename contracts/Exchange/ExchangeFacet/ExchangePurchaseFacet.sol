@@ -35,12 +35,7 @@ contract ExchangePurchaseFacet is SignatureValidator, DiamondOverride, Referral 
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(
-      price,
-      _msgSender(),
-      params.receiver,
-      AllowedTokenTypes(true, true, false, false, true)
-    );
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     ExchangeUtils.acquireFrom(
       ExchangeUtils._toArray(item),

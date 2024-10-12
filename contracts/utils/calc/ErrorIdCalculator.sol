@@ -6,6 +6,9 @@
 
 pragma solidity ^0.8.20;
 
+import { IERC20Errors, IERC721Errors, IERC1155Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { IGeneralizedCollectionErrors } from "@ethberry/contracts-utils/contracts/interfaces/IGeneralizedCollectionErrors.sol";
+
 import { IDiamondErrors } from "../../Diamond/interfaces/IDiamondErrors.sol";
 import { IDiamondInitErrors } from "../../Diamond/interfaces/IDiamondInitErrors.sol";
 import { ISignatureValidatorErrors } from "../../Exchange/interfaces/ISignatureValidatorErrors.sol";
@@ -23,7 +26,19 @@ import { IStakingErrors } from "../../Mechanics/Staking/interfaces/IStakingError
 import { IPonziErrors } from "../../Mechanics/Ponzi/interfaces/IPonziErrors.sol";
 import { IWaitListErrors } from "../../Mechanics/WaitList/interfaces/IWaitListErrors.sol";
 
+interface IAccessControl {
+  error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
+  error AccessControlBadConfirmation();
+}
+
 contract ErrorsIdCalculator is
+  IERC20Errors,
+  IERC721Errors,
+  IERC1155Errors,
+  IAccessControl,
+
+  IGeneralizedCollectionErrors,
+
   IDiamondErrors,
   IDiamondInitErrors,
   ISignatureValidatorErrors,

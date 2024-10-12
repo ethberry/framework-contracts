@@ -7,6 +7,7 @@
 pragma solidity ^0.8.20;
 
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
 
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
@@ -42,9 +43,10 @@ contract StakingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, "", params.nonce);
-
+    bytes memory bytecode = abi.encodePacked(params.bytecode, "");
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit StakingDeployed(account, params.externalId, args);
+    Create2.deploy(0, params.nonce, bytecode);
 
     bytes32[] memory roles = new bytes32[](2);
     roles[0] = PAUSER_ROLE;
@@ -61,11 +63,6 @@ contract StakingFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   }
 
   function _hashStakingStruct(StakingArgs calldata args) private pure returns (bytes32) {
-    return keccak256(
-      abi.encode(
-        STAKING_ARGUMENTS_TYPEHASH,
-        keccak256(bytes(args.contractTemplate))
-      )
-    );
+    return keccak256(abi.encode(STAKING_ARGUMENTS_TYPEHASH, keccak256(bytes(args.contractTemplate))));
   }
 }

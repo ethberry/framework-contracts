@@ -5,4 +5,3 @@ task("calc-interface-id", "Prints interface enum").setAction(async (_args, hre) 
   const errInstance = await errFactory.deploy();
   await errInstance.test();
 });
-

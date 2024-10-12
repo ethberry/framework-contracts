@@ -33,7 +33,11 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory content) external  onlyRole(MINTER_ROLE) returns (uint256) {
+  function mintBox(
+    address account,
+    uint256 templateId,
+    Asset[] memory content
+  ) external onlyRole(MINTER_ROLE) returns (uint256) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     if (content.length == 0) {

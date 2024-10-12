@@ -1,6 +1,7 @@
 import { task } from "hardhat/config";
+import { id } from "ethers";
 
-task("calc-error-id", "Prints Errors enum").setAction(async (args, hre) => {
+task("calc-error-id", "Prints Errors enum").setAction(async (_, hre) => {
   const errFactory = await hre.ethers.getContractFactory("ErrorsIdCalculator");
   const errInstance = await errFactory.deploy();
 
@@ -8,7 +9,7 @@ task("calc-error-id", "Prints Errors enum").setAction(async (args, hre) => {
   console.info("export enum CustomErrors {");
   Object.entries(errInstance.interface.fragments.filter(frag => frag.type === "error")).map(([_val, fragment]) =>
     // @ts-ignore
-    console.info(`"${hre.ethers.id(`${fragment.name}()`).slice(0, 10)}" = "${fragment.name}",`),
+    console.log(`"${id(`${fragment.name}(${fragment.inputs.map(i => i.type).join(',')})`).slice(0, 10)}" = "${fragment.name}",`)
   );
   console.info("}");
 });

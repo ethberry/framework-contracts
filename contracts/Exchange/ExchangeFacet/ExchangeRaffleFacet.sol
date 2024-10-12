@@ -42,10 +42,7 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
       AllowedTokenTypes(true, true, false, false, true)
     );
 
-    uint256 tokenId = IRaffle(params.receiver).printTicket(
-      params.externalId,
-      _msgSender()
-    );
+    uint256 tokenId = IRaffle(params.receiver).printTicket(params.externalId, _msgSender());
 
     // set tokenID = ticketID
     item.tokenId = tokenId;

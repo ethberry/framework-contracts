@@ -29,7 +29,10 @@ abstract contract ERC721Random is IERC721Random, ERC721Simple, Rarity {
     string memory baseTokenURI
   ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
 
-  function mintCommon(address account, uint256 templateId) public override(ERC721Simple) onlyRole(MINTER_ROLE) returns (uint256) {
+  function mintCommon(
+    address account,
+    uint256 templateId
+  ) public override(ERC721Simple) onlyRole(MINTER_ROLE) returns (uint256) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     _upsertRecordField(tokenId, RARITY, 0);

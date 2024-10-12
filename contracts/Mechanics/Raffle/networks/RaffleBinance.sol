@@ -13,7 +13,7 @@ import { VRFConsumerBaseV2Plus } from "@chainlink/contracts/src/v0.8/vrf/dev/VRF
 import { ChainLinkBinanceV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBinanceV2Plus.sol";
 import { ChainLinkBaseV2Plus } from "@ethberry/contracts-chain-link-v2-plus/contracts/extensions/ChainLinkBaseV2Plus.sol";
 
-import {Raffle} from "../Raffle.sol";
+import { Raffle } from "../Raffle.sol";
 import { Asset } from "../../../Exchange/lib/interfaces/IAsset.sol";
 
 contract RaffleBinance is Raffle, ChainLinkBinanceV2Plus {
@@ -33,9 +33,7 @@ contract RaffleBinance is Raffle, ChainLinkBinanceV2Plus {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(
-    bytes4 interfaceId
-  ) public view virtual override(AccessControl, Raffle) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(AccessControl, Raffle) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 }

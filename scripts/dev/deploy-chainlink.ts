@@ -5,7 +5,6 @@ import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 // ChainLink V2Plus
 async function main() {
-
   // dev env only!
   if (!network.name.startsWith("hardhat") && !network.name.startsWith("ethberry")) {
     return;
@@ -41,15 +40,15 @@ async function main() {
 
   // set dummy config
   const tx2 = await vrfInstance.setConfig(
-      3, // minimumRequestConfirmations
-      1000000, // maxGasLimit
-      1, // stalenessSeconds
-      1, // gasAfterPaymentCalculation
-      1, // fallbackWeiPerUnitLink
-      1, // fulfillmentFlatFeeNativePPM
-      1, // fulfillmentFlatFeeLinkDiscountPPM
-      1, // nativePremiumPercentage
-      1, // linkPremiumPercentage
+    3, // minimumRequestConfirmations
+    1000000, // maxGasLimit
+    1, // stalenessSeconds
+    1, // gasAfterPaymentCalculation
+    1, // fallbackWeiPerUnitLink
+    1, // fulfillmentFlatFeeNativePPM
+    1, // fulfillmentFlatFeeLinkDiscountPPM
+    1, // nativePremiumPercentage
+    1, // linkPremiumPercentage
   );
   await tx2.wait();
 
@@ -74,6 +73,4 @@ async function main() {
   return "OK";
 }
 
-main()
-  .then(console.info)
-  .catch(console.error);
+main().then(console.info).catch(console.error);

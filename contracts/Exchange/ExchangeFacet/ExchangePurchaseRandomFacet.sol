@@ -33,12 +33,7 @@ contract ExchangePurchaseRandomFacet is SignatureValidator, DiamondOverride, Ref
       revert SignerMissingRole();
     }
 
-    ExchangeUtils.spendFrom(
-      price,
-      _msgSender(),
-      params.receiver,
-      AllowedTokenTypes(true, true, false, false, true)
-    );
+    ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
     IERC721Random(item.token).mintRandom(_msgSender(), item.tokenId);
 
