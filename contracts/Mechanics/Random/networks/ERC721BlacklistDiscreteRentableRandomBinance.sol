@@ -28,6 +28,7 @@ contract ERC721BlacklistDiscreteRentableRandomBinance is ERC721BlacklistDiscrete
     ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkBinanceV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   /**
    * @dev See {ERC721Random-getRandomNumber}.
    */

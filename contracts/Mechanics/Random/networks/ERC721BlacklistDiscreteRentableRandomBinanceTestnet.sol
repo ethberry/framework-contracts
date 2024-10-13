@@ -31,6 +31,7 @@ contract ERC721BlacklistDiscreteRentableRandomBinanceTestnet is
     ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkBinanceTestnetV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   /**
    * @dev See {ERC721Random-getRandomNumber}.
    */

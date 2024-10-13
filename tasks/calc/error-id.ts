@@ -9,7 +9,7 @@ task("calc-error-id", "Prints Errors enum").setAction(async (_, hre) => {
   console.info("export enum CustomErrors {");
   Object.entries(errInstance.interface.fragments.filter(frag => frag.type === "error")).map(([_val, fragment]) =>
     // @ts-ignore
-    console.log(`"${id(`${fragment.name}(${fragment.inputs.map(i => i.type).join(',')})`).slice(0, 10)}" = "${fragment.name}",`)
+    console.log(`"${id(`${fragment.name}(${fragment.inputs.map(i => i.type).join(",")})`).slice(0, 10)}" = "${fragment.name}",`,),
   );
   console.info("}");
 });

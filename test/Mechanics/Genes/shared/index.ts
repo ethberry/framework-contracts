@@ -1,6 +1,6 @@
-import { shouldNotMint } from "../simple/base/shouldNotMint";
-import { shouldNotSafeMint } from "../simple/base/shouldNotSafeMint";
-import { shouldNotMintCommon } from "../shouldNotMintCommon";
+import { shouldNotMint } from "../../../ERC721/shared/simple/base/shouldNotMint";
+import { shouldNotSafeMint } from "../../../ERC721/shared/simple/base/shouldNotSafeMint";
+import { shouldNotMintCommon } from "../../../ERC721/shared/shouldNotMintCommon";
 
 import { shouldBreed } from "./breed";
 import { shouldMintGenes } from "./mintGenes";

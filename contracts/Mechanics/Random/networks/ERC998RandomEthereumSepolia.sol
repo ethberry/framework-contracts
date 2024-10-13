@@ -25,6 +25,7 @@ contract ERC998RandomEthereumSepolia is ERC998Random, ChainLinkEthereumSepoliaV2
     ERC998Random(name, symbol, royalty, baseTokenURI)
     ChainLinkEthereumSepoliaV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC998Random) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

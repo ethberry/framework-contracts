@@ -4,7 +4,7 @@ import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } fro
 
 import { FrameworkInterfaceId, templateId } from "../constants";
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
-import { shouldMintRandom } from "../ERC721/shared/random/mintRandom";
+import { shouldMintRandom } from "../Mechanics/Random/shared/mintRandom";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { shouldBehaveLikeERC721Blacklist, shouldBehaveLikeERC721BlacklistRandom } from "../ERC721/shared/blacklist";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";

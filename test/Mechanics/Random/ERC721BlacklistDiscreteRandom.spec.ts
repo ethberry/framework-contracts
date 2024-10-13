@@ -9,13 +9,13 @@ import {
   RARITY,
 } from "@ethberry/contracts-constants";
 
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
-import { FrameworkInterfaceId, templateId } from "../constants";
-import { deployERC721 } from "./shared/fixtures";
-import { shouldBehaveLikeERC721Simple } from "./shared/simple";
-import { shouldMintRandom } from "./shared/random/mintRandom";
-import { shouldBehaveLikeERC721Blacklist, shouldBehaveLikeERC721BlacklistRandom } from "./shared/blacklist";
-import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { shouldBehaveLikeDiscrete } from "../Discrete/upgrade";
+import { FrameworkInterfaceId, templateId } from "../../constants";
+import { deployERC721 } from "../../ERC721/shared/fixtures";
+import { shouldBehaveLikeERC721Simple } from "../../ERC721/shared/simple";
+import { shouldMintRandom } from "./shared/mintRandom";
+import { shouldBehaveLikeERC721Blacklist, shouldBehaveLikeERC721BlacklistRandom } from "../../ERC721/shared/blacklist";
+import { shouldMintCommon } from "../../ERC721/shared/simple/base/mintCommon";
 
 describe("ERC721BlacklistDiscreteRandom", function () {
   const factory = () => deployERC721(this.title);

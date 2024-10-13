@@ -26,6 +26,6 @@ task("sub-fund", "Add VRF subscription")
     console.info("SubscriptionFunded", result);
   });
 
-// hardhat sub-fund --vrf 0xa50a51c09a5c451C52BB714527E1974b686D8e77 --token 0x42699A7612A82f1d9C36148af9C77354759b210b --sub 26054867937820587328159301681415153712869728729402639383884357844206994385379 --network ethberry_besu
+// hardhat sub-fund --vrf 0xa50a51c09a5c451C52BB714527E1974b686D8e77 --token 0x42699A7612A82f1d9C36148af9C77354759b210b --sub 86286475704445472511836148046058538780431588607371260219161208015379474780122 --network ethberry_besu
 
 // https://docs.chain.link/vrf/v2/subscription/supported-networks

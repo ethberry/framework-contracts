@@ -25,6 +25,7 @@ contract ERC721RandomPolygonAmoy is ERC721Random, ChainLinkPolygonAmoyV2Plus {
     ERC721Random(name, symbol, royalty, baseTokenURI)
     ChainLinkPolygonAmoyV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC721Random) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

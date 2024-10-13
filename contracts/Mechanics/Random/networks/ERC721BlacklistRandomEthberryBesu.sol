@@ -25,6 +25,7 @@ contract ERC721BlacklistRandomEthberryBesu is ERC721BlacklistRandom, ChainLinkEt
     ERC721BlacklistRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkEthberryBesuV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC721BlacklistRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

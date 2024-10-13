@@ -25,6 +25,7 @@ contract ERC998BlacklistRandomHardhat is ERC998BlacklistRandom, ChainLinkHardhat
     ERC998BlacklistRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkHardhatV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC998BlacklistRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

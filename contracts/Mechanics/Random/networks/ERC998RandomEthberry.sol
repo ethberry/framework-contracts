@@ -22,6 +22,7 @@ contract ERC998RandomEthberry is ERC998Random, ChainLinkEthberryV2Plus {
     uint96 royalty,
     string memory baseTokenURI
   ) ERC998Random(name, symbol, royalty, baseTokenURI) ChainLinkEthberryV2Plus(uint16(6), uint32(600000), uint32(1)) {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC998Random) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

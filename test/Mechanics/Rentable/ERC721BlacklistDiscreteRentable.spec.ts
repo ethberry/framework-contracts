@@ -2,13 +2,13 @@ import { shouldSupportsInterface } from "@ethberry/contracts-utils";
 import { shouldBehaveLikeAccessControl, shouldBehaveLikeBlackList } from "@ethberry/contracts-access";
 import { DEFAULT_ADMIN_ROLE, InterfaceId, METADATA_ROLE, MINTER_ROLE } from "@ethberry/contracts-constants";
 
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
-import { FrameworkInterfaceId } from "../constants";
-import { deployERC721 } from "./shared/fixtures";
-import { shouldBehaveLikeERC721Simple } from "./shared/simple";
-import { shouldBehaveLikeERC721Blacklist } from "./shared/blacklist";
-import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";
-import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { shouldBehaveLikeDiscrete } from "../Discrete/upgrade";
+import { FrameworkInterfaceId } from "../../constants";
+import { deployERC721 } from "../../ERC721/shared/fixtures";
+import { shouldBehaveLikeERC721Simple } from "../../ERC721/shared/simple";
+import { shouldBehaveLikeERC721Blacklist } from "../../ERC721/shared/blacklist";
+import { shouldBehaveLikeERC721Rentable } from "./shared";
+import { shouldMintCommon } from "../../ERC721/shared/simple/base/mintCommon";
 
 describe("ERC721BlacklistDiscreteRentable", function () {
   const factory = () => deployERC721(this.title);

@@ -28,6 +28,7 @@ contract ERC721BlacklistDiscreteRentableRandomEthereumSepolia is
     ERC721BlacklistDiscreteRentableRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkEthereumSepoliaV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber()
     internal
     override(ChainLinkBaseV2Plus, ERC721BlacklistDiscreteRentableRandom)

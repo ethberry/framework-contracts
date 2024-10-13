@@ -25,6 +25,7 @@ contract ERC998DiscreteRandomGemunion is ERC998DiscreteRandom, ChainLinkPolygonA
     ERC998DiscreteRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkPolygonAmoyV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber() internal override(ChainLinkBaseV2Plus, ERC998DiscreteRandom) returns (uint256 requestId) {
     return super.getRandomNumber();
   }

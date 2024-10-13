@@ -9,14 +9,14 @@ import {
   TEMPLATE_ID,
 } from "@ethberry/contracts-constants";
 
-import { FrameworkInterfaceId, templateId } from "../constants";
-import { shouldBehaveLikeDiscrete } from "../Mechanics/Discrete/upgrade";
-import { deployERC721 } from "./shared/fixtures";
-import { shouldMintRandom } from "./shared/random/mintRandom";
-import { shouldBehaveLikeERC721Simple } from "./shared/simple";
-import { shouldBehaveLikeERC721Blacklist, shouldBehaveLikeERC721BlacklistRandom } from "./shared/blacklist";
-import { shouldBehaveLikeERC721Rentable } from "./shared/rentable";
-import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { FrameworkInterfaceId, templateId } from "../../constants";
+import { shouldBehaveLikeDiscrete } from "../Discrete/upgrade";
+import { deployERC721 } from "../../ERC721/shared/fixtures";
+import { shouldMintRandom } from "./shared/mintRandom";
+import { shouldBehaveLikeERC721Simple } from "../../ERC721/shared/simple";
+import { shouldBehaveLikeERC721Blacklist, shouldBehaveLikeERC721BlacklistRandom } from "../../ERC721/shared/blacklist";
+import { shouldBehaveLikeERC721Rentable } from "../Rentable/shared";
+import { shouldMintCommon } from "../../ERC721/shared/simple/base/mintCommon";
 
 describe("ERC721BlacklistDiscreteRentableRandom", function () {
   const factory = () => deployERC721(this.title);

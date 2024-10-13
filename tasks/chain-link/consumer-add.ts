@@ -23,6 +23,6 @@ task("consumer-add", "Add vRF subscription")
     console.info("SubscriptionConsumerAdded", result);
   });
 
-// hardhat consumer-add --vrf 0xa50a51c09a5c451C52BB714527E1974b686D8e77 --consumer 0x9c1d0297b1f4e1d650046f15cbde1e0b7ba79a79 --sub 44566937714374084000807180412924014619026684743332696427206391282662458122019 --network ethberry_besu
+// hardhat consumer-add --vrf 0xa50a51c09a5c451C52BB714527E1974b686D8e77 --consumer 0x3d6bd361d501643fe2998e2cc92c8707b018aa56 --sub 97307802646217566339837191377470248960016610442480987956747409367736883433488 --network ethberry_besu
 
 // https://docs.chain.link/vrf/v2/subscription/supported-networks

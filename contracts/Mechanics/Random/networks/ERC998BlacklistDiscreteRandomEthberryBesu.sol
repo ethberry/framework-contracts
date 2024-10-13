@@ -25,6 +25,7 @@ contract ERC998BlacklistDiscreteRandomEthberryBesu is ERC998BlacklistDiscreteRan
     ERC998BlacklistDiscreteRandom(name, symbol, royalty, baseTokenURI)
     ChainLinkEthberryBesuV2Plus(uint16(6), uint32(600000), uint32(1))
   {}
+
   function getRandomNumber()
     internal
     override(ChainLinkBaseV2Plus, ERC998BlacklistDiscreteRandom)

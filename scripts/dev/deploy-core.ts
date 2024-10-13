@@ -51,6 +51,7 @@ async function main() {
       "ExchangeMergeFacet",
       "ExchangeMysteryBoxFacet",
       "ExchangePurchaseFacet",
+      "ExchangePurchaseRandomFacet",
       "ExchangeRaffleFacet",
       "ExchangeRentableFacet",
       "PausableFacet",

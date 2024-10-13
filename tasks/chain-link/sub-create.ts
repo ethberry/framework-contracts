@@ -4,7 +4,7 @@ import { Result } from "ethers";
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 task("sub-create", "Add VRF subscription")
-  .addParam("contract", "The VRF coordinator contract's address")
+  .addParam("vrf", "The VRF coordinator contract's address")
   .setAction(async (args, hre) => {
     const { vrf } = args;
 

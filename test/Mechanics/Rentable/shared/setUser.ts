@@ -5,7 +5,7 @@ import { time } from "@openzeppelin/test-helpers";
 import type { IERC721EnumOptions } from "@ethberry/contracts-erc721e";
 import { METADATA_ROLE } from "@ethberry/contracts-constants";
 
-import { customMintCommonERC721 } from "../customMintFn";
+import { customMintCommonERC721 } from "../../../ERC721/shared/customMintFn";
 
 export function shouldSetUser(factory: () => Promise<any>, options: IERC721EnumOptions = {}) {
   const { mint = customMintCommonERC721, tokenId: defaultTokenId = 1 } = options;

@@ -2,7 +2,7 @@ import { shouldUserExprires, shouldUserOf } from "@ethberry/contracts-erc721e";
 import type { IERC721EnumOptions } from "@ethberry/contracts-erc721e";
 
 import { shouldSetUser } from "./setUser";
-import { customMintCommonERC721 } from "../customMintFn";
+import { customMintCommonERC721 } from "../../../ERC721/shared/customMintFn";
 
 export function shouldBehaveLikeERC721Rentable(factory: () => Promise<any>, options: IERC721EnumOptions = {}) {
   options = Object.assign({}, { mint: customMintCommonERC721, tokenId: 1 }, options);

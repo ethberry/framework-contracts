@@ -218,8 +218,10 @@ export const fwFunctionNames = [
 
   "TopUp:topUp",
 
-  "ExchangeGenesFacet:breed",
   "ExchangePurchaseFacet:purchase",
+  "ExchangePurchaseRandomFacet:purchaseRandom",
+  "ExchangeGenesFacet:breed",
+  "ExchangeGenesFacet:purchaseGenes",
   "ExchangeRentableFacet:lend",
   "ExchangeClaimFacet:claim",
   "ExchangeClaimFacet:spend",

@@ -83,11 +83,12 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
 
   function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal virtual {
     Request memory request = _queue[requestId];
+    delete _queue[requestId];
+
+    uint256 tokenId = _mintCommon(request.account, templateId);
 
     // child will have moms template id
     uint256 templateId = _getRecordFieldValue(request.motherId, TEMPLATE_ID);
-
-    emit MintGenes(requestId, request.account, randomWords, templateId, _nextTokenId);
 
     uint256 motherGenes = _getRecordFieldValue(request.motherId, GENES);
     uint256 motherCounter = _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER);
@@ -100,15 +101,13 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
     _upsertRecordField(request.fatherId, PREGNANCY_TIMESTAMP, block.timestamp);
 
     // second+ generation
-    _upsertRecordField(_nextTokenId, MOTHER_ID, request.motherId);
-    _upsertRecordField(_nextTokenId, FATHER_ID, request.fatherId);
-    _upsertRecordField(_nextTokenId, PREGNANCY_COUNTER, 0);
-    _upsertRecordField(_nextTokenId, PREGNANCY_TIMESTAMP, 0);
-    _upsertRecordField(_nextTokenId, GENES, _mixGenes(motherGenes, fatherGenes, randomWords[0]));
+    _upsertRecordField(tokenId, MOTHER_ID, request.motherId);
+    _upsertRecordField(tokenId, FATHER_ID, request.fatherId);
+    _upsertRecordField(tokenId, PREGNANCY_COUNTER, 0);
+    _upsertRecordField(tokenId, PREGNANCY_TIMESTAMP, 0);
+    _upsertRecordField(tokenId, GENES, _mixGenes(motherGenes, fatherGenes, randomWords[0]));
 
-    delete _queue[requestId];
-
-    _mintCommon(request.account, templateId);
+    emit MintGenes(requestId, request.account, randomWords, templateId, tokenId);
   }
 
   function _mixGenes(

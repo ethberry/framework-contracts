@@ -2,11 +2,11 @@ import { shouldSupportsInterface } from "@ethberry/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@ethberry/contracts-constants";
 
-import { FrameworkInterfaceId, templateId } from "../constants";
-import { deployERC721 } from "./shared/fixtures";
-import { shouldMintRandom } from "./shared/random/mintRandom";
-import { shouldBehaveLikeERC721Simple } from "./shared/simple";
-import { shouldMintCommon } from "./shared/simple/base/mintCommon";
+import { FrameworkInterfaceId, templateId } from "../../constants";
+import { deployERC721 } from "../../ERC721/shared/fixtures";
+import { shouldMintRandom } from "./shared/mintRandom";
+import { shouldBehaveLikeERC721Simple } from "../../ERC721/shared/simple";
+import { shouldMintCommon } from "../../ERC721/shared/simple/base/mintCommon";
 
 describe("ERC721Random", function () {
   const factory = () => deployERC721(this.title);

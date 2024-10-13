@@ -36,9 +36,7 @@ contract ErrorsIdCalculator is
   IERC721Errors,
   IERC1155Errors,
   IAccessControl,
-
   IGeneralizedCollectionErrors,
-
   IDiamondErrors,
   IDiamondInitErrors,
   ISignatureValidatorErrors,
