@@ -97,7 +97,7 @@ export enum ContractEventSignatures {
   SubscriptionConsumerAdded = "SubscriptionConsumerAdded(uint64,address)",
   SubscriptionCreated = "SubscriptionCreated(uint64,address)",
   VrfSubscriptionSet = "VrfSubscriptionSet(uint64)",
-  EcommercePurchase = "EcommercePurchase(??)",
+  PurchaseEcommerce = "PurchaseEcommerce(??)",
   ReferralEvent = "ReferralEvent(address,address,(uint8,address,uint256,uint256)[])",
   ReferralProgram = "ReferralProgram((uint256,uint256,uint8,bool))",
   ReferralReward = "ReferralReward(address,address,uint8,address,uint256)",
@@ -219,7 +219,7 @@ export const fwFunctionNames = [
   "TopUp:topUp",
 
   "ExchangePurchaseFacet:purchase",
-  "ExchangePurchaseRandomFacet:purchaseRandom",
+  "ExchangeRandomFacet:purchaseRandom",
   "ExchangeGenesFacet:breed",
   "ExchangeGenesFacet:purchaseGenes",
   "ExchangeRentableFacet:lend",

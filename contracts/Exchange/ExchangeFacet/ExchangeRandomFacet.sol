@@ -15,7 +15,7 @@ import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 import { IERC721Random } from "../../Mechanics/Random/interfaces/IERC721Random.sol";
 
-contract ExchangePurchaseRandomFacet is SignatureValidator, DiamondOverride, Referral {
+contract ExchangeRandomFacet is SignatureValidator, DiamondOverride, Referral {
   event PurchaseRandom(address account, uint256 externalId, Asset item, Asset[] price);
 
   constructor() SignatureValidator() {}

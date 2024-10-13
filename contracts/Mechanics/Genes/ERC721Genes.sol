@@ -85,10 +85,10 @@ abstract contract ERC721Genes is IERC721Genes, ERC721Simple, GenesCryptoKitties 
     Request memory request = _queue[requestId];
     delete _queue[requestId];
 
-    uint256 tokenId = _mintCommon(request.account, templateId);
-
     // child will have moms template id
     uint256 templateId = _getRecordFieldValue(request.motherId, TEMPLATE_ID);
+
+    uint256 tokenId = _mintCommon(request.account, templateId);
 
     uint256 motherGenes = _getRecordFieldValue(request.motherId, GENES);
     uint256 motherCounter = _getRecordFieldValue(request.motherId, PREGNANCY_COUNTER);
