@@ -68,6 +68,14 @@ describe("WaitListFactoryDiamond", function () {
       const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx).to.emit(contractInstance, "WaitListDeployed").withArgs(address, externalId);
+
+      const waitListInstance = await ethers.getContractAt("WaitList", address);
+
+      const hasRole1 = await waitListInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
+      expect(hasRole1).to.equal(false);
+
+      const hasRole2 = await waitListInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {

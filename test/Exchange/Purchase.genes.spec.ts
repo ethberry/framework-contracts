@@ -10,10 +10,10 @@ import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
 import { deployLinkVrfFixture } from "../shared/link";
 import { randomRequest } from "../shared/randomRequest";
 import { expiresAt, externalId, motherGenes, tokenId } from "../constants";
-import { deployDiamond, deployErc721Base, wrapOneToManySignature } from "./shared";
 import { deployERC1363 } from "../ERC20/shared/fixtures";
 import { decodeMetadata } from "../shared/metadata";
 import { TokenMetadata } from "../types";
+import { deployDiamond, deployErc721Base, wrapOneToManySignature } from "./shared";
 
 describe("Diamond Exchange Genes", function () {
   const factory = async (facetName = "ExchangeGenesFacet"): Promise<any> => {
@@ -51,7 +51,7 @@ describe("Diamond Exchange Genes", function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const erc20Instance = await deployERC1363("ERC20Simple");
       await erc20Instance.mint(receiver.address, amount);

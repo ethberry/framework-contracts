@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
-import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
+import { getInitCodeHash } from "../../utils";
 
 describe("PredictionFactoryDiamond", function () {
   const factory = async (facetName = "PredictionFactoryFacet"): Promise<any> => {
@@ -81,12 +81,20 @@ describe("PredictionFactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(["uint256"], [100], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = getInitCodeHash(["uint256"], [100], bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "PredictionDeployed")
-        .withArgs(address, externalId, isEqualArray(["100"]));
+        .withArgs(address, externalId, [["100"]]);
+
+      const predictionInstance = await ethers.getContractAt("Prediction", address);
+
+      const hasRole1 = await predictionInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
+      expect(hasRole1).to.equal(false);
+
+      const hasRole2 = await predictionInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {

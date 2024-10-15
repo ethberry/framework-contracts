@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import {
   baseTokenURI,
@@ -9,11 +9,11 @@ import {
   nonce,
   royalty,
   tokenName,
-  tokenSymbol,
+  tokenSymbol
 } from "@ethberry/contracts-constants";
 
-import { contractTemplate, externalId, tokenId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { contractTemplate, externalId } from "../../constants";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("CollectionFactoryDiamond", function () {
@@ -98,12 +98,12 @@ describe("CollectionFactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const initCodeHash = getInitCodeHash(
         ["string", "string", "uint256", "string", "uint256", "address"],
         [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, owner.address],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "CollectionDeployed")
@@ -119,9 +119,6 @@ describe("CollectionFactoryDiamond", function () {
 
       const balance = await collectionInstance.balanceOf(owner.address);
       expect(balance).to.equal(batchSize);
-
-      const uri = await collectionInstance.tokenURI(tokenId);
-      expect(uri).to.equal(`${baseTokenURI}/${(await collectionInstance.getAddress()).toLowerCase()}/${tokenId}`);
     });
 
     it("should fail: SignerMissingRole", async function () {

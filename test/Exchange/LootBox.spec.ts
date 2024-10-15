@@ -35,7 +35,7 @@ describe("Diamond Exchange LootBox", function () {
         const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
-        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
+        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimple", exchangeInstance);
 
         const boxConfig = {
           max: 1,
@@ -153,7 +153,7 @@ describe("Diamond Exchange LootBox", function () {
         const generateSignature = await getSignatures(exchangeInstance);
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
-        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
+        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimple", exchangeInstance);
 
         const boxConfig = {
           min: 1,
@@ -249,7 +249,7 @@ describe("Diamond Exchange LootBox", function () {
         await pausableInstance.pause();
 
         const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
-        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimpleHardhat", exchangeInstance);
+        const lootBoxInstance = await deployErc721Base("ERC721LootBoxSimple", exchangeInstance);
 
         const boxConfig = {
           min: 1,

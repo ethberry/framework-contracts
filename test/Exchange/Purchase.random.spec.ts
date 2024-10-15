@@ -6,15 +6,15 @@ import { Contract, ZeroAddress, ZeroHash } from "ethers";
 import { amount, nonce } from "@ethberry/contracts-constants";
 
 import { VRFCoordinatorV2PlusMock } from "../../typechain-types";
-import { deployDiamond, deployErc721Base, wrapOneToManySignature } from "./shared";
 import { expiresAt, externalId, extra, params, tokenId } from "../constants";
+import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { isEqualEventArgArrObj, isEqualEventArgObj } from "../utils";
 import { deployLinkVrfFixture } from "../shared/link";
-import { deployERC1363, deployUsdt, deployWeth } from "../ERC20/shared/fixtures";
 import { randomRequest } from "../shared/randomRequest";
+import { deployDiamond, deployErc721Base, wrapOneToManySignature } from "./shared";
 
-describe("Diamond Exchange Purchase", function () {
-  const factory = async (facetName = "ExchangePurchaseFacet"): Promise<any> => {
+describe("Diamond Exchange Purchase (Random)", function () {
+  const factory = async (facetName = "ExchangeRandomFacet"): Promise<any> => {
     const diamondInstance = await deployDiamond(
       "DiamondExchange",
       [facetName, "AccessControlFacet", "PausableFacet"],
@@ -49,7 +49,7 @@ describe("Diamond Exchange Purchase", function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
-      const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Random", exchangeInstance);
 
       const usdtInstance = await deployUsdt();
       await usdtInstance.transfer(receiver.address, amount);
@@ -92,7 +92,7 @@ describe("Diamond Exchange Purchase", function () {
         ],
       });
 
-      const tx1 = exchangeInstance.connect(receiver).purchase(
+      const tx1 = exchangeInstance.connect(receiver).purchaseRandom(
         {
           externalId,
           expiresAt,
@@ -118,7 +118,7 @@ describe("Diamond Exchange Purchase", function () {
         signature,
       );
 
-      await expect(tx1).to.emit(exchangeInstance, "Purchase");
+      await expect(tx1).to.emit(exchangeInstance, "PurchaseRandom");
       await randomRequest(erc721Instance, vrfInstance);
 
       const eventFilter = vrfInstance.filters.RandomWordsFulfilled();
@@ -143,7 +143,7 @@ describe("Diamond Exchange Purchase", function () {
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
 
-      const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Random", exchangeInstance);
 
       const wethInstance = await deployWeth();
       await wethInstance.transfer(receiver.address, amount);
@@ -186,7 +186,7 @@ describe("Diamond Exchange Purchase", function () {
         ],
       });
 
-      const tx1 = exchangeInstance.connect(receiver).purchase(
+      const tx1 = exchangeInstance.connect(receiver).purchaseRandom(
         {
           externalId,
           expiresAt,
@@ -213,7 +213,7 @@ describe("Diamond Exchange Purchase", function () {
         { gasLimit: 40966424 }, // block gasLimit
       );
 
-      await expect(tx1).to.emit(exchangeInstance, "Purchase");
+      await expect(tx1).to.emit(exchangeInstance, "PurchaseRandom");
       await randomRequest(erc721Instance, vrfInstance);
 
       const eventFilter = vrfInstance.filters.RandomWordsFulfilled();
@@ -272,7 +272,7 @@ describe("Diamond Exchange Purchase", function () {
       const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
       await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
 
-      const tx1 = exchangeInstance.connect(receiver).purchase(
+      const tx1 = exchangeInstance.connect(receiver).purchaseRandom(
         {
           externalId,
           expiresAt,
@@ -300,7 +300,7 @@ describe("Diamond Exchange Purchase", function () {
       );
 
       await expect(tx1)
-        .to.emit(exchangeInstance, "Purchase")
+        .to.emit(exchangeInstance, "PurchaseRandom")
         .withArgs(
           receiver.address,
           externalId,
@@ -324,7 +324,7 @@ describe("Diamond Exchange Purchase", function () {
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
 
-      const erc721Instance = await deployErc721Base("ERC721RandomHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Random", exchangeInstance);
       const erc20Instance = await deployERC1363("ERC20Blacklist");
       await erc20Instance.mint(receiver.address, amount);
       await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
@@ -365,7 +365,7 @@ describe("Diamond Exchange Purchase", function () {
         ],
       });
 
-      const tx1 = exchangeInstance.connect(receiver).purchase(
+      const tx1 = exchangeInstance.connect(receiver).purchaseRandom(
         {
           externalId,
           expiresAt,
@@ -402,7 +402,7 @@ describe("Diamond Exchange Purchase", function () {
 
       await pausableInstance.pause();
 
-      const tx1 = exchangeInstance.purchase(
+      const tx1 = exchangeInstance.purchaseRandom(
         params,
         {
           tokenType: 0,

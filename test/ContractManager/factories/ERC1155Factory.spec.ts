@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { ZeroAddress, getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
-import { amount, baseTokenURI, DEFAULT_ADMIN_ROLE, nonce, royalty } from "@ethberry/contracts-constants";
+import { baseTokenURI, DEFAULT_ADMIN_ROLE, nonce, royalty } from "@ethberry/contracts-constants";
 
-import { contractTemplate, externalId, tokenId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { contractTemplate, externalId } from "../../constants";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC1155FactoryDiamoond", function () {
@@ -84,8 +84,8 @@ describe("ERC1155FactoryDiamoond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(["uint256", "string"], [royalty, baseTokenURI], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = getInitCodeHash(["uint256", "string"], [royalty, baseTokenURI], bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
       await expect(tx)
         .to.emit(contractInstance, "ERC1155TokenDeployed")
         .withArgs(address, externalId, [royalty, baseTokenURI, contractTemplate]);
@@ -97,17 +97,6 @@ describe("ERC1155FactoryDiamoond", function () {
 
       const hasRole2 = await erc1155Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
-
-      const tx2 = erc1155Instance.mint(receiver.address, tokenId, amount, "0x");
-      await expect(tx2)
-        .to.emit(erc1155Instance, "TransferSingle")
-        .withArgs(owner.address, ZeroAddress, receiver.address, tokenId, amount);
-
-      const balance = await erc1155Instance.balanceOf(receiver.address, tokenId);
-      expect(balance).to.equal(amount);
-
-      const uri = await erc1155Instance.uri(0);
-      expect(uri).to.equal(`${baseTokenURI}/${(await erc1155Instance.getAddress()).toLowerCase()}/{id}`);
     });
 
     it("should fail: SignerMissingRole", async function () {

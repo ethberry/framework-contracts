@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress, ZeroAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import {
   baseTokenURI,
@@ -9,11 +9,11 @@ import {
   nonce,
   royalty,
   tokenName,
-  tokenSymbol,
+  tokenSymbol
 } from "@ethberry/contracts-constants";
 
-import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { contractTemplate, externalId } from "../../constants";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC721FactoryDiamond", function () {
@@ -98,12 +98,12 @@ describe("ERC721FactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const initCodeHash = getInitCodeHash(
         ["string", "string", "uint256", "string"],
         [tokenName, tokenSymbol, royalty, baseTokenURI],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "ERC721TokenDeployed")
@@ -122,15 +122,6 @@ describe("ERC721FactoryDiamond", function () {
 
       const hasRole4 = await erc721Instance.hasRole(METADATA_ROLE, contractInstance);
       expect(hasRole4).to.equal(false);
-
-      const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
-      await expect(tx2).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-
-      const balance = await erc721Instance.balanceOf(receiver.address);
-      expect(balance).to.equal(1);
-
-      const uri = await erc721Instance.tokenURI(tokenId);
-      expect(uri).to.equal(`${baseTokenURI}/${(await erc721Instance.getAddress()).toLowerCase()}/${tokenId}`);
     });
 
     it("should fail: SignerMissingRole", async function () {

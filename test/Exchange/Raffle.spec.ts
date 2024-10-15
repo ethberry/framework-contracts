@@ -130,8 +130,6 @@ describe("Diamond Exchange Raffle", function () {
             tokenId: 121n,
             amount: amount * 1n,
           }),
-          1n, // roundId
-          1n, // ticket indexId
         );
 
       const balance = await erc20Instance.balanceOf(raffleInstance);
@@ -491,8 +489,6 @@ describe("Diamond Exchange Raffle", function () {
             tokenId: 121n,
             amount: amount * 1n,
           }),
-          1n,
-          1n,
         );
 
       const tx2 = exchangeInstance.connect(receiver).purchaseRaffle(

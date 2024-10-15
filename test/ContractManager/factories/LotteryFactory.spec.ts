@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
-import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
-import { buildBytecode, buildCreate2Address, getContractName, isEqualArray } from "../../utils";
+import { getContractName, getInitCodeHash } from "../../utils";
 import { externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
 
@@ -87,20 +86,20 @@ describe("LotteryFactoryDiamoond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(["uint256", "uint256"], [100, 30], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = getInitCodeHash(["uint256", "uint256"], [100, 30], bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "LotteryDeployed")
-        .withArgs(address, externalId, isEqualArray(["100", "30"]));
+        .withArgs(address, externalId, [["100", "30"]]);
 
       const lotteryInstance = await ethers.getContractAt(getContractName("Lottery", network.name), address);
 
-      const lotteryConfig = await lotteryInstance.getLotteryInfo();
-      expect(recursivelyDecodeResult(lotteryConfig)).deep.include({
-        timeLagBeforeRelease: 100n,
-        commission: 30n,
-      });
+      const hasRole1 = await lotteryInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
+      expect(hasRole1).to.equal(false);
+
+      const hasRole2 = await lotteryInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {

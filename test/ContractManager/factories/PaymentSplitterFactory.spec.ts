@@ -1,12 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
-import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
 import { externalId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("PaymentSplitterDiamoond", function () {
@@ -82,7 +81,7 @@ describe("PaymentSplitterDiamoond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const buildByteCode = getInitCodeHash(
         ["address[]", "uint256[]"],
         [
           [owner.address, receiver.address],
@@ -90,18 +89,14 @@ describe("PaymentSplitterDiamoond", function () {
         ],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
 
-      await expect(tx).to.emit(contractInstance, "PaymentSplitterDeployed");
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode);
 
-      const eventFilter = contractInstance.filters.PaymentSplitterDeployed();
-      const events = await contractInstance.queryFilter(eventFilter);
-      const { args } = events[0];
-      const decodedArgs = recursivelyDecodeResult(args);
-      expect(decodedArgs.account).to.equal(address);
-      expect(decodedArgs.externalId).to.equal(1n);
-      expect(decodedArgs.args.payees).to.deep.equal([owner.address, receiver.address]);
-      expect(decodedArgs.args.shares).to.deep.equal([50n, 50n]);
+      await expect(tx).to.emit(contractInstance, "PaymentSplitterDeployed")
+        .withArgs(address, externalId, [
+          [owner.address, receiver.address],
+          [50n, 50n]
+        ]);
     });
 
     it("should fail: SignerMissingRole", async function () {

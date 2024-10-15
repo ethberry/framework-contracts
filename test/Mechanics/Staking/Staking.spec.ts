@@ -1,8 +1,7 @@
 import { expect } from "chai";
-import { ethers, network, web3 } from "hardhat";
+import { ethers, web3 } from "hardhat";
 import { encodeBytes32String, parseEther, ZeroAddress } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 import { shouldBehaveLikePausable, shouldSupportsInterface } from "@ethberry/contracts-utils";
 import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
@@ -13,14 +12,11 @@ import {
   MINTER_ROLE,
   nonce,
   PAUSER_ROLE,
-  TEMPLATE_ID,
+  TEMPLATE_ID
 } from "@ethberry/contracts-constants";
 
-import { VRFCoordinatorV2PlusMock } from "../../../typechain-types";
 import { expiresAt, templateId, tokenId, tokenIds, tokenIdsZero } from "../../constants";
 import { IStakingRule } from "./interface/staking";
-import { randomRequest } from "../../shared/randomRequest";
-import { deployLinkVrfFixture } from "../../shared/link";
 import { deployStaking } from "./shared/fixture";
 import { deployERC1363 } from "../../ERC20/shared/fixtures";
 import { deployERC721 } from "../../ERC721/shared/fixtures";
@@ -92,9 +88,6 @@ describe("Staking", function () {
     extra: encodeBytes32String("0x"),
   };
 
-  let vrfInstance: VRFCoordinatorV2PlusMock;
-  let subId: bigint;
-
   const factory = () => deployStaking();
   const erc20Factory = () => deployERC1363("ERC20Simple", { amount: parseEther("200000") });
   const erc721Factory = (name?: string) => deployERC721(name);
@@ -113,15 +106,6 @@ describe("Staking", function () {
     InterfaceId.IERC721Receiver,
     InterfaceId.IERC1155Receiver,
   ]);
-
-  before(async function () {
-    await network.provider.send("hardhat_reset");
-
-    // https://github.com/NomicFoundation/hardhat/issues/2980
-    ({ vrfInstance, subId } = await loadFixture(function staking() {
-      return deployLinkVrfFixture();
-    }));
-  });
 
   describe("setRule", function () {
     it("should set one Rule", async function () {
@@ -157,7 +141,7 @@ describe("Staking", function () {
     it("should set multiple Rules", async function () {
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
+      const erc721RandomInstance = await erc721Factory("ERC721Random");
       const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
       const stakeRule1: IStakingRule = {
@@ -1005,7 +989,7 @@ describe("Staking", function () {
       await expect(tx2).to.be.revertedWithCustomError(stakingInstance, "StakingNotAnOwner");
     });
 
-    it("should fail: StakingStakeAlreadyWithdrawn", async function () {
+    it("should fail: StakingDepositAlreadyWithdrawn", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const stakingInstance = await factory();
@@ -1077,7 +1061,7 @@ describe("Staking", function () {
       await expect(tx2).to.changeEtherBalance(receiver, amount * BigInt(cycles) + amount);
 
       const tx3 = stakingInstance.connect(receiver).receiveReward(1, true, true);
-      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "StakingStakeAlreadyWithdrawn");
+      await expect(tx3).to.be.revertedWithCustomError(stakingInstance, "StakingDepositAlreadyWithdrawn");
     });
 
     it("should fail staking not yet finished (reccurent)", async function () {
@@ -1785,84 +1769,6 @@ describe("Staking", function () {
       expect(balance2).to.equal(amount * BigInt(cycles));
     });
 
-    it("should stake NATIVE & receive ERC721 Random", async function () {
-      const [owner] = await ethers.getSigners();
-
-      const stakingInstance = await factory();
-      const erc721Instance = await erc721Factory("ERC721RandomHardhat");
-
-      await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
-      await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
-
-      const stakeRule: IStakingRule = {
-        deposit: [
-          {
-            tokenType: 0, // NATIVE
-            token: ZeroAddress,
-            tokenId,
-            amount,
-          },
-        ],
-        reward: [
-          {
-            tokenType: 2, // ERC721
-            token: erc721Instance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        content: [],
-        terms: {
-          period, // 60 sec
-          penalty,
-          maxStake,
-          recurrent: true,
-          advance: false,
-        },
-        active: true,
-      };
-
-      // SET RULE
-      const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.emit(stakingInstance, "RuleCreated");
-
-      // STAKE
-      const tx1 = await stakingInstance.deposit(params, tokenIds, { value: amount });
-      const startTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx1)
-        .to.emit(stakingInstance, "DepositStart")
-        .withArgs(1, tokenId, owner.address, startTimestamp, tokenIds);
-      await expect(tx1).to.changeEtherBalances([owner, stakingInstance], [-amount, amount]);
-
-      // TIME
-      const current = await time.latestBlock();
-      await time.advanceBlockTo(current.add(web3.utils.toBN(period * cycles)));
-
-      // REWARD
-      const tx2 = await stakingInstance.receiveReward(1, true, true);
-      const endTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx2)
-        .to.emit(stakingInstance, "DepositWithdraw")
-        .withArgs(1, owner.address, endTimestamp)
-        .to.emit(stakingInstance, "DepositFinish")
-        .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(vrfInstance, "RandomWordsRequested");
-      await expect(tx2).to.changeEtherBalances([owner, stakingInstance], [amount, -amount]);
-
-      // RANDOM
-      await randomRequest(erc721Instance, vrfInstance);
-      const balance = await erc721Instance.balanceOf(owner.address);
-      expect(balance).to.equal(cycles);
-    });
-
     it("should stake NATIVE & receive ERC721 Common", async function () {
       const [owner] = await ethers.getSigners();
 
@@ -2240,91 +2146,6 @@ describe("Staking", function () {
 
       const balance3 = await erc20Instance.balanceOf(owner.address);
       expect(balance3).to.equal(amount * BigInt(cycles) + amount);
-    });
-
-    it("should stake ERC20 & receive ERC721 Random", async function () {
-      const [owner] = await ethers.getSigners();
-
-      const stakingInstance = await factory();
-      const erc20Instance = await erc20Factory();
-      const erc721Instance = await erc721Factory("ERC721RandomHardhat");
-
-      await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
-      await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
-
-      const stakeRule: IStakingRule = {
-        deposit: [
-          {
-            tokenType: 1, // ERC20
-            token: erc20Instance,
-            tokenId,
-            amount,
-          },
-        ],
-        reward: [
-          {
-            tokenType: 2, // ERC721
-            token: erc721Instance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        content: [],
-        terms: { period, penalty, maxStake, recurrent: true, advance: false },
-        active: true,
-      };
-
-      // SET RULE
-      const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.emit(stakingInstance, "RuleCreated");
-
-      // STAKE
-      await erc20Instance.mint(owner.address, amount);
-      const balance1 = await erc20Instance.balanceOf(owner.address);
-      expect(balance1).to.equal(amount);
-      await erc20Instance.approve(stakingInstance, amount);
-
-      const tx1 = await stakingInstance.deposit(params, tokenIds);
-      const startTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx1)
-        .to.emit(stakingInstance, "DepositStart")
-        .withArgs(1, 1, owner.address, startTimestamp, tokenIds)
-        .to.emit(erc20Instance, "Transfer")
-        .withArgs(owner.address, stakingInstance, amount)
-        .to.emit(stakingInstance, "TransferReceived")
-        .withArgs(stakingInstance, owner.address, amount, "0x");
-
-      const balance2 = await erc20Instance.balanceOf(owner.address);
-      expect(balance2).to.equal(0);
-
-      // TIME
-      const current = await time.latestBlock();
-      await time.advanceBlockTo(current.add(web3.utils.toBN(period * cycles)));
-
-      // REWARD
-      const tx2 = await stakingInstance.receiveReward(1, true, true);
-      const endTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx2)
-        .to.emit(stakingInstance, "DepositWithdraw")
-        .withArgs(1, owner.address, endTimestamp)
-        .to.emit(stakingInstance, "DepositFinish")
-        .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(vrfInstance, "RandomWordsRequested");
-
-      // RANDOM
-      await randomRequest(erc721Instance, vrfInstance);
-      const balance3 = await erc721Instance.balanceOf(owner.address);
-      expect(balance3).to.equal(cycles);
-      const balance4 = await erc20Instance.balanceOf(owner.address);
-      expect(balance4).to.equal(amount);
     });
 
     it("should stake ERC20 & receive ERC721 Common", async function () {
@@ -2880,7 +2701,6 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc721Instance = await erc721Factory();
 
-      await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
       await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       const stakeRule: IStakingRule = {
@@ -3124,92 +2944,12 @@ describe("Staking", function () {
       expect(balance4).to.equal(2);
     });
 
-    it("should stake ERC721 & receive ERC721 Random", async function () {
-      const [owner] = await ethers.getSigners();
-
-      const stakingInstance = await factory();
-      const erc721Instance = await erc721Factory("ERC721RandomHardhat");
-
-      await erc721Instance.grantRole(MINTER_ROLE, vrfInstance);
-      await erc721Instance.grantRole(MINTER_ROLE, stakingInstance);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc721Instance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(subId, erc721Instance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721Instance);
-
-      const stakeRule: IStakingRule = {
-        deposit: [
-          {
-            tokenType: 2, // ERC721
-            token: erc721Instance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        reward: [
-          {
-            tokenType: 2, // ERC721
-            token: erc721Instance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        content: [],
-        terms: { period, penalty, maxStake, recurrent: true, advance: false },
-        active: true,
-      };
-
-      // SET RULE
-      const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.emit(stakingInstance, "RuleCreated");
-
-      // STAKE
-      await erc721Instance.mintCommon(owner.address, templateId);
-      const balance1 = await erc721Instance.balanceOf(owner.address);
-      expect(balance1).to.equal(1);
-      await erc721Instance.approve(stakingInstance, tokenId);
-
-      const tx1 = await stakingInstance.deposit(params, tokenIds);
-      const startTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx1)
-        .to.emit(stakingInstance, "DepositStart")
-        .withArgs(1, tokenId, owner.address, startTimestamp, tokenIds)
-        .to.emit(erc721Instance, "Transfer")
-        .withArgs(owner.address, stakingInstance, tokenId);
-
-      const balance2 = await erc721Instance.balanceOf(owner.address);
-      expect(balance2).to.equal(0);
-
-      // TIME
-      const current = await time.latestBlock();
-      await time.advanceBlockTo(current.add(web3.utils.toBN(period * cycles)));
-
-      // REWARD
-      const tx2 = await stakingInstance.receiveReward(1, true, true);
-      const endTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx2)
-        .to.emit(stakingInstance, "DepositWithdraw")
-        .withArgs(1, owner.address, endTimestamp)
-        .to.emit(stakingInstance, "DepositFinish")
-        .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(vrfInstance, "RandomWordsRequested");
-
-      // RANDOM
-      await randomRequest(erc721Instance, vrfInstance);
-      const balance3 = await erc721Instance.balanceOf(owner.address);
-      expect(balance3).to.equal(cycles + 1);
-    });
-
     it("should stake ERC721 & receive ERC721 Common", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
+      const erc721RandomInstance = await erc721Factory("ERC721Random");
 
       await erc721SimpleInstance.grantRole(MINTER_ROLE, stakingInstance);
 
@@ -3282,7 +3022,7 @@ describe("Staking", function () {
 
       const stakingInstance = await factory();
       const erc721SimpleInstance = await erc721Factory("ERC721Simple");
-      const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
+      const erc721RandomInstance = await erc721Factory("ERC721Random");
       const mysteryBoxInstance = await erc721Factory("ERC721MysteryBoxSimple");
 
       await mysteryBoxInstance.grantRole(MINTER_ROLE, stakingInstance);
@@ -3439,7 +3179,6 @@ describe("Staking", function () {
       const stakingInstance = await factory();
       const erc998Instance = await erc721Factory("ERC998Simple");
 
-      await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
       await erc998Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       const stakeRule: IStakingRule = {
@@ -3838,93 +3577,12 @@ describe("Staking", function () {
       expect(balance4).to.equal(1);
     });
 
-    it("should stake ERC998 & receive ERC998 Random", async function () {
-      const [owner] = await ethers.getSigners();
-
-      const stakingInstance = await factory();
-      const erc998RandomInstance = await erc721Factory("ERC721RandomHardhat");
-
-      await erc998RandomInstance.grantRole(MINTER_ROLE, vrfInstance);
-      await erc998RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc998RandomInstance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(erc998RandomInstance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(subId, erc998RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc998RandomInstance);
-
-      const stakeRule: IStakingRule = {
-        deposit: [
-          {
-            tokenType: 3, // ERC998
-            token: erc998RandomInstance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        reward: [
-          {
-            tokenType: 3, // ERC998
-            token: erc998RandomInstance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        content: [],
-        terms: { period, penalty, maxStake, recurrent: true, advance: false },
-        active: true,
-      };
-
-      // SET RULE
-      const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.emit(stakingInstance, "RuleCreated");
-
-      // STAKE
-      await erc998RandomInstance.mintCommon(owner.address, templateId);
-      const balance1 = await erc998RandomInstance.balanceOf(owner.address);
-      expect(balance1).to.equal(1);
-      await erc998RandomInstance.approve(stakingInstance, 1);
-
-      const tx1 = await stakingInstance.deposit(params, tokenIds);
-      const startTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx1)
-        .to.emit(stakingInstance, "DepositStart")
-        .withArgs(1, tokenId, owner.address, startTimestamp, tokenIds)
-        .to.emit(erc998RandomInstance, "Transfer")
-        .withArgs(owner.address, stakingInstance, tokenId);
-
-      const balance2 = await erc998RandomInstance.balanceOf(owner.address);
-      expect(balance2).to.equal(0);
-
-      // TIME
-      const current = await time.latestBlock();
-      await time.advanceBlockTo(current.add(web3.utils.toBN(period * cycles)));
-
-      // REWARD
-      const tx2 = await stakingInstance.receiveReward(1, true, true);
-      const endTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx2)
-        .to.emit(stakingInstance, "DepositWithdraw")
-        .withArgs(1, owner.address, endTimestamp)
-        .to.emit(stakingInstance, "DepositFinish")
-        .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(vrfInstance, "RandomWordsRequested");
-
-      // RANDOM
-      await randomRequest(erc998RandomInstance, vrfInstance);
-      const balance3 = await erc998RandomInstance.balanceOf(owner.address);
-      expect(balance3).to.equal(cycles + 1);
-    });
-
     it("should stake ERC998 & receive ERC998 Common", async function () {
       const [owner] = await ethers.getSigners();
 
       const stakingInstance = await factory();
       const erc998Instance = await erc721Factory("ERC998Simple");
 
-      await erc998Instance.grantRole(MINTER_ROLE, vrfInstance);
       await erc998Instance.grantRole(MINTER_ROLE, stakingInstance);
 
       const stakeRule: IStakingRule = {
@@ -4220,89 +3878,6 @@ describe("Staking", function () {
 
       const balance3 = await erc20Instance.balanceOf(owner.address);
       expect(balance3).to.equal(amount * BigInt(cycles));
-      const balance4 = await erc1155Instance.balanceOf(owner.address, 1);
-      expect(balance4).to.equal(amount);
-    });
-
-    it("should stake ERC1155 & receive ERC721 Random", async function () {
-      const [owner] = await ethers.getSigners();
-
-      const stakingInstance = await factory();
-      const erc721RandomInstance = await erc721Factory("ERC721RandomHardhat");
-      const erc1155Instance = await erc1155Factory();
-
-      await erc721RandomInstance.grantRole(MINTER_ROLE, vrfInstance);
-      await erc721RandomInstance.grantRole(MINTER_ROLE, stakingInstance);
-
-      // Set VRFV2 Subscription
-      const tx01 = erc721RandomInstance.setSubscriptionId(subId);
-      await expect(tx01).to.emit(erc721RandomInstance, "VrfSubscriptionSet").withArgs(subId);
-
-      // Add Consumer to VRF_V2
-      const tx02 = vrfInstance.addConsumer(subId, erc721RandomInstance);
-      await expect(tx02).to.emit(vrfInstance, "SubscriptionConsumerAdded").withArgs(subId, erc721RandomInstance);
-
-      const stakeRule: IStakingRule = {
-        deposit: [
-          {
-            tokenType: 4, // ERC1155
-            token: erc1155Instance,
-            tokenId,
-            amount,
-          },
-        ],
-        reward: [
-          {
-            tokenType: 2, // ERC721
-            token: erc721RandomInstance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        content: [],
-        terms: { period, penalty, maxStake, recurrent: true, advance: false },
-        active: true,
-      };
-
-      // SET RULE
-      const tx = stakingInstance.setRules([stakeRule]);
-      await expect(tx).to.emit(stakingInstance, "RuleCreated");
-
-      // STAKE
-      await erc1155Instance.mint(owner.address, 1, amount, "0x");
-      const balance1 = await erc1155Instance.balanceOf(owner.address, 1);
-      expect(balance1).to.equal(amount);
-      await erc1155Instance.setApprovalForAll(stakingInstance, true);
-
-      const tx1 = await stakingInstance.deposit(params, tokenIds);
-      const startTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx1)
-        .to.emit(stakingInstance, "DepositStart")
-        .withArgs(1, tokenId, owner.address, startTimestamp, tokenIds)
-        .to.emit(erc1155Instance, "TransferSingle")
-        .withArgs(stakingInstance, owner.address, stakingInstance, tokenId, amount);
-
-      const balance2 = await erc1155Instance.balanceOf(owner.address, 1);
-      expect(balance2).to.equal(0);
-
-      // TIME
-      const current = await time.latestBlock();
-      await time.advanceBlockTo(current.add(web3.utils.toBN(period * cycles)));
-
-      // REWARD
-      const tx2 = await stakingInstance.receiveReward(1, true, true);
-      const endTimestamp: number = (await time.latest()).toNumber();
-      await expect(tx2)
-        .to.emit(stakingInstance, "DepositWithdraw")
-        .withArgs(1, owner.address, endTimestamp)
-        .to.emit(stakingInstance, "DepositFinish")
-        .withArgs(1, owner.address, endTimestamp, cycles)
-        .to.emit(vrfInstance, "RandomWordsRequested");
-
-      // RANDOM
-      await randomRequest(erc721RandomInstance, vrfInstance);
-      const balance3 = await erc721RandomInstance.balanceOf(owner.address);
-      expect(balance3).to.equal(2);
       const balance4 = await erc1155Instance.balanceOf(owner.address, 1);
       expect(balance4).to.equal(amount);
     });

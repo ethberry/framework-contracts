@@ -4,7 +4,7 @@ import { getCreate2Address, keccak256 } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
 
-import { getContractName, isContract } from "../../utils";
+import { getContractName } from "../../utils";
 import { externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
 
@@ -71,8 +71,13 @@ describe("RaffleFactoryDiamond", function () {
 
       await expect(tx).to.emit(contractInstance, "RaffleDeployed").withArgs(address, externalId);
 
-      const isContractCheck = await isContract(address, ethers.provider);
-      expect(isContractCheck).to.equal(true);
+      const raffleInstance = await ethers.getContractAt(getContractName("Raffle", network.name), address);
+
+      const hasRole1 = await raffleInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
+      expect(hasRole1).to.equal(false);
+
+      const hasRole2 = await raffleInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {

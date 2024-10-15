@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress, ZeroAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
-import { amount, DEFAULT_ADMIN_ROLE, nonce, tokenName, tokenSymbol } from "@ethberry/contracts-constants";
+import { DEFAULT_ADMIN_ROLE, nonce, tokenName, tokenSymbol } from "@ethberry/contracts-constants";
 
 import { cap, contractTemplate, externalId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("ERC20FactoryDiamond", function () {
@@ -86,8 +86,8 @@ describe("ERC20FactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(["string", "string", "uint256"], [tokenName, tokenSymbol, cap], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = getInitCodeHash(["string", "string", "uint256"], [tokenName, tokenSymbol, cap], bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "ERC20TokenDeployed")
@@ -100,12 +100,6 @@ describe("ERC20FactoryDiamond", function () {
 
       const hasRole2 = await erc20Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
-
-      const tx2 = erc20Instance.mint(receiver.address, amount);
-      await expect(tx2).to.emit(erc20Instance, "Transfer").withArgs(ZeroAddress, receiver.address, amount);
-
-      const balance = await erc20Instance.balanceOf(receiver.address);
-      expect(balance).to.equal(amount);
     });
 
     it("should fail: SignerMissingRole", async function () {

@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { keccak256, getCreate2Address } from "ethers";
+import { getCreate2Address, keccak256 } from "ethers";
 
-import { DEFAULT_ADMIN_ROLE, PAUSER_ROLE, nonce } from "@ethberry/contracts-constants";
+import { DEFAULT_ADMIN_ROLE, nonce, PAUSER_ROLE } from "@ethberry/contracts-constants";
 
 import { contractTemplate, externalId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
@@ -80,10 +80,11 @@ describe("StakingFactoryDiamond", function () {
 
       await expect(tx).to.emit(contractInstance, "StakingDeployed").withArgs(address, externalId, [contractTemplate]);
 
-      // TEST ROLES
       const staking = await ethers.getContractAt("Staking", address);
+
       const hasRole1 = await staking.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole1).to.equal(true);
+
       const hasRole2 = await staking.hasRole(PAUSER_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
     });

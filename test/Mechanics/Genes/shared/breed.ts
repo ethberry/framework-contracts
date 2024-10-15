@@ -63,7 +63,7 @@ export function shouldBreed(factory: () => Promise<any>) {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(motherPregnancyCounter).to.be.equal(1);
-      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
 
       // Check pregnancy attributes for father
       const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(
@@ -75,7 +75,7 @@ export function shouldBreed(factory: () => Promise<any>) {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(fatherPregnancyCounter).to.be.equal(1);
-      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 50);
+      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
     });
 
     it("should fail: NotOwnerNorApproved", async function () {

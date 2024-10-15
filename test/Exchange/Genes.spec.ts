@@ -51,7 +51,7 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const tx01 = await erc721Instance.setSubscriptionId(subId);
       await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
@@ -153,7 +153,7 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const tx01 = await erc721Instance.setSubscriptionId(subId);
       await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
@@ -197,7 +197,7 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const tx01 = await erc721Instance.setSubscriptionId(subId);
       await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
@@ -287,7 +287,7 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const tx01 = await erc721Instance.setSubscriptionId(subId);
       await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
@@ -358,7 +358,7 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       const tx01 = await erc721Instance.setSubscriptionId(subId);
       await expect(tx01).to.emit(erc721Instance, "VrfSubscriptionSet").withArgs(subId);
@@ -405,8 +405,8 @@ describe("Diamond Exchange Genes", function () {
       const fatherGenes = generateRandomGenes();
 
       const exchangeInstance = await factory();
-      const erc721Instance1 = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
-      const erc721Instance2 = await deployErc721Base("ERC721GenesHardhat", exchangeInstance);
+      const erc721Instance1 = await deployErc721Base("ERC721Genes", exchangeInstance);
+      const erc721Instance2 = await deployErc721Base("ERC721Genes", exchangeInstance);
 
       await erc721Instance1.mintGenes(owner.address, 1, motherGenes);
       await erc721Instance2.mintGenes(owner.address, 2, fatherGenes);
