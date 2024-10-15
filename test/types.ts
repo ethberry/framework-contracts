@@ -22,5 +22,5 @@ export enum TokenType {
   ERC20 = "1",
   ERC721 = "2",
   ERC998 = "3",
-  ERC1155 = "4"
+  ERC1155 = "4",
 }

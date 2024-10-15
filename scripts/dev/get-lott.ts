@@ -11,11 +11,11 @@ import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 async function main() {
   // const [owner, receiver] = await ethers.getSigners();
 
-  const lotteryInstance = await ethers.getContractAt("LotteryRandomBesu", "0x3216c8ac30000d3ec32dd648f4dd0de4f4774579");
+  const lotteryInstance = await ethers.getContractAt("LotteryBesu", "0x3216c8ac30000d3ec32dd648f4dd0de4f4774579");
 
-  // const lotteryInstance = await ethers.getContractAt("LotteryRandomBesu", "0xa4c86c32f10dd6f597817b7991a2b65ee95fd9b8");
-  // const lotteryInstance = await ethers.getContractAt("LotteryRandomBesu", "0xb8a23839c4d9f5320596410f0c01dfe08c36422f");
-  // const lotteryInstance = await ethers.getContractAt("LotteryRandomBesu", "0xdcefac02377797957b2bc79f0285a866d559428e");
+  // const lotteryInstance = await ethers.getContractAt("LotteryBesu", "0xa4c86c32f10dd6f597817b7991a2b65ee95fd9b8");
+  // const lotteryInstance = await ethers.getContractAt("LotteryBesu", "0xb8a23839c4d9f5320596410f0c01dfe08c36422f");
+  // const lotteryInstance = await ethers.getContractAt("LotteryBesu", "0xdcefac02377797957b2bc79f0285a866d559428e");
 
   const round = (await lotteryInstance.getCurrentRoundInfo()) as unknown as Result;
   const decodedRound = recursivelyDecodeResult(round);
@@ -32,7 +32,7 @@ async function main() {
   const ticketInstance = await erc721LotteryTicketFactory.deploy("LOTTERY TICKET", "LOTT721", 0, baseTokenURI);
 
   // LOTTERY
-  const factory = await ethers.getContractFactory(getContractName("LotteryRandom", network.name));
+  const factory = await ethers.getContractFactory(getContractName("Lottery", network.name));
   const lotteryInstance: any = await factory.deploy({
     timeLagBeforeRelease: 3600,
     commission: 30,

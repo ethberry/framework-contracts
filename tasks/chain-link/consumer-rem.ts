@@ -12,10 +12,7 @@ task("consumer-rem", "Add vRF subscription")
 
     const blockNumber = await hre.ethers.provider.getBlockNumber();
 
-    const vrfInstance = await hre.ethers.getContractAt(
-      "VRFCoordinatorV2PlusMock",
-      vrf
-    );
+    const vrfInstance = await hre.ethers.getContractAt("VRFCoordinatorV2PlusMock", vrf);
 
     const tx = await vrfInstance.removeConsumer(sub, consumer);
     await tx.wait();

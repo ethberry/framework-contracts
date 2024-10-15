@@ -38,8 +38,13 @@ contract ExchangeMysteryBoxFacet is SignatureValidator, DiamondOverride, Referra
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    IERC721MysteryBox(item.token).mintBox(_msgSender(), item.tokenId, content);
+    uint256 tokenId = IERC721MysteryBox(item.token).mintBox(_msgSender(), item.tokenId, content);
+
+    // replace templateId with actual tokenId
+    item.tokenId = tokenId;
 
     emit PurchaseMysteryBox(_msgSender(), params.externalId, item, price, content);
+
+    _afterPurchase(params.referrer, price);
   }
 }

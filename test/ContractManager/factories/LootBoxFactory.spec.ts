@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress, ZeroAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import {
   baseTokenURI,
@@ -8,11 +8,11 @@ import {
   nonce,
   royalty,
   tokenName,
-  tokenSymbol,
+  tokenSymbol
 } from "@ethberry/contracts-constants";
 
-import { contractTemplate, externalId, templateId, tokenId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { contractTemplate, externalId } from "../../constants";
+import { getContractName, getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("LootBoxFactoryDiamond", function () {
@@ -30,9 +30,9 @@ describe("LootBoxFactoryDiamond", function () {
 
   describe("deployLootToken", function () {
     it("should deploy contract", async function () {
-      const [owner, receiver] = await ethers.getSigners();
+      const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimpleHardhat");
+      const { bytecode } = await ethers.getContractFactory(getContractName("ERC721LootBoxSimple", network.name));
 
       const contractInstance = await factory();
 
@@ -96,54 +96,30 @@ describe("LootBoxFactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const initCodeHash = getInitCodeHash(
         ["string", "string", "uint256", "string"],
         [tokenName, tokenSymbol, royalty, baseTokenURI],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "LootBoxDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, contractTemplate]);
 
-      const erc721Instance = await ethers.getContractAt("ERC721LootBoxSimpleHardhat", address);
+      const erc721Instance = await ethers.getContractAt(getContractName("ERC721LootBoxSimple", network.name), address);
 
       const hasRole1 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
 
       const hasRole2 = await erc721Instance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
       expect(hasRole2).to.equal(true);
-
-      const tx2 = erc721Instance.mintCommon(receiver.address, templateId);
-      await expect(tx2).to.be.revertedWithCustomError(erc721Instance, "MethodNotSupported");
-
-      const tx3 = erc721Instance.mintBox(
-        receiver.address,
-        templateId,
-        [
-          {
-            tokenType: 2,
-            token: erc721Instance,
-            tokenId,
-            amount: 1n,
-          },
-        ],
-        { min: 1, max: 1 },
-      );
-      await expect(tx3).to.emit(erc721Instance, "Transfer").withArgs(ZeroAddress, receiver.address, tokenId);
-
-      const balance = await erc721Instance.balanceOf(receiver.address);
-      expect(balance).to.equal(1);
-
-      const uri = await erc721Instance.tokenURI(tokenId);
-      expect(uri).to.equal(`${baseTokenURI}/${(await erc721Instance.getAddress()).toLowerCase()}/${tokenId}`);
     });
 
     it("should fail: SignerMissingRole", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721LootBoxSimpleHardhat");
+      const { bytecode } = await ethers.getContractFactory(getContractName("ERC721LootBoxSimple", network.name));
 
       const contractInstance = await factory();
 

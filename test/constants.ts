@@ -59,7 +59,7 @@ export const genesTokenAttributes = {
   FATHER_ID: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.FATHER_ID), 32),
   PREGNANCY_COUNTER: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.PREGNANCY_COUNTER), 32),
   PREGNANCY_TIMESTAMP: zeroPadValue(toUtf8Bytes(GenesTokenMetadata.PREGNANCY_TIMESTAMP), 32),
-}
+};
 
 export enum FrameworkInterfaceId {
   ERC721Simple = "0xbf290e49",

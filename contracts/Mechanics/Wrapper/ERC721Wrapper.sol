@@ -24,11 +24,15 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
     string memory baseTokenURI
   ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
 
-  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
+  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) returns (uint256) {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory content) external payable onlyRole(MINTER_ROLE) {
+  function mintBox(
+    address account,
+    uint256 templateId,
+    Asset[] memory content
+  ) external payable onlyRole(MINTER_ROLE) returns (uint256) {
     if (content.length == 0) {
       revert NoContent();
     }
@@ -46,6 +50,8 @@ contract ERC721Wrapper is IERC721Wrapper, ERC721Simple, AllTypesHolder {
     }
 
     ExchangeUtils.spendFrom(content, _msgSender(), address(this), AllowedTokenTypes(true, true, true, true, true));
+
+    return tokenId;
   }
 
   function unpack(uint256 tokenId) public {

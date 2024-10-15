@@ -54,7 +54,7 @@ contract ERC721CSimple is IERC721Simple, ERC721ABRK, ERC721ABaseUrl, NativeRejec
     revert MethodNotSupported();
   }
 
-  function mintCommon(address, uint256) public pure override {
+  function mintCommon(address, uint256) public pure override returns (uint256) {
     revert MethodNotSupported();
   }
 

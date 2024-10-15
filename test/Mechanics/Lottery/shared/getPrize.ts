@@ -13,11 +13,11 @@ import { deployERC721 } from "../../../ERC721/shared/fixtures";
 import { amount, price } from "../constants";
 
 export function shouldGetPrize(factory: () => Promise<any>) {
-  describe("getPrize", function() {
+  describe("getPrize", function () {
     let vrfInstance: VRFCoordinatorV2PlusMock;
     let subId: bigint;
 
-    before(async function() {
+    before(async function () {
       await network.provider.send("hardhat_reset");
 
       ({ vrfInstance, subId } = await loadFixture(function exchange() {
@@ -25,11 +25,11 @@ export function shouldGetPrize(factory: () => Promise<any>) {
       }));
     });
 
-    after(async function() {
+    after(async function () {
       await network.provider.send("hardhat_reset");
     });
 
-    it("should get the prize successfully", async function() {
+    it("should get the prize successfully", async function () {
       const [owner] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
@@ -39,7 +39,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance.target,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -60,7 +60,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
       await expect(tx).to.emit(lotteryInstance, "Prize").withArgs(owner, 1, 1, 22000);
     });
 
-    it("should fail: LotteryWrongToken", async function() {
+    it("should fail: LotteryWrongToken", async function () {
       const [owner] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
@@ -70,7 +70,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -92,7 +92,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongToken");
     });
 
-    it("should fail: LotteryRoundNotComplete", async function() {
+    it("should fail: LotteryRoundNotComplete", async function () {
       const lotteryInstance = await factory();
       const erc721TicketInstance = await deployERC721("ERC721LotteryTicket");
 
@@ -100,7 +100,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);
@@ -117,7 +117,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryRoundNotComplete");
     });
 
-    it("should fail: LotteryNotOwnerNorApproved", async function() {
+    it("should fail: LotteryNotOwnerNorApproved", async function () {
       const [owner, receiver] = await ethers.getSigners();
 
       const lotteryInstance = await factory();
@@ -127,7 +127,7 @@ export function shouldGetPrize(factory: () => Promise<any>) {
         tokenType: TokenType.ERC721,
         token: erc721TicketInstance,
         tokenId: 1n,
-        amount: 1n
+        amount: 1n,
       };
 
       await lotteryInstance.startRound(ticket, price, 100);

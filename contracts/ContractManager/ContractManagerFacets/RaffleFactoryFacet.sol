@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -27,9 +29,10 @@ contract RaffleFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, "", params.nonce);
-
+    bytes memory bytecode = abi.encodePacked(params.bytecode, "");
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit RaffleDeployed(account, params.externalId);
+    Create2.deploy(0, params.nonce, bytecode);
 
     bytes32[] memory roles = new bytes32[](2);
     roles[0] = PAUSER_ROLE;
@@ -42,8 +45,4 @@ contract RaffleFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   function _hashRaffle(Params calldata params) internal view returns (bytes32) {
     return _hashTypedDataV4(keccak256(abi.encodePacked(RAFFLE_PERMIT_SIGNATURE, _hashParamsStruct(params))));
   }
-
-  //  function allRaffles() external view returns (address[] memory) {
-  //    return _raffles;
-  //  }
 }

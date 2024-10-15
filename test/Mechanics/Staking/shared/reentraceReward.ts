@@ -168,11 +168,7 @@ export function shouldHaveReentrancyGuard(factory: () => Promise<any>) {
         const tx2 = await attakerInstance.receiveReward(1, false, false);
         const endTimestamp: number = (await time.latest()).toNumber();
 
-        await expect(tx2).to.changeTokenBalances(
-          erc20Instance,
-          [attakerInstance, stakingInstance],
-          [amount, amount * -1n],
-        );
+        await expect(tx2).to.changeTokenBalances(erc20Instance, [attakerInstance, stakingInstance], [amount, -amount]);
         await expect(tx2).to.emit(attakerInstance, "Reentered").withArgs(false);
         await expect(tx2).to.emit(stakingInstance, "DepositFinish").withArgs(1, attakerInstance, endTimestamp, 1);
       });

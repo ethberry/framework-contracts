@@ -103,7 +103,7 @@ async function main() {
       "ExchangeClaimFacet",
       "ExchangeCraftFacet",
       "ExchangeDismantleFacet",
-      "ExchangeGradeFacet",
+      "ExchangeDiscreteFacet",
       "ExchangeLootBoxFacet",
       "ExchangeLotteryFacet",
       "ExchangeMergeFacet",

@@ -11,5 +11,5 @@ import { IERC721SimpleErrors } from "./IERC721SimpleErrors.sol";
 interface IERC721Simple is IERC721SimpleErrors {
   function burn(uint256 tokenId) external;
 
-  function mintCommon(address to, uint256 templateId) external;
+  function mintCommon(address to, uint256 templateId) external returns (uint256);
 }

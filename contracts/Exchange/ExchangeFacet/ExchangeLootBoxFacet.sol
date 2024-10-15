@@ -39,7 +39,10 @@ contract ExchangeLootBoxFacet is SignatureValidator, DiamondOverride, Referral {
 
     ExchangeUtils.spendFrom(price, _msgSender(), params.receiver, AllowedTokenTypes(true, true, false, false, true));
 
-    IERC721LootBox(item.token).mintBox(_msgSender(), item.tokenId, content, boxConfig);
+    uint256 tokenId = IERC721LootBox(item.token).mintBox(_msgSender(), item.tokenId, content, boxConfig);
+
+    // replace templateId with actual tokenId
+    item.tokenId = tokenId;
 
     emit PurchaseLootBox(_msgSender(), params.externalId, item, price, content);
 

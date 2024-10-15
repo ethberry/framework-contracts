@@ -45,17 +45,18 @@ async function main() {
       "ExchangeClaimFacet",
       "ExchangeCraftFacet",
       "ExchangeDismantleFacet",
-      "ExchangeGradeFacet",
+      "ExchangeDiscreteFacet",
       "ExchangeLootBoxFacet",
       "ExchangeLotteryFacet",
       "ExchangeMergeFacet",
-      "ExchangeMockFacet",
       "ExchangeMysteryBoxFacet",
       "ExchangePurchaseFacet",
+      "ExchangeRandomFacet",
       "ExchangeRaffleFacet",
       "ExchangeRentableFacet",
       "PausableFacet",
       "AccessControlFacet",
+      "WalletFacet",
       "DiamondLoupeFacet",
     ],
     "DiamondExchangeInit",
@@ -75,6 +76,4 @@ async function main() {
   return "OK";
 }
 
-main()
-  .then(console.info)
-  .catch(console.error);
+main().then(console.info).catch(console.error);

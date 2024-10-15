@@ -30,8 +30,11 @@ contract ERC721Simple is IERC721Simple, ERC721ABER, ERC721ABaseUrl, ERC721Genera
     _nextTokenId++;
   }
 
-  function mintCommon(address account, uint256 templateId) external virtual override onlyRole(MINTER_ROLE) {
-    _mintCommon(account, templateId);
+  function mintCommon(
+    address account,
+    uint256 templateId
+  ) external virtual override onlyRole(MINTER_ROLE) returns (uint256) {
+    return _mintCommon(account, templateId);
   }
 
   function _mintCommon(address account, uint256 templateId) internal returns (uint256) {

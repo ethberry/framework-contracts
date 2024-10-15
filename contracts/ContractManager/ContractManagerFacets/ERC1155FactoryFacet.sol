@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -41,9 +43,11 @@ contract ERC1155FactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, abi.encode(args.royalty, args.baseTokenURI), params.nonce);
-
+    bytes memory argument = abi.encode(args.royalty, args.baseTokenURI);
+    bytes memory bytecode = abi.encodePacked(params.bytecode, argument);
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit ERC1155TokenDeployed(account, params.externalId, args);
+    Create2.deploy(0, params.nonce, bytecode);
 
     bytes32[] memory roles = new bytes32[](2);
     roles[0] = MINTER_ROLE;

@@ -16,7 +16,7 @@ import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 import { Referral } from "../../Mechanics/Referral/Referral.sol";
 
 contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
-  event PurchaseRaffle(address account, uint256 externalId, Asset item, Asset price, uint256 roundId, uint256 index);
+  event PurchaseRaffle(address account, uint256 externalId, Asset item, Asset price);
 
   constructor() SignatureValidator() {}
 
@@ -42,15 +42,12 @@ contract ExchangeRaffleFacet is SignatureValidator, DiamondOverride, Referral {
       AllowedTokenTypes(true, true, false, false, true)
     );
 
-    (uint256 tokenId, uint256 roundId, uint256 index) = IRaffle(params.receiver).printTicket(
-      params.externalId,
-      _msgSender()
-    );
+    uint256 tokenId = IRaffle(params.receiver).printTicket(params.externalId, _msgSender());
 
     // set tokenID = ticketID
     item.tokenId = tokenId;
 
-    emit PurchaseRaffle(_msgSender(), params.externalId, item, price, roundId, index);
+    emit PurchaseRaffle(_msgSender(), params.externalId, item, price);
 
     _afterPurchase(params.referrer, _price);
   }

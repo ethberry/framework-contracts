@@ -34,11 +34,9 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
 
       await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
 
-      const tx = lotteryInstance.printTicket(1, receiver.address, ticketNumbers, price, {value: amount});
+      const tx = lotteryInstance.printTicket(1, receiver.address, ticketNumbers, price, { value: amount });
 
-      await expect(tx)
-        .to.emit(erc721TicketInstance, "Transfer")
-        .withArgs(ZeroAddress, receiver.address, 1n);
+      await expect(tx).to.emit(erc721TicketInstance, "Transfer").withArgs(ZeroAddress, receiver.address, 1n);
 
       const newTicketId = await erc721TicketInstance.ownerOf(1n);
       expect(newTicketId).to.equal(receiver.address);
@@ -71,9 +69,9 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
 
       await erc721TicketInstance.grantRole(MINTER_ROLE, lotteryInstance);
 
-      await lotteryInstance.printTicket(1, receiver.address, ticketNumbers, price, {value: amount});
+      await lotteryInstance.printTicket(1, receiver.address, ticketNumbers, price, { value: amount });
 
-      const tx = lotteryInstance.printTicket(2, ZeroAddress, ticketNumbers, price, {value: amount});
+      const tx = lotteryInstance.printTicket(2, ZeroAddress, ticketNumbers, price, { value: amount });
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryTicketLimitExceed");
     });
 
@@ -84,7 +82,9 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
       const values = [1, 2, 3, 4, 5, 6];
       const ticketNumbers = getNumbersBytes(values);
 
-      const tx = lotteryInstance.connect(nonMinter).printTicket(1, ZeroAddress, ticketNumbers, price, {value: amount});
+      const tx = lotteryInstance
+        .connect(nonMinter)
+        .printTicket(1, ZeroAddress, ticketNumbers, price, { value: amount });
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "AccessControlUnauthorizedAccount");
     });
 
@@ -94,7 +94,7 @@ export function shouldPrintTicket(factory: () => Promise<any>) {
       const values = [1, 2, 3, 4, 5, 6];
       const ticketNumbers = getNumbersBytes(values);
 
-      const tx = lotteryInstance.printTicket(1, ZeroAddress, ticketNumbers, price, {value: amount});
+      const tx = lotteryInstance.printTicket(1, ZeroAddress, ticketNumbers, price, { value: amount });
       await expect(tx).to.be.revertedWithCustomError(lotteryInstance, "LotteryWrongRound");
     });
   });

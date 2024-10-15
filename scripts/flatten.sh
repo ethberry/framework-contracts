@@ -82,7 +82,7 @@ hardhat flatten contracts/Mechanics/LootBox/ERC721LootBoxSimple.sol > dist/Mecha
 
 mkdir -p dist/Mechanics/Lottery
 hardhat flatten contracts/Mechanics/Lottery/ERC721LotteryTicket.sol > dist/Mechanics/Lottery/ERC721LotteryTicket.sol
-hardhat flatten contracts/Mechanics/Lottery/LotteryRandom.sol > dist/Mechanics/Lottery/LotteryRandom.sol
+hardhat flatten contracts/Mechanics/Lottery/Lottery.sol > dist/Mechanics/Lottery/Lottery.sol
 
 mkdir -p dist/Mechanics/MysteryBox
 hardhat flatten contracts/Mechanics/MysteryBox/ERC721MysteryBoxBlacklist.sol > dist/Mechanics/MysteryBox/ERC721MysteryBoxBlacklist.sol
@@ -95,7 +95,7 @@ hardhat flatten contracts/Mechanics/Ponzi/Ponzi.sol > dist/Mechanics/Ponzi/Ponzi
 
 mkdir -p dist/Mechanics/Raffle
 hardhat flatten contracts/Mechanics/Raffle/ERC721RaffleTicket.sol > dist/Mechanics/Raffle/ERC721RaffleTicket.sol
-hardhat flatten contracts/Mechanics/Raffle/RaffleRandom.sol > dist/Mechanics/Raffle/RaffleRandom.sol
+hardhat flatten contracts/Mechanics/Raffle/Raffle.sol > dist/Mechanics/Raffle/Raffle.sol
 
 mkdir -p dist/Mechanics/Staking
 hardhat flatten contracts/Mechanics/Staking/Staking.sol > dist/Mechanics/Staking/Staking.sol

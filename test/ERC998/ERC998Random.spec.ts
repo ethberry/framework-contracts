@@ -3,7 +3,7 @@ import { shouldBehaveLikeAccessControl } from "@ethberry/contracts-access";
 import { DEFAULT_ADMIN_ROLE, InterfaceId, MINTER_ROLE, RARITY, TEMPLATE_ID } from "@ethberry/contracts-constants";
 
 import { shouldMintCommon } from "../ERC721/shared/simple/base/mintCommon";
-import { shouldMintRandom } from "../ERC721/shared/random/mintRandom";
+import { shouldMintRandom } from "../Mechanics/Random/shared/mintRandom";
 import { deployERC721 } from "../ERC721/shared/fixtures";
 import { shouldBehaveLikeERC998Simple } from "./shared/simple";
 import { FrameworkInterfaceId, templateId } from "../constants";

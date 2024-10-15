@@ -29,11 +29,15 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
     string memory baseTokenURI
   ) ERC721Simple(name, symbol, royalty, baseTokenURI) {}
 
-  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) {
+  function mintCommon(address, uint256) external virtual override onlyRole(MINTER_ROLE) returns (uint256) {
     revert MethodNotSupported();
   }
 
-  function mintBox(address account, uint256 templateId, Asset[] memory content) external onlyRole(MINTER_ROLE) {
+  function mintBox(
+    address account,
+    uint256 templateId,
+    Asset[] memory content
+  ) external onlyRole(MINTER_ROLE) returns (uint256) {
     uint256 tokenId = _mintCommon(account, templateId);
 
     if (content.length == 0) {
@@ -55,6 +59,8 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
         i++;
       }
     }
+
+    return tokenId;
   }
 
   function unpack(uint256 tokenId) public virtual {

@@ -39,7 +39,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
       const raffleInstance: any = await raffleFactory.deploy();
 
       await raffleInstance.startRound(
@@ -130,8 +130,6 @@ describe("Diamond Exchange Raffle", function () {
             tokenId: 121n,
             amount: amount * 1n,
           }),
-          1n, // roundId
-          1n, // ticket indexId
         );
 
       const balance = await erc20Instance.balanceOf(raffleInstance);
@@ -266,7 +264,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const raffleInstance: any = await raffleFactory.deploy();
       await raffleInstance.startRound(
@@ -348,7 +346,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const raffleInstance: any = await raffleFactory.deploy();
       await raffleInstance.startRound(
@@ -402,7 +400,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const raffleInstance: any = await raffleFactory.deploy();
       await raffleInstance.startRound(
@@ -491,8 +489,6 @@ describe("Diamond Exchange Raffle", function () {
             tokenId: 121n,
             amount: amount * 1n,
           }),
-          1n,
-          1n,
         );
 
       const tx2 = exchangeInstance.connect(receiver).purchaseRaffle(
@@ -530,7 +526,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
       const raffleInstance: any = await raffleFactory.deploy();
 
       await raffleInstance.startRound(
@@ -616,7 +612,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const raffleInstance: any = await raffleFactory.deploy();
       await raffleInstance.startRound(
@@ -699,7 +695,7 @@ describe("Diamond Exchange Raffle", function () {
       const erc20Instance = await deployERC20();
       const erc721TicketInstance = await deployERC721("ERC721RaffleTicket");
 
-      const raffleFactory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+      const raffleFactory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
       const raffleInstance: any = await raffleFactory.deploy();
       await raffleInstance.startRound(

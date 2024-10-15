@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
 import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 
@@ -44,9 +46,11 @@ contract PaymentSplitterFactoryFacet is AbstractFactoryFacet, SignatureValidator
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, abi.encode(args.payees, args.shares), params.nonce);
-
+    bytes memory argument = abi.encode(args.payees, args.shares);
+    bytes memory bytecode = abi.encodePacked(params.bytecode, argument);
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit PaymentSplitterDeployed(account, params.externalId, args);
+    Create2.deploy(0, params.nonce, bytecode);
   }
 
   function _hashPaymentSplitter(

@@ -4,10 +4,10 @@ import { shouldPrintTicket } from "./printTicket";
 import { shouldGetPrize } from "./getPrize";
 import { shouldReleaseFunds } from "./releaseFunds";
 
-export function shouldBehaveLikeLottery(deployLotteryRandomContract: () => Promise<any>) {
-  shouldStartRound(deployLotteryRandomContract);
-  shouldEndRound(deployLotteryRandomContract);
-  shouldPrintTicket(deployLotteryRandomContract);
-  shouldGetPrize(deployLotteryRandomContract);
-  shouldReleaseFunds(deployLotteryRandomContract);
+export function shouldBehaveLikeLottery(deployLotteryContract: () => Promise<any>) {
+  shouldStartRound(deployLotteryContract);
+  shouldEndRound(deployLotteryContract);
+  shouldPrintTicket(deployLotteryContract);
+  shouldGetPrize(deployLotteryContract);
+  shouldReleaseFunds(deployLotteryContract);
 }

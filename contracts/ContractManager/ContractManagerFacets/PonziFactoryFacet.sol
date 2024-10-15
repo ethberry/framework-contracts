@@ -6,6 +6,8 @@
 
 pragma solidity ^0.8.20;
 
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 import { MINTER_ROLE, DEFAULT_ADMIN_ROLE, PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { SignatureValidatorCM } from "../override/SignatureValidator.sol";
@@ -14,16 +16,13 @@ import { AbstractFactoryFacet } from "./AbstractFactoryFacet.sol";
 contract PonziFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   constructor() SignatureValidatorCM() {}
 
-  bytes private constant PONZI_ARGUMENTS_SIGNATURE =
-    "PonziArgs(address[] payees,uint256[] shares,string contractTemplate)";
+  bytes private constant PONZI_ARGUMENTS_SIGNATURE = "PonziArgs(string contractTemplate)";
   bytes32 private constant PONZI_ARGUMENTS_TYPEHASH = keccak256(PONZI_ARGUMENTS_SIGNATURE);
 
   bytes32 private immutable PONZI_PERMIT_SIGNATURE =
     keccak256(bytes.concat("EIP712(Params params,PonziArgs args)", PARAMS_SIGNATURE, PONZI_ARGUMENTS_SIGNATURE));
 
   struct PonziArgs {
-    address[] payees;
-    uint256[] shares;
     string contractTemplate;
   }
 
@@ -41,9 +40,10 @@ contract PonziFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
       revert SignerMissingRole();
     }
 
-    account = deploy2(params.bytecode, abi.encode(args.payees, args.shares), params.nonce);
-
+    bytes memory bytecode = abi.encodePacked(params.bytecode, "");
+    account = Create2.computeAddress(params.nonce, keccak256(bytecode));
     emit PonziDeployed(account, params.externalId, args);
+    Create2.deploy(0, params.nonce, bytecode);
 
     bytes32[] memory roles = new bytes32[](2);
     roles[0] = PAUSER_ROLE;
@@ -60,14 +60,6 @@ contract PonziFactoryFacet is AbstractFactoryFacet, SignatureValidatorCM {
   }
 
   function _hashPonziStruct(PonziArgs calldata args) private pure returns (bytes32) {
-    return
-      keccak256(
-        abi.encode(
-          PONZI_ARGUMENTS_TYPEHASH,
-          keccak256(abi.encodePacked(args.payees)),
-          keccak256(abi.encodePacked(args.shares)),
-          keccak256(bytes(args.contractTemplate))
-        )
-      );
+    return keccak256(abi.encode(PONZI_ARGUMENTS_TYPEHASH, keccak256(bytes(args.contractTemplate))));
   }
 }

@@ -2,14 +2,14 @@ import { snakeToCamelCase } from "@ethberry/utils";
 import {
   AbiCoder,
   concat,
+  hexlify,
   id,
   keccak256,
   Provider,
+  randomBytes,
   toBeArray,
   toBeHex,
-  zeroPadValue,
-  hexlify,
-  randomBytes
+  zeroPadValue
 } from "ethers";
 
 import { patchBigInt } from "@ethberry/utils-eth";
@@ -43,7 +43,8 @@ export const getBytesNumbersArr = (selected = "4328719624n"): Array<number> => {
 };
 
 export const getContractName = (base: string, network: string) => {
-  return base.endsWith("Random") || base.endsWith("Genes") ? snakeToCamelCase(`${base}_${network}`) : base;
+  return base.includes("Random") || base.includes("Genes") || base.includes("LootBox") || base.startsWith("Lottery") || base.startsWith("Raffle") ?
+    snakeToCamelCase(`${base}_${network}`) : base;
 };
 
 export const isEqualArray = (...args: any[]): any => {
@@ -98,8 +99,8 @@ export const encodeParams = (dataTypes: any[], data: any[]) => {
   return dataTypes.length > 0 && data.length > 0 ? abiCoder.encode(dataTypes, data) : "";
 };
 
-export const buildBytecode = (constructorTypes: any[], constructorArgs: any[], contractBytecode: string) =>
-  `${contractBytecode}${encodeParams(constructorTypes, constructorArgs).slice(2)}`;
+export const getInitCodeHash = (constructorTypes: any[], constructorArgs: any[], contractBytecode: string) =>
+  keccak256(`${contractBytecode}${encodeParams(constructorTypes, constructorArgs).slice(2)}`);
 
 export const buildCreate2Address = (factory: string, saltHex: string, byteCode: string) => {
   return `0x${keccak256(
@@ -123,7 +124,6 @@ export const chainIdToSuffix = (chainId: string | bigint | number) => {
   return Object.keys(Networks)[Object.values(Networks).indexOf(Number(chainId))];
 };
 
-
 export const decodeNumber = (encoded: bigint) => {
   const genes = {
     baseColor: encoded >> 176n,
@@ -137,7 +137,7 @@ export const decodeNumber = (encoded: bigint) => {
     wild: (encoded >> 48n) & 0xffffn,
     environment: (encoded >> 32n) & 0xffffn,
     secret: (encoded >> 16n) & 0xffffn,
-    purrstige: (encoded >> 0n) & 0xffffn
+    purrstige: (encoded >> 0n) & 0xffffn,
   };
   return genes;
 };

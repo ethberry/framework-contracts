@@ -12,7 +12,7 @@ import { IERC721BoxErrors } from "../../../ERC721/interfaces/IERC721BoxErrors.so
 interface IERC721Wrapper is IERC721BoxErrors {
   event UnpackWrapper(address account, uint256 tokenId);
 
-  function mintBox(address to, uint256 templateId, Asset[] memory items) external payable;
+  function mintBox(address to, uint256 templateId, Asset[] memory items) external payable returns (uint256);
 
   function unpack(uint256 tokenId) external;
 }

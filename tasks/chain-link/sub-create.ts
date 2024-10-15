@@ -3,18 +3,14 @@ import { Result } from "ethers";
 
 import { recursivelyDecodeResult } from "@ethberry/utils-eth";
 
-
 task("sub-create", "Add VRF subscription")
-  .addParam("contract", "The VRF coordinator contract's address")
+  .addParam("vrf", "The VRF coordinator contract's address")
   .setAction(async (args, hre) => {
     const { vrf } = args;
 
     const blockNumber = await hre.ethers.provider.getBlockNumber();
 
-    const vrfInstance = await hre.ethers.getContractAt(
-      "VRFCoordinatorV2PlusMock",
-      vrf
-    );
+    const vrfInstance = await hre.ethers.getContractAt("VRFCoordinatorV2PlusMock", vrf);
 
     const tx = await vrfInstance.createSubscription();
     await tx.wait();

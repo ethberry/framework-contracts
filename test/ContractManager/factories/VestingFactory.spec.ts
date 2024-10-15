@@ -1,14 +1,14 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { concat, getAddress, toBeHex, ZeroAddress, zeroPadValue } from "ethers";
+import { concat, getCreate2Address, toBeHex, ZeroAddress, zeroPadValue } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 import { amount, DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
 import { decodeTraits } from "@ethberry/traits-v6";
 import { deployERC20Mock } from "@ethberry/contracts-mocks";
 
-import { buildBytecode, buildCreate2Address, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
-import { claimId, externalId, tokenId, userId, contractTemplate } from "../../constants";
+import { getInitCodeHash, isEqualEventArgArrObj, isEqualEventArgObj } from "../../utils";
+import { claimId, contractTemplate, externalId, tokenId, userId } from "../../constants";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("VestingFactoryDiamond", function () {
@@ -125,12 +125,12 @@ describe("VestingFactoryDiamond", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const initCodeHash = getInitCodeHash(
         ["address", "uint256", "uint256", "uint256"],
         [owner.address, current.toNumber(), 12, 417],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "VestingDeployed")

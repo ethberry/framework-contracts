@@ -20,7 +20,10 @@ async function main() {
   // validate deployment
   const linkAddress = await linkInstance.getAddress();
   console.info(`LINK_ADDR=${linkAddress}`);
-  if (linkAddress.toLowerCase() !== LinkTokenAddress[chainIdToSuffix(chainId) as keyof typeof LinkTokenAddress] as string) {
+  if (
+    linkAddress.toLowerCase() !==
+    (LinkTokenAddress[chainIdToSuffix(chainId) as keyof typeof LinkTokenAddress] as string)
+  ) {
     console.info("LINK_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -32,7 +35,10 @@ async function main() {
   // validate deployment
   const vrfAddress = await vrfInstance.getAddress();
   console.info(`VRF_ADDR=${vrfAddress}`);
-  if (vrfAddress.toLowerCase() !== VrfCoordinatorV2PlusAddress[chainIdToSuffix(chainId) as keyof typeof VrfCoordinatorV2PlusAddress] as string) {
+  if (
+    vrfAddress.toLowerCase() !==
+    (VrfCoordinatorV2PlusAddress[chainIdToSuffix(chainId) as keyof typeof VrfCoordinatorV2PlusAddress] as string)
+  ) {
     console.info("VRF_ADDR address mismatch, clean BESU, then try again");
   }
 
@@ -50,7 +56,7 @@ async function main() {
     1, // fulfillmentFlatFeeNativePPM
     1, // fulfillmentFlatFeeLinkDiscountPPM
     1, // nativePremiumPercentage
-    1 // linkPremiumPercentage
+    1, // linkPremiumPercentage
   );
   await tx2.wait();
 
@@ -61,7 +67,7 @@ async function main() {
   const eventFilter1 = vrfInstance.filters.SubscriptionCreated();
   const events1 = await vrfInstance.queryFilter(eventFilter1);
   const result1 = recursivelyDecodeResult(events1[0].args as unknown as Result);
-  const {subId} = result1;
+  const { subId } = result1;
   console.info("SubscriptionCreated", result1);
 
   // fund subscription
@@ -100,12 +106,14 @@ async function main() {
   const mysteryAddress = await mysteryInstance.getAddress();
   console.info(`MYSTERY deployed to ${mysteryAddress}`);
 
-  const tx7 = await mysteryInstance.mintBox(owner, 1, [{
-    tokenType: 2,
-    token: nftAddress,
-    tokenId: 1,
-    amount: 1,
-  }]);
+  const tx7 = await mysteryInstance.mintBox(owner, 1, [
+    {
+      tokenType: 2,
+      token: nftAddress,
+      tokenId: 1,
+      amount: 1,
+    },
+  ]);
   await tx7.wait();
 
   const eventFilter5 = mysteryInstance.filters.Transfer();
@@ -136,7 +144,7 @@ async function main() {
       uWitness: ZeroAddress,
       cGammaWitness: [0, 0],
       sHashWitness: [0, 0],
-      zInv: result6.requestId // requestId
+      zInv: result6.requestId, // requestId
     },
     // RequestCommitmentV2Plus
     {
@@ -161,6 +169,4 @@ async function main() {
   return "OK";
 }
 
-main()
-  .then(console.info)
-  .catch(console.error);
+main().then(console.info).catch(console.error);

@@ -19,7 +19,7 @@ export async function deployRaffle(config: ILotteryConfig): Promise<{
   generateSignature: any;
 }> {
   const [owner] = await ethers.getSigners();
-  const factory = await ethers.getContractFactory(getContractName("RaffleRandom", network.name));
+  const factory = await ethers.getContractFactory(getContractName("Raffle", network.name));
 
   const erc20Instance: any = await deployERC20();
   const erc721TicketInstance: any = await deployERC721("ERC721RaffleTicket");

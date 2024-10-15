@@ -34,5 +34,5 @@ interface ILottery is ILotteryErrors {
     address account,
     bytes32 numbers,
     Asset memory price
-  ) external payable returns (uint256 tokenId, uint256 roundId);
+  ) external payable returns (uint256 tokenId);
 }

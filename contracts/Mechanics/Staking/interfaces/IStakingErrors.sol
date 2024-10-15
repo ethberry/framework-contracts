@@ -16,7 +16,7 @@ interface IStakingErrors {
   error StakingStakeLimitExceed();
   error StakingBalanceExceed();
   error StakingStakeNotExist();
-  error StakingStakeAlreadyWithdrawn();
+  error StakingDepositAlreadyWithdrawn();
   error StakingZeroBalance();
   error StakingDepositNotComplete();
   error StakingWrongTemplate();

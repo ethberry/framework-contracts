@@ -19,7 +19,6 @@ import { PAUSER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 import { TEMPLATE_ID } from "@ethberry/contracts-utils/contracts/attributes.sol";
 import { IERC721GeneralizedCollection } from "@ethberry/contracts-erc721/contracts/interfaces/IERC721GeneralizedCollection.sol";
 
-import { IERC721Random } from "../../ERC721/interfaces/IERC721Random.sol";
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 import { IERC1155Simple } from "../../ERC1155/interfaces/IERC1155Simple.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
@@ -226,7 +225,7 @@ contract Staking is
       revert StakingNotAnOwner(_msgSender());
     }
     if (!stake.activeDeposit) {
-      revert StakingStakeAlreadyWithdrawn();
+      revert StakingDepositAlreadyWithdrawn();
     }
 
     uint256 stakePeriod = rule.terms.period;

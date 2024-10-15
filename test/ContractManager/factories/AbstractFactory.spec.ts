@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address } from "ethers";
 
 import {
   baseTokenURI,
@@ -9,11 +9,11 @@ import {
   nonce,
   royalty,
   tokenName,
-  tokenSymbol,
+  tokenSymbol
 } from "@ethberry/contracts-constants";
 
 import { contractTemplate, externalId } from "../../constants";
-import { buildBytecode, buildCreate2Address } from "../../utils";
+import { getInitCodeHash } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("AbstractFactoryFacet", function () {
@@ -102,12 +102,12 @@ describe("AbstractFactoryFacet", function () {
         signature,
       );
 
-      const buildByteCode = buildBytecode(
+      const initCodeHash = getInitCodeHash(
         ["string", "string", "uint256", "string"],
         [tokenName, tokenSymbol, royalty, baseTokenURI],
         bytecode,
       );
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "ERC721TokenDeployed")

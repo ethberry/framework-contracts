@@ -6,7 +6,7 @@
 
 pragma solidity ^0.8.20;
 
-import { Rarity } from "../Mechanics/Rarity/Rarity.sol";
+import { Rarity } from "../Mechanics/Random/Rarity.sol";
 
 contract Dispersion is Rarity {
   function getDispersion(uint256 randomness) external pure virtual returns (uint256) {

@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { getAddress } from "ethers";
+import { getCreate2Address, keccak256 } from "ethers";
 
 import { DEFAULT_ADMIN_ROLE, nonce } from "@ethberry/contracts-constants";
 
 import { contractTemplate, externalId } from "../../constants";
-import { buildBytecode, buildCreate2Address, isEqualArray } from "../../utils";
 import { deployDiamond } from "../../Exchange/shared";
 
 describe("PonziFactoryDiamond", function () {
@@ -50,8 +49,6 @@ describe("PonziFactoryDiamond", function () {
             { name: "externalId", type: "uint256" },
           ],
           PonziArgs: [
-            { name: "payees", type: "address[]" },
-            { name: "shares", type: "uint256[]" },
             { name: "contractTemplate", type: "string" },
           ],
         },
@@ -63,8 +60,6 @@ describe("PonziFactoryDiamond", function () {
             externalId,
           },
           args: {
-            payees: [owner.address],
-            shares: [1],
             contractTemplate,
           },
         },
@@ -77,19 +72,25 @@ describe("PonziFactoryDiamond", function () {
           externalId,
         },
         {
-          payees: [owner.address],
-          shares: [1],
           contractTemplate,
         },
         signature,
       );
 
-      const buildByteCode = buildBytecode(["address[]", "uint256[]"], [[owner.address], [1]], bytecode);
-      const address = getAddress(buildCreate2Address(await contractInstance.getAddress(), nonce, buildByteCode));
+      const initCodeHash = keccak256(bytecode);
+      const address = getCreate2Address(await contractInstance.getAddress(), nonce, initCodeHash);
 
       await expect(tx)
         .to.emit(contractInstance, "PonziDeployed")
-        .withArgs(address, externalId, isEqualArray([owner.address], [1n], contractTemplate));
+        .withArgs(address, externalId, [contractTemplate]);
+
+      const ponziInstance = await ethers.getContractAt("Ponzi", address);
+
+      const hasRole1 = await ponziInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
+      expect(hasRole1).to.equal(false);
+
+      const hasRole2 = await ponziInstance.hasRole(DEFAULT_ADMIN_ROLE, owner.address);
+      expect(hasRole2).to.equal(true);
     });
 
     it("should fail: SignerMissingRole", async function () {
