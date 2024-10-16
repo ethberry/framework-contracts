@@ -65,7 +65,7 @@ contract SignatureValidator is EIP712, Context, ISignatureValidatorErrors {
    */
   function _validateNonce(bytes32 nonce) internal {
     if (SigValStorage.layout()._expired[nonce]) {
-      revert ExpiredSignature();
+      revert ExpiredNonce();
     }
     SigValStorage.layout()._expired[nonce] = true;
   }

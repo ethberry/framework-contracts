@@ -359,12 +359,16 @@ describe("Diamond Exchange Purchase", function () {
         );
     });
 
-    it("should fail: duplicate mint", async function () {
+    it("should fail: ExpiredNonce", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
-      const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
+
       const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
+
+      const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
+      await erc20Instance.mint(receiver.address, amount);
+      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const signature = await generateSignature({
         account: receiver.address,
@@ -391,9 +395,6 @@ describe("Diamond Exchange Purchase", function () {
           },
         ],
       });
-
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
 
       const tx1 = exchangeInstance.connect(receiver).purchase(
         {
@@ -448,7 +449,7 @@ describe("Diamond Exchange Purchase", function () {
         ],
         signature,
       );
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
+      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredNonce");
     });
 
     it("should fail: SignerMissingRole", async function () {
@@ -680,100 +681,6 @@ describe("Diamond Exchange Purchase", function () {
       );
 
       await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
-    });
-
-    it("should fail: ExpiredSignature 2", async function () {
-      const [owner, receiver] = await ethers.getSigners();
-      const exchangeInstance = await factory();
-      const generateSignature = await getSignatures(exchangeInstance);
-
-      const erc721Instance = await deployErc721Base("ERC721Simple", exchangeInstance);
-
-      const erc20Instance = await deployErc20Base("ERC20Simple", exchangeInstance);
-      await erc20Instance.mint(receiver.address, amount);
-      await erc20Instance.connect(receiver).approve(exchangeInstance, amount);
-
-      const signature = await generateSignature({
-        account: receiver.address,
-        params: {
-          externalId,
-          expiresAt,
-          nonce,
-          extra,
-          receiver: owner.address,
-          referrer: ZeroAddress,
-        },
-        item: {
-          tokenType: 2,
-          token: await erc721Instance.getAddress(),
-          tokenId,
-          amount: 1n,
-        },
-        price: [
-          {
-            tokenType: 1,
-            token: await erc20Instance.getAddress(),
-            tokenId,
-            amount,
-          },
-        ],
-      });
-
-      const tx1 = exchangeInstance.connect(receiver).purchase(
-        {
-          externalId,
-          expiresAt,
-          nonce,
-          extra,
-          receiver: owner.address,
-          referrer: ZeroAddress,
-        },
-        {
-          tokenType: 2,
-          token: erc721Instance,
-          tokenId,
-          amount: 1n,
-        },
-        [
-          {
-            tokenType: 1,
-            token: erc20Instance,
-            tokenId,
-            amount,
-          },
-        ],
-        signature,
-      );
-
-      await expect(tx1).to.emit(exchangeInstance, "Purchase");
-
-      const tx2 = exchangeInstance.connect(receiver).purchase(
-        {
-          externalId,
-          expiresAt,
-          nonce,
-          extra,
-          receiver: owner.address,
-          referrer: ZeroAddress,
-        },
-        {
-          tokenType: 2,
-          token: erc721Instance,
-          tokenId,
-          amount: 1n,
-        },
-        [
-          {
-            tokenType: 1,
-            token: erc20Instance,
-            tokenId,
-            amount,
-          },
-        ],
-        signature,
-      );
-
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
     });
 
     it("should purchase", async function () {

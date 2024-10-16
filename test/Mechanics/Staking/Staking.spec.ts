@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, web3 } from "hardhat";
-import { encodeBytes32String, parseEther, ZeroAddress } from "ethers";
+import { parseEther, ZeroAddress, ZeroHash } from "ethers";
 import { time } from "@openzeppelin/test-helpers";
 
 import { shouldBehaveLikePausable, shouldSupportsInterface } from "@ethberry/contracts-utils";
@@ -77,7 +77,7 @@ describe("Staking", function () {
     expiresAt,
     receiver: ZeroAddress,
     referrer: ZeroAddress,
-    extra: encodeBytes32String("0x"),
+    extra: ZeroHash,
   };
   const params2 = {
     nonce,
@@ -85,7 +85,7 @@ describe("Staking", function () {
     expiresAt,
     receiver: ZeroAddress,
     referrer: ZeroAddress,
-    extra: encodeBytes32String("0x"),
+    extra: ZeroHash,
   };
 
   const factory = () => deployStaking();
@@ -5291,7 +5291,7 @@ describe("Staking", function () {
           expiresAt,
           receiver: ZeroAddress,
           referrer: ZeroAddress,
-          extra: encodeBytes32String("0x"),
+          extra: ZeroHash,
         },
         tokenIdsZero,
       );

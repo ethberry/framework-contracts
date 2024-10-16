@@ -1287,7 +1287,7 @@ describe("Diamond Exchange Dismantle", function () {
   });
 
   describe("ERROR", function () {
-    it("should fail: ExpiredSignature", async function () {
+    it("should fail: ExpiredNonce", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -1336,7 +1336,7 @@ describe("Diamond Exchange Dismantle", function () {
         },
         signature,
       );
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
+      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredNonce");
     });
 
     it("should fail: ECDSAInvalidSignature", async function () {

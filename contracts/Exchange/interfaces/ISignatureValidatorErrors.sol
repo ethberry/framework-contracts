@@ -16,4 +16,9 @@ interface ISignatureValidatorErrors {
    * @dev used to indicate that server signature has expired
    */
   error ExpiredSignature();
+
+  /**
+   * @dev used to indicate that server signature has been used already
+   */
+  error ExpiredNonce();
 }

@@ -61,7 +61,7 @@ describe("Diamond Exchange Claim (Random)", function () {
         );
 
         await expect(tx1)
-          .to.emit(exchangeInstance, "Claim")
+          .to.emit(exchangeInstance, "ClaimTemplate")
           .withArgs(
             receiver.address,
             externalId,
@@ -115,7 +115,7 @@ describe("Diamond Exchange Claim (Random)", function () {
         );
 
         await expect(tx1)
-          .to.emit(exchangeInstance, "Claim")
+          .to.emit(exchangeInstance, "ClaimTemplate")
           .withArgs(
             receiver.address,
             externalId,

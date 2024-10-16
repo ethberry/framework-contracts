@@ -14,7 +14,8 @@ import { SignatureValidator } from "../override/SignatureValidator.sol";
 import { Asset, Params, AllowedTokenTypes } from "../lib/interfaces/IAsset.sol";
 
 contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
-  event Claim(address account, uint256 externalId, Asset[] items);
+  event ClaimTemplate(address account, uint256 externalId, Asset[] items);
+  event ClaimToken(address account, uint256 externalId, Asset[] items);
 
   constructor() SignatureValidator() {}
 
@@ -27,15 +28,9 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    if (uint256(params.extra) != 0) {
-      if (block.timestamp > uint256(params.extra)) {
-        revert ExpiredSignature();
-      }
-    }
-
     ExchangeUtils.acquireFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, false, true, true, true));
 
-    emit Claim(_msgSender(), params.externalId, items);
+    emit ClaimTemplate(_msgSender(), params.externalId, items);
   }
 
   // send Coins and NFTs from merchant to msgSender
@@ -47,14 +42,8 @@ contract ExchangeClaimFacet is SignatureValidator, DiamondOverride {
       revert SignerMissingRole();
     }
 
-    if (uint256(params.extra) != 0) {
-      if (block.timestamp > uint256(params.extra)) {
-        revert ExpiredSignature();
-      }
-    }
-
     ExchangeUtils.spendFrom(items, params.receiver, _msgSender(), AllowedTokenTypes(false, true, true, true, true));
 
-    emit Claim(_msgSender(), params.externalId, items);
+    emit ClaimToken(_msgSender(), params.externalId, items);
   }
 }

@@ -953,7 +953,7 @@ describe("Diamond Exchange Merge", function () {
       await expect(tx1).to.be.revertedWithCustomError(exchangeInstance, "MergeDifferentContracts");
     });
 
-    it("should fail: ExpiredSignature (duplicate mint)", async function () {
+    it("should fail: ExpiredNonce", async function () {
       const [owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -1099,7 +1099,7 @@ describe("Diamond Exchange Merge", function () {
         signature,
       );
 
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
+      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredNonce");
     });
 
     it("should fail: ECDSAInvalidSignature", async function () {

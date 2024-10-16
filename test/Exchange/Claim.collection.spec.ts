@@ -81,7 +81,7 @@ describe("Diamond Exchange Claim (Collection)", function () {
         );
 
         await expect(tx1)
-          .to.emit(exchangeInstance, "Claim")
+          .to.emit(exchangeInstance, "ClaimToken")
           .withArgs(
             receiver.address,
             externalId,

@@ -1347,7 +1347,7 @@ describe("Diamond Exchange Craft", function () {
   });
 
   describe("ERROR", function () {
-    it("should fail: ExpiredSignature (duplicate mint)", async function () {
+    it("should fail: ExpiredNonce", async function () {
       const [_owner, receiver] = await ethers.getSigners();
       const exchangeInstance = await factory();
       const generateSignature = await getSignatures(exchangeInstance);
@@ -1364,7 +1364,7 @@ describe("Diamond Exchange Craft", function () {
       await expect(tx1).to.emit(exchangeInstance, "Craft");
 
       const tx2 = exchangeInstance.connect(receiver).craft(params, [], [], signature);
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
+      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredNonce");
     });
 
     it("should fail: ECDSAInvalidSignature", async function () {

@@ -297,7 +297,7 @@ describe("Diamond Exchange Lottery", function () {
       await expect(tx).to.be.revertedWithCustomError(exchangeInstance, "ECDSAInvalidSignatureLength");
     });
 
-    it("should fail: expired signature", async function () {
+    it("should fail: ExpiredNonce", async function () {
       const [_owner, receiver] = await ethers.getSigners();
 
       const exchangeInstance = await factory();
@@ -423,7 +423,7 @@ describe("Diamond Exchange Lottery", function () {
         },
         signature,
       );
-      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredSignature");
+      await expect(tx2).to.be.revertedWithCustomError(exchangeInstance, "ExpiredNonce");
     });
 
     it("should fail: ERC20InsufficientAllowance", async function () {

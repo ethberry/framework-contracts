@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { time } from "@openzeppelin/test-helpers";
 
 import { VRFCoordinatorV2PlusMock } from "../../../../typechain-types";
 import { fatherGenes, genesTokenAttributes, motherGenes, templateId } from "../../../constants";
@@ -42,6 +43,8 @@ export function shouldBreed(factory: () => Promise<any>) {
       // Simulate Chainlink VRF response
       await randomRequest(erc721Instance, vrfInstance, 54321n);
 
+      const current = await time.latest();
+
       const newTokenId = await erc721Instance.totalSupply();
       expect(newTokenId).to.be.equal(3n);
 
@@ -63,7 +66,7 @@ export function shouldBreed(factory: () => Promise<any>) {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(motherPregnancyCounter).to.be.equal(1);
-      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(motherPregnancyTimestamp).to.be.equal(current);
 
       // Check pregnancy attributes for father
       const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(
@@ -75,7 +78,7 @@ export function shouldBreed(factory: () => Promise<any>) {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(fatherPregnancyCounter).to.be.equal(1);
-      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(fatherPregnancyTimestamp).to.be.equal(current);
     });
 
     it("should fail: NotOwnerNorApproved", async function () {
