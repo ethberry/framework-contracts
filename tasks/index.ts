@@ -40,4 +40,3 @@ import "./flat";
 import "./get-hash";
 import "./get-receipt-by-hash";
 import "./get-rule";
-import "./parse-dispenser-tx";

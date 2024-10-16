@@ -25,10 +25,16 @@ import { IRaffleErrors } from "../../Mechanics/Raffle/interfaces/IRaffleErrors.s
 import { IStakingErrors } from "../../Mechanics/Staking/interfaces/IStakingErrors.sol";
 import { IPonziErrors } from "../../Mechanics/Ponzi/interfaces/IPonziErrors.sol";
 import { IWaitListErrors } from "../../Mechanics/WaitList/interfaces/IWaitListErrors.sol";
+import { IDispenserErrors } from "../../Mechanics/Dispenser/interfaces/IDispenserErrors.sol";
 
 interface IAccessControl {
   error AccessControlUnauthorizedAccount(address account, bytes32 neededRole);
   error AccessControlBadConfirmation();
+}
+
+interface IErc20Capped {
+  error ERC20ExceededCap(uint256 increasedSupply, uint256 cap);
+  error ERC20InvalidCap(uint256 cap);
 }
 
 contract ErrorsIdCalculator is
@@ -36,6 +42,7 @@ contract ErrorsIdCalculator is
   IERC721Errors,
   IERC1155Errors,
   IAccessControl,
+  IErc20Capped,
   IGeneralizedCollectionErrors,
   IDiamondErrors,
   IDiamondInitErrors,
@@ -52,5 +59,6 @@ contract ErrorsIdCalculator is
   IRaffleErrors,
   IStakingErrors,
   IPonziErrors,
-  IWaitListErrors
+  IWaitListErrors,
+  IDispenserErrors
 {}

@@ -38,6 +38,9 @@ contract Dispenser is IDispenser, ERC165, Context, NativeRejector {
         i++;
       }
     }
+
+    // do not keep change
+    Address.sendValue(payable(_msgSender()), address(this).balance);
   }
 
   /**
