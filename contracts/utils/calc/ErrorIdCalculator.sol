@@ -37,12 +37,20 @@ interface IErc20Capped {
   error ERC20InvalidCap(uint256 cap);
 }
 
+interface IErc2981Royalty {
+  error ERC2981InvalidDefaultRoyalty(uint256 numerator, uint256 denominator);
+  error ERC2981InvalidDefaultRoyaltyReceiver(address receiver);
+  error ERC2981InvalidTokenRoyalty(uint256 tokenId, uint256 numerator, uint256 denominator);
+  error ERC2981InvalidTokenRoyaltyReceiver(uint256 tokenId, address receiver);
+}
+
 contract ErrorsIdCalculator is
   IERC20Errors,
   IERC721Errors,
   IERC1155Errors,
   IAccessControl,
   IErc20Capped,
+  IErc2981Royalty,
   IGeneralizedCollectionErrors,
   IDiamondErrors,
   IDiamondInitErrors,

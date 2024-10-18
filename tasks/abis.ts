@@ -139,6 +139,7 @@ export const fwFunctionNames = [
   "ERC721Simple:approve",
   "ERC721Simple:setApprovalForAll",
   "ERC721Simple:isApprovedForAll",
+  "ERC721Simple:setTokenRoyalty",
   "ERC721Simple:setDefaultRoyalty",
   "ERC721RandomEthberry:setSubscriptionId",
   "ERC721LootBoxSimple:mintBox",
