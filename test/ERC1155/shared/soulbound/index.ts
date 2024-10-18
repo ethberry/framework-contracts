@@ -4,7 +4,7 @@ import {
   shouldBehaveLikeERC1155Burnable,
   shouldBehaveLikeERC1155Royalty,
   shouldBehaveLikeERC1155Supply,
-  shouldCustomURI,
+  shouldBehaveLikeERC1155BaseUrl,
   shouldMint,
   shouldMintBatch,
   shouldSetApprovalForAll,
@@ -22,9 +22,8 @@ export function shouldBehaveLikeERC1155Soulbound(factory: () => Promise<any>) {
   shouldSafeTransferFrom(factory);
   shouldSafeBatchTransferFrom(factory);
 
-  shouldCustomURI(factory);
-
   shouldBehaveLikeERC1155Burnable(factory);
   shouldBehaveLikeERC1155Royalty(factory);
   shouldBehaveLikeERC1155Supply(factory);
+  shouldBehaveLikeERC1155BaseUrl(factory);
 }

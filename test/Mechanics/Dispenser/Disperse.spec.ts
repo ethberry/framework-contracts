@@ -147,7 +147,7 @@ describe("Dispenser", function () {
       await expect(tx).to.be.revertedWithCustomError(contractInstance, "DispenserWrongArrayLength");
     });
 
-    it.only("should have reentrancy guard", async function () {
+    it("should have reentrancy guard", async function () {
       const [owner] = await ethers.getSigners();
 
       const contractInstance = await factory();

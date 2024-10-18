@@ -1,7 +1,6 @@
 import {
   shouldBalanceOf,
   shouldBalanceOfBatch,
-  shouldCustomURI,
   shouldMint,
   shouldMintBatch,
   shouldSafeBatchTransferFrom,
@@ -17,6 +16,4 @@ export function shouldBehaveLikeERC1155(factory: () => Promise<any>) {
   shouldSetApprovalForAll(factory);
   shouldSafeTransferFrom(factory);
   shouldSafeBatchTransferFrom(factory);
-
-  shouldCustomURI(factory);
 }

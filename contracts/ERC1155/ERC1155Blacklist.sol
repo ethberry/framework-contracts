@@ -9,7 +9,6 @@ pragma solidity ^0.8.20;
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
 import { BlackList } from "@ethberry/contracts-access/contracts/extension/BlackList.sol";
-import { ERC1155ABSR } from "@ethberry/contracts-erc1155/contracts/preset/ERC1155ABSR.sol";
 
 import { ERC1155Simple } from "./ERC1155Simple.sol";
 
@@ -19,7 +18,7 @@ contract ERC1155Blacklist is ERC1155Simple, BlackList {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155ABSR, BlackList) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155Simple, BlackList) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
 
