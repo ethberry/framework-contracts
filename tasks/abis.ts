@@ -122,6 +122,7 @@ export const fwEventNames = Object.keys(ContractEventSignatures).map(key => key.
 // LIST OF FUNCTIONS WE NEED TO INCLUDE TO @FW/PACKAGES
 export const fwFunctionNames = [
   "ERC20Simple:transfer",
+  "ERC20Simple:transferAndCall",
   "ERC20Simple:approve",
   "ERC20Simple:mint",
   "ERC20Simple:balanceOf",
@@ -199,6 +200,8 @@ export const fwFunctionNames = [
 
   "WaitList:setReward",
   "WaitList:claim",
+
+  "SplitterWallet:release",
 
   "ERC20FactoryFacet:deployERC20Token",
   "ERC721FactoryFacet:deployERC721Token",

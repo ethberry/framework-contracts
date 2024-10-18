@@ -58,9 +58,9 @@ contract WaitList is IWaitList, AccessControl, Pausable, NativeRejector, CoinHol
       revert WaitListMissingRoot();
     }
 
-    // should be
-    // keccak256(abi.encodePacked(_msgSender()))
-    bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
+    // OpenZeppelin double hash leaf, see
+    // https://github.com/OpenZeppelin/merkle-tree/blob/master/src/hashes.ts#L9
+    bytes32 leaf = keccak256(abi.encode(keccak256(abi.encode(_msgSender()))));
     bool verified = MerkleProof.verifyCalldata(proof, _roots[externalId], leaf);
 
     if (!verified) {

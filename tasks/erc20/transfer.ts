@@ -4,7 +4,7 @@ import { WeiPerEther } from "ethers";
 task("erc20-transfer", "Prints an ERC20 balance")
   .addParam("contract", "The ERC20 contract's address")
   .addParam("to", "The spender's address")
-  .addOptionalParam("value", "The spender's address")
+  .addOptionalParam("value", "Amount to send")
   .setAction(async (args, hre) => {
     const { contract, to, value = 1_000_000n } = args;
 

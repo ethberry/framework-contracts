@@ -1,5 +1,6 @@
 // TOKENS
 import "./native/balance";
+import "./native/transfer";
 import "./erc20/allowance";
 import "./erc20/approve";
 import "./erc20/deploy";
