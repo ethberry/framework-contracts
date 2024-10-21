@@ -16,7 +16,7 @@ import { MINTER_ROLE } from "@ethberry/contracts-utils/contracts/roles.sol";
 
 import { IERC721Simple } from "../../ERC721/interfaces/IERC721Simple.sol";
 
-contract ERC721CSimple is IERC721Simple, ERC721ABRK, ERC721ABaseUrl, NativeRejector {
+contract ERC721CollectionSimple is IERC721Simple, ERC721ABRK, ERC721ABaseUrl, NativeRejector {
   uint96 _batchSize;
 
   constructor(

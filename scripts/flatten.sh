@@ -65,8 +65,8 @@ hardhat flatten contracts/ERC1155/ERC1155Soulbound.sol > dist/ERC1155/ERC1155Sou
 mkdir -p dist/Mechanics
 
 mkdir -p dist/Mechanics/Collection
-hardhat flatten contracts/Mechanics/Collection/ERC721CBlacklist.sol > dist/Mechanics/Collection/ERC721CBlacklist.sol
-hardhat flatten contracts/Mechanics/Collection/ERC721CSimple.sol > dist/Mechanics/Collection/ERC721CSimple.sol
+hardhat flatten contracts/Mechanics/Collection/ERC721CollectionBlacklist.sol > dist/Mechanics/Collection/ERC721CollectionBlacklist.sol
+hardhat flatten contracts/Mechanics/Collection/ERC721CollectionSimple.sol > dist/Mechanics/Collection/ERC721CollectionSimple.sol
 
 mkdir -p dist/Mechanics/Dispenser
 hardhat flatten contracts/Mechanics/Dispenser/Dispenser.sol > dist/Mechanics/Dispenser/Dispenser.sol

@@ -3,7 +3,8 @@ import { Contract, WeiPerEther, ZeroAddress } from "ethers";
 import fs from "fs";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 
-import { blockAwait, blockAwaitMs, camelToSnakeCase } from "@ethberry/contracts-helpers";
+import { camelToSnakeCase } from "@ethberry/utils";
+import { blockAwait, blockAwaitMs } from "@ethberry/contracts-helpers";
 import {
   baseTokenURI,
   METADATA_ROLE,
@@ -543,7 +544,7 @@ async function main() {
   );
 
   // GENERATIVE
-  const erc721CollectionFactory = await ethers.getContractFactory("ERC721CSimple");
+  const erc721CollectionFactory = await ethers.getContractFactory("ERC721CollectionSimple");
   contracts.erc721Generative = await erc721CollectionFactory.deploy(
     "COLLECTION SIMPLE",
     "COLL721",

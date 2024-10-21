@@ -13,7 +13,7 @@ import { expiresAt, externalId } from "../test/constants";
 import { deployDiamond } from "../test/Exchange/shared";
 import { debug, grantRoles } from "./utils/deploy-utils";
 import { getBaseTokenURI } from "../test/shared/uri";
-import { TypedContractEvent, TypedEventLog } from "../contracts/core/typechain-types/common";
+import { TypedContractEvent, TypedEventLog } from "../typechain-types/common";
 
 // DELAY CONFIG
 const delay = 1; // block delay
@@ -645,7 +645,7 @@ async function main() {
   );
 
   // GENERATIVE
-  const erc721CollectionFactory = await ethers.getContractFactory("ERC721CSimple");
+  const erc721CollectionFactory = await ethers.getContractFactory("ERC721CollectionSimple");
   contracts.erc721Generative = await erc721CollectionFactory.deploy(
     "COLLECTION SIMPLE",
     "COLL721",

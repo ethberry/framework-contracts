@@ -1,6 +1,8 @@
 import { ethers } from "hardhat";
 import fs from "fs";
-import { blockAwait, camelToSnakeCase } from "@ethberry/contracts-helpers";
+
+import { camelToSnakeCase } from "@ethberry/utils";
+import { blockAwait } from "@ethberry/contracts-helpers";
 import { MINTER_ROLE } from "@ethberry/contracts-constants";
 
 // import { addFacetDiamond, updateFacetDiamond } from "../../test/Exchange/shared";

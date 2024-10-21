@@ -113,6 +113,8 @@ describe("Diamond Exchange Genes", function () {
 
       await randomRequest(exchangeInstance, vrfInstance, 54321n);
 
+      const current = await time.latest();
+
       const newTokenId = await erc721Instance.totalSupply();
       const newTokenOwner = await erc721Instance.ownerOf(newTokenId);
       expect(newTokenOwner).to.equal(owner);
@@ -132,7 +134,7 @@ describe("Diamond Exchange Genes", function () {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(motherPregnancyCounter).to.be.equal(1);
-      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(motherPregnancyTimestamp).equal(current);
 
       // Check pregnancy attributes for father
       const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(
@@ -144,7 +146,7 @@ describe("Diamond Exchange Genes", function () {
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
       expect(fatherPregnancyCounter).to.be.equal(1);
-      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(fatherPregnancyTimestamp).equal(current);
     });
 
     it("should fail: NotOwnerNorApproved, ZeroAddress", async function () {
@@ -241,6 +243,8 @@ describe("Diamond Exchange Genes", function () {
       await exchangeInstance.breed(params1, mother, father, signature1);
       await randomRequest(exchangeInstance, vrfInstance, 54321n);
 
+      const current = await time.latest();
+
       const motherPregnancyCounter = await erc721Instance.getRecordFieldValue(
         1,
         genesTokenAttributes.PREGNANCY_COUNTER,
@@ -250,7 +254,7 @@ describe("Diamond Exchange Genes", function () {
         1,
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
-      expect(motherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(motherPregnancyTimestamp).equal(current);
 
       const fatherPregnancyCounter = await erc721Instance.getRecordFieldValue(
         2,
@@ -261,7 +265,7 @@ describe("Diamond Exchange Genes", function () {
         2,
         genesTokenAttributes.PREGNANCY_TIMESTAMP,
       );
-      expect(fatherPregnancyTimestamp).to.be.closeTo(Math.floor(Date.now() / 1000), 100);
+      expect(fatherPregnancyTimestamp).equal(current);
 
       const nonce2 = encodeBytes32String("nonce1");
       const params2 = {

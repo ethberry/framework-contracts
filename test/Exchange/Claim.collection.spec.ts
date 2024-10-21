@@ -35,7 +35,7 @@ describe("Diamond Exchange Claim (Collection)", function () {
 
         // DEPLOY ERC721 Collection
         const batchSize = 10n;
-        const erc721CollectionInstance = await deployCollection("ERC721CBlacklist", batchSize);
+        const erc721CollectionInstance = await deployCollection("ERC721CollectionSimple", batchSize);
         // TEST deploy?
 
         // APPROVE

@@ -7,7 +7,7 @@ import { deployCollection } from "./shared/fixtures";
 import { shouldMintConsecutive } from "./shared/simple/base/mintConsecutive";
 import { shouldBehaveLikeERC721Collection } from "./shared/simple";
 
-describe("ERC721CBlacklist", function () {
+describe("ERC721CollectionBlacklist", function () {
   // test timeout fails when batchSize = 5000n
   const factory = () => deployCollection(this.title, batchSize);
 

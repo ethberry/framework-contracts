@@ -7,7 +7,7 @@ import { deployCollection } from "./shared/fixtures";
 import { shouldMintConsecutive } from "./shared/simple/base/mintConsecutive";
 import { shouldBehaveLikeERC721Collection } from "./shared/simple";
 
-describe("ERC721CSimple", function () {
+describe("ERC721CollectionSimple", function () {
   const factory = () => deployCollection(this.title, batchSize);
 
   shouldBehaveLikeAccessControl(factory)(DEFAULT_ADMIN_ROLE, MINTER_ROLE);

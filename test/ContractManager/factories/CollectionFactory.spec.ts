@@ -33,7 +33,7 @@ describe("CollectionFactoryDiamond", function () {
     it("should deploy a collection", async function () {
       const [owner] = await ethers.getSigners();
       const network = await ethers.provider.getNetwork();
-      const { bytecode } = await ethers.getContractFactory("ERC721CSimple");
+      const { bytecode } = await ethers.getContractFactory("ERC721CollectionSimple");
 
       const contractInstance = await factory();
       const verifyingContract = await contractInstance.getAddress();
@@ -109,7 +109,7 @@ describe("CollectionFactoryDiamond", function () {
         .to.emit(contractInstance, "CollectionDeployed")
         .withArgs(address, externalId, [tokenName, tokenSymbol, royalty, baseTokenURI, batchSize, contractTemplate]);
 
-      const collectionInstance = await ethers.getContractAt("ERC721CSimple", address);
+      const collectionInstance = await ethers.getContractAt("ERC721CollectionSimple", address);
 
       const hasRole1 = await collectionInstance.hasRole(DEFAULT_ADMIN_ROLE, contractInstance);
       expect(hasRole1).to.equal(false);
