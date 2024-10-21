@@ -9,6 +9,11 @@ pragma solidity ^0.8.20;
 import { IERC20Errors, IERC721Errors, IERC1155Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 import { IGeneralizedCollectionErrors } from "@ethberry/contracts-utils/contracts/interfaces/IGeneralizedCollectionErrors.sol";
 
+import { IERC998TopDownErrors } from "@ethberry/contracts-erc998td/contracts/interfaces/IERC998TopDownErrors.sol";
+import { IERC998ERC20TopDownError } from "@ethberry/contracts-erc998td/contracts/interfaces/IERC998ERC20TopDownError.sol";
+import { IStateHashError } from "@ethberry/contracts-erc998td/contracts/interfaces/IStateHashError.sol";
+import { IWhiteListChildError } from "@ethberry/contracts-erc998td/contracts/interfaces/IWhiteListChildError.sol";
+
 import { IDiamondErrors } from "../../Diamond/interfaces/IDiamondErrors.sol";
 import { IDiamondInitErrors } from "../../Diamond/interfaces/IDiamondInitErrors.sol";
 import { ISignatureValidatorErrors } from "../../Exchange/interfaces/ISignatureValidatorErrors.sol";
@@ -48,6 +53,10 @@ contract ErrorsIdCalculator is
   IERC20Errors,
   IERC721Errors,
   IERC1155Errors,
+  IERC998TopDownErrors,
+  IERC998ERC20TopDownError,
+  IStateHashError,
+  IWhiteListChildError,
   IAccessControl,
   IErc20Capped,
   IErc2981Royalty,
