@@ -60,7 +60,7 @@ library ExchangeUtils {
       }
       // If the `Asset` token is an ERC20 token.
       else if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
-        if (_isERC1363Supported(receiver, item.token)) {
+        if (isERC1363Supported(receiver, item.token)) {
           // Transfer the ERC20 token and emit event to notify server
           IERC1363(item.token).transferFromAndCall(spender, receiver, item.amount);
         } else {
@@ -169,7 +169,7 @@ library ExchangeUtils {
       }
       // If the `Asset` is an ERC20 token.
       else if (item.tokenType == TokenType.ERC20 && allowed.erc20) {
-        if (_isERC1363Supported(receiver, item.token)) {
+        if (isERC1363Supported(receiver, item.token)) {
           // Transfer the ERC20 token and emit event to notify server
           IERC1363(item.token).transferAndCall(receiver, item.amount);
         } else {
@@ -303,14 +303,14 @@ library ExchangeUtils {
     return items;
   }
 
-  function _isERC1363Supported(address receiver, address token) internal view returns (bool) {
+  function isERC1363Supported(address receiver, address token) internal view returns (bool) {
     return
       (receiver == address(this) ||
-        (receiver.code.length != 0 && _tryGetSupportedInterface(receiver, IERC1363_RECEIVER_ID))) &&
-      _tryGetSupportedInterface(token, IERC1363_ID);
+        (receiver.code.length != 0 && tryGetSupportedInterface(receiver, IERC1363_RECEIVER_ID))) &&
+      tryGetSupportedInterface(token, IERC1363_ID);
   }
 
-  function _tryGetSupportedInterface(address account, bytes4 interfaceId) internal view returns (bool) {
+  function tryGetSupportedInterface(address account, bytes4 interfaceId) internal view returns (bool) {
     try IERC165(account).supportsInterface(interfaceId) returns (bool isSupported) {
       return isSupported;
     } catch (bytes memory) {

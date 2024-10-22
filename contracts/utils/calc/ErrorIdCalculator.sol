@@ -37,6 +37,11 @@ interface IAccessControl {
   error AccessControlBadConfirmation();
 }
 
+interface IPausable {
+  error EnforcedPause();
+  error ExpectedPause();
+}
+
 interface IErc20Capped {
   error ERC20ExceededCap(uint256 increasedSupply, uint256 cap);
   error ERC20InvalidCap(uint256 cap);
@@ -58,6 +63,7 @@ contract ErrorsIdCalculator is
   IStateHashError,
   IWhiteListChildError,
   IAccessControl,
+  IPausable,
   IErc20Capped,
   IErc2981Royalty,
   IGeneralizedCollectionErrors,

@@ -11,4 +11,9 @@ interface ITokenValidationErrors {
    * @dev used to indicate that certain token types are not allowed for mechanics
    */
   error UnsupportedTokenType();
+
+  /**
+   * @dev used to indicate that token does not support certain feature
+   */
+  error UnsupportedFeature();
 }

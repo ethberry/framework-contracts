@@ -14,6 +14,7 @@ import { IERC721MysteryBox } from "./interfaces/IERC721MysteryBox.sol";
 import { ExchangeUtils } from "../../Exchange/lib/ExchangeUtils.sol";
 import { ERC721Simple } from "../../ERC721/ERC721Simple.sol";
 import { Asset, AllowedTokenTypes, TokenType } from "../../Exchange/lib/interfaces/IAsset.sol";
+import { IERC721Random } from "../Random/interfaces/IERC721Random.sol";
 
 contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
   using Address for address;
@@ -51,7 +52,11 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
     for (uint256 i = 0; i < length; ) {
       Asset memory item = content[i];
       if (item.tokenType == TokenType.ERC721 || item.tokenType == TokenType.ERC998) {
-        _itemData[tokenId].push(item);
+        if (ExchangeUtils.tryGetSupportedInterface(item.token, type(IERC721Random).interfaceId)) {
+          _itemData[tokenId].push(item);
+        } else {
+          revert UnsupportedFeature();
+        }
       } else {
         revert UnsupportedTokenType();
       }
@@ -66,11 +71,19 @@ contract ERC721MysteryBoxSimple is IERC721MysteryBox, ERC721Simple {
   function unpack(uint256 tokenId) public virtual {
     _checkAuthorized(_ownerOf(tokenId), _msgSender(), tokenId);
 
-    emit UnpackMysteryBox(_msgSender(), tokenId);
-
     _burn(tokenId);
 
-    ExchangeUtils.acquire(_itemData[tokenId], _msgSender(), AllowedTokenTypes(false, false, true, true, false));
+    Asset[] memory content = _itemData[tokenId];
+    uint256 length = content.length;
+    for (uint256 i = 0; i < length; ) {
+      Asset memory item = content[i];
+      IERC721Random(item.token).mintRandom(_msgSender(), item.tokenId);
+      unchecked {
+        i++;
+      }
+    }
+
+    emit UnpackMysteryBox(_msgSender(), tokenId);
   }
 
   /**
